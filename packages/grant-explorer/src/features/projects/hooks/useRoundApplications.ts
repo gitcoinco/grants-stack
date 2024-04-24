@@ -1,10 +1,9 @@
 import useSWR from "swr";
-import { Application, DataLayer } from "data-layer";
+import { DataLayer } from "data-layer";
 
 type Params = {
   chainId?: number;
   roundId?: string;
-  projectIds?: string[];
 };
 
 export function useRoundApprovedApplications(
@@ -15,24 +14,14 @@ export function useRoundApprovedApplications(
   return useSWR(
     shouldFetch ? ["allApprovedApplications", params] : null,
     async () => {
-      const validatedParams = (projectId: string) => {
-        return {
-          chainId: params.chainId as number,
-          roundId: params.roundId as string,
-          applicationId: projectId as string,
-        };
-      };
-      if (!params.projectIds) return;
+      if (params.chainId === undefined || params.roundId === undefined) {
+        return null;
+      }
 
-      const arr = params.projectIds?.map((projectId) => {
-        return dataLayer.getApplication(validatedParams(projectId));
+      return await dataLayer.getApplicationsForExplorer({
+        roundId: params.roundId,
+        chainId: params.chainId,
       });
-      return Promise.all(arr).then(
-        (applications) =>
-          applications.filter(
-            (application) => application?.status === "APPROVED"
-          ) as Application[] | undefined
-      );
     }
   );
 }

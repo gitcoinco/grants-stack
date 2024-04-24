@@ -612,16 +612,13 @@ const ProjectList = (props: {
   setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }): JSX.Element => {
-  const { projects, roundRoutePath, round, chainId, roundId } = props;
+  const { projects, roundRoutePath, chainId, roundId } = props;
   const dataLayer = useDataLayer();
 
   const { data: applications } = useRoundApprovedApplications(
     {
       chainId,
       roundId,
-      projectIds: round.approvedProjects?.map(
-        (proj) => proj.grantApplicationId
-      ),
     },
     dataLayer
   );
@@ -882,9 +879,6 @@ const RoundStatsTabContent = ({
       {
         chainId,
         roundId,
-        projectIds: round.approvedProjects?.map(
-          (proj) => proj.grantApplicationId
-        ),
       },
       dataLayer
     );
