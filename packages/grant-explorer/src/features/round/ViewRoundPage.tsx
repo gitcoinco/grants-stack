@@ -1,7 +1,7 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getRoundStrategyTitle } from "common";
+import { getRoundStrategyTitle, isRoundUsingPassportLite } from "common";
 
 import {
   ChainId,
@@ -315,11 +315,12 @@ function AfterRoundStart(props: {
           >
             <Breadcrumb items={breadCrumbs} />
           </div>
-          {walletAddress && isSybilDefenseEnabled && (
-            <div data-testid="passport-widget">
-              <PassportWidget round={round} alignment="right" />
-            </div>
-          )}
+          {walletAddress &&
+            (isSybilDefenseEnabled || isRoundUsingPassportLite(round)) && (
+              <div data-testid="passport-widget">
+                <PassportWidget round={round} alignment="right" />
+              </div>
+            )}
         </div>
         <main>
           <div className="flex flex-col md:items-center md:justify-between md:gap-8 md:flex-row md:mb-0 mb-4">
