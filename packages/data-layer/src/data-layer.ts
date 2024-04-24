@@ -624,6 +624,7 @@ export class DataLayer {
           strategyName: round.strategyName,
         },
         approvedProjects: projects,
+        uniqueDonorsCount: round.uniqueDonorsCount,
       },
     };
   }

@@ -80,7 +80,7 @@ export function CollectionShareDialog(props: Props) {
 
   useEffect(() => {
     setState({ ...state, applications: [...props.applications] });
-  }, [props.applications]);
+  }, [props.applications, state]);
 
   return (
     <>
