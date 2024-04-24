@@ -13,7 +13,7 @@ interface BreadcrumbProps {
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
   return (
-    <nav className="flex flex-wrap items-center text-sm text-grey-400 font-semibold">
+    <nav className="flex flex-wrap items-center text-sm text-grey-400 font-modern-era-medium">
       {items.map((item, index) => (
         <React.Fragment key={index}>
           <Link

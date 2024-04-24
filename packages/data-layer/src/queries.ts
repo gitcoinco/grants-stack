@@ -260,6 +260,7 @@ export const getApplication = gql`
       status
       totalAmountDonatedInUsd
       uniqueDonorsCount
+      totalDonationsCount
       round {
         strategyName
         donationsStartTime
@@ -534,6 +535,7 @@ export const getRoundForExplorer = gql`
     ) {
       id
       chainId
+      uniqueDonorsCount
       applicationsStartTime
       applicationsEndTime
       donationsStartTime

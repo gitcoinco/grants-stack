@@ -13,9 +13,9 @@ export function DefaultLayout({
   children,
 }: LayoutProps) {
   return (
-    <main className={"font-sans min-h-screen"}>
+    <main className={"font-sans min-h-screen text-grey-500"}>
       <Navbar showWalletInteraction={showWalletInteraction} />
-      <div className="container mx-auto max-w-screen-xl pt-16 relative z-10 px-2 xl:px-0">
+      <div className="container pt-16 relative z-10 mx-auto px-4 sm:px-6 lg:px-20 max-w-screen-2xl">
         {children}
       </div>
 
@@ -41,7 +41,7 @@ export function GradientLayout({
       />
       <div
         className={classNames(
-          "container mx-auto max-w-screen-xl relative z-10 px-2 xl:px-0",
+          "container mx-auto max-w-screen-2xl relative z-10 px-4 sm:px-6 lg:px-20",
           showAlloVersionBanner ? "pt-[120px]" : "pt-16"
         )}
       >
