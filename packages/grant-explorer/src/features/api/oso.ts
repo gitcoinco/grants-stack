@@ -129,7 +129,7 @@ export function useOSO(projectGithub?: string) {
         return;
       }
 
-      if (items.events_monthly_to_project.length == 6) {
+      if (items.events_monthly_to_project.length === 6) {
         const parsedItems : IOSOStats = {
           code_metrics_by_project: items.code_metrics_by_project[0],
           events_monthly_to_project: items.events_monthly_to_project
