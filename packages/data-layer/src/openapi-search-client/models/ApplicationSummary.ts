@@ -117,6 +117,7 @@ export interface ApplicationSummary {
    * @optional
    */
   tags?: Array<string>;
+  anchorAddress?: string;
 }
 
 /**
