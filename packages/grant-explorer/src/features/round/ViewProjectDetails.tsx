@@ -550,7 +550,7 @@ export function ProjectStats() {
     (isInfiniteDate(round.roundEndTime) || round.roundEndTime > new Date());
 
   return (
-    <div className="p-4 gap-4 grid grid-cols-3 md:flex md:flex-col text-blue-800">
+    <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
       <Stat
         isLoading={!application}
         value={`$${application?.totalAmountDonatedInUsd.toFixed(2)}`}
