@@ -2,6 +2,7 @@ import React from "react";
 import { IOSOStats } from "../../api/oso";
 import { Flex, Link, Text } from "@chakra-ui/react";
 import { Stat } from "../ViewProjectDetails";
+import { formatTimeAgo } from "../../common/utils/utils";
 
 export const StatList = ({ stats }: { stats: IOSOStats }) => {
   return (
@@ -63,30 +64,13 @@ export const StatList = ({ stats }: { stats: IOSOStats }) => {
   );
 };
 
-function formatTimeAgo(dateString : number) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffTime = Math.abs(now.getTime() - date.getTime()); // Difference in milliseconds
-  const diffMonths = Math.round(diffTime / (1000 * 60 * 60 * 24 * 30)); // Convert to months
-
-  if (diffMonths === 0) {
-    return 'This month';
-  } else if (diffMonths === 1) {
-    return 'Last month';
-  } else {
-    return `${diffMonths} months`;
-  }
-}
-
-function projectVelocity(stats : IOSOStats){
+function projectVelocity(stats : IOSOStats) {
   const recentCommits = stats.events_monthly_to_project[0].amount + stats.events_monthly_to_project[1].amount + stats.events_monthly_to_project[2].amount;
   const olderCommits = stats.events_monthly_to_project[3].amount + stats.events_monthly_to_project[4].amount + stats.events_monthly_to_project[5].amount;
 
-  if (recentCommits === 0 && olderCommits === 0) {
-    return 'unknown';
-  } else if (recentCommits >= (1.5 * olderCommits)){
-    return 'increasing';
-  } else if (recentCommits <= 0.5 * olderCommits){
+  if (recentCommits === 0 && olderCommits === 0) return 'unknown';
+  if (recentCommits >= (1.5 * olderCommits)) return 'increasing'; 
+  if (recentCommits <= 0.5 * olderCommits){
     return 'decreasing';
   } else {
     return 'steady';
