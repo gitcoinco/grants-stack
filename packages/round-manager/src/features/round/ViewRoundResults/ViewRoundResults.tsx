@@ -33,6 +33,7 @@ import { DistributionMatch } from "data-layer";
 import { utils } from "ethers";
 import { useContractAmountFunded } from "../FundContract";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
+import { set } from "lodash";
 
 type RevisedMatch = {
   revisedContributionCount: number;
@@ -245,6 +246,9 @@ function ViewRoundResults({
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
   >("keep");
+
+  const [isRecommendedDistribution, setIsRecommendedDistribution] =
+    useState<boolean>(true);
 
   const {
     matches,
@@ -465,62 +469,115 @@ function ViewRoundResults({
                   <p className="text-sm mt-2">Manual Verification</p>
                 )}
                 <div>
-                  <RadioGroup>
-                    <RadioGroup.Option value="auto">
+                  <RadioGroup
+                    value={isRecommendedDistribution}
+                    onChange={setIsRecommendedDistribution}
+                  >
+                    <RadioGroup.Option value={true}>
                       {({ checked }) => (
                         <div
                           className={classNames(
-                            "cursor-pointer flex items-center",
+                            "cursor-pointer flex flex-row my-2",
                             disableRoundSaturationControls &&
                               "opacity-50 cursor-not-allowed"
                           )}
                         >
                           <input
                             type="radio"
-                            className="text-indigo-600 focus:ring-indigo-500"
+                            className="text-indigo-600 items-start mt-0.5 focus:ring-indigo-500"
                             checked={checked}
                             readOnly
                           />
-                          <span
-                            className={classNames(
-                              "ml-2 font-medium text-gray-900",
-                              checked && "text-indigo-900"
-                            )}
-                          >
-                            Recommended
-                          </span>
+                          {sybilDefense === "auto" ? (
+                            <div className="flex flex-col">
+                              <span className="text-sm ml-2 text-gray-900">
+                                <a className="text-violet-400 hover:underline">
+                                  Recommended
+                                </a>{" "}
+                                - Upload your own results using the Passport
+                                Model-Based Detection system + result
+                                verification
+                              </span>
+                              <span className="text-sm mt-1 ml-2 text-gray-400">
+                                Since you selected frictionless auto-sybil
+                                detection at setup, select this option. Please
+                                use{" "}
+                                <a
+                                  className="underline"
+                                  href="https://roundoperations.gitcoin.co/round-operations/post-round/cluster-matching-and-csv-upload"
+                                >
+                                  this
+                                </a>
+                                cluster matching template to calculate your
+                                results.
+                              </span>
+                            </div>
+                          ) : sybilDefense === "manual" ? (
+                            <div className="flex flex-col">
+                              <span className="text-sm ml-2 text-gray-900">
+                                <a className="text-violet-400 hover:underline">
+                                  Recommended
+                                </a>{" "}
+                                - System default quadratic funding calculation
+                              </span>
+                              <span className="text-sm mt-1 ml-2 text-gray-400">
+                                Since you selected manual verification with
+                                Passport at setup, select this option to
+                                calculate your round’s final results.
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col">
+                              <span className="text-sm ml-2 text-gray-900">
+                                <a className="text-violet-400 hover:underline">
+                                  Recommended
+                                </a>{" "}
+                                - System default quadratic funding calculation
+                              </span>
+                              <span className="text-sm mt-1 ml-2 text-gray-400">
+                                Since you selected manual verification at setup,
+                                select this option to calculate your round’s
+                                final results.
+                              </span>
+                            </div>
+                          )}
                         </div>
                       )}
                     </RadioGroup.Option>
-                    <RadioGroup.Option value="manual">
+                    <RadioGroup.Option value={false}>
                       {({ checked }) => (
                         <div
                           className={classNames(
-                            "cursor-pointer flex items-center",
+                            "cursor-pointer flex my-2",
                             disableRoundSaturationControls &&
                               "opacity-50 cursor-not-allowed"
                           )}
                         >
                           <input
                             type="radio"
-                            className="text-indigo-600 focus:ring-indigo-500"
+                            className="text-indigo-600 items-start mt-0.5 focus:ring-indigo-500"
                             checked={checked}
                             readOnly
                           />
-                          <span
-                            className={classNames(
-                              "ml-2 font-medium text-gray-900",
-                              checked && "text-indigo-900"
-                            )}
-                          >
-                            Upload your own results
-                          </span>
+                          {sybilDefense === "auto" ? (
+                            <span className="text-sm ml-2 text-gray-900">
+                              System default quadratic funding calculation
+                            </span>
+                          ) : sybilDefense === "manual" ? (
+                            <span className="text-sm ml-2 text-gray-900">
+                              Upload your own results
+                            </span>
+                          ) : (
+                            <span className="text-sm ml-2 text-gray-900">
+                              Upload your own results
+                            </span>
+                          )}
                         </div>
                       )}
                     </RadioGroup.Option>
                   </RadioGroup>
                 </div>
-                <div className="flex mt-6 pt-6 mb-4">
+                <div className="flex mt-4 pt-6 mb-4">
                   <p className="text-sm leading-5 text-gray-500 font-semibold text-left">
                     Preview
                   </p>
@@ -713,7 +770,7 @@ function ViewRoundResults({
                       <a
                         className="underline"
                         href={
-                          "https://support.gitcoin.co/gitcoin-knowledge-base/gitcoin-grants-program/program-managers/how-to-view-your-round-results"
+                          "https://roundoperations.gitcoin.co/round-operations/post-round/sybil-analysis"
                         }
                       >
                         here
