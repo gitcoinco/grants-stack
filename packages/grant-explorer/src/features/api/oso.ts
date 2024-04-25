@@ -2,8 +2,6 @@ import { useState } from "react";
 import useSWR from "swr";
 import { Hex } from "viem";
 import { gql, GraphQLClient } from "graphql-request";
-import internal from "stream";
-import { date } from "zod";
 
 const osoApiKey = process.env.REACT_APP_OSO_API_KEY;
 const osoUrl = "https://opensource-observer.hasura.app/v1/graphql";
@@ -89,8 +87,6 @@ export function useOSO(projectGithub?: string) {
   const [stats, setStats] = useState<IOSOStats>(emptyReturn);
 
   const getStatsFor = async (projectRegistryGithub: string) => {
-    if (!osoUrl) throw new Error("Open Source Observer url not set.");
-
     const queryId = gql`{
       artifacts_by_project(where: {artifact_name: {_ilike: "%${projectRegistryGithub}/%"}}
         distinct_on: project_id
@@ -127,14 +123,12 @@ export function useOSO(projectGithub?: string) {
       }`
 
       const items: IOSOStats = await graphQLClient.request<IOSOStats>(queryStats)
-      console.log(items);
+
       if (!Array.isArray(items.code_metrics_by_project)) {
         setStats(emptyReturn);
         return;
       }
 
-      console.log(items.events_monthly_to_project);
-      
       if (items.events_monthly_to_project.length == 6) {
         const parsedItems : IOSOStats = {
           code_metrics_by_project: items.code_metrics_by_project[0],

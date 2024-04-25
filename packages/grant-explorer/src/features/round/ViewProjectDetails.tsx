@@ -208,8 +208,8 @@ export default function ViewProjectDetails() {
         name: "Impact Measurement",
         content: (
           <React.Fragment>
-          <StatList stats={stats} />
-          <GrantList grants={grants} />
+            <StatList stats={stats} />
+            <GrantList grants={grants} />
           </React.Fragment>
         ),
       },
