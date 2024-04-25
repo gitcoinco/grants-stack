@@ -332,9 +332,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                               }}
                               isValidDate={disablePastAndBeforeRoundStartDate}
                               initialViewDate={now}
-                              utc={true}
+                              utc={false}
                               dateFormat={"YYYY-MM-DD"}
-                              timeFormat={"HH:mm UTC"}
                             />
                           )}
                         />
@@ -434,9 +433,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                 disabled: rollingApplications,
                               }}
                               isValidDate={disableBeforeApplicationStartDate}
-                              utc={true}
+                              utc={false}
                               dateFormat={"YYYY-MM-DD"}
-                              timeFormat={"HH:mm UTC"}
                             />
                           )}
                         />
@@ -510,9 +508,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                 "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                             }}
                             isValidDate={disableBeforeApplicationStartDate}
-                            utc={true}
+                            utc={false}
                             dateFormat={"YYYY-MM-DD"}
-                            timeFormat={"HH:mm UTC"}
                           />
                         )}
                       />
@@ -622,7 +619,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                 }
                               }}
                               isValidDate={disableBeforeRoundStartDate}
-                              utc={true}
+                              utc={false}
                               // we use renderInput because there is a bug with the library
                               // if the input is cleared programmatically the value is removed
                               // but the visual date is not updated
@@ -634,7 +631,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                     value={
                                       field.value
                                         ? moment(field.value).format(
-                                            "YYYY-MM-DD HH:mm UTC"
+                                            "YYYY-MM-DD HH:mm"
                                           )
                                         : ""
                                     }
@@ -1041,7 +1038,7 @@ function ApplicationDatesInformation() {
         type="dark"
         effect="solid"
       >
-        <span className="text-xs">All dates are in UTC.</span>
+        <span className="text-xs">All dates are browser localized.</span>
       </ReactTooltip>
     </>
   );
