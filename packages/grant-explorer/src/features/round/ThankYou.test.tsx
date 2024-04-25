@@ -24,7 +24,7 @@ describe("<TwitterButton />", () => {
       <TwitterButton address={zeroAddress} isMrc={true} roundName={"Round"} />
     );
 
-    expect(screen.getByText("Share on Twitter")).toBeInTheDocument();
+    expect(screen.getByText("Share on X")).toBeInTheDocument();
   });
 
   it("Should redirect to twitter with correct text", async () => {
@@ -36,7 +36,7 @@ describe("<TwitterButton />", () => {
       <TwitterButton address={zeroAddress} isMrc={true} roundName={"Round"} />
     );
 
-    fireEvent.click(screen.getByText("Share on Twitter"));
+    fireEvent.click(screen.getByText("Share on X"));
     expect(openSpy).toHaveBeenCalledOnce();
     expect(openSpy).toHaveBeenCalledWith(
       "https://twitter.com/intent/tweet?text=I%20just%20donated%20to%20Round%20and%20more%20on%20%40gitcoin's%20%40grantsstack.%20Join%20me%20in%20making%20a%20difference%20by%20donating%20today%2C%20and%20check%20out%20the%20projects%20I%20supported%20on%20my%20Donation%20History%20page!%0A%0Ahttps%3A%2F%2Fexplorer.gitcoin.co%2F%23%2Fcontributors%2F0x0000000000000000000000000000000000000000",
@@ -119,7 +119,7 @@ describe.skip("<ThankYou/>", () => {
     renderWithContext(<ThankYou />);
 
     expect(screen.queryByTestId("view-tx-button")).toBeInTheDocument();
-    expect(screen.queryByTestId("twitter-button")).toBeInTheDocument();
+    expect(screen.queryByTestId("x-button")).toBeInTheDocument();
     expect(screen.queryByTestId("home-button")).toBeInTheDocument();
   });
 });

@@ -5,7 +5,7 @@ export const chains = {
   10: "optimism",
   11155111: "sepolia",
   250: "fantom",
-  280: "zkSyncEraTestnet",
+  300: "zkSyncEraTestnet",
   324: "zkSyncEraMainnet",
   424: "pgn",
   4002: "fantomTestnet",

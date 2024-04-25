@@ -9,6 +9,9 @@ type Props = {
   projectsInView: number;
   onAddAllApplicationsToCart: () => void;
 };
+
+const defaultCollectionName = "Untitled Collection";
+
 export function CollectionDetails({
   collection,
   projectsInView,
@@ -16,7 +19,9 @@ export function CollectionDetails({
 }: Props) {
   return (
     <div className="mt-16">
-      <h3 className="text-4xl font-medium mb-2">{`${collection.name} (${collection.applications.length})`}</h3>
+      <h3 className="text-4xl font-medium mb-2">{`${
+        collection.name ?? defaultCollectionName
+      } (${projectsInView})`}</h3>
       <div className="flex">
         <div className="text-lg flex-1 whitespace-pre-wrap">
           {collection.description}

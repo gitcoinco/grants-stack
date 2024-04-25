@@ -36,17 +36,15 @@ import { GrantList } from "./KarmaGrant/GrantList";
 import { useGap } from "../api/gap";
 import { StatList } from "./OSO/ImpactStats";
 import { useOSO } from "../api/oso";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { DataLayer, useDataLayer } from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { truncate } from "../common/utils/truncate";
-import tw from "tailwind-styled-components";
 import {
   mapApplicationToProject,
   mapApplicationToRound,
   useApplication,
 } from "../projects/hooks/useApplication";
-import { AlloVersionBanner } from "./ViewRoundPage";
 import { PassportWidget } from "../common/PassportWidget";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
@@ -151,12 +149,12 @@ export default function ViewProjectDetails() {
     isAfterRoundEndDate;
   const { projects, add, remove } = useCartStorage();
 
-   const isAlreadyInCart = projects.some(
-     (project) =>
-       project.grantApplicationId === applicationId &&
-       project.chainId === Number(chainId) &&
-       project.roundId === roundId
-   );
+  const isAlreadyInCart = projects.some(
+    (project) =>
+      project.grantApplicationId === applicationId &&
+      project.chainId === Number(chainId) &&
+      project.roundId === roundId
+  );
   const cartProject = projectToRender as CartProject;
 
   if (cartProject !== undefined) {
@@ -190,7 +188,9 @@ export default function ViewProjectDetails() {
         name: "Project details",
         content: (
           <>
-            <h3 className="text-3xl mt-8 mb-4 font-medium text-black">About</h3>
+            <h3 className="text-3xl mt-8 mb-4 font-modern-era-medium text-blue-800">
+              About
+            </h3>
             {projectToRender ? (
               <>
                 <Detail text={description} testID="project-metadata" />
@@ -224,7 +224,6 @@ export default function ViewProjectDetails() {
   return (
     <>
       <DefaultLayout>
-        <AlloVersionBanner roundId={roundId} />
         {isAfterRoundEndDate && <RoundEndedBanner />}
         <div className="flex flex-row justify-between my-8">
           <div className="flex items-center pt-2" data-testid="bread-crumbs">
@@ -267,7 +266,7 @@ export default function ViewProjectDetails() {
             {error === undefined ? (
               <>
                 <Skeleton isLoaded={Boolean(title)}>
-                  <h1 className="text-4xl font-medium tracking-tight text-black">
+                  <h1 className="text-4xl font-modern-era-medium tracking-tight text-grey-500">
                     {title}
                   </h1>
                 </Skeleton>
@@ -423,7 +422,7 @@ function ProjectLink({
         <Component
           href={url}
           target="_blank"
-          className={url && "text-blue-200 hover:underline"}
+          className={url && "text-blue-300 hover:underline"}
         >
           {children}
         </Component>
@@ -435,7 +434,7 @@ function ProjectLink({
 
 function VerifiedBadge() {
   return (
-    <span className="bg-teal-100 flex gap-2 rounded-full px-2 text-xs items-center font-medium text-teal-500">
+    <span className="bg-teal-100 flex gap-2 rounded-full px-2 text-xs items-center font-modern-era-medium text-teal-500">
       <ShieldCheckIcon className="w-4 h-4" />
       Verified
     </span>
@@ -448,7 +447,7 @@ function Detail(props: { text: string; testID: string }) {
       dangerouslySetInnerHTML={{
         __html: renderToHTML(props.text.replace(/\n/g, "\n\n")),
       }}
-      className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600 max-w-full"
+      className="text-blue-800 text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600 max-w-full"
       data-testid={props.testID}
     />
   );
@@ -466,7 +465,7 @@ function ApplicationFormAnswers(props: {
 
   return (
     <div>
-      <h1 className="text-2xl mt-8 font-thin text-black">
+      <h1 className="text-2xl mt-8 font-thin text-blue-800">
         Additional Information
       </h1>
       <div>
@@ -476,7 +475,7 @@ function ApplicationFormAnswers(props: {
             : answer.answer;
           return (
             <div key={answer.questionId}>
-              <p className="text-md mt-8 mb-3 font-semibold text-black">
+              <p className="text-md mt-8 mb-3 font-semibold text-blue-800">
                 {answer.question}
               </p>
               {answer.type === "paragraph" ? (
@@ -488,7 +487,7 @@ function ApplicationFormAnswers(props: {
                 ></p>
               ) : (
                 <p
-                  className="text-base text-black"
+                  className="text-base text-blue-800"
                   dangerouslySetInnerHTML={{
                     __html: renderToHTML(answerText.replace(/\n/g, "\n\n")),
                   }}
@@ -524,7 +523,7 @@ function Sidebar(props: {
   addToCart: () => void;
 }) {
   return (
-    <div className="min-w-[320px] mb-6">
+    <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
       <ProjectStats />
       {props.isBeforeRoundEndDate && (
         <CartButtonToggle
@@ -559,11 +558,7 @@ export function ProjectStats() {
     (isInfiniteDate(round.roundEndTime) || round.roundEndTime > new Date());
 
   return (
-    <div
-      className={
-        "rounded-3xl bg-gray-50 mb-4 p-4 gap-4 grid grid-cols-3 md:flex md:flex-col"
-      }
-    >
+    <div className="p-4 gap-4 grid grid-cols-3 md:flex md:flex-col text-blue-800">
       <Stat
         isLoading={!application}
         value={`$${application?.totalAmountDonatedInUsd.toFixed(2)}`}
@@ -616,38 +611,26 @@ export function Stat({
   );
 }
 
-const CartButton = tw.button<{ variant?: "danger" | "default" }>`
-border
-w-full
-items-center
-justify-center
-rounded-full
-px-4
-py-2
-font-medium
-inline-flex
-gap-2
-${(props) =>
-  props.variant === "danger"
-    ? `border-red-200 hover:bg-red-50`
-    : `border-blue-200 hover:bg-blue-50`}
-`;
 function CartButtonToggle(props: {
   isAlreadyInCart: boolean;
   addToCart: () => void;
   removeFromCart: () => void;
 }) {
   return (
-    <CartButton
+    <button
+      className="font-mono bg-blue-100 hover:bg-blue-300  hover:text-grey-50 transition-all w-full items-center justify-center rounded-b-3xl rounded-t-none p-4 inline-flex gap-2"
       data-testid={props.isAlreadyInCart ? "remove-from-cart" : "add-to-cart"}
-      variant={props.isAlreadyInCart ? "danger" : "default"}
       onClick={() =>
         props.isAlreadyInCart ? props.removeFromCart() : props.addToCart()
       }
     >
-      <ShoppingCartIcon className="w-4 h-4" />
-      {props.isAlreadyInCart ? "Remove from cart" : "Add to cart"}
-    </CartButton>
+      {props.isAlreadyInCart ? (
+        <CheckIcon className="w-5 h-5" />
+      ) : (
+        <ShoppingCartIcon className="w-5 h-5" />
+      )}
+      {props.isAlreadyInCart ? "Added to cart" : "Add to cart"}
+    </button>
   );
 }
 

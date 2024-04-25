@@ -33,12 +33,12 @@ export function MRCProgressModalBody({
     const stepsWithChainSwitch = [
       {
         name: "Switch Network",
-        description: "Switch to the network you want to donate",
+        description: `Switch network to ${CHAINS[chainId].name}`,
         status: chainSwitchStatus[chainId],
       },
       {
         name: "Permit",
-        description: "Permit the checkout contract",
+        description: "Approve checkout contract",
         status:
           chainSwitchStatus[chainId] !== ProgressStatus.IS_SUCCESS
             ? ProgressStatus.NOT_STARTED
@@ -56,7 +56,7 @@ export function MRCProgressModalBody({
     const stepsWithoutChainSwitch = [
       {
         name: "Permit",
-        description: "Permit the checkout contract",
+        description: "Permit checkout contract",
         status: permitStatus[chainId],
       },
       {
@@ -71,7 +71,7 @@ export function MRCProgressModalBody({
   }, [chainId, chainSwitchStatus, permitStatus, voteStatus]);
 
   return (
-    <>
+    <div className="sm:w-fit md:w-[400px]">
       {chainIdsBeingCheckedOut.length > 1 && (
         <div className="flex py-2 justify-between">
           {chainIdsBeingCheckedOut.map((chainId, idx) => {
@@ -101,8 +101,8 @@ export function MRCProgressModalBody({
                   <MRCModalChainStep
                     key={chainId}
                     icon={
-                      <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
-                        <span className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale" />
+                      <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 border-blue-500 rounded-full">
+                        <span className="h-2.5 w-2.5 bg-blue-500 rounded-full animate-pulse-scale" />
                       </span>
                     }
                     line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
@@ -114,14 +114,14 @@ export function MRCProgressModalBody({
                   <MRCModalChainStep
                     key={chainId}
                     icon={
-                      <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-teal-500 rounded-full">
+                      <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-blue-500 rounded-full">
                         <CheckIcon
                           className="w-5 h-5 text-white"
                           aria-hidden="true"
                         />
                       </span>
                     }
-                    line={<div className="flex-grow h-0.5 bg-teal-500"></div>}
+                    line={<div className="flex-grow h-0.5 bg-blue-500"></div>}
                     isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
                     chainCount={chainIdsBeingCheckedOut.length}
                   />
@@ -130,7 +130,7 @@ export function MRCProgressModalBody({
                   <MRCModalChainStep
                     key={chainId}
                     icon={
-                      <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"></span>
+                      <span className="relative z-10 w-8 h-8 flex items-center justify-center bg-white border-2 rounded-full border-grey-300"></span>
                     }
                     line={<div className="flex-grow h-0.5 bg-grey-100"></div>}
                     isLastStep={idx === chainIdsBeingCheckedOut.length - 1}
@@ -145,21 +145,23 @@ export function MRCProgressModalBody({
       <div className="px-2 py-2 font-bold">
         <p>
           <img
-            className="inline mr-2 w-5 h-5"
+            className="inline mr-1 w-5 h-5"
             alt={CHAINS[chainId].name}
             src={CHAINS[chainId].logo}
           />
           {chainIdsBeingCheckedOut.length > 1 ? (
-            <span>
+            <span className="font-bold text-[16px]">
               Step {chainIdsBeingCheckedOut.indexOf(Number(chainId)) + 1}:
               Checkout {CHAINS[chainId].name} donations
             </span>
           ) : (
-            <span>Checkout {CHAINS[chainId].name} donations</span>
+            <span className="font-bold text-[16px]">
+              Checkout {CHAINS[chainId].name} donations
+            </span>
           )}
         </p>
       </div>
-      <nav aria-label="Progress" className="ml-4 mt-2 mb-2">
+      <nav aria-label="Progress" className="ml-6 mt-2 mb-2">
         <ol className="overflow-hidden">
           {progressSteps.map((step, stepIdx) => (
             <li
@@ -173,7 +175,7 @@ export function MRCProgressModalBody({
                   step={step}
                   icon={
                     <span
-                      className="relative z-10 w-6 h-6 flex items-center justify-center bg-teal-500 rounded-full"
+                      className="relative z-10 w-6 h-6 flex items-center justify-center bg-blue-500 rounded-full"
                       data-testid={`${step.name}-complete-icon`}
                     >
                       <CheckIcon
@@ -189,14 +191,14 @@ export function MRCProgressModalBody({
                 <MRCModalStep
                   step={step}
                   icon={
-                    <span className="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 border-violet-500 rounded-full">
+                    <span className="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 border-blue-500 rounded-full font-sans text-sm font-medium">
                       <span
-                        className="h-2.5 w-2.5 bg-violet-500 rounded-full animate-pulse-scale"
+                        className="h-2.5 w-2.5 bg-blue-500 rounded-full animate-pulse-scale"
                         data-testid={`${step.name}-current-icon`}
                       />
                     </span>
                   }
-                  nameColor="text-violet-500"
+                  nameColor="text-black"
                 />
               ) : step.status === ProgressStatus.IS_ERROR ? (
                 <MRCModalStep
@@ -216,11 +218,11 @@ export function MRCProgressModalBody({
                   step={step}
                   icon={
                     <span
-                      className="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 rounded-full border-grey-400"
+                      className="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 rounded-full border-black"
                       data-testid={`${step.name}-upcoming-icon`}
                     ></span>
                   }
-                  nameColor="text-grey-400"
+                  nameColor="text-black"
                 />
               ) : (
                 <></>
@@ -270,7 +272,7 @@ export function MRCProgressModalBody({
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -295,13 +297,13 @@ function MRCModalStep(props: {
           {props.icon}
         </span>
         <span className="ml-2 w-full flex flex-col">
-          <span
+          {/* <span
             className={`flex justify-start text-xs font-semibold tracking-wide uppercase ${props.nameColor}`}
           >
             {props.step.name}
-          </span>
+          </span> */}
           <span
-            className={`flex justify-start text-sm ${
+            className={`flex justify-start text-sm mt-2 font-normal font-sans ${
               props.descriptionColor ?? "text-grey-400"
             }`}
           >
