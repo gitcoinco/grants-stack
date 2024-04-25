@@ -35,7 +35,7 @@ function createCartProjectFromApplication(
   application: ApplicationSummary
 ): CartProject {
   return {
-    // anchorAddress: application.anchorAddress,
+    anchorAddress: application.anchorAddress,
     projectRegistryId: application.projectId,
     roundId: application.roundId,
     chainId: application.chainId,
@@ -178,7 +178,6 @@ export function ExploreProjectsPage(): JSX.Element {
     setUrlParams(`?${filterListToUrlParams(newFilters).toString()}`);
   }
 
-  console.log("applications", applications);
   return (
     <GradientLayout showWalletInteraction>
       <LandingHero />
