@@ -82,7 +82,7 @@ function projectVelocity(stats : IOSOStats){
   const recentCommits = stats.events_monthly_to_project[0].amount + stats.events_monthly_to_project[1].amount + stats.events_monthly_to_project[2].amount;
   const olderCommits = stats.events_monthly_to_project[3].amount + stats.events_monthly_to_project[4].amount + stats.events_monthly_to_project[5].amount;
 
-  if (recentCommits == 0 && olderCommits == 0) {
+  if (recentCommits === 0 && olderCommits === 0) {
     return 'unknown';
   } else if (recentCommits >= (1.5 * olderCommits)){
     return 'increasing';
