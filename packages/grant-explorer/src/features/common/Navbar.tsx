@@ -45,47 +45,56 @@ export default function Navbar(props: NavbarProps) {
   const rounds: ExploreRoundsDropdownProps[] = [
     {
       chainId: 42161,
+      roundId: "26",
       name: "WEB3 Infrastructurre",
       link: "/round/42161/26",
     },
     {
       chainId: 42161,
+      roundId: "27",
       name: "Developer Tooling",
       link: "/round/42161/27",
     },
     {
       chainId: 42161,
+      roundId: "25",
       name: "dApps & Apps",
       link: "/round/42161/25",
     },
     {
       chainId: 42161,
+      roundId: "23",
       name: "Hackathon Alumni",
       link: "/round/42161/23",
     },
     {
       chainId: 42161,
+      roundId: "29",
       name: "Climate Solutions",
       link: "/round/42161/29",
     },
     {
       chainId: 42161,
+      roundId: "24",
       name: "ENS",
       link: "/round/42161/24",
     },
     {
       chainId: 10,
+      roundId: "9",
       name: "Token Engineering Commons (TEC)",
       link: "/round/10/9",
-      customClasses: "w-[7.5rem]"
+      customClasses: "w-[7.5rem]",
     },
     {
       chainId: 42161,
+      roundId: "31",
       name: "Open Civics",
       link: "/round/42161/31",
     },
     {
       chainId: 42161,
+      roundId: "28",
       name: "Hypercerts Ecosystem",
       link: "/round/42161/28",
     },
@@ -95,7 +104,7 @@ export default function Navbar(props: NavbarProps) {
     <nav
       className={`blurred fixed w-full z-20 shadow-[0_4px_24px_0px_rgba(0,0,0,0.08)] ${props.customBackground}`}
     >
-      <div className="mx-auto px-4 sm:px-6 lg:px-20">
+      <div className="mx-auto px-4 sm:px-6 lg:px-20 max-w-screen-2xl">
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link
@@ -112,7 +121,7 @@ export default function Navbar(props: NavbarProps) {
             </Link>
           </div>
           <div className="flex flex-row items-center gap-6 font-mono font-medium">
-            {rounds &&  <ExploreRoundsDropdown rounds={rounds} /> }
+            {rounds && <ExploreRoundsDropdown rounds={rounds} />}
             {showWalletInteraction && (
               <div>
                 <div

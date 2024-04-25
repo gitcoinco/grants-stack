@@ -11,7 +11,7 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../../store";
 import { Skeleton } from "@chakra-ui/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
-import { ChainId, VotingToken } from "common";
+import { ChainId, VotingToken, isRoundUsingPassportLite } from "common";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { PassportWidget } from "../../common/PassportWidget";
 
@@ -131,11 +131,13 @@ export function RoundInCart(
       <div className="p-4 bg-grey-100 rounded-b-xl font-medium text-lg">
         <div className="flex flex-row justify-between items-center">
           <div>
-            {address && round && isSybilDefenseEnabled && (
-              <div data-testid="passport-widget">
-                <PassportWidget round={round} alignment="left" />
-              </div>
-            )}
+            {address &&
+              round &&
+              (isSybilDefenseEnabled || isRoundUsingPassportLite(round)) && (
+                <div data-testid="passport-widget">
+                  <PassportWidget round={round} alignment="left" />
+                </div>
+              )}
           </div>
           <div className="flex flex-row gap-3 justify-center pt-1 pr-2">
             <div>
@@ -143,9 +145,9 @@ export function RoundInCart(
                 <div className="flex justify-end flex-nowrap">
                   <Skeleton isLoaded={!matchingEstimateLoading}>
                     <div className="flex flex-row font-semibold">
-                      <p
+                      <div
                         className={
-                          "flex flex-col md:flex-row items-center gap-2"
+                          "flex flex-col md:flex-row items-center gap-2 text-base"
                         }
                       >
                         <span className="mr-2">Total match</span>
@@ -154,7 +156,7 @@ export function RoundInCart(
                           ~$
                           {estimate?.toFixed(2)}
                         </div>
-                      </p>
+                      </div>
                       <span className="pl-4">|</span>
                     </div>
                   </Skeleton>

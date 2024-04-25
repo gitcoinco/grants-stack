@@ -1,5 +1,4 @@
 import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
-import { Button } from "common/src/styles";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { getChainIds, votingTokens } from "../api/utils";
@@ -211,7 +210,7 @@ export function ViewContributionHistory(props: {
             </div>
           </div>
           <div className="flex justify-between items-center">
-          {/* todo: removed until site is stable */}
+            {/* todo: removed until site is stable */}
             {/* <Button
               className="shadow-sm inline-flex border-gray-300 border-2 bg-gradient-to-br from-[#f6d7caff] via-[#bddce8ff] to-[#ebdfa5ff] font-medium py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6"
               onClick={() =>
@@ -230,6 +229,10 @@ export function ViewContributionHistory(props: {
               iconStyle="h-4 w-4 mr-1 mt-1 shadow-sm"
             />
           </div>
+        </div>
+        <div className="mt-8 mb-2 font-sans italic">
+          * Please note that your recent transactions may take a short while to
+          reflect in your donation history, as processing times may vary.
         </div>
         <div className="text-2xl my-6 font-sans">Donation Impact</div>
         <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-3 lg:grid-row-1 gap-6">

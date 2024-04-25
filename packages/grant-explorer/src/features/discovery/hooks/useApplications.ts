@@ -1,4 +1,3 @@
-import { Collection } from "data-layer";
 import useSWRInfinite from "swr/infinite";
 import { useDataLayer, SearchBasedProjectCategory } from "data-layer";
 import { useMemo } from "react";

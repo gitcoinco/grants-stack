@@ -1,31 +1,36 @@
-import { Fragment, ReactNode } from "react";
+import React, { Fragment, ReactNode, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
-interface MRCProgressModalProps {
-  isOpen: boolean;
-  heading?: string;
-  subheading?: string;
+interface InfoModalProps {
+  title?: string;
+  titleSize?: "sm" | "lg";
   body?: JSX.Element;
-  redirectUrl?: string;
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   children?: ReactNode;
 }
 
-export default function MRCProgressModal({
-  isOpen,
-  heading = "Processing...",
-  subheading = "Please hold while we submit your donation.",
+export default function InfoModal({
+  title = "Information Title",
+  titleSize = "sm",
+  isOpen = false,
+  setIsOpen = () => {
+    /**/
+  },
+
   children,
   ...props
-}: MRCProgressModalProps) {
+}: InfoModalProps) {
+  const cancelButtonRef = useRef(null);
+
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
         as="div"
-        data-testid="progress-modal"
         className="relative z-10"
-        onClose={() => {
-          /* Don't close the dialog when clicking the backdrop */
-        }}
+        initialFocus={cancelButtonRef}
+        onClose={setIsOpen}
+        data-testid="generic-modal"
       >
         <Transition.Child
           as={Fragment}
@@ -50,27 +55,25 @@ export default function MRCProgressModal({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative bg-white rounded-3xl px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6">
-                <div className="sm:flex sm:items-start">
-                  <div className="mt-3 font-sans text-center sm:mt-0 sm:text-left">
+              <Dialog.Panel className="relative bg-white px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-6">
+                <div className="sm:flex sm:items-start flex-col">
+                  <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                     <Dialog.Title
                       as="h3"
-                      className="text-lg font-medium text-grey-500"
+                      className={`${
+                        titleSize === "sm" ? "text-base" : "text-2xl"
+                      } leading-6 font-semibold text-grey-500 text-center`}
+                      data-testid="Info-heading"
                     >
-                      {heading}
+                      {title}
                     </Dialog.Title>
-                    <div className="mt-2">
-                      <p className="text-sm text-grey-400">{subheading}</p>
-                    </div>
-                    <div className="mt-2">{props.body}</div>
+                    {props.body && <div className="mt-2">{props.body}</div>}
                   </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>
         </div>
-        {/* Adding invisible button as modal needs to be displayed with a button */}
-        <button className="h-0 w-0 overflow-hidden" />
         {children}
       </Dialog>
     </Transition.Root>

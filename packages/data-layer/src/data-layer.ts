@@ -48,6 +48,7 @@ import {
   getRoundForExplorer,
   getRoundsQuery,
   getDonationsByDonorAddress,
+  getApplicationsForExplorer,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -370,6 +371,27 @@ export class DataLayer {
     return response.application ?? null;
   }
 
+  async getApplicationsForExplorer({
+    roundId,
+    chainId,
+  }: {
+    roundId: string;
+    chainId: number;
+  }): Promise<Application[]> {
+    const requestVariables = {
+      roundId,
+      chainId,
+    };
+
+    const response: { applications: Application[] } = await request(
+      this.gsIndexerEndpoint,
+      getApplicationsForExplorer,
+      requestVariables,
+    );
+
+    return response.applications ?? [];
+  }
+
   /**
    * Returns a list of applications identified by their chainId, roundId, and id.
    * @param expandedRefs
@@ -624,6 +646,7 @@ export class DataLayer {
           strategyName: round.strategyName,
         },
         approvedProjects: projects,
+        uniqueDonorsCount: round.uniqueDonorsCount,
       },
     };
   }

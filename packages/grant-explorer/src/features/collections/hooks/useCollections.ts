@@ -2,7 +2,6 @@ import useSWR, { SWRResponse } from "swr";
 import { useDataLayer, Collection } from "data-layer";
 import { CollectionV1, parseCollection } from "../collections";
 import { getConfig } from "common/src/config";
-import { ApplicationSummary } from "data-layer";
 
 const config = getConfig();
 
