@@ -15,7 +15,7 @@ import { ProjectBanner } from "./ProjectBanner";
 import { createIpfsImageUrl } from "common/src/ipfs";
 import { getConfig } from "common/src/config";
 
-function ProjectLogo(props: {
+export function ProjectLogo(props: {
   className?: string;
   imageCid: string;
   size: number;

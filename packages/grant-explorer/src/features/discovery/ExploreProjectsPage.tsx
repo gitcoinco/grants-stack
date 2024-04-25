@@ -200,7 +200,7 @@ export function ExploreProjectsPage(): JSX.Element {
             : `${pageTitle} (${totalApplicationsCount})`
         }
         action={
-          !collection && (
+          collection && (
             <div className="font-mono flex gap-x-4">
               <form
                 className="relative"
