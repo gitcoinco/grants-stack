@@ -1347,9 +1347,9 @@ function RoundApplicationPeriod(props: {
                                   applicationsStartTime: moment(date).toDate(),
                                 });
                               }}
-                              utc={true}
+                              utc={false}
                               dateFormat={"YYYY/MM/DD"}
-                              timeFormat={"HH:mm UTC"}
+                              timeFormat={"HH:mm"}
                               isValidDate={
                                 isV2
                                   ? (current: Moment) => true
@@ -1528,9 +1528,9 @@ function RoundApplicationPeriod(props: {
                                 applicationsEndTime: moment(date).toDate(),
                               });
                             }}
-                            utc={true}
+                            utc={false}
                             dateFormat={"YYYY/MM/DD"}
-                            timeFormat={"HH:mm UTC"}
+                            timeFormat={"HH:mm"}
                             isValidDate={disableBeforeApplicationStartDate}
                             inputProps={{
                               id: "applicationsEndTime",
@@ -1647,9 +1647,9 @@ function RoundApplicationPeriod(props: {
                               roundStartTime: moment(date).toDate(),
                             });
                           }}
-                          utc={true}
+                          utc={false}
                           dateFormat={"YYYY/MM/DD"}
-                          timeFormat={"HH:mm UTC"}
+                          timeFormat={"HH:mm"}
                           isValidDate={
                             isV2 ? (current: Moment) => true : disablePastDate
                           }
@@ -1768,9 +1768,9 @@ function RoundApplicationPeriod(props: {
                                   applicationsEndTime: moment(date).toDate(),
                                 });
                           }}
-                          utc={true}
+                          utc={false}
                           dateFormat={"YYYY/MM/DD"}
-                          timeFormat={"HH:mm UTC"}
+                          timeFormat={"HH:mm"}
                           isValidDate={disableBeforeRoundStartDate}
                           inputProps={{
                             id: "roundEndTime",
