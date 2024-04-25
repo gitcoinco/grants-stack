@@ -43,6 +43,10 @@
   font-family: "Modern Era Regular", serif;
 }
 
+.font-modern-era-bold {
+    font-family: 'Modern Era Bold', serif;
+}
+
 .blurred::before {
   content: "";
   position: absolute;

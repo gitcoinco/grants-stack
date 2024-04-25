@@ -7,6 +7,13 @@ import { ProjectStats } from "../../../reducers/projects";
 import RoundDetailsCard from "./RoundDetailsCard";
 import StatCard from "./StatCard";
 
+export const slugify = (input: string): string =>
+  input
+    .trim() // Remove whitespace
+    .replace(/\s+/g, "-") // Replace space w/ dash
+    .replace(/[^a-zA-Z0-9-]/g, "") // Remove non-alphanumeric chars
+    .toLowerCase();
+
 export default function RoundStats() {
   const NA = -1;
   const NAText = "N/A";
@@ -26,6 +33,7 @@ export default function RoundStats() {
 
     return {
       projectID: params.id!,
+      project: state.grantsMetadata[params.id!],
       stats,
       projectApplications: allApplications,
       rounds: state.rounds,
@@ -92,6 +100,28 @@ export default function RoundStats() {
 
   const renderRoundStats = () => (
     <>
+      <div
+        className="max-w-[53rem] m-auto w-full bg-green-50
+        text-black rounded-2xl py-8 px-2 flex justify-center
+        items-center gap-8 flex-wrap mb-16"
+      >
+        <div className="text-xl sm:text-2xl font-medium">
+          Want to check out more stats?
+        </div>
+        <a
+          href={`https://gitcoindonordata.xyz/projects/${slugify(
+            props.project.metadata?.title ?? ""
+          )}`}
+          rel="noreferrer"
+          target="_blank"
+          className="rounded-lg px-4 py-2.5 font-mono bg-green-200
+           hover:bg-green-300 text-white transition-all flex items-center justify-center gap-2"
+          data-testid="share-results-footer"
+        >
+          <span>Project stats dashboard</span>
+        </a>
+      </div>
+
       {section(
         <RoundDetailsCard heading="All-Time" />,
         <>

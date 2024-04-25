@@ -61,12 +61,12 @@ export default function ConfirmationModal({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative bg-white px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6">
+              <Dialog.Panel className="relative bg-white rounded-3xl pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-md sm:w-full sm:p-6">
                 <div className="sm:items-start">
                   <div className="mt-3 text-center sm:mt-0 sm:text-left">
                     <Dialog.Title
                       as="h3"
-                      className={`text-base leading-6 font-semibold text-grey-500 ${
+                      className={`font-sans text-lg font-medium text-grey-500 ${
                         modalStyle === "wide" ? "text-center" : ""
                       }`}
                     >
@@ -78,7 +78,8 @@ export default function ConfirmationModal({
                 <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                   <Button
                     type="button"
-                    className={`w-full inline-flex text-sm sm:ml-3 ${
+                    $variant="outline"
+                    className={`w-full inline-flex text-sm sm:ml-3 bg-blue-100 text-black font-mono px-8 focus:shadow-outline ${
                       modalStyle === "wide"
                         ? "sm_full justify-center"
                         : "sm:w-auto justify-center"
@@ -92,7 +93,7 @@ export default function ConfirmationModal({
                   <Button
                     type="button"
                     $variant="outline"
-                    className={`w-full inline-flex text-sm sm:ml-3 ${
+                    className={`w-full inline-flex text-sm sm:ml-3 font-mono px-8 ${
                       modalStyle === "wide"
                         ? "sm_full justify-center"
                         : "sm:w-auto justify-center"
