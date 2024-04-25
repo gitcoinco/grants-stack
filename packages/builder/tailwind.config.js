@@ -1,3 +1,4 @@
+const colors = require("tailwindcss/colors");
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
@@ -38,6 +39,13 @@ module.exports = {
         "gitcoin-violet-500": "#5932C4",
         "gitcoin-separator": "#757087",
         "modal-button": "#664AEC",
+        green: {
+          ...colors.green,
+          50: "#DCF5F2",
+          100: "#ADEDE5",
+          200: "#47A095",
+          300: "rgba(0, 67, 59, 1)",
+        },
       },
       width: {
         "dropdown-menu": "17.5rem",
