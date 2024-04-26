@@ -103,7 +103,6 @@ export class DefaultApi extends runtime.BaseAPI {
       initOverrides,
     );
 
-    console.log("response", response);
     return new runtime.JSONApiResponse(response, (jsonValue) =>
       SearchResponseFromJSON(jsonValue),
     );
