@@ -70,9 +70,6 @@ function projectVelocity(stats : IOSOStats) {
 
   if (recentCommits === 0 && olderCommits === 0) return 'unknown';
   if (recentCommits >= (1.5 * olderCommits)) return 'increasing'; 
-  if (recentCommits <= 0.5 * olderCommits){
-    return 'decreasing';
-  } else {
-    return 'steady';
-  }
+  if (recentCommits <= 0.5 * olderCommits) return 'decreasing';
+  return 'steady';
 }
