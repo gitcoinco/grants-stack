@@ -198,10 +198,6 @@ export class AlloV2 implements Allo {
         60_000,
         publicClient
       );
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
       return receipt;
     } else {
       throw tx.error;
@@ -696,13 +692,11 @@ export class AlloV2 implements Allo {
         throw new AlloError("DirectGrants is not supported yet!");
       }
 
-      const strategyInstance = new DonationVotingMerkleDistributionStrategy(
-        {
-          chain: this.chainId,
-          poolId: BigInt(args.roundId),
-          address: args.strategyAddress,
-        }
-      );
+      const strategyInstance = new DonationVotingMerkleDistributionStrategy({
+        chain: this.chainId,
+        poolId: BigInt(args.roundId),
+        address: args.strategyAddress,
+      });
 
       const totalApplications = await strategyInstance.recipientsCounter();
 
