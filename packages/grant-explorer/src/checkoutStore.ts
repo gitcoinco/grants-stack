@@ -27,7 +27,6 @@ import { getPermitType } from "common/dist/allo/voting";
 import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
-import * as Sentry from "@sentry/browser";
 
 type ChainMap<T> = Record<ChainId, T>;
 
@@ -204,15 +203,11 @@ export const useCheckoutStore = create<CheckoutState>()(
 
             get().setPermitStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
           } catch (e) {
-            console.error("permit error", e);
-
             if (!(e instanceof UserRejectedRequestError)) {
-              Sentry.captureException(e, {
-                extra: {
-                  donations,
-                  chainId,
-                  tokenAddress: token.address,
-                },
+              console.error("permit error", e, {
+                donations,
+                chainId,
+                tokenAddress: token.address,
               });
             }
             get().setPermitStatusForChain(chainId, ProgressStatus.IS_ERROR);
@@ -359,12 +354,8 @@ export const useCheckoutStore = create<CheckoutState>()(
 
           // do not log user rejections
           if (!(error instanceof UserRejectedRequestError)) {
-            Sentry.captureException(error, {
-              extra: context,
-            });
+            console.error("donation error", error, context);
           }
-
-          console.error("donation error", error, context);
 
           get().setVoteStatusForChain(chainId, ProgressStatus.IS_ERROR);
           throw error;
