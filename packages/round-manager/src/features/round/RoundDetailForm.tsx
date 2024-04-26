@@ -626,22 +626,6 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                               utc={false}
                               dateFormat={"YYYY-MM-DD"}
                               timeFormat={`HH:mm [${getTimezoneName()}]`}
-                              // we use renderInput because there is a bug with the library
-                              // if the input is cleared programmatically the value is removed
-                              // but the visual date is not updated
-                              // ref: https://stackoverflow.com/a/64972324/2524608
-                              renderInput={(props) => {
-                                return (
-                                  <input
-                                    {...props}
-                                    value={
-                                      field.value
-                                        ? moment(field.value)
-                                        : ""
-                                    }
-                                  />
-                                );
-                              }}
                             />
                           );
                         }}
