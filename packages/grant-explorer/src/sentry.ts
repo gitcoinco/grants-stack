@@ -3,8 +3,10 @@ import { BrowserTracing } from "@sentry/tracing";
 import {
   ReportingObserver as ReportingObserverIntegration,
   CaptureConsole as CaptureConsoleIntegration,
+  ExtraErrorData,
 } from "@sentry/integrations";
 
+console.log(process.env.REACT_APP_SENTRY_DSN);
 export const initSentry = () => {
   Sentry.init({
     dsn: process.env.REACT_APP_SENTRY_DSN || "",
@@ -15,6 +17,7 @@ export const initSentry = () => {
         levels: ["error", "warn"],
       }),
       new Sentry.Replay(),
+      new ExtraErrorData({ depth: 10 }),
     ],
     // This sets the sample rate to be 10%. You may want this to be 100% while
     // in development and sample at a lower rate in production
