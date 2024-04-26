@@ -35,6 +35,7 @@ function createCartProjectFromApplication(
   application: ApplicationSummary
 ): CartProject {
   return {
+    anchorAddress: application.anchorAddress,
     projectRegistryId: application.projectId,
     roundId: application.roundId,
     chainId: application.chainId,
@@ -196,8 +197,8 @@ export function ExploreProjectsPage(): JSX.Element {
           collection
             ? ""
             : isLoading
-            ? "Loading..."
-            : `${pageTitle} (${totalApplicationsCount})`
+              ? "Loading..."
+              : `${pageTitle} (${totalApplicationsCount})`
         }
         action={
           collection && (
