@@ -182,6 +182,10 @@ const applyToRound =
             "error uploading round application metadata",
             Status.UploadingMetadata
           );
+
+          throw new Error("error uploading round application metadata", {
+            cause: { error: res.error },
+          });
         }
       })
       .on("transaction", (res) => {
@@ -336,6 +340,7 @@ export const submitApplication =
         "error building round application",
         Status.LitAuthentication
       );
+
       return;
     }
 

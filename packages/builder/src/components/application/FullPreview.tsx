@@ -120,7 +120,7 @@ export function FullPreview(props: {
                     : currentAnswer || "";
 
                   return (
-                    <div>
+                    <div key={question.id}>
                       {!question.hidden && question.type !== "project" && (
                         <div key={question.id}>
                           <p className="text-md mt-8 mb-3 font-semibold text-black">
