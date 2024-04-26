@@ -196,6 +196,10 @@ const applyToRound =
           console.error("Transaction Error", res.error);
           datadogRum.addError(res.error);
           datadogLogs.logger.warn("transaction error");
+
+          throw new Error("error calling applyToRound", {
+            cause: { error: res.error },
+          });
         }
       })
       .on("transactionStatus", async (res) => {
@@ -214,6 +218,10 @@ const applyToRound =
             Status.SendingTx
           );
           console.log("Transaction Status Error", res.error);
+
+          throw new Error("error calling applyToRound", {
+            cause: { error: res.error },
+          });
         }
       })
       .on("indexingStatus", (res) => {
@@ -225,6 +233,10 @@ const applyToRound =
           });
         } else {
           console.error("Indexing Status Error", res.error);
+
+          throw new Error("error calling applyToRound", {
+            cause: { error: res.error },
+          });
         }
       })
       .execute();
