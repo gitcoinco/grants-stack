@@ -203,7 +203,7 @@ export function ExploreProjectsPage(): JSX.Element {
         action={
           collection && (
             <div className="font-mono flex gap-x-4">
-              <form
+              {/* <form
                 className="relative"
                 onSubmit={onSearchSubmit}
                 onBlur={onSearchSubmit}
@@ -232,7 +232,7 @@ export function ExploreProjectsPage(): JSX.Element {
                     options={FILTER_OPTIONS}
                   />
                 </div>
-              )}
+              )} */}
             </div>
           )
         }
