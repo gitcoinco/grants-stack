@@ -37,12 +37,12 @@ export default function LandingTabs() {
       children: isDesktop ? "Explore rounds" : "Rounds",
       tabName: "home-rounds-tab",
     },
-    {
-      to: "/projects",
-      activeRegExp: /^\/projects/,
-      children: isDesktop ? "Explore projects" : "Projects",
-      tabName: "home-projects-tab",
-    },
+    // {
+    //   to: "/projects",
+    //   activeRegExp: /^\/projects/,
+    //   children: isDesktop ? "Explore projects" : "Projects",
+    //   tabName: "home-projects-tab",
+    // },
   ];
 
   return (
