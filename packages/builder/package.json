@@ -26,6 +26,7 @@
     "@rsbuild/plugin-svgr": "^0.3.11",
     "@rsdoctor/rspack-plugin": "^0.1.1",
     "@sentry/browser": "^7.112.2",
+    "@sentry/cli": "^2.31.0",
     "@sentry/integrations": "^7.112.2",
     "@sentry/react": "^7.112.2",
     "@sentry/tracing": "^7.112.2",
@@ -106,7 +107,8 @@
     "lint:ci": "CI=false pnpm lint",
     "lint:fix": "eslint ./src --fix --cache",
     "typecheck": "tsc --noEmit",
-    "synpress:test": "playwright test --project=chromium"
+    "synpress:test": "playwright test --project=chromium",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org gitcoin-protocol --project grants-stack-builder ./build && sentry-cli sourcemaps upload --org gitcoin-protocol --project grants-stack-builder ./build"
   },
   "eslintConfig": {
     "extends": [
