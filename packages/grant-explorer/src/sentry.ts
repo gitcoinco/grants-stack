@@ -6,7 +6,6 @@ import {
   ExtraErrorData,
 } from "@sentry/integrations";
 
-console.log(process.env.REACT_APP_SENTRY_DSN);
 export const initSentry = () => {
   Sentry.init({
     dsn: process.env.REACT_APP_SENTRY_DSN || "",
