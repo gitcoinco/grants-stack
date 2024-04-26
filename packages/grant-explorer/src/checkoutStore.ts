@@ -325,7 +325,7 @@ export const useCheckoutStore = create<CheckoutState>()(
 
           if (receipt.status === "reverted") {
             throw new Error("donate transaction reverted", {
-              cause: { receipt, chainId, donations, token },
+              cause: { receipt },
             });
           }
 
