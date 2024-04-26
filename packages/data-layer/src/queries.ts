@@ -261,6 +261,7 @@ export const getApplication = gql`
       totalAmountDonatedInUsd
       uniqueDonorsCount
       totalDonationsCount
+      anchorAddress
       round {
         strategyName
         donationsStartTime
@@ -295,6 +296,7 @@ export const getApplicationsForExplorer = gql`
       totalAmountDonatedInUsd
       uniqueDonorsCount
       totalDonationsCount
+      anchorAddress
       round {
         strategyName
         donationsStartTime

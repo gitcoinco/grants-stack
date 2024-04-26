@@ -171,6 +171,7 @@ export function ApplicationSummaryFromJSONTyped(
     createdAtBlock: json["createdAtBlock"],
     contributorCount: json["contributorCount"],
     contributionsTotalUsd: json["contributionsTotalUsd"],
+    anchorAddress: json["anchorAddress"],
   };
 }
 
@@ -199,5 +200,6 @@ export function ApplicationSummaryToJSON(
     createdAtBlock: value.createdAtBlock,
     contributorCount: value.contributorCount,
     contributionsTotalUsd: value.contributionsTotalUsd,
+    anchorAddress: value.anchorAddress,
   };
 }

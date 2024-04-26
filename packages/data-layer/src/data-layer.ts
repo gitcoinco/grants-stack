@@ -428,6 +428,7 @@ export class DataLayer {
           }
         ) {
           id
+          anchorAddress
           chainId
           roundId
           projectId
@@ -478,7 +479,7 @@ export class DataLayer {
         contributorCount: a.uniqueDonorsCount,
         contributionsTotalUsd: a.totalAmountDonatedInUsd,
         tags: a.round.tags,
-        anchorAddress: a.project.anchorAddress,
+        anchorAddress: a.anchorAddress,
       };
     });
   }
