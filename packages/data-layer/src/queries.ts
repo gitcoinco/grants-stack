@@ -338,6 +338,7 @@ export const getApplicationsByRoundIdAndProjectIds = gql`
       status
       metadataCid
       metadata
+      anchorAddress
       round {
         applicationsStartTime
         applicationsEndTime
