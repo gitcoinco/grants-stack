@@ -29,6 +29,7 @@ import { Program, Round } from "../api/types";
 import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
+import { getTimezoneName } from "common/src/index";
 
 export const RoundValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -334,7 +335,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                               initialViewDate={now}
                               utc={false}
                               dateFormat={"YYYY-MM-DD"}
-                              timeFormat={"HH:mm"}
+                              timeFormat={`HH:mm [${getTimezoneName()}]`}
                             />
                           )}
                         />
@@ -436,7 +437,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                               isValidDate={disableBeforeApplicationStartDate}
                               utc={false}
                               dateFormat={"YYYY-MM-DD"}
-                              timeFormat={"HH:mm"}
+                              timeFormat={`HH:mm [${getTimezoneName()}]`}
                             />
                           )}
                         />
@@ -512,7 +513,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                             isValidDate={disableBeforeApplicationStartDate}
                             utc={false}
                             dateFormat={"YYYY-MM-DD"}
-                            timeFormat={"HH:mm"}
+                            timeFormat={`HH:mm [${getTimezoneName()}]`}
                           />
                         )}
                       />
@@ -623,6 +624,8 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                               }}
                               isValidDate={disableBeforeRoundStartDate}
                               utc={false}
+                              dateFormat={"YYYY-MM-DD"}
+                              timeFormat={`HH:mm [${getTimezoneName()}]`}
                               // we use renderInput because there is a bug with the library
                               // if the input is cleared programmatically the value is removed
                               // but the visual date is not updated
@@ -633,9 +636,7 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                     {...props}
                                     value={
                                       field.value
-                                        ? moment(field.value).format(
-                                            "YYYY-MM-DD HH:mm"
-                                          )
+                                        ? moment(field.value)
                                         : ""
                                     }
                                   />

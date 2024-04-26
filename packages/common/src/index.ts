@@ -235,7 +235,7 @@ export const formatLocalDateAsISOString = (date: Date): string => {
   return localString;
 };
 
-function getTimezoneName() {
+export function getTimezoneName() {
   const today = new Date();
   const short = today.toLocaleDateString(undefined);
   const full = today.toLocaleDateString(undefined, { timeZoneName: "short" });

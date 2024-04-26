@@ -58,6 +58,7 @@ import { ethers } from "ethers";
 import { getConfig } from "common/src/config";
 import { zeroAddress } from "viem";
 import { NATIVE } from "common/dist/allo/common";
+import { getTimezoneName } from "common/src/index";
 
 type EditMode = {
   canEdit: boolean;
@@ -1349,7 +1350,7 @@ function RoundApplicationPeriod(props: {
                               }}
                               utc={false}
                               dateFormat={"YYYY/MM/DD"}
-                              timeFormat={"HH:mm"}
+                              timeFormat={`HH:mm [${getTimezoneName()}]`}
                               isValidDate={
                                 isV2
                                   ? (current: Moment) => true
