@@ -289,6 +289,7 @@ export type ProjectApplicationForManager = ProjectApplication & {
 };
 
 export type ProjectApplicationWithRound = ProjectApplication & {
+  anchorAddress: Address;
   round: {
     applicationsStartTime: string;
     applicationsEndTime: string;

@@ -349,7 +349,8 @@ export function SummaryContainer() {
           permitDeadline: currentPermitDeadline,
         })),
         walletClient,
-        allo
+        allo,
+        dataLayer
       );
     } catch (error) {
       console.error(error);
