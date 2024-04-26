@@ -239,6 +239,9 @@ function ViewRoundResults({
 
   const matchingTableRef = useRef<HTMLDivElement>(null);
   const [overridesFile, setOverridesFile] = useState<undefined | File>();
+  const [customResultsFile, setCustomResultsFile] = useState<
+    undefined | File
+  >();
 
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
@@ -264,6 +267,8 @@ function ViewRoundResults({
 
   const shouldShowRevisedTable =
     areMatchingFundsRevised || Boolean(readyForPayoutTransactionHash);
+
+  const shouldShowCustomResultsTable = Boolean(customResultsFile);
 
   const { data: amountFunded } = useContractAmountFunded({
     round: round,
@@ -571,38 +576,62 @@ function ViewRoundResults({
                     </RadioGroup>
                   </div>
                 )}
-                <MatchingDistributionPreview
-                  matches={matches}
-                  isLoadingMatchingFunds={isLoadingMatchingFunds}
-                  matchingFundsError={matchingFundsError}
-                  shouldShowRevisedTable={shouldShowRevisedTable}
-                  round={round}
-                  matchToken={matchToken}
-                />
-                <DownloadMatchesAsCSV matches={matches} />
               </div>
-              <RoundSaturationView
-                roundSaturation={roundSaturation}
-                sumOfMatches={sumOfMatches}
-                round={round}
-                matchToken={matchToken}
-              />
+              {(sybilDefense === "auto" && isRecommendedDistribution) ||
+                (sybilDefense !== "auto" && !isRecommendedDistribution && (
+                  <>
+                    <UploadCustomResults
+                      customResultsFile={customResultsFile}
+                      setCustomResultsFile={setCustomResultsFile}
+                      reloadMatchingFunds={reloadMatchingFunds}
+                      shouldShowCustomResultsTable={
+                        shouldShowCustomResultsTable
+                      }
+                    />
+                  </>
+                ))}
+              {(sybilDefense === "auto" && !isRecommendedDistribution) ||
+                (sybilDefense !== "auto" && isRecommendedDistribution && (
+                  <>
+                    <MatchingDistributionPreview
+                      matches={matches}
+                      isLoadingMatchingFunds={isLoadingMatchingFunds}
+                      matchingFundsError={matchingFundsError}
+                      shouldShowRevisedTable={shouldShowRevisedTable}
+                      round={round}
+                      matchToken={matchToken}
+                    />
+                    <DownloadMatchesAsCSV matches={matches} />
+                    <RoundSaturationView
+                      roundSaturation={roundSaturation}
+                      sumOfMatches={sumOfMatches}
+                      round={round}
+                      matchToken={matchToken}
+                    />
+                  </>
+                ))}
+              {((sybilDefense === "auto" && !isRecommendedDistribution) ||
+                (sybilDefense !== "auto" && isRecommendedDistribution)) &&
+                !readyForPayoutTransactionHash && (
+                  <>
+                    <RoundSaturationOptions
+                      distributionOption={distributionOption}
+                      setDistributionOption={setDistributionOption}
+                      disableRoundSaturationControls={
+                        disableRoundSaturationControls
+                      }
+                    />
+                    <ReviseVotingCoefficients
+                      overridesFile={overridesFile}
+                      setOverridesFile={setOverridesFile}
+                      reloadMatchingFunds={reloadMatchingFunds}
+                      matchingTableRef={matchingTableRef}
+                      shouldShowRevisedTable={shouldShowRevisedTable}
+                    />
+                  </>
+                )}
               {!readyForPayoutTransactionHash && (
                 <>
-                  <RoundSaturationOptions
-                    distributionOption={distributionOption}
-                    setDistributionOption={setDistributionOption}
-                    disableRoundSaturationControls={
-                      disableRoundSaturationControls
-                    }
-                  />
-                  <ReviseVotingCoefficients
-                    overridesFile={overridesFile}
-                    setOverridesFile={setOverridesFile}
-                    reloadMatchingFunds={reloadMatchingFunds}
-                    matchingTableRef={matchingTableRef}
-                    shouldShowRevisedTable={shouldShowRevisedTable}
-                  />
                   <FinalizeResultsButton
                     isReadyForPayout={isReadyForPayout}
                     isRoundFullyFunded={isRoundFullyFunded}
@@ -1141,6 +1170,78 @@ function ReviseVotingCoefficients(props: {
             <button
               onClick={() => {
                 props.setOverridesFile(undefined);
+                props.reloadMatchingFunds();
+              }}
+              className="w-fit bg-white border border-gray-100 text-black py-1 mt-3 px-3 rounded gap-2 ml-2"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function UploadCustomResults(props: {
+  customResultsFile: File | undefined;
+  setCustomResultsFile: (file: File | undefined) => void;
+  reloadMatchingFunds: () => void;
+  shouldShowCustomResultsTable: boolean;
+}) {
+  const [customResultsDraft, setCustomResultsDraft] = useState<
+    undefined | File
+  >(undefined);
+  return (
+    <div className="flex flex-col mt-4">
+      <span className="text-sm leading-5 text-gray-500 font-semibold text-left mb-1 mt-2">
+        Upload Results
+      </span>
+      <div className="text-sm leading-5 text-left mb-1">
+        Upload a CSV file with your round results. For instructions, click{" "}
+        <a
+          className="underline"
+          href={
+            "https://roundoperations.gitcoin.co/round-operations/post-round/cluster-matching-and-csv-upload"
+          }
+        >
+          here
+        </a>
+        .
+      </div>
+      <div className="text-sm pt-2 leading-5 text-left flex items-start justify-start">
+        <ExclamationCircleIcon className={"w-6 h-6 text-gray-500 mr-2.5"} />
+        If you navigate away from this page, your data will be lost. You will be
+        able to re-upload data as much as you’d like, but it will not be saved
+        to the contract until you finalize results.
+      </div>
+      <FileUploader
+        file={customResultsDraft}
+        onSelectFile={(file: File) => {
+          setCustomResultsDraft(file);
+        }}
+      />
+      <div className="flex flex-row justify-items-start gap-2 items-center">
+        <div>
+          <Button
+            type="button"
+            className="mt-4 mr-auto"
+            $variant="secondary"
+            onClick={() => {
+              props.setCustomResultsFile(customResultsDraft);
+              // force a refresh each time fot better ux
+              props.reloadMatchingFunds();
+            }}
+          >
+            <UploadIcon className="h-5 w-5 inline mr-2" />
+            <span>Upload</span>
+          </Button>
+        </div>
+        <div>
+          {props.shouldShowCustomResultsTable && (
+            <button
+              onClick={() => {
+                props.setCustomResultsFile(undefined);
                 props.reloadMatchingFunds();
               }}
               className="w-fit bg-white border border-gray-100 text-black py-1 mt-3 px-3 rounded gap-2 ml-2"
