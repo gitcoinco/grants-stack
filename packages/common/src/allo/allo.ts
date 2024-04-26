@@ -123,7 +123,14 @@ export interface Allo {
       deadline: number;
       nonce: bigint;
     }
-  ) => Promise<TransactionReceipt>;
+  ) => AlloOperation<
+    Result<TransactionReceipt>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  >;
 
   bulkUpdateApplicationStatus: (args: {
     roundId: string;

@@ -116,7 +116,7 @@ export class AlloV2 implements Allo {
     });
   }
 
-  async donate(
+  donate(
     publicClient: PublicClient,
     chainId: ChainId,
     token: VotingToken,
@@ -128,84 +128,109 @@ export class AlloV2 implements Allo {
       deadline: number;
       nonce: bigint;
     }
-  ) {
-    let tx: Result<Hex>;
-    const mrcAddress = MRC_CONTRACTS[chainId];
-
-    const poolIds = Object.keys(groupedVotes).flatMap((key) => {
-      const count = groupedVotes[key].length;
-      return new Array(count).fill(key);
-    });
-
-    const data = Object.values(groupedVotes).flat();
-
-    /* decide which function to use based on whether token is native, permit-compatible or DAI */
-    if (token.address === zeroAddress || token.address === NATIVE) {
-      tx = await sendTransaction(this.transactionSender, {
-        address: mrcAddress,
-        abi: MRC_ABI,
-        functionName: "allocate",
-        args: [poolIds, Object.values(groupedAmounts), data],
-        value: nativeTokenAmount,
-      });
-    } else if (permit) {
-      if (getPermitType(token) === "dai") {
-        tx = await sendTransaction(this.transactionSender, {
-          address: mrcAddress,
-          abi: MRC_ABI,
-          functionName: "allocateDAIPermit",
-          args: [
-            data,
-            poolIds,
-            Object.values(groupedAmounts),
-            Object.values(groupedAmounts).reduce((acc, b) => acc + b),
-            token.address as Hex,
-            BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
-            permit.nonce,
-            permit.sig.v,
-            permit.sig.r as Hex,
-            permit.sig.s as Hex,
-          ],
-        });
-      } else {
-        tx = await sendTransaction(this.transactionSender, {
-          address: mrcAddress,
-          abi: MRC_ABI,
-          functionName: "allocateERC20Permit",
-          args: [
-            data,
-            poolIds,
-            Object.values(groupedAmounts),
-            Object.values(groupedAmounts).reduce((acc, b) => acc + b),
-            token.address as Hex,
-            BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
-            permit.sig.v,
-            permit.sig.r as Hex,
-            permit.sig.s as Hex,
-          ],
-        });
-      }
-    } else {
-      /* Tried voting using erc-20 but no permit signature provided */
-      throw new AlloError(
-        "Tried voting using erc-20 but no permit signature provided"
-      );
+  ): AlloOperation<
+    Result<TransactionReceipt>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
     }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      let tx: Result<Hex>;
+      const mrcAddress = MRC_CONTRACTS[chainId];
 
-    if (tx.type === "success") {
-      const receipt = await this.transactionSender.wait(
-        tx.value,
-        60_000,
-        publicClient
-      );
+      const poolIds = Object.keys(groupedVotes).flatMap((key) => {
+        const count = groupedVotes[key].length;
+        return new Array(count).fill(key);
+      });
+
+      const data = Object.values(groupedVotes).flat();
+
+      /* decide which function to use based on whether token is native, permit-compatible or DAI */
+      if (token.address === zeroAddress || token.address === NATIVE) {
+        tx = await sendTransaction(this.transactionSender, {
+          address: mrcAddress,
+          abi: MRC_ABI,
+          functionName: "allocate",
+          args: [poolIds, Object.values(groupedAmounts), data],
+          value: nativeTokenAmount,
+        });
+      } else if (permit) {
+        if (getPermitType(token) === "dai") {
+          tx = await sendTransaction(this.transactionSender, {
+            address: mrcAddress,
+            abi: MRC_ABI,
+            functionName: "allocateDAIPermit",
+            args: [
+              data,
+              poolIds,
+              Object.values(groupedAmounts),
+              Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+              token.address as Hex,
+              BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+              permit.nonce,
+              permit.sig.v,
+              permit.sig.r as Hex,
+              permit.sig.s as Hex,
+            ],
+          });
+        } else {
+          tx = await sendTransaction(this.transactionSender, {
+            address: mrcAddress,
+            abi: MRC_ABI,
+            functionName: "allocateERC20Permit",
+            args: [
+              data,
+              poolIds,
+              Object.values(groupedAmounts),
+              Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+              token.address as Hex,
+              BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+              permit.sig.v,
+              permit.sig.r as Hex,
+              permit.sig.s as Hex,
+            ],
+          });
+        }
+      } else {
+        /* Tried voting using erc-20 but no permit signature provided */
+        throw new AlloError(
+          "Tried voting using erc-20 but no permit signature provided"
+        );
+      }
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(
+          tx.value,
+          60_000,
+          publicClient
+        );
+
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to create project");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
       await this.waitUntilIndexerSynced({
         chainId: this.chainId,
         blockNumber: receipt.blockNumber,
       });
-      return receipt;
-    } else {
-      throw tx.error;
-    }
+
+      emit("indexingStatus", success(null));
+
+      return success(receipt);
+    });
   }
 
   createProject(args: {
@@ -696,13 +721,11 @@ export class AlloV2 implements Allo {
         throw new AlloError("DirectGrants is not supported yet!");
       }
 
-      const strategyInstance = new DonationVotingMerkleDistributionStrategy(
-        {
-          chain: this.chainId,
-          poolId: BigInt(args.roundId),
-          address: args.strategyAddress,
-        }
-      );
+      const strategyInstance = new DonationVotingMerkleDistributionStrategy({
+        chain: this.chainId,
+        poolId: BigInt(args.roundId),
+        address: args.strategyAddress,
+      });
 
       const totalApplications = await strategyInstance.recipientsCounter();
 
