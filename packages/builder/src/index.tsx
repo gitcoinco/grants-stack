@@ -30,6 +30,7 @@ import "./styles/index.css";
 import initDatadog from "./utils/datadog";
 import wagmiClient, { chains } from "./utils/wagmi";
 import initTagmanager from "./tagmanager";
+import { initSentry } from "./utils/sentry";
 
 const dataLayerConfig = new DataLayer({
   search: {
@@ -53,6 +54,9 @@ const root = ReactDOM.createRoot(
 
 const gtcLightTheme = lightTheme();
 gtcLightTheme.shadows.connectButton = "0 0 0 0px";
+
+// Initialize sentry
+initSentry();
 
 // Initialize datadog
 initDatadog();
