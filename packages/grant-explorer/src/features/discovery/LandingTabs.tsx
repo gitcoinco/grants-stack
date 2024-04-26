@@ -3,6 +3,9 @@ import { Tab, Tabs } from "../common/styles";
 import { toQueryString } from "./RoundsFilter";
 import { RoundStatus } from "./hooks/useFilterRounds";
 import { useMediaQuery } from "@chakra-ui/react";
+import {
+  useAlloVersion,
+} from "common/src/components/AlloVersionSwitcher";
 
 type TabType = {
   to: string;
@@ -44,6 +47,12 @@ export default function LandingTabs() {
       tabName: "home-projects-tab",
     },
   ];
+
+  const { version: currentVersion } = useAlloVersion();
+  if (currentVersion === "allo-v1") {
+    // Remove the projects tab if the current version is allo-v1
+    tabs.pop();
+  }
 
   return (
     <Tabs className="font-mono">
