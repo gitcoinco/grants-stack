@@ -30,7 +30,7 @@ export function mapApplicationToProject(application: Application): Project {
     projectMetadata: application.project.metadata,
     status: application.status,
     grantApplicationFormAnswers: application.metadata.application.answers ?? [],
-    anchorAddress: application.project.anchorAddress,
+    anchorAddress: application.anchorAddress,
   };
 }
 
