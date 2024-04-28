@@ -56,10 +56,7 @@ export async function listPrograms(
     // Filter out programs where operatorWallets does not include round.createdByAddress.
     // This is to filter out spam rounds created by bots
     programs = programs.filter((program) => {
-      return (
-        program.createdByAddress &&
-        program.operatorWallets?.includes(program.createdByAddress)
-      );
+      return program.operatorWallets?.includes(address);
     });
 
     return programs;
