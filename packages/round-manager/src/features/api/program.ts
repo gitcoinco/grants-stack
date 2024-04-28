@@ -34,30 +34,29 @@ export async function listPrograms(
       throw Error("Unable to fetch programs");
     }
 
-    let programs: Program[] = [];
+    const programs: Program[] = [];
 
     for (const program of programsRes.programs) {
-      programs.push({
-        id: program.id,
-        metadata: program.metadata,
-        operatorWallets: program.roles.map(
-          (role: { address: string }) => role.address
-        ),
-        tags: program.tags,
-        chain: {
-          id: chainId,
-          name: CHAINS[chainId]?.name,
-          logo: CHAINS[chainId]?.logo,
-        },
-        createdByAddress: program.createdByAddress,
-      });
+      if (
+        program.roles.some(
+          (role) => role.role === "OWNER" && role.address === address
+        )
+      )
+        programs.push({
+          id: program.id,
+          metadata: program.metadata,
+          operatorWallets: program.roles.map(
+            (role: { address: string }) => role.address
+          ),
+          tags: program.tags,
+          chain: {
+            id: chainId,
+            name: CHAINS[chainId]?.name,
+            logo: CHAINS[chainId]?.logo,
+          },
+          createdByAddress: program.createdByAddress,
+        });
     }
-
-    // Filter out programs where operatorWallets does not include round.createdByAddress.
-    // This is to filter out spam rounds created by bots
-    programs = programs.filter((program) => {
-      return program.operatorWallets?.includes(address);
-    });
 
     return programs;
   } catch (error) {
