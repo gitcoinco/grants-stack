@@ -292,6 +292,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}
@@ -315,6 +316,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}
@@ -341,6 +343,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}
@@ -378,6 +381,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}
@@ -400,6 +404,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}
@@ -434,6 +439,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}
@@ -456,6 +462,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}
@@ -515,6 +522,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}
@@ -539,6 +547,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}
@@ -566,6 +575,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}
@@ -589,6 +599,7 @@ describe("Application Form Builder", () => {
             program: {
               operatorWallets: [],
               metadata: randomMetadata,
+              roles: [],
             },
           }}
           stepper={FormStepper}

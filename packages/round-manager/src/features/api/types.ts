@@ -8,7 +8,7 @@ import { RoundVisibilityType } from "common";
 import { BigNumber } from "ethers";
 import { Address } from "viem";
 import { SchemaQuestion } from "./utils";
-import { RoundForManager } from "data-layer";
+import { AddressAndRole, RoundForManager } from "data-layer";
 
 export type Network = "optimism" | "fantom" | "pgn";
 
@@ -110,6 +110,7 @@ export interface Program {
   };
 
   tags?: string[];
+  roles: AddressAndRole[];
 }
 
 export type InputType =

@@ -56,14 +56,14 @@ export default function LandingTabs() {
 
   return (
     <Tabs className="font-mono">
-      {tabs.map((tab) => {
+      {tabs.map((tab, i) => {
         const isActive = tab.activeRegExp.test(pathname);
         // Set the data-track-event attribute when the tab is active
         const tabProps = isActive ? { "data-track-event": tab.tabName } : {};
 
         return (
           <Tab
-            key={tab.to}
+            key={i}
             to={tab.to}
             active={isActive}
             show={

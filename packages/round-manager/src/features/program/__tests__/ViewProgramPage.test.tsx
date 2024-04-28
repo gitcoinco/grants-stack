@@ -381,7 +381,9 @@ describe("<ViewProgram />", () => {
     });
 
     it("displays create round link", async () => {
-      const stubRound = makeRoundData({ ownedBy: stubProgram.id });
+      const stubRound = makeRoundData({
+        ownedBy: stubProgram.operatorWallets[0],
+      });
       render(
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewProgram />, {

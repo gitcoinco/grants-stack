@@ -101,8 +101,7 @@ export const useCheckoutStore = create<CheckoutState>()(
     checkout: async (
       chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
       walletClient: WalletClient,
-      allo: Allo,
-      dataLayer: DataLayer
+      allo: Allo
     ) => {
       const chainIdsToCheckOut = chainsToCheckout.map((chain) => chain.chainId);
       get().setChainsToCheckout(
@@ -238,50 +237,9 @@ export const useCheckoutStore = create<CheckoutState>()(
           const groupedEncodedVotes: Record<string, Hex[]> = {};
 
           for (const roundId in groupedDonations) {
-            const allProjectIds = groupedDonations[roundId].map(
-              (d) => d.projectRegistryId
-            );
-            const response =
-              await dataLayer.getApplicationsByRoundIdAndProjectIds({
-                chainId,
-                roundId,
-                projectIds: allProjectIds,
-              });
-
-            const roundDonations: {
-              roundId: string;
-              chainId: number;
-              amount: string;
-              recipient: string;
-              projectRegistryId: string;
-              applicationIndex: number;
-              anchorAddress: string;
-            }[] = [];
-
-            groupedDonations[roundId].map((d) => {
-              const app = response.find(
-                (r) => r.projectId === d.projectRegistryId
-              );
-
-              if (!app) {
-                throw new Error(
-                  `Application not found for projectRegistryId ${d.projectRegistryId} in round ${roundId} on chain ${chainId}`
-                );
-              }
-              roundDonations.push({
-                roundId: d.roundId,
-                chainId: d.chainId,
-                amount: d.amount,
-                recipient: d.recipient,
-                projectRegistryId: d.projectRegistryId,
-                applicationIndex: Number(app.id),
-                anchorAddress: app.anchorAddress,
-              });
-            });
-
             groupedEncodedVotes[roundId] = isV2
-              ? encodedQFAllocation(token, roundDonations)
-              : encodeQFVotes(token, roundDonations);
+              ? encodedQFAllocation(token, groupedDonations[roundId])
+              : encodeQFVotes(token, groupedDonations[roundId]);
           }
 
           const groupedAmounts: Record<string, bigint> = {};

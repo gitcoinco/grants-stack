@@ -22,11 +22,18 @@ describe("listPrograms", () => {
     expectedProgram = {
       ...expectedProgram,
       createdByAddress: expectedProgram.operatorWallets[0],
+      roles: [
+        {
+          role: "OWNER",
+          address: expectedProgram.operatorWallets[0],
+          createdAtBlock: "0",
+        },
+      ],
     };
     const expectedPrograms: Program[] = [expectedProgram];
 
     const actualPrograms = await listPrograms(
-      "0x0",
+      expectedProgram.operatorWallets[0],
       {
         getNetwork: async () =>
           // @ts-expect-error Test file
@@ -37,11 +44,18 @@ describe("listPrograms", () => {
           programs: [
             {
               id: expectedProgram.id,
-              roles: [{ address: expectedProgram.operatorWallets[0] }],
+
               metadata: {
                 name: expectedProgram.metadata?.name,
               },
               createdByAddress: expectedProgram.operatorWallets[0],
+              roles: [
+                {
+                  role: "OWNER",
+                  address: expectedProgram.operatorWallets[0],
+                  createdAtBlock: "0",
+                },
+              ],
             },
           ],
         }),
@@ -70,7 +84,13 @@ describe("getProgramById", () => {
         getProgramById: jest.fn().mockResolvedValue({
           program: {
             id: expectedProgram.id,
-            roles: [{ address: expectedProgram.operatorWallets[0] }],
+            roles: [
+              {
+                role: "OWNER",
+                address: expectedProgram.operatorWallets[0],
+                createdAtBlock: "0",
+              },
+            ],
             metadata: {
               name: expectedProgram.metadata?.name,
             },

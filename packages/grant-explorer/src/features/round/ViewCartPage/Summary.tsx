@@ -1,5 +1,4 @@
 import { ChainId, useTokenPrice, VotingToken } from "common";
-import React from "react";
 import { CHAINS } from "../../api/utils";
 import { formatUnits, zeroAddress } from "viem";
 import { useAccount, useBalance } from "wagmi";

@@ -17,6 +17,7 @@ interface CartState {
     grantApplicationId: string,
     amount: string
   ) => void;
+  setCart: (projects: CartProject[]) => void;
   chainToVotingToken: Record<ChainId, VotingToken>;
   getVotingTokenForChain: (chainId: ChainId) => VotingToken;
   setVotingTokenForChain: (chainId: ChainId, votingToken: VotingToken) => void;
@@ -91,6 +92,13 @@ export const useCartStorage = create<CartState>()(
   persist(
     (set, get) => ({
       projects: [],
+
+      setCart: (projects: CartProject[]) => {
+        set({
+          projects,
+        });
+      },
+
       add: (newProject: CartProject) => {
         const currentProjects = get().projects;
 

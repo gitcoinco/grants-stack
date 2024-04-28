@@ -3,7 +3,7 @@ import { Program, Web3Instance } from "./types";
 import { datadogLogs } from "@datadog/browser-logs";
 import { ChainId } from "common";
 import { DataLayer } from "data-layer";
-import { getAlloVersion, getConfig } from "common/src/config";
+import { getAlloVersion } from "common/src/config";
 
 /**
  * Fetch a list of programs
@@ -23,7 +23,6 @@ export async function listPrograms(
     };
 
     // fetch programs from indexer
-
     const programsRes = await dataLayer.getProgramsByUser({
       address,
       chainId,
@@ -34,7 +33,7 @@ export async function listPrograms(
       throw Error("Unable to fetch programs");
     }
 
-    let programs: Program[] = [];
+    const programs: Program[] = [];
 
     for (const program of programsRes.programs) {
       programs.push({
@@ -50,18 +49,9 @@ export async function listPrograms(
           logo: CHAINS[chainId]?.logo,
         },
         createdByAddress: program.createdByAddress,
+        roles: program.roles,
       });
     }
-
-    // Filter out programs where operatorWallets does not include round.createdByAddress.
-    // This is to filter out spam rounds created by bots
-    programs = programs.filter((program) => {
-      return (
-        program.createdByAddress &&
-        program.operatorWallets?.includes(program.createdByAddress)
-      );
-    });
-
     return programs;
   } catch (error) {
     datadogLogs.logger.error(`error: listPrograms - ${error}`);
@@ -104,5 +94,6 @@ export async function getProgramById(
       name: CHAINS[chainId]?.name,
       logo: CHAINS[chainId]?.logo,
     },
+    roles: program.roles,
   };
 }
