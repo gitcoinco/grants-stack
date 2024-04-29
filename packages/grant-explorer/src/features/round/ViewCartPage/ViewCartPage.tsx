@@ -48,6 +48,7 @@ export default function ViewCart() {
           return { ...newProject, amount: existingProject?.amount ?? "" };
         });
 
+        // replace whole cart
         setCart(updatedProjects);
       })
       .catch((error) => {
