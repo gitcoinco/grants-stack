@@ -27,7 +27,7 @@ export default function ViewCart() {
       };
     });
 
-    // will only update cart if fetching applications is successful
+    // only update cart if fetching applications is successful
     dataLayer
       .getApprovedApplicationsByExpandedRefs(applicationRefs)
       .then((applications) => {
