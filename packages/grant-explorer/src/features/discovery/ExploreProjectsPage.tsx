@@ -35,6 +35,7 @@ function createCartProjectFromApplication(
   application: ApplicationSummary
 ): CartProject {
   return {
+    anchorAddress: application.anchorAddress,
     projectRegistryId: application.projectId,
     roundId: application.roundId,
     chainId: application.chainId,
@@ -200,7 +201,7 @@ export function ExploreProjectsPage(): JSX.Element {
             : `${pageTitle} (${totalApplicationsCount})`
         }
         action={
-          !collection && (
+          collection && (
             <div className="font-mono flex gap-x-4">
               <form
                 className="relative"

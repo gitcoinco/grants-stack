@@ -289,6 +289,7 @@ export type ProjectApplicationForManager = ProjectApplication & {
 };
 
 export type ProjectApplicationWithRound = ProjectApplication & {
+  anchorAddress: Address;
   round: {
     applicationsStartTime: string;
     applicationsEndTime: string;
@@ -705,6 +706,7 @@ export type Application = {
   totalAmountDonatedInUsd: number;
   totalDonationsCount: string;
   uniqueDonorsCount: number;
+  anchorAddress?: string;
   round: {
     strategyName: RoundPayoutType;
     donationsStartTime: string;

@@ -49,6 +49,7 @@
     "@rsbuild/plugin-react": "^0.3.11",
     "@rsbuild/plugin-svgr": "^0.3.11",
     "@rsdoctor/rspack-plugin": "^0.1.1",
+    "@sentry/browser": "^7.112.2",
     "@sentry/integrations": "^7.28.0",
     "@sentry/react": "^7.27.0",
     "@sentry/tracing": "^7.26.0",

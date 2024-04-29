@@ -42,7 +42,7 @@ const LandingPage = () => {
   const collections = useCollections();
 
   return (
-    <GradientLayout showWalletInteraction showAlloVersionBanner>
+    <GradientLayout showWalletInteraction showAlloVersionBanner={false}>
       <LandingHero />
 
       <LandingSection title="Community collections">

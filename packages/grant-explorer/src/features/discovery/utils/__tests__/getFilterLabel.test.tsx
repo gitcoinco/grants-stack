@@ -18,7 +18,7 @@ describe("getFilterLabel", () => {
     ).toEqual("Quadratic funding");
     // Filters out commas
     expect(
-      getFilterLabel({ status: "", type: ",allov1.Direct", network: "" }).label
+      getFilterLabel({ status: "", type: "allov1.Direct", network: "" }).label
     ).toEqual("Direct grants");
   });
   it("Returns Multiple when many are selected from same category", async () => {

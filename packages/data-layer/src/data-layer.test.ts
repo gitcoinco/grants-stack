@@ -67,6 +67,7 @@ const mockApplications: ProjectApplicationWithRound[] = [
     totalAmountDonatedInUsd: 0,
     uniqueDonorsCount: 0,
     distributionTransaction: null,
+    anchorAddress: getAddress("0xe849b2a694184b8739a04c915518330757cdb133"),
     round: {
       strategyName: "allov1.QF",
       applicationsStartTime: "2024-02-20T17:27:40+00:00",

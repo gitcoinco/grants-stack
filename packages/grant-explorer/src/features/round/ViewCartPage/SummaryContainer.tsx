@@ -185,7 +185,7 @@ export function SummaryContainer() {
       ? [...rounds]
           .sort(
             (a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime()
-          )[0]
+          )[rounds.length - 1]
           .roundEndTime.getTime()
       : 0;
 
@@ -349,7 +349,8 @@ export function SummaryContainer() {
           permitDeadline: currentPermitDeadline,
         })),
         walletClient,
-        allo
+        allo,
+        dataLayer
       );
     } catch (error) {
       console.error(error);
