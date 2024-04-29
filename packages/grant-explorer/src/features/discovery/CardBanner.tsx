@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Stock1 from "../../assets/landing/stock1.jpg";
 import Stock10 from "../../assets/landing/stock10.jpg";
 import Stock11 from "../../assets/landing/stock11.jpg";
@@ -87,21 +88,40 @@ export function RoundBanner(props: { roundId: string }) {
   );
 }
 
-export function CollectionBanner({ images }: { images: string[] }) {
+const gradients = [
+  ["F68561", "FFD9CD"],
+  ["47A095", "ADEDE5"],
+  ["FFEFBE", "FBC624"],
+  ["D3EDFE", "15B8DC"],
+  ["FFD9CD", "5F94BC"],
+  ["FFD9CD", "ADEDE5"],
+  ["FFEFBE", "ADEDE5"],
+  ["DBF0DB", "5F94BC"],
+  ["FFE5F8", "FFEFBE"],
+  ["73E2E2", "FF9776"],
+  ["D9D6FF", "645AD8"],
+  ["B3DE9F", "DBF0DB"],
+  ["6935FF", "D3EDFE"],
+  ["FBC624", "FF7043"],
+  ["FF00B8", "FF9776"],
+  ["D3EDFE", "25BDCE"],
+  ["FF7043", "FFC2EE"],
+];
+
+function getRandomGradient() {
+  const r = Math.floor(Math.random() * gradients.length);
+  return gradients[r];
+}
+
+export function CollectionBanner() {
+  const [gradient] = useState<string[]>(getRandomGradient());
   return (
-    <div className="overflow-hidden h-[192px]">
-      {images.map((image, i) => {
-        return (
-          <div
-            key={i}
-            className={`bg-grey-100 h-[48px] bg-no-repeat bg-center w-full bg-cover`}
-            style={{
-              backgroundImage: `url(${image})`,
-            }}
-          />
-        );
-      })}
-    </div>
+    <div
+      className="h-[192px]"
+      style={{
+        background: `linear-gradient(180deg, #${gradient[0]} 0%, #${gradient[1]} 100%)`,
+      }}
+    ></div>
   );
 }
 
