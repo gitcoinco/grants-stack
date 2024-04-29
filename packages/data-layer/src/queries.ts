@@ -246,13 +246,21 @@ export const getApplicationStatusByRoundIdAndCID = gql`
   }
 `;
 
-export const getApplication = gql`
+export const getApprovedApplication = gql`
   query Application(
     $chainId: Int!
     $applicationId: String!
     $roundId: String!
   ) {
-    application(chainId: $chainId, id: $applicationId, roundId: $roundId) {
+    applications(
+      first: 1
+      condition: {
+        status: APPROVED
+        chainId: $chainId
+        id: $applicationId
+        roundId: $roundId
+      }
+    ) {
       id
       chainId
       roundId

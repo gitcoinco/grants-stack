@@ -31,7 +31,7 @@ const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
   },
 ];
 
-function createCartProjectFromApplication(
+export function createCartProjectFromApplication(
   application: ApplicationSummary
 ): CartProject {
   return {

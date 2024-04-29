@@ -77,9 +77,10 @@ export function useApplications(options: ApplicationFetchOptions | null) {
         }
         case "applications-collection": {
           if (options.filter?.type === "expanded-refs") {
-            const applications = await dataLayer.getApplicationsByExpandedRefs(
-              options.filter?.refs ?? []
-            );
+            const applications =
+              await dataLayer.getApprovedApplicationsByExpandedRefs(
+                options.filter?.refs ?? []
+              );
 
             const v2Applications = applications.filter(
               (a) => a.tags?.includes("allo-v2")
