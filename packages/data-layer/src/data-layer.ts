@@ -396,7 +396,7 @@ export class DataLayer {
    * Returns a list of applications identified by their chainId, roundId, and id.
    * @param expandedRefs
    */
-  async getApplicationsByExpandedRefs(
+  async getApprovedApplicationsByExpandedRefs(
     expandedRefs: Array<ExpandedApplicationRef>,
   ): Promise<ApplicationSummary[]> {
     if (expandedRefs.length === 0) {
@@ -422,8 +422,9 @@ export class DataLayer {
         applications(
           first: 100
           filter: {
-            or: [
-              ${filters}
+            and: [
+              { status: { equalTo: APPROVED } },
+              { or: [ ${filters} ] }
             ]
           }
         ) {

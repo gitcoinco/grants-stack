@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ChainId } from "common";
 import { groupProjectsInCart } from "../../api/utils";
 import Footer from "common/src/components/Footer";
@@ -9,10 +9,54 @@ import { Header } from "./Header";
 import { useCartStorage } from "../../../store";
 import { CartWithProjects } from "./CartWithProjects";
 import { SummaryContainer } from "./SummaryContainer";
+import { useDataLayer } from "data-layer";
+import { createCartProjectFromApplication } from "../../discovery/ExploreProjectsPage";
 
 export default function ViewCart() {
-  const { projects } = useCartStorage();
+  const { projects, setCart } = useCartStorage();
+  const dataLayer = useDataLayer();
   const groupedCartProjects = groupProjectsInCart(projects);
+
+  // ensure cart data is up to date on mount
+  useEffect(() => {
+    const applicationRefs = projects.map((project) => {
+      return {
+        chainId: project.chainId,
+        roundId: project.roundId,
+        id: project.applicationIndex.toString(),
+      };
+    });
+
+    // will only update cart if fetching applications is successful
+    dataLayer
+      .getApprovedApplicationsByExpandedRefs(applicationRefs)
+      .then((applications) => {
+        const updatedProjects = applications.flatMap((application) => {
+          const existingProject = projects.find((project) => {
+            return applications.some(
+              (application) =>
+                application.chainId === project.chainId &&
+                application.roundId === project.roundId &&
+                application.roundApplicationId ===
+                  project.applicationIndex.toString()
+            );
+          });
+
+          const newProject = createCartProjectFromApplication(application);
+
+          // update all application data, but preserve the selected amount
+          return { ...newProject, amount: existingProject?.amount ?? "" };
+        });
+
+        setCart(updatedProjects);
+      })
+      .catch((error) => {
+        console.error("error fetching applications in cart", error);
+      });
+
+    // we only want to run this on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const breadCrumbs: BreadcrumbItem[] = [
     {

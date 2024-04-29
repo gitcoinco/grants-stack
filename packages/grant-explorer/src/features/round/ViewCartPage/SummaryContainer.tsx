@@ -183,10 +183,8 @@ export function SummaryContainer() {
   const currentPermitDeadline =
     rounds && rounds.length > 0
       ? [...rounds]
-          .sort(
-            (a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime()
-          )[rounds.length - 1]
-          .roundEndTime.getTime()
+          .sort((a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime())
+          [rounds.length - 1].roundEndTime.getTime()
       : 0;
 
   const [emptyInput, setEmptyInput] = useState(false);
