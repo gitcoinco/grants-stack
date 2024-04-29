@@ -55,7 +55,7 @@ export default function ViewCart() {
         console.error("error fetching applications in cart", error);
       });
 
-    // we only want to run this on mount and when user adds new projects
+    // we only want to run this once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
