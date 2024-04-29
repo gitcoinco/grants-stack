@@ -411,7 +411,7 @@ export type Eligibility = {
   requirements?: Requirement[];
 };
 
-export type SybilDefence = "auto" | "manual" | "none";
+export type SybilDefense = "auto" | "manual" | "none";
 
 export interface Round {
   /**
@@ -436,7 +436,7 @@ export interface Round {
       matchingCapAmount?: number;
       minDonationThreshold?: boolean;
       minDonationThresholdAmount?: number;
-      sybilDefense?: SybilDefence | boolean; // this is to support both old and new sybil defense types.
+      sybilDefense?: SybilDefense | boolean; // this is to support both old and new sybil defense types.
     };
     support?: {
       type: string;
@@ -633,7 +633,7 @@ export interface MatchingFunds {
 
 export interface QuadraticFundingConfig {
   matchingCap: boolean;
-  sybilDefense: SybilDefence | boolean;
+  sybilDefense: SybilDefense | boolean;
   matchingCapAmount?: number;
   minDonationThreshold: boolean;
   matchingFundsAvailable: number;
