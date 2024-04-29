@@ -1,3 +1,4 @@
+/* eslint-disable no-unexpected-multiline */
 import { ChainId, getTokenPrice, NATIVE, submitPassportLite } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
