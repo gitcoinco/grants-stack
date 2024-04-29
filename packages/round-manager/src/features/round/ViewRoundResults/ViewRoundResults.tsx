@@ -16,7 +16,9 @@ import {
   ProgressStatus,
   ProgressStep,
   Round,
+  RevisedMatch,
 } from "../../api/types";
+import { useMatchCSVParser } from "../../api/utils";
 import { LoadingRing, Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
@@ -33,19 +35,6 @@ import { DistributionMatch } from "data-layer";
 import { utils } from "ethers";
 import { useContractAmountFunded } from "../FundContract";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
-import { set } from "lodash";
-import { Network } from "@ethersproject/providers";
-
-type RevisedMatch = {
-  revisedContributionCount: number;
-  revisedMatch: bigint;
-  matched: bigint;
-  contributionsCount: number;
-  projectId: string;
-  applicationId: string;
-  projectName: string;
-  payoutAddress: string;
-};
 
 // CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
@@ -243,6 +232,12 @@ function ViewRoundResults({
     undefined | File
   >();
 
+  const {
+    data: customMatches,
+    loading: customMatchesLoading,
+    error: customMatchesError,
+  } = useMatchCSVParser(customResultsFile ?? null);
+
   const [distributionOption, setDistributionOption] = useState<
     "keep" | "scale"
   >("keep");
@@ -300,14 +295,15 @@ function ViewRoundResults({
     useFinalizeRound();
 
   const onFinalizeResults = async () => {
-    if (!matches || !signer) {
+    const finalMatches = isCustomResults ? customMatches : matches;
+    if (!finalMatches || !signer) {
       return;
     }
 
     setWarningModalOpen(false);
     setProgressModalOpen(true);
     try {
-      const matchingJson: DistributionMatch[] = matches.map((match) => {
+      const matchingJson: DistributionMatch[] = finalMatches.map((match) => {
         const app = applications.find(
           (app) => app.applicationIndex.toString() == match.applicationId
         );
@@ -382,6 +378,10 @@ function ViewRoundResults({
 
   const sybilDefense =
     round.roundMetadata?.quadraticFundingConfig?.sybilDefense;
+
+  const isCustomResults =
+    (sybilDefense === "auto" && isRecommendedDistribution) ||
+    (sybilDefense !== "auto" && !isRecommendedDistribution);
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -577,59 +577,61 @@ function ViewRoundResults({
                   </div>
                 )}
               </div>
-              {(sybilDefense === "auto" && isRecommendedDistribution) ||
-                (sybilDefense !== "auto" && !isRecommendedDistribution && (
-                  <>
-                    <UploadCustomResults
-                      customResultsFile={customResultsFile}
-                      setCustomResultsFile={setCustomResultsFile}
-                      reloadMatchingFunds={reloadMatchingFunds}
-                      shouldShowCustomResultsTable={
-                        shouldShowCustomResultsTable
-                      }
-                    />
-                  </>
-                ))}
-              {(sybilDefense === "auto" && !isRecommendedDistribution) ||
-                (sybilDefense !== "auto" && isRecommendedDistribution && (
-                  <>
-                    <MatchingDistributionPreview
-                      matches={matches}
-                      isLoadingMatchingFunds={isLoadingMatchingFunds}
-                      matchingFundsError={matchingFundsError}
-                      shouldShowRevisedTable={shouldShowRevisedTable}
-                      round={round}
-                      matchToken={matchToken}
-                    />
-                    <DownloadMatchesAsCSV matches={matches} />
-                    <RoundSaturationView
-                      roundSaturation={roundSaturation}
-                      sumOfMatches={sumOfMatches}
-                      round={round}
-                      matchToken={matchToken}
-                    />
-                  </>
-                ))}
-              {((sybilDefense === "auto" && !isRecommendedDistribution) ||
-                (sybilDefense !== "auto" && isRecommendedDistribution)) &&
-                !readyForPayoutTransactionHash && (
-                  <>
-                    <RoundSaturationOptions
-                      distributionOption={distributionOption}
-                      setDistributionOption={setDistributionOption}
-                      disableRoundSaturationControls={
-                        disableRoundSaturationControls
-                      }
-                    />
-                    <ReviseVotingCoefficients
-                      overridesFile={overridesFile}
-                      setOverridesFile={setOverridesFile}
-                      reloadMatchingFunds={reloadMatchingFunds}
-                      matchingTableRef={matchingTableRef}
-                      shouldShowRevisedTable={shouldShowRevisedTable}
-                    />
-                  </>
-                )}
+              {isCustomResults && (
+                <>
+                  <UploadCustomResults
+                    customResultsFile={customResultsFile}
+                    setCustomResultsFile={setCustomResultsFile}
+                    reloadMatchingFunds={reloadMatchingFunds}
+                    shouldShowCustomResultsTable={shouldShowCustomResultsTable}
+                  />
+                  <MatchingDistributionPreview
+                    matches={customMatches}
+                    isLoadingMatchingFunds={customMatchesLoading}
+                    matchingFundsError={customMatchesError}
+                    shouldShowRevisedTable={false}
+                    round={round}
+                    matchToken={matchToken}
+                  />
+                </>
+              )}
+              {!isCustomResults && (
+                <>
+                  <MatchingDistributionPreview
+                    matches={matches}
+                    isLoadingMatchingFunds={isLoadingMatchingFunds}
+                    matchingFundsError={matchingFundsError}
+                    shouldShowRevisedTable={shouldShowRevisedTable}
+                    round={round}
+                    matchToken={matchToken}
+                  />
+                  <DownloadMatchesAsCSV matches={matches} />
+                  <RoundSaturationView
+                    roundSaturation={roundSaturation}
+                    sumOfMatches={sumOfMatches}
+                    round={round}
+                    matchToken={matchToken}
+                  />
+                </>
+              )}
+              {!isCustomResults && !readyForPayoutTransactionHash && (
+                <>
+                  <RoundSaturationOptions
+                    distributionOption={distributionOption}
+                    setDistributionOption={setDistributionOption}
+                    disableRoundSaturationControls={
+                      disableRoundSaturationControls
+                    }
+                  />
+                  <ReviseVotingCoefficients
+                    overridesFile={overridesFile}
+                    setOverridesFile={setOverridesFile}
+                    reloadMatchingFunds={reloadMatchingFunds}
+                    matchingTableRef={matchingTableRef}
+                    shouldShowRevisedTable={shouldShowRevisedTable}
+                  />
+                </>
+              )}
               {!readyForPayoutTransactionHash && (
                 <>
                   <FinalizeResultsButton
@@ -909,7 +911,7 @@ function MatchingDistributionPreview(props: {
               {props.matchingFundsError?.message}
             </div>
           )}
-          {props.matches && (
+          {props.matches !== undefined ? (
             <>
               <div className="col-span-3 border border-gray-100 rounded p-4 row-span-2 overflow-y-auto max-h-80">
                 <table
@@ -992,6 +994,13 @@ function MatchingDistributionPreview(props: {
                 </table>
               </div>
             </>
+          ) : (
+            <div className="flex flex-col items-center justify-center p-4 py-16 border border-gray-100 rounded overflow-y-auto max-h-80">
+              <NoInformationIcon className="w-6 h-6" />
+              <p className="mt-2">
+                Your results will appear here when uploaded
+              </p>
+            </div>
           )}
         </div>
       )}
