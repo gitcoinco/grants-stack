@@ -465,3 +465,14 @@ export type TransactionBlock = {
   transactionBlockNumber: number;
   error?: unknown;
 };
+
+export type RevisedMatch = {
+  revisedContributionCount: number;
+  revisedMatch: bigint;
+  matched: bigint;
+  contributionsCount: number;
+  projectId: string;
+  applicationId: string;
+  projectName: string;
+  payoutAddress: string;
+};
