@@ -8,7 +8,7 @@ import { RoundVisibilityType } from "common";
 import { BigNumber } from "ethers";
 import { Address } from "viem";
 import { SchemaQuestion } from "./utils";
-import { RoundForManager, SybilDefence } from "data-layer";
+import { RoundForManager, SybilDefense } from "data-layer";
 
 export type Network = "optimism" | "fantom" | "pgn";
 
@@ -170,7 +170,7 @@ export interface Round {
       matchingCapAmount?: number;
       minDonationThreshold?: boolean;
       minDonationThresholdAmount?: number;
-      sybilDefense?: SybilDefence;
+      sybilDefense?: SybilDefense;
     };
     support?: {
       type: string;

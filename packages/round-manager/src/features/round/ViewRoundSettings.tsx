@@ -56,7 +56,7 @@ import { ethers } from "ethers";
 import { getConfig } from "common/src/config";
 import { zeroAddress } from "viem";
 import { NATIVE } from "common/dist/allo/common";
-import { SybilDefence } from "data-layer";
+import { SybilDefense } from "data-layer";
 
 type EditMode = {
   canEdit: boolean;
@@ -2406,7 +2406,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          sybilDefense: e.target.value as SybilDefence,
+                          sybilDefense: e.target.value as SybilDefense,
                         },
                       },
                     });
@@ -2465,7 +2465,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          sybilDefense: e.target.value as SybilDefence,
+                          sybilDefense: e.target.value as SybilDefense,
                         },
                       },
                     });
@@ -2512,7 +2512,7 @@ function Funding(props: {
                         quadraticFundingConfig: {
                           ...props.editedRound?.roundMetadata
                             .quadraticFundingConfig,
-                          sybilDefense: e.target.value as SybilDefence,
+                          sybilDefense: e.target.value as SybilDefense,
                         },
                       },
                     });
