@@ -4,7 +4,9 @@ import { Flex, Link, Text } from "@chakra-ui/react";
 import { Stat } from "../ViewProjectDetails";
 import { formatTimeAgo } from "../../common/utils/utils";
 
-export const StatList = ({ stats }: { stats: IOSOStats }) => {
+
+export const StatList = ({ stats }: { stats: IOSOStats | null }) => {
+  if (stats === null) return;
   return (
     stats.code_metrics_by_project.contributors > 0 ? (
       <React.Fragment>

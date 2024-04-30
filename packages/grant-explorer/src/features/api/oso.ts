@@ -3,13 +3,15 @@ import useSWR from "swr";
 import { Hex } from "viem";
 import { gql, GraphQLClient } from "graphql-request";
 
+
 const osoApiKey = process.env.REACT_APP_OSO_API_KEY;
 const osoUrl = "https://opensource-observer.hasura.app/v1/graphql";
 const graphQLClient = new GraphQLClient(osoUrl, {
   headers: {
     authorization: `Bearer ${osoApiKey}`,
   },
-})
+});
+let hasFetched = false;
 
 interface IOSOId {
   artifacts_by_project: {
@@ -84,19 +86,21 @@ export function useOSO(projectGithub?: string) {
         }
       ]
   };
-  const [stats, setStats] = useState<IOSOStats>(emptyReturn);
+  const [stats, setStats] = useState<IOSOStats | null>(null);
 
   const getStatsFor = async (projectRegistryGithub: string) => {
+    if (!osoApiKey) throw new Error("OpenSourceObserver API key not set.");
     const queryId = gql`{
       artifacts_by_project(where: {artifact_name: {_ilike: "%${projectRegistryGithub}/%"}}
         distinct_on: project_id
       ) {
         project_id
       }
-    }`
+      }`;
 
     try {
-      const idData: IOSOId = await graphQLClient.request<IOSOId>(queryId)
+      hasFetched = true;
+      const idData: IOSOId = await graphQLClient.request<IOSOId>(queryId);
 
       if (!Array.isArray(idData.artifacts_by_project)) {
         setStats(emptyReturn);
@@ -120,9 +124,9 @@ export function useOSO(projectGithub?: string) {
           bucket_month
           amount
         }
-      }`
+      }`;
 
-      const items: IOSOStats = await graphQLClient.request<IOSOStats>(queryStats)
+      const items: IOSOStats = await graphQLClient.request<IOSOStats>(queryStats);
 
       if (!Array.isArray(items.code_metrics_by_project)) {
         setStats(emptyReturn);
@@ -133,13 +137,13 @@ export function useOSO(projectGithub?: string) {
         const parsedItems : IOSOStats = {
           code_metrics_by_project: items.code_metrics_by_project[0],
           events_monthly_to_project: items.events_monthly_to_project
-        }
+        };
         setStats(parsedItems);
        } else {      
         const parsedItems : IOSOStats = {
           code_metrics_by_project: items.code_metrics_by_project[0],
           events_monthly_to_project: emptyReturn.events_monthly_to_project
-        }
+        };
         setStats(parsedItems);
       }
 
@@ -150,22 +154,25 @@ export function useOSO(projectGithub?: string) {
     }
   };
 
-  const { isLoading } = useSWR(osoUrl, {
+  const { isLoading } = useSWR(osoUrl,
+    {
       fetcher: async () => projectGithub && getStatsFor(projectGithub),
+      revalidateOnMount: true,
     }
   );
 
+  if ( stats === null && !hasFetched) projectGithub && getStatsFor(projectGithub);
   return {
     /**
      * Fetch OSO for stats on a project
-     * @param projectRegistryTitle projectTitle
+     * @param projectRegistryGithub projectGithub
      */
     getStatsFor,
     /**
      * Stats for a project (loaded from OSO)
      */
     stats,
-    isGapLoading: isLoading,
+    isStatsLoading: isLoading,
   };
 }
 

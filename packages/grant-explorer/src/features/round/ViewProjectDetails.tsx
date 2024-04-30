@@ -122,7 +122,7 @@ export default function ViewProjectDetails() {
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
-  const { stats } = useOSO(projectToRender?.projectMetadata.projectGithub?.toString() as string);
+  const { stats } = useOSO(projectToRender?.projectMetadata.projectGithub as string);
 
   const currentTime = new Date();
   const isAfterRoundEndDate =
@@ -181,7 +181,6 @@ export default function ViewProjectDetails() {
   const {
     projectMetadata: { title, description = "", bannerImg },
   } = projectToRender ?? { projectMetadata: {} };
-
   const projectDetailsTabs = useMemo(
     () => [
       {
