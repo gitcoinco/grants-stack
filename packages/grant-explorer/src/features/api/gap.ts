@@ -2,7 +2,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import { Hex } from "viem";
 
-const indexerUrl = process.env.REACT_APP_KARMA_GAP_INDEXER_URL as string;
+const indexerUrl = process.env.REACT_APP_KARMA_GAP_INDEXER_URL as string || "";
 
 export interface IGrantStatus {
   uid: Hex;
@@ -33,7 +33,7 @@ export function useGap(projectId?: string) {
   const [grants, setGrants] = useState<IGapGrant[]>([]);
 
   const getGrantsFor = async (projectRegistryId: string) => {
-    if (indexerUrl === undefined) throw new Error("GAP Indexer url not set.");
+    if (indexerUrl === "") throw new Error("GAP Indexer url not set.");
     try {
       const items: IGapGrant[] = await fetch(
         `${indexerUrl}/grants/external-id/${projectRegistryId}`
