@@ -10,6 +10,7 @@ interface GrantListProps {
 export const GrantList: React.FC<GrantListProps> = ({ grants }) => {
   return (
     <Flex gap={2} flexDir="column" py={6} px={3}>
+      <h4 className="text-3xl">Project milestones</h4>
       {grants.length > 0 ? (
         <>
           <Text className="text-[18px]">Total grants ({grants.length})</Text>
@@ -20,7 +21,7 @@ export const GrantList: React.FC<GrantListProps> = ({ grants }) => {
               url={getGapProjectUrl(grant.projectUID, grant.uid)}
             />
           ))}
-          <Text fontFamily="DM Mono" textAlign="center">
+          <Text fontFamily="DM Mono" textAlign="center" className={"text-xs"}>
             Data provided by Karma via{" "}
             <Link href={gapAppUrl} target="_blank">
               <Text as="span" className="text-gitcoin-violet-500">
