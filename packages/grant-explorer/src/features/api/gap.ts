@@ -33,7 +33,7 @@ export function useGap(projectId?: string) {
   const [grants, setGrants] = useState<IGapGrant[]>([]);
 
   const getGrantsFor = async (projectRegistryId: string) => {
-    if (indexerUrl === "") throw new Error("GAP Indexer url not set.");
+    if (indexerUrl === undefined) throw new Error("GAP Indexer url not set.");
     try {
       const items: IGapGrant[] = await fetch(
         `${indexerUrl}/grants/external-id/${projectRegistryId}`

@@ -3,8 +3,8 @@ import useSWR from "swr";
 import { Hex } from "viem";
 import { gql, GraphQLClient } from "graphql-request";
 
-const osoApiKey = process.env.REACT_APP_OSO_API_KEY;
-const osoUrl = "https://opensource-observer.hasura.app/v1/graphql" as string;
+const osoApiKey = process.env.REACT_APP_OSO_API_KEY as string;
+const osoUrl = "https://opensource-observer.hasura.app/v1/graphql";
 const graphQLClient = new GraphQLClient(osoUrl, {
   headers: {
     authorization: `Bearer ${osoApiKey}`,
@@ -88,7 +88,7 @@ export function useOSO(projectGithub?: string) {
   const [stats, setStats] = useState<IOSOStats | null>(null);
 
   const getStatsFor = async (projectRegistryGithub: string) => {
-    if (osoApiKey === "") throw new Error("OpenSourceObserver API key not set.");
+    if (osoApiKey === undefined) throw new Error("OpenSourceObserver API key not set.");
     const queryId = gql`{
       artifacts_by_project(where: {artifact_name: {_ilike: "%${projectRegistryGithub}/%"}}
         distinct_on: project_id
