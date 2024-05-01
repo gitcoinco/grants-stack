@@ -667,7 +667,7 @@ async function isVerified(args: {
   project: Project | undefined;
   dataLayer: DataLayer;
 }) {
-  const { verifiableCredential, provider, project, dataLayer } = args;
+  const { verifiableCredential, provider, project } = args;
 
   const passportVerifier = new PassportVerifierWithExpiration();
   const  vcHasValidProof = await passportVerifier.verifyCredential(verifiableCredential);

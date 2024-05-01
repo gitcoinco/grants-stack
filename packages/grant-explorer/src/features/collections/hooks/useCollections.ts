@@ -1,6 +1,4 @@
 import useSWR, { SWRResponse } from "swr";
-import { Collection } from "data-layer";
-import { useDataLayer } from "data-layer";
 import { CommunityCollection } from "../community";
 import { CollectionV1, parseCollection } from "../collections";
 import { getConfig } from "common/src/config";

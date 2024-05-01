@@ -430,7 +430,7 @@ const passportLiteRounds = [
   { roundId: "23", chainId: 42161 }, // Hackathon Alumni
   { roundId: "24", chainId: 42161 }, // ENS
   { roundId: "25", chainId: 42161 }, // dApps & Apps
-  { roundId: "26", chainId: 42161 }, // WEB3 Infrastructurre
+  { roundId: "26", chainId: 42161 }, // WEB3 Infrastructure
   { roundId: "27", chainId: 42161 }, // Developer Tooling
   { roundId: "28", chainId: 42161 }, // Hypercerts Ecosystem
   { roundId: "29", chainId: 42161 }, // Climate Solutions
