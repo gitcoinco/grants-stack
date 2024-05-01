@@ -66,10 +66,18 @@ const collections: CommunityCollection[] = [
   {
     cid: "bafkreia7eablt2gbn4afqmo5z5p4gjiiymn3yhpwlmkkhiaotwqwfuidmq",
     author: "Trent Van Epps",
-    name: "Trent Van Epps projects",
-    numberOfProjects: 100,
+    name: "Trent Van Epps favorite projects",
+    numberOfProjects: 17,
     description:
       "Trents favorite ecosystem projects.",
+  },
+  {
+    cid: "bafkreibmljr4sgcbopmj7z62pj55a4e2krc5hfrjyynj6urqugbhzyyrm4",
+    author: "Jon Ellison",
+    name: "ReFi DAO & Local Nodes",
+    numberOfProjects: 17,
+    description:
+      "List of ReFi DAO & Local Nodes.",
   },
 ];
 
