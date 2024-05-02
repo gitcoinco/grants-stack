@@ -55,6 +55,30 @@ const collections: CommunityCollection[] = [
     description:
       "Check out my collection of Climate Projects making real-world impact in rural Africa including 2 projects for dMRV.",
   },
+  {
+    cid: "bafkreibmhp2c2wc7ppbdb3rlgql2xkaxuevfmbdjze2p5svoinrpfb4jim",
+    author: "Carl Cervone",
+    name: "Carl Cervone's high impact projects",
+    numberOfProjects: 100,
+    description:
+      "Carl Cervone's favorite OSS and non-OSS projects.",
+  },
+  {
+    cid: "bafkreia7eablt2gbn4afqmo5z5p4gjiiymn3yhpwlmkkhiaotwqwfuidmq",
+    author: "Trent Van Epps",
+    name: "Trent Van Epps favorite projects",
+    numberOfProjects: 17,
+    description:
+      "Trents favorite ecosystem projects.",
+  },
+  {
+    cid: "bafkreibmljr4sgcbopmj7z62pj55a4e2krc5hfrjyynj6urqugbhzyyrm4",
+    author: "Jon Ellison",
+    name: "ReFi DAO & Local Nodes",
+    numberOfProjects: 17,
+    description:
+      "List of ReFi DAO & Local Nodes.",
+  },
 ];
 
 export default collections;
