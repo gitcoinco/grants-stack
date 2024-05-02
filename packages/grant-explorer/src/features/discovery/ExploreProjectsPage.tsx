@@ -19,7 +19,6 @@ import { CollectionDetails } from "../collections/CollectionDetails";
 import { FilterDropdown, FilterDropdownOption } from "../common/FilterDropdown";
 import { getEnabledChains } from "../../app/chainConfig";
 import { useIpfsCollection } from "../collections/hooks/useCollections";
-import { usePostHog } from "posthog-js/react";
 
 const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
   {
@@ -119,8 +118,6 @@ export function ExploreProjectsPage(): JSX.Element {
   } = useApplications(
     isPreloading || preloadingError ? null : applicationsFetchOptions
   );
-
-  const posthog = usePostHog();
 
   const isLoading = isPreloading || applicationsLoading;
   const error = preloadingError || applicationsError;

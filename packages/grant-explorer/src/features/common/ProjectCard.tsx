@@ -67,13 +67,6 @@ export function ProjectCard(props: {
   } = props;
 
   const posthog = usePostHog();
-
-  useEffect(() => {
-    posthog.identify("user-wallet", {
-      walletAddress: "0x1234567890",
-    });
-  });
-
   const roundId = application.roundId.toLowerCase();
 
   return (

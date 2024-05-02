@@ -28,12 +28,6 @@ export function PaginatedProjectsList({
 }: PaginatedProjectsListProps): JSX.Element {
   const posthog = usePostHog();
 
-  useEffect(() => {
-    posthog.identify("user-wallet", {
-      walletAddress: "0x1234567890",
-    });
-  });
-
   return (
     <>
       {applications.map((application) => (
