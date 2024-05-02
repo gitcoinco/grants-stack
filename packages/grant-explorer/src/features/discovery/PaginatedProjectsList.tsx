@@ -2,6 +2,8 @@ import PlusIcon from "@heroicons/react/20/solid/PlusIcon";
 import { LoadingRing } from "../common/Spinner";
 import { ProjectCard, ProjectCardSkeleton } from "../common/ProjectCard";
 import { ApplicationSummary } from "data-layer";
+import { usePostHog } from "posthog-js/react";
+import { useEffect } from "react";
 
 interface PaginatedProjectsListProps {
   applications: ApplicationSummary[];
@@ -24,6 +26,14 @@ export function PaginatedProjectsList({
   onRemoveApplicationFromCart,
   applicationExistsInCart,
 }: PaginatedProjectsListProps): JSX.Element {
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    posthog.identify("user-wallet", {
+      walletAddress: "0x1234567890",
+    });
+  });
+
   return (
     <>
       {applications.map((application) => (
@@ -31,8 +41,18 @@ export function PaginatedProjectsList({
           key={application.applicationRef}
           application={application}
           inCart={applicationExistsInCart(application)}
-          onAddToCart={() => onAddApplicationToCart(application)}
-          onRemoveFromCart={() => onRemoveApplicationFromCart(application)}
+          onAddToCart={() => {
+            posthog.capture("application_added_to_cart", {
+              applicationRef: application.applicationRef,
+            });
+            onAddApplicationToCart(application);
+          }}
+          onRemoveFromCart={() => {
+            posthog.capture("application_removed_from_cart", {
+              applicationRef: application.applicationRef,
+            });
+            onRemoveApplicationFromCart(application);
+          }}
         />
       ))}
       {isLoadingMore && (
