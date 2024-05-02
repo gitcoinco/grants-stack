@@ -3,7 +3,6 @@ import { LoadingRing } from "../common/Spinner";
 import { ProjectCard, ProjectCardSkeleton } from "../common/ProjectCard";
 import { ApplicationSummary } from "data-layer";
 import { usePostHog } from "posthog-js/react";
-import { useEffect } from "react";
 
 interface PaginatedProjectsListProps {
   applications: ApplicationSummary[];

@@ -8,13 +8,6 @@ export const initPosthog = () => {
       session_recording: {
         maskTextSelector: '[data-testid="rk-account-button"]',
       },
-      // note: https://posthog.com/docs/product-analytics/autocapture
-      // autocapture: {
-      //   dom_event_allowlist: ["click"], // DOM events from this list ['click', 'change', 'submit']
-      //   url_allowlist: ["posthog.com./docs/.*"], // strings or RegExps
-      //   element_allowlist: ["button"], // DOM elements from this list ['a', 'button', 'form', 'input', 'select', 'textarea', 'label']
-      //   css_selector_allowlist: ["[ph-autocapture]"], // List of CSS selectors
-      // },
     });
 
     console.log("Posthog initialized");
