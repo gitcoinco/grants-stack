@@ -682,8 +682,12 @@ export class DataLayer {
       },
     );
 
+    console.log("donation", { response });
+
     return response.donations.filter((donation) => {
-      return donation.application.project !== null;
+      return (
+        donation.application !== null && donation.application?.project !== null
+      );
     });
   }
 
