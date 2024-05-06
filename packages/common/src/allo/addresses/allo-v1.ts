@@ -32,6 +32,10 @@ export const projectRegistryMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0x2420EABfA2C0e6f77E435B0B7615c848bF4963AF",
   [ChainId.SCROLL]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
   [ChainId.SEI_DEVNET]: "0x",
+  [ChainId.LUKSO_TESTNET]: "0x",
+  [ChainId.LUKSO]: "0x",
+  [ChainId.CELO_ALFAJORES]: "0x",
+  [ChainId.CELO]: "0x",
 };
 
 export const programFactoryMap: ChainIdToStringMap = {
@@ -60,6 +64,10 @@ export const programFactoryMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e",
   [ChainId.SCROLL]: "0x545B282A50EaeA01A619914d44105437036CbB36",
   [ChainId.SEI_DEVNET]: "0x",
+  [ChainId.LUKSO_TESTNET]: "0x",
+  [ChainId.LUKSO]: "0x",
+  [ChainId.CELO_ALFAJORES]: "0x",
+  [ChainId.CELO]: "0x",
 };
 
 export const roundFactoryMap: ChainIdToStringMap = {
@@ -88,6 +96,10 @@ export const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0xF1d4F5f21746bCD75fD71eB18992443f4F0edb6f",
   [ChainId.SCROLL]: "0x29aAF7D4E83A778DAee08Fe04B0712c4C2989AD1",
   [ChainId.SEI_DEVNET]: "0x",
+  [ChainId.LUKSO_TESTNET]: "0x",
+  [ChainId.LUKSO]: "0x",
+  [ChainId.CELO_ALFAJORES]: "0x",
+  [ChainId.CELO]: "0x",
 };
 
 export const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
@@ -116,6 +128,10 @@ export const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0xf5D111B57de221774866AC32c4435841F5c141D5",
   [ChainId.SCROLL]: "0x5b55728e41154562ee80027C1247B13382692e5C",
   [ChainId.SEI_DEVNET]: "0x",
+  [ChainId.LUKSO_TESTNET]: "0x",
+  [ChainId.LUKSO]: "0x",
+  [ChainId.CELO_ALFAJORES]: "0x",
+  [ChainId.CELO]: "0x",
 };
 
 export const dgVotingStrategyDummyContractMap: ChainIdToStringMap = {
@@ -144,6 +160,10 @@ export const dgVotingStrategyDummyContractMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0xB9dDcd73278C7f472867bf3D844E2Cc53a3d3D90",
   [ChainId.SCROLL]: "0x1525370A2B92FB5e8D0a44F3A9833f0E9F1a54b5",
   [ChainId.SEI_DEVNET]: "0x",
+  [ChainId.LUKSO_TESTNET]: "0x",
+  [ChainId.LUKSO]: "0x",
+  [ChainId.CELO_ALFAJORES]: "0x",
+  [ChainId.CELO]: "0x",
 };
 
 export const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
@@ -172,6 +192,10 @@ export const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0xB5CF3fFD3BDfC6A124aa9dD96fE14118Ed8083e5",
   [ChainId.SCROLL]: "0x7ac74Be34b1A27E48a2525259719F877a57B2Aa4",
   [ChainId.SEI_DEVNET]: "0x",
+  [ChainId.LUKSO_TESTNET]: "0x",
+  [ChainId.LUKSO]: "0x",
+  [ChainId.CELO_ALFAJORES]: "0x",
+  [ChainId.CELO]: "0x",
 };
 
 export const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
@@ -200,4 +224,8 @@ export const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0xC2B0d8dAdB88100d8509534BB8B5778d1901037d",
   [ChainId.SCROLL]: "0xc7722909fEBf7880E15e67d563E2736D9Bb9c1Ab",
   [ChainId.SEI_DEVNET]: "0x",
+  [ChainId.LUKSO_TESTNET]: "0x",
+  [ChainId.LUKSO]: "0x",
+  [ChainId.CELO_ALFAJORES]: "0x",
+  [ChainId.CELO]: "0x",
 };

@@ -471,7 +471,13 @@ export const txBlockExplorerLinks: Record<ChainId, string> = {
   [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
   [ChainId.SCROLL]: "https://scrollscan.com/tx/",
   [ChainId.SEI_DEVNET]: "https://seistream.app/tx/",
+  [ChainId.LUKSO_TESTNET]:
+    "https://explorer.execution.testnet.lukso.network/tx/",
+  [ChainId.LUKSO]: "https://explorer.execution.mainnet.lukso.network/tx/",
+  [ChainId.CELO_ALFAJORES]: "https://alfajores.celoscan.io/tx/",
+  [ChainId.CELO]: "https://celoscan.io/tx/",
 };
+
 
 /**
  * Fetch the correct transaction block explorer link for the provided web3 network

@@ -21,6 +21,8 @@ export enum ChainId {
   SEI_DEVNET = 713715,
   LUKSO = 42,
   LUKSO_TESTNET = 4201,
+  CELO = 42220,
+  CELO_ALFAJORES = 44787,
 }
 
 export const RedstoneTokenIds = {
@@ -43,4 +45,5 @@ export const RedstoneTokenIds = {
   SEI: "SEI",
   OP: "OP",
   LYX: "LYX",
+  CELO: "CELO",
 } as const;
