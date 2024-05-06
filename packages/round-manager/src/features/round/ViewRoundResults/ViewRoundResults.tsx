@@ -572,7 +572,7 @@ function ViewRoundResults({
                   </div>
                 )}
               </div>
-              {isCustomResults && (
+              {isCustomResults && !readyForPayoutTransactionHash && (
                 <>
                   <UploadCustomResults
                     customResultsFile={customResultsFile}
@@ -590,7 +590,7 @@ function ViewRoundResults({
                   />
                 </>
               )}
-              {!isCustomResults && (
+              {(!isCustomResults || readyForPayoutTransactionHash) && (
                 <>
                   <MatchingDistributionPreview
                     matches={matches}
