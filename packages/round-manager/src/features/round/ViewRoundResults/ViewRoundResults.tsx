@@ -489,9 +489,7 @@ function ViewRoundResults({
                             {sybilDefense === "auto" ? (
                               <div className="flex flex-col">
                                 <span className="text-sm ml-2 text-gray-900">
-                                  <a className="text-violet-400 hover:underline">
-                                    Recommended
-                                  </a>{" "}
+                                  <a className="text-violet-400">Recommended</a>{" "}
                                   - Upload your own results using the Passport
                                   Model-Based Detection system + result
                                   verification
@@ -502,9 +500,10 @@ function ViewRoundResults({
                                   use{" "}
                                   <a
                                     className="underline"
+                                    target="_blank"
                                     href="https://roundoperations.gitcoin.co/round-operations/post-round/cluster-matching-and-csv-upload"
                                   >
-                                    this
+                                    this{" "}
                                   </a>
                                   cluster matching template to calculate your
                                   results.
@@ -513,9 +512,7 @@ function ViewRoundResults({
                             ) : sybilDefense === "manual" ? (
                               <div className="flex flex-col">
                                 <span className="text-sm ml-2 text-gray-900">
-                                  <a className="text-violet-400 hover:underline">
-                                    Recommended
-                                  </a>{" "}
+                                  <a className="text-violet-400">Recommended</a>{" "}
                                   - System default quadratic funding calculation
                                 </span>
                                 <span className="text-sm mt-1 ml-2 text-gray-400">
@@ -527,9 +524,7 @@ function ViewRoundResults({
                             ) : (
                               <div className="flex flex-col">
                                 <span className="text-sm ml-2 text-gray-900">
-                                  <a className="text-violet-400 hover:underline">
-                                    Recommended
-                                  </a>{" "}
+                                  <a className="text-violet-400">Recommended</a>{" "}
                                   - System default quadratic funding calculation
                                 </span>
                                 <span className="text-sm mt-1 ml-2 text-gray-400">
@@ -1129,6 +1124,7 @@ function ReviseVotingCoefficients(props: {
         For instructions, click{" "}
         <a
           className="underline"
+          target="_blank"
           href={
             "https://roundoperations.gitcoin.co/round-operations/post-round/sybil-analysis"
           }
@@ -1210,6 +1206,7 @@ function UploadCustomResults(props: {
         Upload a CSV file with your round results. For instructions, click{" "}
         <a
           className="underline"
+          target="_blank"
           href={
             "https://roundoperations.gitcoin.co/round-operations/post-round/cluster-matching-and-csv-upload"
           }
