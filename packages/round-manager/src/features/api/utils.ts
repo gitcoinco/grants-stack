@@ -111,6 +111,26 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "SEI Devnet",
     logo: "/logos/sei.png",
   },
+  [ChainId.LUKSO]: {
+    id: ChainId.LUKSO,
+    name: "Lukso",
+    logo: "/logos/lukso-logo.svg",
+  },
+  [ChainId.LUKSO_TESTNET]: {
+    id: ChainId.LUKSO_TESTNET,
+    name: "Lukso Testnet",
+    logo: "/logos/lukso-logo.svg",
+  },
+  [ChainId.CELO]: {
+    id: ChainId.CELO,
+    name: "Celo",
+    logo: "/logos/celo-logo.svg",
+  },
+  [ChainId.CELO_ALFAJORES]: {
+    id: ChainId.CELO_ALFAJORES,
+    name: "Celo Alfajores",
+    logo: "/logos/celo-logo.svg",
+  },
 };
 
 export type SupportType = {
