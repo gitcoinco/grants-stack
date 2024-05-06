@@ -31,7 +31,7 @@ const FILTER_OPTIONS: FilterDropdownOption<Filter>[] = [
   },
 ];
 
-function createCartProjectFromApplication(
+export function createCartProjectFromApplication(
   application: ApplicationSummary
 ): CartProject {
   return {
@@ -193,6 +193,43 @@ export function ExploreProjectsPage(): JSX.Element {
       )}
 
       <LandingSection
+        left={
+          <div
+            className="rounded-md mr-auto font-mono"
+            style={{
+              backgroundImage:
+                "linear-gradient(123.78deg, #FFD6C9 17.77%, #B8D9E7 35.47%, #ABE3EB 59.3%, #F2DD9E 91.61%)",
+              padding: "1px",
+            }}
+          >
+            <a
+              className="bg-[#cdf1f3] text-black flex items-center px-4 py-2 rounded-md block"
+              href="https://grantscan.gitcoin.co/"
+              title="Discover grants using AI"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <svg
+                className="mr-2 h-4 w-4"
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7.05295 13.1667H10.9471M9.00002 1.5V2.33333M14.3033 3.6967L13.7141 4.28596M16.5001 8.99996H15.6667M2.33339 8.99996H1.50006M4.28597 4.28595L3.69672 3.6967M6.05374 11.9463C4.42655 10.3191 4.42655 7.68093 6.05374 6.05374C7.68092 4.42656 10.3191 4.42656 11.9463 6.05374C13.5735 7.68093 13.5735 10.3191 11.9463 11.9463L11.4904 12.4022C10.963 12.9296 10.6667 13.6449 10.6667 14.3908V14.8333C10.6667 15.7538 9.92049 16.5 9.00002 16.5C8.07954 16.5 7.33335 15.7538 7.33335 14.8333V14.3908C7.33335 13.6449 7.03706 12.9296 6.50965 12.4022L6.05374 11.9463Z"
+                  stroke="black"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+
+              <span>GrantScan</span>
+            </a>
+          </div>
+        }
         title={
           collection
             ? ""
@@ -202,7 +239,7 @@ export function ExploreProjectsPage(): JSX.Element {
         }
         action={
           collection && (
-            <div className="font-mono flex gap-x-4">
+            <div className="font-mono flex gap-x-4 items-center w-full">
               <form
                 className="relative"
                 onSubmit={onSearchSubmit}

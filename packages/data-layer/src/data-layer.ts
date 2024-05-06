@@ -32,7 +32,7 @@ import {
   SearchResult,
 } from "./openapi-search-client/index";
 import {
-  getApplication,
+  getApprovedApplication,
   getApplicationsByProjectIds,
   getApplicationsByRoundIdAndProjectIds,
   getApplicationsForManager,
@@ -347,7 +347,7 @@ export class DataLayer {
    * Returns a single application as identified by its id, round name and chain name
    * @param projectId
    */
-  async getApplication({
+  async getApprovedApplication({
     roundId,
     chainId,
     applicationId,
@@ -362,13 +362,17 @@ export class DataLayer {
       applicationId,
     };
 
-    const response: { application: Application } = await request(
+    const response: { applications: Application[] } = await request(
       this.gsIndexerEndpoint,
-      getApplication,
+      getApprovedApplication,
       requestVariables,
     );
 
-    return response.application ?? null;
+    if (response.applications.length === 0) {
+      return null;
+    }
+
+    return response.applications[0];
   }
 
   async getApplicationsForExplorer({
@@ -396,7 +400,7 @@ export class DataLayer {
    * Returns a list of applications identified by their chainId, roundId, and id.
    * @param expandedRefs
    */
-  async getApplicationsByExpandedRefs(
+  async getApprovedApplicationsByExpandedRefs(
     expandedRefs: Array<ExpandedApplicationRef>,
   ): Promise<ApplicationSummary[]> {
     if (expandedRefs.length === 0) {
@@ -422,8 +426,9 @@ export class DataLayer {
         applications(
           first: 100
           filter: {
-            or: [
-              ${filters}
+            and: [
+              { status: { equalTo: APPROVED } },
+              { or: [ ${filters} ] }
             ]
           }
         ) {
@@ -678,7 +683,9 @@ export class DataLayer {
     );
 
     return response.donations.filter((donation) => {
-      return donation.application.project !== null;
+      return (
+        donation.application !== null && donation.application?.project !== null
+      );
     });
   }
 

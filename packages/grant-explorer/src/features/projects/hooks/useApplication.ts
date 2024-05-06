@@ -15,7 +15,9 @@ export function useApplication(params: Params, dataLayer: DataLayer) {
       applicationId: params.applicationId as string,
       roundId: params.roundId as string,
     };
-    return (await dataLayer.getApplication(validatedParams)) ?? undefined;
+    return (
+      (await dataLayer.getApprovedApplication(validatedParams)) ?? undefined
+    );
   });
 }
 
