@@ -91,7 +91,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
       matchingFundsAvailable: 0,
       matchingCap: false,
       minDonationThreshold: false,
-      sybilDefense: true,
+      sybilDefense: "passport-mbds",
     };
 
   const { chain } = useWallet();
@@ -880,7 +880,7 @@ function SybilDefense(props: {
           data-testid="sybil-defense-selection"
         >
           <div>
-            <RadioGroup.Option value={"auto"} className="mb-2">
+            <RadioGroup.Option value={"passport-mbds"} className="mb-2">
               {({ checked, active }) => (
                 <span className="flex items-center text-sm">
                   <span
@@ -923,7 +923,7 @@ function SybilDefense(props: {
                 </span>
               )}
             </RadioGroup.Option>
-            <RadioGroup.Option value={"manual"} className="mb-2">
+            <RadioGroup.Option value={"passport"} className="mb-2">
               {({ checked, active }) => (
                 <span className="flex items-center text-sm">
                   <span

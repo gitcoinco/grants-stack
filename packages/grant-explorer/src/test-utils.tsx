@@ -43,7 +43,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
         matchingCapAmount: 0,
         minDonationThreshold: false,
         minDonationThresholdAmount: 0,
-        sybilDefense: "auto",
+        sybilDefense: "passport-mbds",
       },
     },
     store: {

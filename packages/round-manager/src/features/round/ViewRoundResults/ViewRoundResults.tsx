@@ -380,8 +380,8 @@ function ViewRoundResults({
     round.roundMetadata?.quadraticFundingConfig?.sybilDefense;
 
   const isCustomResults =
-    (sybilDefense === "auto" && isRecommendedDistribution) ||
-    (sybilDefense !== "auto" && !isRecommendedDistribution);
+    (sybilDefense === "passport-mbds" && isRecommendedDistribution) ||
+    (sybilDefense !== "passport-mbds" && !isRecommendedDistribution);
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3 mb-[212px]">
@@ -447,18 +447,18 @@ function ViewRoundResults({
                 ref={matchingTableRef}
               >
                 <p className="text-sm leading-5 text-gray-500 font-semibold text-left">
-                  {sybilDefense === "auto"
+                  {sybilDefense === "passport-mbds"
                     ? "Matching Distribution"
                     : areMatchingFundsRevised
                     ? "Revised Matching Distribution"
                     : "Matching Distribution"}
                 </p>
                 {!readyForPayoutTransactionHash &&
-                  (sybilDefense === "auto" ? (
+                  (sybilDefense === "passport-mbds" ? (
                     <p className="text-sm mt-2">
                       Frictionless auto-sybil detection
                     </p>
-                  ) : sybilDefense === "manual" ? (
+                  ) : sybilDefense === "passport" ? (
                     <p className="text-sm mt-2">
                       Manual verification with Passport
                     </p>
@@ -486,7 +486,7 @@ function ViewRoundResults({
                               checked={checked}
                               readOnly
                             />
-                            {sybilDefense === "auto" ? (
+                            {sybilDefense === "passport-mbds" ? (
                               <div className="flex flex-col">
                                 <span className="text-sm ml-2 text-gray-900">
                                   <a className="text-violet-400">Recommended</a>{" "}
@@ -509,7 +509,7 @@ function ViewRoundResults({
                                   results.
                                 </span>
                               </div>
-                            ) : sybilDefense === "manual" ? (
+                            ) : sybilDefense === "passport" ? (
                               <div className="flex flex-col">
                                 <span className="text-sm ml-2 text-gray-900">
                                   <a className="text-violet-400">Recommended</a>{" "}
@@ -552,11 +552,11 @@ function ViewRoundResults({
                               checked={checked}
                               readOnly
                             />
-                            {sybilDefense === "auto" ? (
+                            {sybilDefense === "passport-mbds" ? (
                               <span className="text-sm ml-2 text-gray-900">
                                 System default quadratic funding calculation
                               </span>
-                            ) : sybilDefense === "manual" ? (
+                            ) : sybilDefense === "passport" ? (
                               <span className="text-sm ml-2 text-gray-900">
                                 Upload your own results
                               </span>

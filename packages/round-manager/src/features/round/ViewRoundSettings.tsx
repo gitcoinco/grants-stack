@@ -2385,17 +2385,17 @@ function Funding(props: {
                     "roundMetadata.quadraticFundingConfig.sybilDefense"
                   )}
                   type="radio"
-                  value="auto"
+                  value="passport-mbds"
                   disabled={
                     !props.editMode.canEdit &&
                     !(
                       props.editedRound?.roundMetadata?.quadraticFundingConfig
-                        ?.sybilDefense === "auto"
+                        ?.sybilDefense === "passport-mbds"
                     )
                   }
                   checked={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.sybilDefense === "auto"
+                      ?.sybilDefense === "passport-mbds"
                   }
                   onChange={(e) => {
                     field.onChange(e.target.value);
@@ -2444,17 +2444,17 @@ function Funding(props: {
                     "roundMetadata.quadraticFundingConfig.sybilDefense"
                   )}
                   type="radio"
-                  value="manual"
+                  value="passport"
                   disabled={
                     !props.editMode.canEdit &&
                     !(
                       props.editedRound?.roundMetadata?.quadraticFundingConfig
-                        ?.sybilDefense === "manual"
+                        ?.sybilDefense === "passport"
                     )
                   }
                   checked={
                     props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.sybilDefense === "manual"
+                      ?.sybilDefense === "passport"
                   }
                   onChange={(e) => {
                     field.onChange(e.target.value);

@@ -411,7 +411,7 @@ export type Eligibility = {
   requirements?: Requirement[];
 };
 
-export type SybilDefense = "auto" | "manual" | "none";
+export type SybilDefense = "passport" | "passport-mbds" | "none";
 
 export interface Round {
   /**
