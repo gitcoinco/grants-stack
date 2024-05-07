@@ -334,13 +334,55 @@ export const customMainnet = {
 };
 
 export const customCelo = {
-  ...celo,
+  id: 42220,
+  name: "Celo",
+  network: "Celo",
   iconUrl: celoIcon,
+  nativeCurrency: {
+    name: "CELO",
+    symbol: "CELO",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://forno.celo.org"],
+    },
+    public: {
+      http: ["https://forno.celo.org"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Celo Explorer",
+      url: "https://celoscan.io/",
+    },
+  },
 };
 
 export const customCeloAlfajores = {
-  ...celoAlfajores,
+  id: 44787,
+  name: "Celo Alfajores",
+  network: "Celo Alfajores",
   iconUrl: celoIcon,
+  nativeCurrency: {
+    name: "CELO",
+    symbol: "CELO",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://alfajores-forno.celo-testnet.org"],
+    },
+    public: {
+      http: ["https://alfajores-forno.celo-testnet.org"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Celo Explorer",
+      url: "https://alfajores.celoscan.io/",
+    },
+  },
 };
 
 export const customLukso = {
