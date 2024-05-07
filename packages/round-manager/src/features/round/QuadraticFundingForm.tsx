@@ -5,7 +5,7 @@ import {
   SelectorIcon,
 } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { classNames } from "common";
+import { PayoutToken, classNames, getPayoutTokenOptions } from "common";
 import { Input } from "common/src/styles";
 import _ from "lodash";
 import { Fragment, useContext, useState } from "react";
@@ -24,7 +24,6 @@ import { Round } from "../api/types";
 import { useWallet } from "../common/Auth";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
-import { getPayoutTokenOptions, PayoutToken } from "../api/payoutTokens";
 interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }

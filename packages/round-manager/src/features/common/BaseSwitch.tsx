@@ -17,16 +17,20 @@ const BaseSwitch = ({
   value,
   handler,
   testid,
+  disabled = false,
 }: {
   activeLabel: string;
   inactiveLabel: string;
   value: boolean;
   handler: (a: boolean) => void;
   testid: string;
+  disabled?: boolean;
 }) => (
   <Switch.Group
     as="div"
-    className={classNames("flex items-center justify-end")}
+    className={classNames(
+      `flex items-center justify-end ${disabled ? "hidden" : ""}`
+    )}
   >
     <span className="flex-grow">
       <Switch.Label
@@ -46,6 +50,7 @@ const BaseSwitch = ({
       </Switch.Label>
     </span>
     <Switch
+      disabled={disabled}
       data-testid={testid}
       className="focus:outline-0! bg-gray-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
       onChange={handler}

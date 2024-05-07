@@ -7,8 +7,10 @@ import {
   ChainId,
   RoundVisibilityType,
   classNames,
+  getPayoutTokenOptions,
   getUTCDate,
   getUTCTime,
+  payoutTokens,
   useAllo,
 } from "common";
 import { Button } from "common/src/styles";
@@ -36,7 +38,6 @@ import * as yup from "yup";
 import { maxDateForUint256 } from "../../constants";
 import { useRoundById } from "../../context/round/RoundContext";
 import { useUpdateRound } from "../../context/round/UpdateRoundContext";
-import { getPayoutTokenOptions, payoutTokens } from "../api/payoutTokens";
 import { ProgressStatus, ProgressStep, Round } from "../api/types";
 import { CHAINS, SupportType } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";

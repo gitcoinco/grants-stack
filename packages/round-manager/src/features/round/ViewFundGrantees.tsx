@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
-import { classNames, getTxBlockExplorerLink, useTokenPrice } from "common";
+import {
+  PayoutToken,
+  classNames,
+  getTxBlockExplorerLink,
+  payoutTokens,
+  useTokenPrice,
+} from "common";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +20,6 @@ import {
   ProgressStatus,
   ProgressStep,
   Round,
-  TransactionBlock,
 } from "../api/types";
 import { formatCurrency } from "../api/utils";
 import { useWallet } from "../common/Auth";
@@ -23,7 +28,6 @@ import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { assertAddress } from "common/src/address";
-import { PayoutToken, payoutTokens } from "../api/payoutTokens";
 import { useAllo } from "common";
 import { getAddress } from "viem";
 import { getConfig } from "common/src/config";

@@ -14,10 +14,14 @@ import { usePayout } from "../../context/application/usePayout";
 import { Button, Input } from "common/src/styles";
 import { BigNumber, ethers } from "ethers";
 import { AnswerBlock, GrantApplication, Round } from "../api/types";
-import { formatUTCDateAsISOString, getUTCTime, useAllo } from "common";
+import {
+  formatUTCDateAsISOString,
+  getPayoutTokenOptions,
+  getUTCTime,
+  useAllo,
+} from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
-import { getPayoutTokenOptions } from "../api/payoutTokens";
 import { usePayouts } from "./usePayouts";
 import { Hex } from "viem";
 import { useDataLayer } from "data-layer";

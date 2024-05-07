@@ -19,8 +19,13 @@ export enum ChainId {
   DEV2 = 313372,
   SEPOLIA = 11155111,
   SEI_DEVNET = 713715,
+  LUKSO = 42,
+  LUKSO_TESTNET = 4201,
+  CELO = 42220,
+  CELO_ALFAJORES = 44787,
 }
 
+// see: https://github.com/redstone-finance/redstone-node/blob/main/src/config/tokens.json
 export const RedstoneTokenIds = {
   FTM: "FTM",
   USDC: "USDC",
@@ -40,4 +45,7 @@ export const RedstoneTokenIds = {
   USDGLO: "USDGLO",
   SEI: "SEI",
   OP: "OP",
+  LYX: "LYX",
+  CELO: "CELO",
+  CUSD: "CUSD",
 } as const;

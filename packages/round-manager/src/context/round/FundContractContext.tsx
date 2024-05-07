@@ -10,8 +10,7 @@ import React, {
 
 import { ProgressStatus } from "../../features/api/types";
 
-import { PayoutToken } from "../../features/api/payoutTokens";
-import { Allo } from "common";
+import { Allo, PayoutToken } from "common";
 
 export interface FundContractState {
   tokenApprovalStatus: ProgressStatus;

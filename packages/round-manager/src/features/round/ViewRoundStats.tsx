@@ -1,5 +1,5 @@
 import { Match } from "allo-indexer-client";
-import { getUTCDate } from "common";
+import { getUTCDate, payoutTokens } from "common";
 import { getConfig } from "common/src/config";
 import { utils } from "ethers";
 import { useMemo } from "react";
@@ -10,7 +10,6 @@ import {
   useRoundApplications,
   useRoundMatchingFunds,
 } from "../../hooks";
-import { payoutTokens } from "../api/payoutTokens";
 
 export default function ViewRoundStats() {
   const { id } = useParams();

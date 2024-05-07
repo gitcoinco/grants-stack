@@ -12,6 +12,7 @@ export * from "./icons";
 export * from "./markdown";
 export * from "./allo/common";
 export * from "./allo/application";
+export * from "./payoutTokens";
 
 export { PassportVerifierWithExpiration } from "./credentialVerifier";
 export { ChainId };
@@ -453,7 +454,13 @@ export const txBlockExplorerLinks: Record<ChainId, string> = {
   [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
   [ChainId.SCROLL]: "https://scrollscan.com/tx/",
   [ChainId.SEI_DEVNET]: "https://seistream.app/tx/",
+  [ChainId.LUKSO_TESTNET]:
+    "https://explorer.execution.testnet.lukso.network/tx/",
+  [ChainId.LUKSO]: "https://explorer.execution.mainnet.lukso.network/tx/",
+  [ChainId.CELO_ALFAJORES]: "https://alfajores.celoscan.io/tx/",
+  [ChainId.CELO]: "https://celoscan.io/tx/",
 };
+
 
 /**
  * Fetch the correct transaction block explorer link for the provided web3 network
@@ -490,4 +497,10 @@ const gg20Rounds = [
 
 export function isGG20Round(roundId: string, chainId: number) {
   return gg20Rounds.some((r) => r.roundId === roundId && r.chainId === chainId);
+}
+
+export function isLitUnavailable(chainId: number) {
+  return [ChainId.LUKSO_TESTNET, ChainId.LUKSO, ChainId.SEI_DEVNET].includes(
+    chainId
+  );
 }

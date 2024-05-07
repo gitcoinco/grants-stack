@@ -51,7 +51,13 @@ function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
   let strategyAddresses;
   switch (chainId) {
     case ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID:
-      throw new Error("ZkSync era mainnet is not supported");
+      strategyAddresses = {
+        [RoundCategory.QuadraticFunding]:
+          "0x61E288cf14f196CF8a6104ec421ae17c7f16a749",
+        [RoundCategory.Direct]: "0x0000000000000000000000000000000000000000",
+      };
+      break;
+
     case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID:
       throw new Error("ZkSync era testnet is not supported");
 
@@ -59,6 +65,15 @@ function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
       strategyAddresses = {
         [RoundCategory.QuadraticFunding]:
           "0x029dFAf686DfA0efdace5132ba422e9279D50b5b",
+        [RoundCategory.Direct]: "0x0000000000000000000000000000000000000000",
+      };
+      break;
+
+    case ChainId.LUKSO:
+    case ChainId.LUKSO_TESTNET:
+      strategyAddresses = {
+        [RoundCategory.QuadraticFunding]:
+          "0x91b5eeE385D8e0cfd49FD94D4C7aE15e1F17e0A2",
         [RoundCategory.Direct]: "0x0000000000000000000000000000000000000000",
       };
       break;
@@ -507,7 +522,9 @@ export class AlloV2 implements Allo {
         token,
         amount: 0n, // we send 0 tokens to the pool, we fund it later
         metadata: { protocol: 1n, pointer: roundIpfsResult.value },
-        managers: args.roundData.roundOperators ?? [],
+        managers: (args.roundData.roundOperators ?? []).map((operator) =>
+          getAddress(operator)
+        ),
       };
 
       const txData = this.allo.createPool(createPoolArgs);
