@@ -7,6 +7,8 @@ import {
   fantomTestnet as fantomTestnetOriginal,
   sepolia as ethereumSepolia,
   zkSync as zkSyncOriginal,
+  celo,
+  celoAlfajores,
 } from "@wagmi/chains";
 import { ChainId } from "./chain-ids";
 import { getConfig } from "./config";
@@ -21,9 +23,13 @@ export const BaseLogo =
 export const FantomFTMLogo =
   "https://ipfs.io/ipfs/QmRJgxRqXUpHeskg48qeehUK97FzCAY7espZhTAVdrh9B9";
 export const ScrollIcon =
-  "https://ipfs.io/ipfs/QmYRA5tXMmGxhw7HUNdr9DYN2GRX3MnLoJVweeWKgfxBZX"; 
+  "https://ipfs.io/ipfs/QmYRA5tXMmGxhw7HUNdr9DYN2GRX3MnLoJVweeWKgfxBZX";
 export const SeiIcon =
   "https://ipfs.io/ipfs/QmUvNaLwzNf1bHjqTMW1aBjRgd5FrsTDqjSnyypLwxv8x5";
+export const celoIcon =
+  "https://ipfs.io/ipfs/QmQ16s5NLSQCRpaETRqBAq93hWU8nuDebZMT5D4JhQumf6";
+export const luksoIcon =
+  "https://ipfs.io/ipfs/QmV51pWBAZipPDcoNMV2on8VevmRgpmm3xjntpyhpKzNWx";
 
 const config = getConfig();
 
@@ -323,6 +329,68 @@ export const customMainnet = {
     default: {
       name: "Etherscan",
       url: "https://etherscan.io",
+    },
+  },
+};
+
+export const customCelo = {
+  ...celo,
+  iconUrl: celoIcon,
+};
+
+export const customCeloAlfajores = {
+  ...celoAlfajores,
+  iconUrl: celoIcon,
+};
+
+export const customLukso = {
+  id: 42,
+  name: "Lukso",
+  network: "Lukso",
+  iconUrl: luksoIcon,
+  nativeCurrency: {
+    name: "LYX",
+    symbol: "LYX",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.mainnet.lukso.network"],
+    },
+    public: {
+      http: ["https://rpc.mainnet.lukso.network"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Lukso Explorer",
+      url: "https://explorer.execution.mainnet.lukso.network/",
+    },
+  },
+};
+
+export const customLuksoTestnet = {
+  id: 4201,
+  name: "Lukso Testnet",
+  network: "Lukso Testnet",
+  iconUrl: luksoIcon,
+  nativeCurrency: {
+    name: "LYXt",
+    symbol: "LYXt",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.testnet.lukso.network"],
+    },
+    public: {
+      http: ["https://rpc.testnet.lukso.network"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "Lukso Testnet Explorer",
+      url: "https://explorer.execution.testnet.lukso.network/",
     },
   },
 };
