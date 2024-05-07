@@ -8,6 +8,8 @@ import { SchemaQuestion, typeToText } from "../api/utils";
 import BaseSwitch from "./BaseSwitch";
 import { InputIcon } from "./InputIcon";
 import Option from "./Option";
+import { useWallet } from "./Auth";
+import { isLitUnavailable } from "common";
 
 const INITIAL_VALUE = "Select a type";
 
@@ -37,6 +39,8 @@ function AddQuestionModal({
   onClose,
 }: AddQuestionModalProps) {
   const questionExists = question && question.index !== undefined;
+
+  const { chain } = useWallet();
 
   const [isOpen, setIsOpen] = useState(show);
   const initialQuestion = question;
@@ -82,6 +86,7 @@ function AddQuestionModal({
         <BaseSwitch
           testid="encrypted-toggle"
           key="encrypted"
+          disabled={isLitUnavailable(chain.id)}
           activeLabel="Encrypted"
           inactiveLabel="Not Encrypted"
           value={

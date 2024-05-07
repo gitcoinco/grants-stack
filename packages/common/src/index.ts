@@ -496,3 +496,9 @@ export function isChainIdSupported(chainId: number) {
   }
   return Object.values(ChainId).includes(chainId);
 }
+
+export function isLitUnavailable(chainId: number) {
+  return [
+    ChainId.SEPOLIA
+  ].includes(chainId);
+}

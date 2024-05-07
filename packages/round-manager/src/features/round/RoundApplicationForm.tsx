@@ -6,7 +6,7 @@ import {
   LockOpenIcon,
 } from "@heroicons/react/outline";
 import { PencilIcon, PlusSmIcon, XIcon } from "@heroicons/react/solid";
-import { useAllo } from "common";
+import { isLitUnavailable, useAllo } from "common";
 import { Button } from "common/src/styles";
 import { RoundCategory } from "data-layer";
 import _ from "lodash";
@@ -44,7 +44,7 @@ import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
 
-export const initialQuestionsQF: SchemaQuestion[] = [
+export const getInitialQuestionsQF = (chainId: number) => [
   {
     id: 0,
     title: "Payout Wallet Address",
@@ -59,7 +59,7 @@ export const initialQuestionsQF: SchemaQuestion[] = [
     id: 1,
     title: "Email Address",
     required: true,
-    encrypted: true,
+    encrypted: !isLitUnavailable(chainId),
     hidden: true,
     type: "email",
   },
@@ -81,12 +81,12 @@ export const initialQuestionsQF: SchemaQuestion[] = [
   },
 ];
 
-export const initialQuestionsDirect: SchemaQuestion[] = [
+export const getInitialQuestionsDirect = (chainId: number) => [
   {
     id: 1,
     title: "Email Address",
     required: true,
-    encrypted: true,
+    encrypted: !isLitUnavailable(chainId),
     hidden: true,
     type: "email",
     fixed: true,
@@ -185,7 +185,7 @@ export function RoundApplicationForm(props: {
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [openAddQuestionModal, setOpenAddQuestionModal] = useState(false);
   const [toEdit, setToEdit] = useState<EditQuestion | undefined>();
-  const { signer: walletSigner } = useWallet();
+  const { signer: walletSigner, chain } = useWallet();
 
   const { currentStep, setCurrentStep, stepsCount, formData } =
     useContext(FormContext);
@@ -206,8 +206,8 @@ export function RoundApplicationForm(props: {
   const defaultQuestions: ApplicationMetadata["questions"] = questionsArg
     ? questionsArg
     : roundCategory === RoundCategory.QuadraticFunding
-    ? initialQuestionsQF
-    : initialQuestionsDirect;
+    ? getInitialQuestionsQF(chain.id)
+    : getInitialQuestionsDirect(chain.id);
 
   const { control, handleSubmit } = useForm<Round>({
     defaultValues: {
