@@ -17,6 +17,7 @@ import { LandingSection, ViewAllLink } from "./LandingSection";
 import { toQueryString } from "./RoundsFilter";
 import { useCollections } from "../collections/hooks/useCollections";
 import { CollectionsGrid } from "../collections/CollectionsGrid";
+import { getAlloVersion } from "common/src/config";
 
 const LandingPage = () => {
   const activeRounds = useFilterRounds(
@@ -45,11 +46,13 @@ const LandingPage = () => {
     <GradientLayout showWalletInteraction showAlloVersionBanner={false}>
       <LandingHero />
 
-      <LandingSection title="Community collections">
-        {collections.data !== undefined && (
-          <CollectionsGrid data={collections.data} />
-        )}
-      </LandingSection>
+      {getAlloVersion() === "allo-v2" && (
+        <LandingSection title="Community collections">
+          {collections.data !== undefined && (
+            <CollectionsGrid data={collections.data} />
+          )}
+        </LandingSection>
+      )}
 
       <LandingSection
         title="Donate now"

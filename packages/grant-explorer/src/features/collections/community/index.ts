@@ -55,6 +55,50 @@ const collections: CommunityCollection[] = [
     description:
       "Check out my collection of Climate Projects making real-world impact in rural Africa including 2 projects for dMRV.",
   },
+  {
+    cid: "bafkreibmhp2c2wc7ppbdb3rlgql2xkaxuevfmbdjze2p5svoinrpfb4jim",
+    author: "Carl Cervone",
+    name: "Carl Cervone's high impact projects",
+    numberOfProjects: 100,
+    description: "Carl Cervone's favorite OSS and non-OSS projects.",
+  },
+  {
+    cid: "bafkreia7eablt2gbn4afqmo5z5p4gjiiymn3yhpwlmkkhiaotwqwfuidmq",
+    author: "Trent Van Epps",
+    name: "Trent Van Epps favorite projects",
+    numberOfProjects: 17,
+    description: "Trents favorite ecosystem projects.",
+  },
+  {
+    cid: "bafkreibmljr4sgcbopmj7z62pj55a4e2krc5hfrjyynj6urqugbhzyyrm4",
+    author: "Jon Ellison",
+    name: "ReFi DAO & Local Nodes",
+    numberOfProjects: 17,
+    description: "List of ReFi DAO & Local Nodes.",
+  },
+  {
+    cid: "bafkreic3it6ka4g6e3n2nplo2bmo34tn4nw2drrmkqmjifrespvwzg5ydu",
+    author: "David mortech ",
+    name: "Africa web3 Changemakers",
+    numberOfProjects: 29,
+    description:
+      "Africa web3 Changemakers in Gitcoin GG20 QF rounds take a look n support.",
+  },
+  {
+    cid: "bafkreiaqclu2z3tlhhyux3mqgux3y5lfnmgi4end2a4itw25slm2fba4ba",
+    author: "Piraox",
+    name: "The Future",
+    numberOfProjects: 7,
+    description: "Projects I think are the future",
+  },
+  {
+    cid: "bafkreifz2wakvsiw5o6dcinqn7vhgcun2t4wxl7rm22s5g2jsfznmwnnsi",
+    author: "Tarah Stafford",
+    name: "Women Founders",
+    numberOfProjects: 15,
+    description:
+      "Womyn Founders GG20 - 15 impactful Climate/ReFi/Impact projects led and co-led by women #GG20",
+  },
 ];
 
 export default collections;

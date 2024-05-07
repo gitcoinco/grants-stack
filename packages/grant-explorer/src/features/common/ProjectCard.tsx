@@ -14,6 +14,7 @@ import { applicationPath } from "common/src/routes/explorer";
 import { ProjectBanner } from "./ProjectBanner";
 import { createIpfsImageUrl } from "common/src/ipfs";
 import { getConfig } from "common/src/config";
+import { usePostHog } from "posthog-js/react";
 
 export function ProjectLogo(props: {
   className?: string;
@@ -64,6 +65,7 @@ export function ProjectCard(props: {
     onRemoveFromCart: removeFromCart,
   } = props;
 
+  const posthog = usePostHog();
   const roundId = application.roundId.toLowerCase();
 
   return (
@@ -111,14 +113,26 @@ export function ProjectCard(props: {
           {inCart ? (
             <button
               aria-label="Remove from cart"
-              onClick={() => removeFromCart(application)}
+              onClick={() => {
+                posthog.capture("application_removed_from_cart", {
+                  applicationRef: application.applicationRef,
+                });
+
+                removeFromCart(application);
+              }}
             >
               <CheckedCircleIcon className="w-10" />
             </button>
           ) : (
             <button
               aria-label="Add to cart"
-              onClick={() => addToCart(application)}
+              onClick={() => {
+                posthog.capture("application_added_to_cart", {
+                  applicationRef: application.applicationRef,
+                });
+
+                addToCart(application);
+              }}
             >
               <CartCircleIcon className="w-10" />
             </button>

@@ -424,7 +424,7 @@ export class DataLayer {
     const query = gql`
       query Application {
         applications(
-          first: 100
+          first: 300
           filter: {
             and: [
               { status: { equalTo: APPROVED } },
@@ -683,7 +683,9 @@ export class DataLayer {
     );
 
     return response.donations.filter((donation) => {
-      return donation.application.project !== null;
+      return (
+        donation.application !== null && donation.application?.project !== null
+      );
     });
   }
 

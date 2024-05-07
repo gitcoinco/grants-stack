@@ -10,10 +10,15 @@ text-sm
 
 export function LandingSection({
   action,
+  left,
   title,
   children,
   className,
-}: { action?: ReactNode; title: string } & ComponentProps<"div">) {
+}: {
+  left?: ReactNode;
+  action?: ReactNode;
+  title: string;
+} & ComponentProps<"div">) {
   return (
     <section className="pt-12 pb-16">
       <div
@@ -22,9 +27,12 @@ export function LandingSection({
           className
         )}
       >
-        <h3 className="text-xl md:text-3xl font-medium tracking-tight">
-          {title}
-        </h3>
+        {left}
+        {title && (
+          <h3 className="text-xl md:text-3xl font-medium tracking-tight">
+            {title}
+          </h3>
+        )}
         <div>{action}</div>
       </div>
       <div>{children}</div>

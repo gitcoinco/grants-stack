@@ -1,5 +1,4 @@
 import { CommunityCollection } from "./community";
-import { Link } from "react-router-dom";
 import { Badge, BasicCard, CardHeader } from "../common/styles";
 import { CollectionBanner } from "../discovery/CardBanner";
 import { collectionPath } from "common/src/routes/explorer";

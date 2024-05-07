@@ -46,7 +46,7 @@ export default function Navbar(props: NavbarProps) {
     {
       chainId: 42161,
       roundId: "26",
-      name: "WEB3 Infrastructurre",
+      name: "WEB3 Infrastructure",
       link: "/round/42161/26",
     },
     {
