@@ -454,45 +454,45 @@ export const sepolia: Chain = {
 //   },
 // },
 
-export const luksoMainnet: Chain = {
-  id: 42,
-  name: "LUKSO",
-  network: "lukso-mainnet",
-  iconUrl: LuksoIcon,
-  nativeCurrency: {
-    name: "LYX",
-    symbol: "LYX",
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: {
-      http: [`https://42.rpc.thirdweb.com`],
-    },
-    public: {
-      http: [`https://42.rpc.thirdweb.com`],
-    },
-  },
-};
+// export const luksoMainnet: Chain = {
+//   id: 42,
+//   name: "LUKSO",
+//   network: "lukso-mainnet",
+//   iconUrl: LuksoIcon,
+//   nativeCurrency: {
+//     name: "LYX",
+//     symbol: "LYX",
+//     decimals: 18,
+//   },
+//   rpcUrls: {
+//     default: {
+//       http: [`https://42.rpc.thirdweb.com`],
+//     },
+//     public: {
+//       http: [`https://42.rpc.thirdweb.com`],
+//     },
+//   },
+// };
 
-export const luksoTestnet: Chain = {
-  id: 4201,
-  name: "LUKSO Testnet",
-  network: "lukso-testnet",
-  iconUrl: LuksoIcon,
-  nativeCurrency: {
-    name: "LYXt",
-    symbol: "LYXt",
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: {
-      http: [`https://4201.rpc.thirdweb.com`],
-    },
-    public: {
-      http: [`https://4201.rpc.thirdweb.com`],
-    },
-  },
-};
+// export const luksoTestnet: Chain = {
+//   id: 4201,
+//   name: "LUKSO Testnet",
+//   network: "lukso-testnet",
+//   iconUrl: LuksoIcon,
+//   nativeCurrency: {
+//     name: "LYXt",
+//     symbol: "LYXt",
+//     decimals: 18,
+//   },
+//   rpcUrls: {
+//     default: {
+//       http: [`https://4201.rpc.thirdweb.com`],
+//     },
+//     public: {
+//       http: [`https://4201.rpc.thirdweb.com`],
+//     },
+//   },
+// };
 
 export function parseChainIdIntoResult(
   input: string | number
