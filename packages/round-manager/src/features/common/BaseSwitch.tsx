@@ -17,7 +17,7 @@ const BaseSwitch = ({
   value,
   handler,
   testid,
-  disabled=false
+  disabled = false,
 }: {
   activeLabel: string;
   inactiveLabel: string;
@@ -28,7 +28,9 @@ const BaseSwitch = ({
 }) => (
   <Switch.Group
     as="div"
-    className={classNames("flex items-center justify-end")}
+    className={classNames(
+      `flex items-center justify-end ${disabled ? "opacity-50" : ""}`
+    )}
   >
     <span className="flex-grow">
       <Switch.Label

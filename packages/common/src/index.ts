@@ -499,6 +499,10 @@ export function isChainIdSupported(chainId: number) {
 
 export function isLitUnavailable(chainId: number) {
   return [
-    ChainId.SEPOLIA
+    ChainId.LUKSO_TESTNET,
+    ChainId.LUKSO,
+    ChainId.CELO,
+    ChainId.CELO_ALFAJORES,
+    ChainId.SEI_DEVNET,
   ].includes(chainId);
 }

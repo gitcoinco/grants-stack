@@ -495,7 +495,9 @@ export class AlloV2 implements Allo {
         token,
         amount: 0n, // we send 0 tokens to the pool, we fund it later
         metadata: { protocol: 1n, pointer: roundIpfsResult.value },
-        managers: args.roundData.roundOperators ?? [],
+        managers: (args.roundData.roundOperators ?? []).map((operator) =>
+          getAddress(operator)
+        ),
       };
 
       const txData = this.allo.createPool(createPoolArgs);

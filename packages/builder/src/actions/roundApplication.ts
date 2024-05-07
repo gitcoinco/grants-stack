@@ -134,7 +134,7 @@ const dispatchAndLogApplicationError = (
   dispatch(applicationError(roundAddress, error, step));
 };
 
-export function chainIdToChainName(chainId: number): string {
+export function chainIdToChainName(chainId: number): string | undefined {
   // eslint-disable-next-line no-restricted-syntax
   for (const name in LitJsSdk.LIT_CHAINS) {
     if (LitJsSdk.LIT_CHAINS[name].chainId === chainId) {
@@ -142,7 +142,8 @@ export function chainIdToChainName(chainId: number): string {
     }
   }
 
-  throw new Error(`couldn't find LIT chain name for chainId ${chainId}`);
+  return undefined;
+  // throw new Error(`couldn't find LIT chain name for chainId ${chainId}`);
 }
 
 const applyToRound =
