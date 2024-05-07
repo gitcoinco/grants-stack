@@ -4,7 +4,12 @@ import {
   VerifiableCredential,
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import { PassportVerifierWithExpiration, formatDateWithOrdinal, renderToHTML, useParams } from "common";
+import {
+  PassportVerifierWithExpiration,
+  formatDateWithOrdinal,
+  renderToHTML,
+  useParams,
+} from "common";
 import { getAlloVersion } from "common/src/config";
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
@@ -91,12 +96,13 @@ export default function ViewProjectDetails() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const {
     chainId,
-    roundId,
+    roundId: paramRoundId,
     applicationId: paramApplicationId,
   } = useProjectDetailsParams();
   const dataLayer = useDataLayer();
   const { address: walletAddress } = useAccount();
 
+  const roundId = paramRoundId.toLowerCase();
   let applicationId: string;
 
   /// handle URLs where the application ID is ${roundId}-${applicationId}
@@ -122,7 +128,9 @@ export default function ViewProjectDetails() {
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
-  const { stats } = useOSO(projectToRender?.projectMetadata.projectGithub as string);
+  const { stats } = useOSO(
+    projectToRender?.projectMetadata.projectGithub as string
+  );
 
   const currentTime = new Date();
   const isAfterRoundEndDate =
@@ -537,12 +545,12 @@ function Sidebar(props: {
 
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useProjectDetailsParams();
-  const { round } = useRoundById(Number(chainId), roundId);
+  const { round } = useRoundById(Number(chainId), roundId.toLowerCase());
   const dataLayer = useDataLayer();
   const { data: application } = useApplication(
     {
       chainId: Number(chainId as string),
-      roundId,
+      roundId: roundId.toLowerCase(),
       applicationId: applicationId,
     },
     dataLayer
@@ -670,7 +678,8 @@ async function isVerified(args: {
   const { verifiableCredential, provider, project } = args;
 
   const passportVerifier = new PassportVerifierWithExpiration();
-  const  vcHasValidProof = await passportVerifier.verifyCredential(verifiableCredential);
+  const vcHasValidProof =
+    await passportVerifier.verifyCredential(verifiableCredential);
 
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(

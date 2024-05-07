@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { payoutTokens, PayoutToken } from "common/src/payoutTokens";
 import {
   CalendarIcon,
   ChainId,
@@ -18,7 +19,6 @@ import {
   renderToPlainText,
   truncateDescription,
   useTokenPrice,
-  VotingToken,
 } from "common";
 import { Button, Input } from "common/src/styles";
 import AlloV1 from "common/src/icons/AlloV1";
@@ -37,7 +37,6 @@ import {
   getDaysLeft,
   isDirectRound,
   isInfiniteDate,
-  votingTokens,
 } from "../api/utils";
 import { PassportWidget } from "../common/PassportWidget";
 
@@ -124,7 +123,7 @@ export default function ViewRound() {
             <BeforeRoundStart
               round={round}
               chainId={chainId}
-              roundId={roundId}
+              roundId={roundId.toLowerCase()}
             />
           )}
 
@@ -132,7 +131,7 @@ export default function ViewRound() {
             <AfterRoundStart
               round={round}
               chainId={Number(chainId)}
-              roundId={roundId}
+              roundId={roundId.toLowerCase()}
               isBeforeRoundEndDate={isBeforeRoundEndDate}
               isAfterRoundEndDate={isAfterRoundEndDate}
             />
@@ -295,10 +294,10 @@ function AfterRoundStart(props: {
     chainId: Number(props.chainId),
   });
 
-  const nativePayoutToken = votingTokens.find(
+  const nativePayoutToken = payoutTokens.find(
     (t) =>
       t.chainId === Number(props.chainId) &&
-      t.address === getAddress(props.round.token)
+      t.address.toLowerCase() === getAddress(props.round.token).toLowerCase()
   );
 
   const tokenData = data ?? {
@@ -869,7 +868,7 @@ const RoundStatsTabContent = ({
   roundId: string;
   round: Round;
   chainId: ChainId;
-  token?: VotingToken;
+  token?: PayoutToken;
   tokenSymbol?: string;
 }): JSX.Element => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -994,7 +993,7 @@ const Stats = ({
   totalCrowdfunded: number;
   totalProjects: number;
   chainId: number;
-  token?: VotingToken;
+  token?: PayoutToken;
   tokenSymbol?: string;
   totalDonations: number;
   totalDonors: number;
@@ -1204,10 +1203,10 @@ function PreRoundPage(props: {
     chainId: Number(chainId),
   });
 
-  const nativePayoutToken = votingTokens.find(
+  const nativePayoutToken = payoutTokens.find(
     (t) =>
       t.chainId === Number(chainId) &&
-      t.address === getAddress(props.round.token)
+      t.address.toLowerCase() === getAddress(props.round.token).toLowerCase()
   );
 
   const tokenData = data ?? {
