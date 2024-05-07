@@ -31,6 +31,10 @@ import {
   zkSyncEraTestnet,
   sepolia,
   seiDevnet,
+  customLukso as lukso,
+  customLuksoTestnet as luksoTestnet,
+  customCelo as celo,
+  customCeloAlfajores as celoAlfajores,
 } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
@@ -46,6 +50,8 @@ const testnetChains = () => {
     avalancheFuji,
     sepolia,
     seiDevnet,
+    luksoTestnet,
+    celoAlfajores,
   ];
 };
 
@@ -62,6 +68,8 @@ const mainnetChains = () => {
     scroll,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
     seiDevnet,
+    lukso,
+    celo,
   ];
 };
 
