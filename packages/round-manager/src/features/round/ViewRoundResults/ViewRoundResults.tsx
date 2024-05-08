@@ -8,7 +8,7 @@ import {
   UploadIcon,
 } from "@heroicons/react/solid";
 import { useDropzone } from "react-dropzone";
-import { classNames } from "common";
+import { classNames, isGG20Round } from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRoundMatchingFunds } from "../../../hooks";
 import {
@@ -376,8 +376,9 @@ function ViewRoundResults({
 
   const disableRoundSaturationControls = Math.round(roundSaturation) >= 100;
 
-  const sybilDefense =
-    round.roundMetadata?.quadraticFundingConfig?.sybilDefense;
+  const sybilDefense = isGG20Round(round.id, chain.id)
+    ? "passport-mbds"
+    : round.roundMetadata?.quadraticFundingConfig?.sybilDefense;
 
   const isCustomResults =
     (sybilDefense === "passport-mbds" && isRecommendedDistribution) ||
@@ -473,13 +474,7 @@ function ViewRoundResults({
                     >
                       <RadioGroup.Option value={true}>
                         {({ checked }) => (
-                          <div
-                            className={classNames(
-                              "cursor-pointer flex flex-row my-2",
-                              disableRoundSaturationControls &&
-                                "opacity-50 cursor-not-allowed"
-                            )}
-                          >
+                          <div className="cursor-pointer flex flex-row my-2">
                             <input
                               type="radio"
                               className="text-indigo-600 items-start mt-0.5 focus:ring-indigo-500"
@@ -503,8 +498,8 @@ function ViewRoundResults({
                                     target="_blank"
                                     href="https://roundoperations.gitcoin.co/round-operations/post-round/cluster-matching-and-csv-upload"
                                   >
-                                    this{" "}
-                                  </a>
+                                    this
+                                  </a>{" "}
                                   cluster matching template to calculate your
                                   results.
                                 </span>
@@ -539,13 +534,7 @@ function ViewRoundResults({
                       </RadioGroup.Option>
                       <RadioGroup.Option value={false}>
                         {({ checked }) => (
-                          <div
-                            className={classNames(
-                              "cursor-pointer flex my-2",
-                              disableRoundSaturationControls &&
-                                "opacity-50 cursor-not-allowed"
-                            )}
-                          >
+                          <div className="cursor-pointer flex my-2">
                             <input
                               type="radio"
                               className="text-indigo-600 items-start mt-0.5 focus:ring-indigo-500"
