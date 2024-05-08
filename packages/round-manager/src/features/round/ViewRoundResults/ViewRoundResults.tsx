@@ -492,16 +492,23 @@ function ViewRoundResults({
                                 <span className="text-sm mt-1 ml-2 text-gray-400">
                                   Since you selected frictionless auto-sybil
                                   detection at setup, select this option. Please
-                                  use{" "}
+                                  use this{" "}
+                                  <a
+                                    className="underline"
+                                    target="_blank"
+                                    href={`https://qf-calculator.fly.dev/?round_id=${round.id}&chain_id=${chain.id}`}
+                                  >
+                                    cluster matching template
+                                  </a>{" "}
+                                  to calculate your results. Click{" "}
                                   <a
                                     className="underline"
                                     target="_blank"
                                     href="https://roundoperations.gitcoin.co/round-operations/post-round/cluster-matching-and-csv-upload"
                                   >
-                                    this
+                                    here
                                   </a>{" "}
-                                  cluster matching template to calculate your
-                                  results.
+                                  to learn more.
                                 </span>
                               </div>
                             ) : sybilDefense === "passport" ? (
