@@ -128,7 +128,9 @@ export default function ViewProjectDetails() {
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
-  const { stats } = useOSO(projectToRender?.projectMetadata.projectGithub as string);
+  const { stats } = useOSO(
+    projectToRender?.projectMetadata.projectGithub as string
+  );
 
   const currentTime = new Date();
   const isAfterRoundEndDate =
@@ -229,7 +231,11 @@ export default function ViewProjectDetails() {
   return (
     <>
       <DefaultLayout>
-        {isAfterRoundEndDate && <RoundEndedBanner />}
+        {isAfterRoundEndDate && (
+          <div className="relative top-6">
+            <RoundEndedBanner />
+          </div>
+        )}
         <div className="flex flex-row justify-between my-8">
           <div className="flex items-center pt-2" data-testid="bread-crumbs">
             <Breadcrumb items={breadCrumbs} />

@@ -402,7 +402,7 @@ function AfterRoundStart(props: {
       <DefaultLayout>
         {showCartNotification && renderCartNotification()}
         {props.isAfterRoundEndDate && (
-          <div className="relative top-16">
+          <div className="relative top-6">
             <RoundEndedBanner />
           </div>
         )}
