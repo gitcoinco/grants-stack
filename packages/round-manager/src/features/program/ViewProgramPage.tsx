@@ -256,7 +256,7 @@ export default function ViewProgram() {
             Round.
           </p>
           <div className="w-full px-12">
-            {getAlloVersion() === "allo-v2" && (
+            {true && (
               <>
                 <button
                   onClick={() => setGrantType("quadraticFunding")}
@@ -297,7 +297,7 @@ export default function ViewProgram() {
                 </button>
               </>
             )}
-            {getAlloVersion() === "allo-v1" && (
+            {true && (
               <>
                 <button
                   onClick={() => setGrantType("directGrant")}
