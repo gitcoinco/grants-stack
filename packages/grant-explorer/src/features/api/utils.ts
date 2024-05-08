@@ -363,16 +363,6 @@ const ZKSYNC_ERA_TESTNET_TOKENS: VotingToken[] = [
     defaultForVoting: true,
     canVote: true,
   },
-  {
-    name: "TEST",
-    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
-    address: "0x8fd03Cd97Da068CC242Ab7551Dc4100DD405E8c7",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DAI"],
-    redstoneTokenId: RedstoneTokenIds["DAI"],
-    defaultForVoting: false,
-    canVote: true,
-  },
 ];
 
 const ZKSYNC_ERA_MAINNET_TOKENS: VotingToken[] = [

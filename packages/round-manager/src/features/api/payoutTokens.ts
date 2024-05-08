@@ -192,14 +192,6 @@ const ZKSYNC_ERA_TESTNET_TOKENS: PayoutToken[] = [
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
   },
-  {
-    name: "TEST",
-    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
-    address: "0x8fd03Cd97Da068CC242Ab7551Dc4100DD405E8c7",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DAI"],
-    redstoneTokenId: RedstoneTokenIds["DAI"],
-  },
 ];
 
 const ZKSYNC_ERA_MAINNET_TOKENS: PayoutToken[] = [
