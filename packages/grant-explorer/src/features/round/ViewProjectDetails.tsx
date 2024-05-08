@@ -4,7 +4,12 @@ import {
   VerifiableCredential,
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import { PassportVerifierWithExpiration, formatDateWithOrdinal, renderToHTML, useParams } from "common";
+import {
+  PassportVerifierWithExpiration,
+  formatDateWithOrdinal,
+  renderToHTML,
+  useParams,
+} from "common";
 import { getAlloVersion } from "common/src/config";
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
@@ -119,7 +124,8 @@ export default function ViewProjectDetails() {
   const round = application && mapApplicationToRound(application);
   round && (round.chainId = Number(chainId));
   const isSybilDefenseEnabled =
-    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
   const { stats } = useOSO(projectToRender?.projectMetadata.projectGithub as string);
@@ -670,7 +676,8 @@ async function isVerified(args: {
   const { verifiableCredential, provider, project } = args;
 
   const passportVerifier = new PassportVerifierWithExpiration();
-  const  vcHasValidProof = await passportVerifier.verifyCredential(verifiableCredential);
+  const vcHasValidProof =
+    await passportVerifier.verifyCredential(verifiableCredential);
 
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(
