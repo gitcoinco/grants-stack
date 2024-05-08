@@ -25,8 +25,8 @@ const collections: CommunityCollection[] = [
   },
   {
     cid: "bafkreifk3ejfp3j6eanuvvoqmp2bgyieuq67eh4kqpuxebegshaqaghu5e",
-    author: "ThankArb",
-    name: "Bring ARB Home ",
+    author: "ArbFan",
+    name: "Projects building on ARB",
     numberOfProjects: 22,
     description:
       "Think ARB is cool, but never felt like it would really work for you? Take a look at these rounds on Abriturum that you can use to impact your community close to home.",
@@ -98,6 +98,30 @@ const collections: CommunityCollection[] = [
     numberOfProjects: 15,
     description:
       "Womyn Founders GG20 - 15 impactful Climate/ReFi/Impact projects led and co-led by women #GG20",
+  },
+  {
+    cid: "bafkreigg3kxlj4o4bihbiqp5ngamwas2secavegnfnl24ub6jv3qjkhmb4",
+    author: "Austin Fatheree",
+    name: "ICP projects",
+    numberOfProjects: 2,
+    description:
+      "Internet Computer Collection - Projects that are building on the Internet Computer(DFINITY) to scale web3.",
+  },
+  {
+    cid: "bafkreifjrs25nw4pj6t3dmkl54og6bphisszqgbjmg2mej33fpuncxpx4m",
+    author: "Wasabi",
+    name: "Lets Grow live Hosts",
+    numberOfProjects: 41,
+    description:
+      "This is a collection that includes all the grantees showing up to make Let's GROW Live 24/7 Broadcast a reality.",
+  },
+  {
+    cid: "bafkreihkao32n3zjfffeuqm5bywgd67toztasrcpabyhrwjurfa7l35rse",
+    author: "Wasabi",
+    name: "Critical Infra + Scaling Web3",
+    numberOfProjects: 45,
+    description:
+      "This is a curated collection about long-tail yet critical projects for a massive Web3 Scaling and secure Critical Infrastructure for the Future.",
   },
 ];
 
