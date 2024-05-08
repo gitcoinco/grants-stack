@@ -47,7 +47,7 @@ export const applicationData = {
         programContractAddress: "0x8294ea30a691b47bb73e4b64225e52a080dc9ec7",
         quadraticFundingConfig: {
           matchingCap: true,
-          sybilDefense: true,
+          sybilDefense: "passport-mbds",
           matchingCapAmount: 7.42,
           minDonationThreshold: true,
           matchingFundsAvailable: 200000,
