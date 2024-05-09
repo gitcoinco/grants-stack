@@ -1,9 +1,8 @@
 import type { AllocationAdapter, Adapter } from "./adapter";
-import allov2DonationVotingMerkleDistributionDirectTransferStrategy from "./adapters/allov2.DonationVotingMerkleDistributionDirectTransferStrategy";
+import alloV2QF from "./adapters/allov2.QF";
 
 export const adapters: { [key: string]: Adapter } = {
-  "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
-    allov2DonationVotingMerkleDistributionDirectTransferStrategy,
+  "allov2.DonationVotingMerkleDistributionDirectTransferStrategy": alloV2QF,
 };
 
 export function getAllocationAdapter(

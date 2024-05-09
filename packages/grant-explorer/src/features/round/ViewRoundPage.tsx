@@ -865,12 +865,22 @@ export function CartButtonToggle(props: {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error checking if you can allocate: {error.message}</div>;
+  if (error !== undefined) {
+    switch (error.type) {
+      case "ADAPTER_ALLOCATION_UNAUTHORIZED":
+        return (
+          <div>
+            You are not authorized to allocate:
+            {error.error.message}
+          </div>
+        );
+      default:
+        return <div>Something went wrong {error.error.message}</div>;
+    }
   }
 
   if (!canAllocate) {
-    return <div>You can't allocate</div>;
+    return <div>Allocation not allowed</div>;
   }
 
   return (

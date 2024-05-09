@@ -2,11 +2,11 @@ import { Address } from "wagmi";
 import { PublicClient } from "viem";
 import { useState, useEffect } from "react";
 import { getAllocationAdapter } from "./index";
-import { AdapterError, UnknownAdapterError } from "./adapter";
+import { AdapterErrorWrapper } from "./adapter";
 
 type AdapterResponseWrapper<T> = {
   loading: boolean;
-  error: Error | undefined;
+  error: AdapterErrorWrapper | undefined;
   value: T | undefined;
 };
 
@@ -17,7 +17,7 @@ export function useAdapterCanAllocate(
   address: Address | undefined
 ): AdapterResponseWrapper<boolean> {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<AdapterError>();
+  const [error, setError] = useState<AdapterErrorWrapper>();
   const [value, setValue] = useState<boolean>();
 
   useEffect(() => {
@@ -33,7 +33,11 @@ export function useAdapterCanAllocate(
 
     const adapter = getAllocationAdapter(strategyName);
     if (adapter === undefined) {
-      setError(new UnknownAdapterError(strategyName));
+      setError({
+        type: "ADAPTER_NOT_FOUND",
+        strategyName,
+        error: new Error(`Adapter not found for strategy: ${strategyName}`),
+      });
       setLoading(false);
       return;
     }
@@ -47,7 +51,7 @@ export function useAdapterCanAllocate(
           setError(resp.error);
         }
       })
-      .catch((e: AdapterError) => {
+      .catch((e: AdapterErrorWrapper) => {
         setError(e);
       })
       .finally(() => {

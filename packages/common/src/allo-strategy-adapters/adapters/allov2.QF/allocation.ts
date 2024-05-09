@@ -1,5 +1,5 @@
 import { Address, PublicClient } from "viem";
-import { AdapterResponse, AdapterError } from "../../adapter";
+import { AdapterResponse } from "../../adapter";
 
 export function canAllocate(
   _client: PublicClient,
@@ -25,7 +25,10 @@ export function canAllocate(
       return resolve({
         type: "error",
 
-        error: new AdapterError("you don't have a badge to vote."),
+        error: {
+          type: "ADAPTER_ALLOCATION_UNAUTHORIZED",
+          error: new Error("you don't have a badge to vote."),
+        },
       });
     }, 2000);
   });
