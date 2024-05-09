@@ -92,10 +92,10 @@ root.render(
                       <Route path="/" element={<LandingPage />} />
 
                       <Route path="/rounds" element={<ExploreRoundsPage />} />
-                      <Route
+                      {/* <Route
                         path="/projects"
                         element={<ExploreProjectsPage />}
-                      />
+                      /> */}
 
                       {/* Round Routes */}
                       <Route
