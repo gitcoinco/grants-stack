@@ -348,7 +348,7 @@ export const seiDevnet = {
   blockExplorers: {
     default: {
       name: "SEI Explorer",
-      url: "https://seistrace.com/",
+      url: "https://seitrace.com/",
     },
   },
 };
