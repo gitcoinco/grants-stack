@@ -699,8 +699,7 @@ export class AlloV2 implements Allo {
 
       switch (args.strategy) {
         case RoundCategory.QuadraticFunding: {
-
-        strategyInstance = new DonationVotingMerkleDistributionStrategy({
+          strategyInstance = new DonationVotingMerkleDistributionStrategy({
             chain: this.chainId,
             poolId: BigInt(args.roundId),
             address: args.strategyAddress,
@@ -721,7 +720,12 @@ export class AlloV2 implements Allo {
           return error(new AlloError("Unsupported strategy"));
       }
 
-      const totalApplications = await strategyInstance.recipientsCounter();
+      let totalApplications = 0n;
+      try {
+        totalApplications = await strategyInstance.recipientsCounter();
+      } catch (error) {
+        totalApplications = BigInt(args.currentApplications.length + 1);
+      }
 
       const rows = buildUpdatedRowsOfApplicationStatuses({
         applicationsToUpdate: args.applicationsToUpdate,
