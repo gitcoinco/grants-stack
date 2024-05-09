@@ -1053,8 +1053,11 @@ export const isDirectRound = (round: Round) =>
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT ||
   round.payoutStrategy.strategyName === "allov2.DirectGrantsLiteStrategy";
 
-export const isInfiniteDate = (roundTime: Date) =>
-  roundTime.toString() === "Invalid Date";
+export const isInfiniteDate = (roundTime: Date) => {
+  return (
+    roundTime.toString() === "Invalid Date" || roundTime.getFullYear() === 1970
+  );
+};
 
 type GroupedCartProjects = {
   [chainId: number]: {
