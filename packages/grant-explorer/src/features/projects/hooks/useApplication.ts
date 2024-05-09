@@ -37,7 +37,6 @@ export function mapApplicationToProject(application: Application): Project {
 }
 
 export function mapApplicationToRound(application: Application): Round {
-  console.log("application", application);
   return {
     roundEndTime: new Date(application.round.donationsEndTime),
     roundStartTime: new Date(application.round.donationsStartTime),
