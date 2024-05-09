@@ -11,6 +11,7 @@ import {
   DocumentTextIcon,
   InboxIcon,
   UserGroupIcon,
+  UserAddIcon,
 } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { Link, useParams } from "react-router-dom";
@@ -52,6 +53,7 @@ import { getRoundStrategyType } from "common";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import AlloV1 from "common/src/icons/AlloV1";
 import AlloV2 from "common/src/icons/AlloV2";
+import ViewManageTeam from "./ViewManageTeam";
 
 export const isDirectRound = (round: Round | undefined) => {
   return (
@@ -221,6 +223,29 @@ export default function ViewRoundPage() {
                           </div>
                         )}
                       </Tab>
+                      <Tab
+                        className={({ selected }) =>
+                          verticalTabStyles(selected)
+                        }
+                      >
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <UserAddIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="grant-applications"
+                            >
+                              Manage Team
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
                       {!isDirectRound(round) && (
                         <Tab
                           className={({ selected }) =>
@@ -339,6 +364,9 @@ export default function ViewRoundPage() {
                     )}
                     <Tab.Panel>
                       <ViewRoundSettings id={round?.id} />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ViewManageTeam />
                     </Tab.Panel>
                     {!isDirectRound(round) && (
                       <>
