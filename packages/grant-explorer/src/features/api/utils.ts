@@ -154,6 +154,7 @@ export const TokenNamesAndLogos = {
   MUTE: "./logos/mute-logo.svg",
   DATA: "./logos/data-logo.svg",
   SEI: SeiIcon,
+  GTC: "./logos/gtc.svg",
 } as const;
 
 export const MAINNET_TOKENS: VotingToken[] = [
@@ -579,6 +580,16 @@ const ARBITRUM_TOKENS: VotingToken[] = [
     redstoneTokenId: RedstoneTokenIds["ARB"],
     defaultForVoting: true,
     canVote: true,
+  },
+  {
+    name: "GTC",
+    chainId: ChainId.ARBITRUM,
+    address: "0x7f9a7db853ca816b9a138aee3380ef34c437dee0",
+    decimal: 18,
+    logo: TokenNamesAndLogos["GTC"],
+    redstoneTokenId: RedstoneTokenIds["GTC"],
+    defaultForVoting: false,
+    canVote: false,
   },
 ];
 
