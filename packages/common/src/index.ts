@@ -425,27 +425,6 @@ export function roundToPassportURLMap(round: Round) {
   }
 }
 
-const passportLiteRounds = [
-  //GG20 rounds
-  { roundId: "23", chainId: 42161 }, // Hackathon Alumni
-  { roundId: "24", chainId: 42161 }, // ENS
-  { roundId: "25", chainId: 42161 }, // dApps & Apps
-  { roundId: "26", chainId: 42161 }, // WEB3 Infrastructure
-  { roundId: "27", chainId: 42161 }, // Developer Tooling
-  { roundId: "28", chainId: 42161 }, // Hypercerts Ecosystem
-  { roundId: "29", chainId: 42161 }, // Climate Solutions
-  { roundId: "31", chainId: 42161 }, // Open Civics
-  { roundId: "9", chainId: 10 }, // Token Engineering Commons (TEC)
-];
-
-export function isRoundUsingPassportLite(round: Round) {
-  const roundId = round.id;
-  const chainId = round.chainId;
-  return passportLiteRounds.some(
-    (r) => r.roundId === roundId && r.chainId === chainId
-  );
-}
-
 export * from "./allo/transaction-builder";
 export type { VotingToken } from "./types";
 
@@ -489,4 +468,23 @@ export function isChainIdSupported(chainId: number) {
     return false;
   }
   return Object.values(ChainId).includes(chainId);
+}
+
+const gg20Rounds = [
+  //GG20 rounds
+  { roundId: "23", chainId: 42161 }, // Hackathon Alumni
+  { roundId: "24", chainId: 42161 }, // ENS
+  { roundId: "25", chainId: 42161 }, // dApps & Apps
+  { roundId: "26", chainId: 42161 }, // WEB3 Infrastructure
+  { roundId: "27", chainId: 42161 }, // Developer Tooling
+  { roundId: "28", chainId: 42161 }, // Hypercerts Ecosystem
+  { roundId: "29", chainId: 42161 }, // Climate Solutions
+  { roundId: "31", chainId: 42161 }, // Open Civics
+  { roundId: "36", chainId: 42161 }, // Regenerative Land Projects
+  { roundId: "39", chainId: 42161 }, // DeSci
+  { roundId: "9", chainId: 10 }, // Token Engineering Commons (TEC)
+];
+
+export function isGG20Round(roundId: string, chainId: number) {
+  return gg20Rounds.some((r) => r.roundId === roundId && r.chainId === chainId);
 }
