@@ -15,7 +15,6 @@ import {
   formatUTCDateAsISOString,
   getRoundStrategyTitle,
   getUTCTime,
-  isRoundUsingPassportLite,
   renderToPlainText,
   truncateDescription,
   useTokenPrice,
@@ -213,7 +212,8 @@ function AfterRoundStart(props: {
   const [randomizedProjects, setRandomizedProjects] = useState<Project[]>();
   const { address: walletAddress } = useAccount();
   const isSybilDefenseEnabled =
-    round.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
 
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
@@ -402,7 +402,7 @@ function AfterRoundStart(props: {
       <DefaultLayout>
         {showCartNotification && renderCartNotification()}
         {props.isAfterRoundEndDate && (
-          <div className="relative top-16">
+          <div className="relative top-6">
             <RoundEndedBanner />
           </div>
         )}
@@ -413,12 +413,11 @@ function AfterRoundStart(props: {
           >
             <Breadcrumb items={breadCrumbs} />
           </div>
-          {walletAddress &&
-            (isSybilDefenseEnabled || isRoundUsingPassportLite(round)) && (
-              <div data-testid="passport-widget">
-                <PassportWidget round={round} alignment="right" />
-              </div>
-            )}
+          {walletAddress && isSybilDefenseEnabled && (
+            <div data-testid="passport-widget">
+              <PassportWidget round={round} alignment="right" />
+            </div>
+          )}
         </div>
 
         <section>

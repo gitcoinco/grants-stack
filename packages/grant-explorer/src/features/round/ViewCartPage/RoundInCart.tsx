@@ -11,7 +11,7 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../../store";
 import { Skeleton } from "@chakra-ui/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
-import { ChainId, VotingToken, isRoundUsingPassportLite } from "common";
+import { ChainId, VotingToken } from "common";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { PassportWidget } from "../../common/PassportWidget";
 
@@ -29,7 +29,8 @@ export function RoundInCart(
   ).round;
 
   const isSybilDefenseEnabled =
-    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
 
   const minDonationThresholdAmount =
     round?.roundMetadata?.quadraticFundingConfig?.minDonationThresholdAmount ??
@@ -131,13 +132,11 @@ export function RoundInCart(
       <div className="p-4 bg-grey-100 rounded-b-xl font-medium text-lg">
         <div className="flex flex-row justify-between items-center">
           <div>
-            {address &&
-              round &&
-              (isSybilDefenseEnabled || isRoundUsingPassportLite(round)) && (
-                <div data-testid="passport-widget">
-                  <PassportWidget round={round} alignment="left" />
-                </div>
-              )}
+            {address && round && isSybilDefenseEnabled && (
+              <div data-testid="passport-widget">
+                <PassportWidget round={round} alignment="left" />
+              </div>
+            )}
           </div>
           <div className="flex flex-row gap-3 justify-center pt-1 pr-2">
             <div>

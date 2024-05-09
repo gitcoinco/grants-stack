@@ -125,7 +125,8 @@ export default function ViewProjectDetails() {
   const round = application && mapApplicationToRound(application);
   round && (round.chainId = Number(chainId));
   const isSybilDefenseEnabled =
-    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
   const { stats } = useOSO(
@@ -231,7 +232,11 @@ export default function ViewProjectDetails() {
   return (
     <>
       <DefaultLayout>
-        {isAfterRoundEndDate && <RoundEndedBanner />}
+        {isAfterRoundEndDate && (
+          <div className="relative top-6">
+            <RoundEndedBanner />
+          </div>
+        )}
         <div className="flex flex-row justify-between my-8">
           <div className="flex items-center pt-2" data-testid="bread-crumbs">
             <Breadcrumb items={breadCrumbs} />
