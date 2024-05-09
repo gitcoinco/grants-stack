@@ -19,6 +19,7 @@ import {
   useTokenPrice,
   VotingToken,
 } from "common";
+import { useAdapterCanAllocate } from "common/src/allo-strategy-adapters/hooks";
 import { Button, Input } from "common/src/styles";
 import AlloV1 from "common/src/icons/AlloV1";
 import AlloV2 from "common/src/icons/AlloV2";
@@ -60,7 +61,7 @@ import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 const builderURL = process.env.REACT_APP_BUILDER_URL;
 import CartNotification from "../common/CartNotification";
 import { useCartStorage } from "../../store";
-import { useAccount, useToken } from "wagmi";
+import { useAccount, useToken, usePublicClient } from "wagmi";
 import { getAddress } from "viem";
 import { getAlloVersion } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
@@ -778,6 +779,7 @@ function ProjectCard(props: {
               {props.isBeforeRoundEndDate && (
                 <CartButton
                   project={project}
+                  round={round}
                   isAlreadyInCart={isAlreadyInCart}
                   removeFromCart={() => {
                     remove(cartProject);
@@ -801,6 +803,7 @@ function ProjectCard(props: {
 
 function CartButton(props: {
   project: Project;
+  round: Round;
   isAlreadyInCart: boolean;
   removeFromCart: () => void;
   addToCart: () => void;
@@ -811,6 +814,7 @@ function CartButton(props: {
     <div>
       <CartButtonToggle
         project={props.project}
+        round={props.round}
         isAlreadyInCart={props.isAlreadyInCart}
         removeFromCart={props.removeFromCart}
         addToCart={props.addToCart}
@@ -823,12 +827,26 @@ function CartButton(props: {
 
 export function CartButtonToggle(props: {
   project: Project;
+  round: Round;
   isAlreadyInCart: boolean;
   addToCart: () => void;
   removeFromCart: () => void;
   setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const account = useAccount();
+  const client = usePublicClient();
+  const {
+    loading,
+    error,
+    value: canAllocate,
+  } = useAdapterCanAllocate(
+    client,
+    props.round.id,
+    props.round.strategyName,
+    account.address
+  );
+
   // if the project is not added, show the add to cart button
   // if the project is added to the cart, show the remove from cart button
   if (props.isAlreadyInCart) {
@@ -842,6 +860,19 @@ export function CartButtonToggle(props: {
       </div>
     );
   }
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error checking if you can allocate: {error.message}</div>;
+  }
+
+  if (!canAllocate) {
+    return <div>You can't allocate</div>;
+  }
+
   return (
     <div
       className="cursor-pointer"

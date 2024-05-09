@@ -6,7 +6,6 @@ import {
 } from "../utils";
 import {
   __deprecated_getProjectOwners,
-  __deprecated_getRoundById,
   __deprecated_GetRoundByIdResult,
 } from "../round";
 import { Mock } from "vitest";
@@ -84,125 +83,6 @@ describe("getRoundById", () => {
         return {};
       }
     );
-  });
-
-  it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
-    const actualRound = await __deprecated_getRoundById(
-      expectedRoundData.id!,
-      "someChain"
-    );
-
-    expect(actualRound).toMatchObject(expectedRound);
-    expect(__deprecated_graphql_fetch as Mock).toBeCalledTimes(1);
-    expect(__deprecated_fetchFromIPFS as Mock).toBeCalledTimes(1);
-    expect(__deprecated_fetchFromIPFS as Mock).toBeCalledWith(
-      expectedRoundData.store?.pointer
-    );
-  });
-
-  describe("when round has approved projects", () => {
-    const roundProjectStatuses = "round-project-metadata-ptr";
-    const approvedProjectMetadataPointer = "my-project-metadata";
-    const expectedApprovedApplication = makeApprovedProjectData();
-
-    let graphQLResultWithApprovedApplication: __deprecated_GetRoundByIdResult;
-    let graphQLResultWithProjectOwners: any;
-    let roundMetadataIpfsResult: any;
-    let roundProjectStatusesIpfsResult: any;
-
-    beforeEach(() => {
-      graphQLResultWithApprovedApplication = {
-        data: {
-          rounds: [
-            {
-              ...graphQLResult.data.rounds[0],
-              projectsMetaPtr: { protocol: 1, pointer: roundProjectStatuses },
-              projects: [
-                {
-                  id: expectedApprovedApplication.grantApplicationId,
-                  project: expectedApprovedApplication.projectRegistryId,
-                  metaPtr: {
-                    protocol: 1,
-                    pointer: approvedProjectMetadataPointer,
-                  },
-                  status: expectedApprovedApplication.status,
-                  applicationIndex:
-                    expectedApprovedApplication.applicationIndex,
-                },
-              ],
-            },
-          ],
-        },
-      };
-
-      graphQLResultWithProjectOwners = {
-        data: {
-          projects: [
-            {
-              id: expectedApprovedApplication.projectRegistryId,
-              accounts: [
-                {
-                  account: {
-                    address: "0x4873178bea2dcd7022f0ef6c70048b0e05bf9017",
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      };
-
-      roundMetadataIpfsResult = expectedRound.roundMetadata;
-      roundProjectStatusesIpfsResult = [
-        {
-          id: expectedApprovedApplication.grantApplicationId,
-          status: "APPROVED",
-          payoutAddress: "some payout address",
-        },
-      ];
-
-      const projectOwners =
-        expectedApprovedApplication.projectMetadata.owners.map(
-          (it) => it.address
-        );
-
-      (__deprecated_getProjectOwners as Mock).mockResolvedValue(projectOwners);
-    });
-
-    it("maps approved project metadata for old application format", async () => {
-      const oldFormat = {
-        round: expectedRound.id,
-        project: {
-          ...expectedApprovedApplication.projectMetadata,
-        },
-      };
-
-      (__deprecated_graphql_fetch as Mock)
-        .mockResolvedValueOnce(graphQLResultWithApprovedApplication)
-        .mockResolvedValueOnce(graphQLResultWithProjectOwners);
-
-      (__deprecated_fetchFromIPFS as Mock).mockImplementation(
-        (pointer: string) => {
-          if (pointer === expectedRoundData.store?.pointer) {
-            return roundMetadataIpfsResult;
-          }
-          if (pointer === roundProjectStatuses) {
-            return roundProjectStatusesIpfsResult;
-          }
-          if (pointer === approvedProjectMetadataPointer) {
-            return oldFormat;
-          }
-          return {};
-        }
-      );
-
-      const actualRound = await __deprecated_getRoundById(
-        expectedRoundData.id!,
-        "someChain"
-      );
-
-      expect(actualRound).toMatchObject(expectedRound);
-    });
   });
 });
 
