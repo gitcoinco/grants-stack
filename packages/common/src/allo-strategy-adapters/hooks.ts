@@ -2,7 +2,7 @@ import { Address } from "wagmi";
 import { PublicClient } from "viem";
 import { useState, useEffect } from "react";
 import { getAllocationAdapter } from "./index";
-import { AdapterErrorWrapper } from "./adapter";
+import { AdapterErrorWrapper } from "./errorWrapper";
 
 type AdapterResponseWrapper<T> = {
   loading: boolean;
