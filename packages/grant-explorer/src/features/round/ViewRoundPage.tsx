@@ -19,7 +19,7 @@ import {
   useTokenPrice,
   VotingToken,
 } from "common";
-import { useAdapterCanAllocate } from "common/src/allo-strategy-adapters/hooks";
+import { useAdapterCanAllocate } from "common/src/allo-adapters/hooks";
 import { Button, Input } from "common/src/styles";
 import AlloV1 from "common/src/icons/AlloV1";
 import AlloV2 from "common/src/icons/AlloV2";
