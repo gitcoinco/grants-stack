@@ -32,6 +32,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
 
   return {
     id: faker.finance.ethereumAddress(),
+    strategyName: "allov1.QF",
     roundMetadata: {
       name: faker.company.name(),
       roundType: "private",

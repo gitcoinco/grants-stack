@@ -116,9 +116,9 @@ function fetchRoundsById(
         dispatch({ type: ActionType.ADD_ROUND, payload: round });
       }
     })
-    .catch((error) =>
-      dispatch({ type: ActionType.SET_ERROR_GET_ROUND, payload: error })
-    )
+    .catch((error) => {
+      dispatch({ type: ActionType.SET_ERROR_GET_ROUND, payload: error });
+    })
     .finally(() => dispatch({ type: ActionType.FINISH_LOADING }));
 }
 

@@ -38,6 +38,7 @@ export function mapApplicationToProject(application: Application): Project {
 
 export function mapApplicationToRound(application: Application): Round {
   return {
+    strategyName: application.round.strategyName,
     roundEndTime: new Date(application.round.donationsEndTime),
     roundStartTime: new Date(application.round.donationsStartTime),
     applicationsStartTime: new Date(application.round.applicationsStartTime),

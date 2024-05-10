@@ -480,6 +480,8 @@ export interface Round {
    */
   token: string;
 
+  strategyName: RoundPayoutType;
+
   /**
    * Contract address of the program to which the round belongs
    */

@@ -640,6 +640,7 @@ export class DataLayer {
     return {
       round: {
         id: round.id,
+        strategyName: round.strategyName,
         chainId: round.chainId,
         applicationsStartTime: new Date(round.applicationsStartTime),
         applicationsEndTime: new Date(round.applicationsEndTime),

@@ -77,103 +77,6 @@ export type ContributionHistoryState =
     }
   | { type: "error"; error: string };
 
-export async function __deprecated_getRoundById(
-  roundId: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  chainId: any
-): Promise<Round> {
-  try {
-    // get the subgraph for round by $roundId
-    const res: __deprecated_GetRoundByIdResult =
-      await __deprecated_graphql_fetch(
-        `
-        query GetRoundById($roundId: String) {
-          rounds(where: {
-            id: $roundId
-          }) {
-            id
-            program {
-              id
-            }
-            roundMetaPtr {
-              protocol
-              pointer
-            }
-            applicationMetaPtr {
-              protocol
-              pointer
-            }
-            applicationsStartTime
-            applicationsEndTime
-            roundStartTime
-            roundEndTime
-            token
-            payoutStrategy {
-              id
-              strategyName
-            }
-            votingStrategy
-            projectsMetaPtr {
-              pointer
-            }
-            projects(
-              first: 1000
-              where:{
-                status: 1
-              }
-            ) {
-              id
-              project
-              status
-              applicationIndex
-              metaPtr {
-                protocol
-                pointer
-              }
-            }
-          }
-        }
-      `,
-        chainId,
-        { roundId: roundId.toLowerCase() }
-      );
-
-    const round: __deprecated_RoundResult = res.data.rounds[0];
-
-    const roundMetadata: __deprecated_RoundMetadata =
-      await __deprecated_fetchFromIPFS(round.roundMetaPtr.pointer);
-
-    round.projects = round.projects.map((project) => {
-      return {
-        ...project,
-        status: __deprecated_convertStatus(project.status),
-      };
-    });
-
-    const approvedProjectsWithMetadata =
-      await __deprecated_loadApprovedProjectsMetadata(round, chainId);
-
-    return {
-      id: roundId,
-      roundMetadata,
-      applicationsStartTime: new Date(
-        parseInt(round.applicationsStartTime) * 1000
-      ),
-      applicationsEndTime: new Date(parseInt(round.applicationsEndTime) * 1000),
-      roundStartTime: new Date(parseInt(round.roundStartTime) * 1000),
-      roundEndTime: new Date(parseInt(round.roundEndTime) * 1000),
-      token: round.token,
-      payoutStrategy: round.payoutStrategy,
-      votingStrategy: round.votingStrategy,
-      ownedBy: round.program.id,
-      approvedProjects: approvedProjectsWithMetadata,
-    };
-  } catch (error) {
-    console.error("getRoundById", error);
-    throw Error("Unable to fetch round");
-  }
-}
-
 export function __deprecated_convertStatus(status: string | number) {
   switch (status) {
     case 0:
@@ -295,7 +198,6 @@ export const useContributionHistory = (
     }
 
     const fetchContributions = async () => {
-
       let address: Address = "0x";
       try {
         address = getAddress(rawAddress.toLowerCase());
@@ -310,10 +212,9 @@ export const useContributionHistory = (
       const contributions = await dataLayer.getDonationsByDonorAddress({
         address,
         chainIds,
-      });    
+      });
 
       try {
-
         const contributionsWithTimestamp: Contribution[] = await Promise.all(
           contributions.map(async (contribution) => {
             const publicClient = getPublicClient({
@@ -338,8 +239,8 @@ export const useContributionHistory = (
           type: "loaded",
           data: {
             chainIds: chainIds,
-            data: contributionsWithTimestamp
-          }
+            data: contributionsWithTimestamp,
+          },
         });
       } catch (e) {
         console.error("Error fetching contribution history for all chains", e);
