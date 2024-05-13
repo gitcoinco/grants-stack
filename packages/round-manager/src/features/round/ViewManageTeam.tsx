@@ -32,7 +32,7 @@ export default function ViewManageTeam(props: { round: Round | undefined }) {
             <tr>
               <th
                 scope="col"
-                className="w-1/4 px-6 py-3 text-left text-base font-medium text-gray-500 tracking-wider"
+                className="w-1/4 py-3 text-left text-base font-medium text-gray-500 tracking-wider"
               >
                 Name
               </th>
@@ -53,7 +53,7 @@ export default function ViewManageTeam(props: { round: Round | undefined }) {
           <tbody className="bg-white divide-y divide-gray-100">
             {sortedRoles.map((item: AddressAndRole, index) => (
               <tr key={index}>
-                <td className="w-1/4 px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
+                <td className="w-1/4 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
                   User
                 </td>
                 <td className="w-2/4 px-6 py-4 whitespace-nowrap text-sm text-gray-400">
