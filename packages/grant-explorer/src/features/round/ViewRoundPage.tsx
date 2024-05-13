@@ -90,17 +90,34 @@ export default function ViewRound() {
   );
 
   const currentTime = new Date();
-  const isBeforeRoundStartDate = round && round.roundStartTime >= currentTime;
-  const isAfterRoundStartDate = round && round.roundStartTime <= currentTime;
+  const isBeforeRoundStartDate =
+    round &&
+    (isDirectRound(round)
+      ? round.applicationsStartTime
+      : round.roundStartTime) >= currentTime;
+  const isAfterRoundStartDate =
+    round &&
+    (isDirectRound(round)
+      ? round.applicationsStartTime
+      : round.roundStartTime) <= currentTime;
   // covers infinte dates for roundEndDate
   const isAfterRoundEndDate =
     round &&
-    (isInfiniteDate(round.roundEndTime)
+    (isInfiniteDate(
+      isDirectRound(round) ? round.applicationsEndTime : round.roundEndTime
+    )
       ? false
-      : round && round.roundEndTime <= currentTime);
+      : round &&
+        (isDirectRound(round)
+          ? round.applicationsEndTime
+          : round.roundEndTime) <= currentTime);
   const isBeforeRoundEndDate =
     round &&
-    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
+    (isInfiniteDate(
+      isDirectRound(round) ? round.applicationsEndTime : round.roundEndTime
+    ) ||
+      (isDirectRound(round) ? round.applicationsEndTime : round.roundEndTime) >
+        currentTime);
 
   const alloVersion = getAlloVersion();
 
@@ -214,7 +231,8 @@ function AfterRoundStart(props: {
   const [randomizedProjects, setRandomizedProjects] = useState<Project[]>();
   const { address: walletAddress } = useAccount();
   const isSybilDefenseEnabled =
-    round.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
 
   const [showCartNotification, setShowCartNotification] = useState(false);
   const [currentProjectAddedToCart, setCurrentProjectAddedToCart] =
@@ -397,13 +415,19 @@ function AfterRoundStart(props: {
     roundId,
     tokenData.symbol,
   ]);
+  const roundStart = isDirectRound(round)
+    ? round.applicationsStartTime
+    : round.roundStartTime;
+  const roundEnd = isDirectRound(round)
+    ? round.applicationsEndTime
+    : round.roundEndTime;
 
   return (
     <>
       <DefaultLayout>
         {showCartNotification && renderCartNotification()}
         {props.isAfterRoundEndDate && (
-          <div className="relative top-16">
+          <div className="relative top-6">
             <RoundEndedBanner />
           </div>
         )}
@@ -414,12 +438,11 @@ function AfterRoundStart(props: {
           >
             <Breadcrumb items={breadCrumbs} />
           </div>
-          {walletAddress &&
-            (isSybilDefenseEnabled || isRoundUsingPassportLite(round)) && (
-              <div data-testid="passport-widget">
-                <PassportWidget round={round} alignment="right" />
-              </div>
-            )}
+          {walletAddress && isSybilDefenseEnabled && (
+            <div data-testid="passport-widget">
+              <PassportWidget round={round} alignment="right" />
+            </div>
+          )}
         </div>
 
         <section>
@@ -485,19 +508,19 @@ function AfterRoundStart(props: {
                   <span>
                     <span className="px-2 rounded bg-grey-50">
                       <span className="mr-1">
-                        {formatUTCDateAsISOString(round.roundStartTime)}
+                        {formatUTCDateAsISOString(roundStart)}
                       </span>
-                      <span>{getUTCTime(round.roundStartTime)}</span>
+                      <span>{getUTCTime(roundStart)}</span>
                     </span>
                     <span className="px-1.5">-</span>
                     <span className="px-2 rounded bg-grey-50">
-                      {!isInfiniteDate(round.roundEndTime) ? (
+                      {!isInfiniteDate(roundEnd) ? (
                         <>
                           <span className="mr-1">
-                            {formatUTCDateAsISOString(round.roundEndTime)}
+                            {formatUTCDateAsISOString(roundEnd)}
                           </span>
 
-                          <span>{getUTCTime(round.roundEndTime)}</span>
+                          <span>{getUTCTime(roundEnd)}</span>
                         </>
                       ) : (
                         <span>No End Date</span>
@@ -1189,10 +1212,9 @@ function PreRoundPage(props: {
     round && round.applicationsStartTime >= currentTime;
   // covers infinite dates for applicationsEndTime
   const isDuringApplicationPeriod =
-    round &&
-    round.applicationsStartTime <= currentTime &&
-    (isInfiniteDate(round.applicationsEndTime) ||
-      round.applicationsEndTime >= currentTime);
+    (round && currentTime >= round.applicationsStartTime) ||
+    currentTime <=
+      (isInfiniteDate(round.applicationsEndTime) || round.applicationsEndTime);
 
   const isAfterApplicationEndDateAndBeforeRoundStartDate =
     round &&

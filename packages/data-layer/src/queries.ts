@@ -246,13 +246,21 @@ export const getApplicationStatusByRoundIdAndCID = gql`
   }
 `;
 
-export const getApplication = gql`
+export const getApprovedApplication = gql`
   query Application(
     $chainId: Int!
     $applicationId: String!
     $roundId: String!
   ) {
-    application(chainId: $chainId, id: $applicationId, roundId: $roundId) {
+    applications(
+      first: 1
+      condition: {
+        status: APPROVED
+        chainId: $chainId
+        id: $applicationId
+        roundId: $roundId
+      }
+    ) {
       id
       chainId
       roundId
@@ -261,6 +269,7 @@ export const getApplication = gql`
       totalAmountDonatedInUsd
       uniqueDonorsCount
       totalDonationsCount
+      anchorAddress
       round {
         strategyName
         donationsStartTime
@@ -295,6 +304,7 @@ export const getApplicationsForExplorer = gql`
       totalAmountDonatedInUsd
       uniqueDonorsCount
       totalDonationsCount
+      anchorAddress
       round {
         strategyName
         donationsStartTime
@@ -336,6 +346,7 @@ export const getApplicationsByRoundIdAndProjectIds = gql`
       status
       metadataCid
       metadata
+      anchorAddress
       round {
         applicationsStartTime
         applicationsEndTime
@@ -629,6 +640,30 @@ export const getDonationsByDonorAddress = gql`
       application {
         project: canonicalProject {
           name
+        }
+      }
+    }
+  }
+`;
+
+export const getPayoutsByChainIdRoundIdProjectId = gql`
+  query getPayoutsByChainIdRoundIdRecipientId(
+    $chainId: Int!
+    $roundId: String!
+    $projectId: String!
+  ) {
+    round(chainId: $chainId, id: $roundId) {
+      id
+      applications(filter: { projectId: { equalTo: $projectId } }) {
+        id
+        applicationsPayoutsByChainIdAndRoundIdAndApplicationId {
+          id
+          tokenAddress
+          amount
+          amountInUsd
+          transactionHash
+          timestamp
+          sender
         }
       }
     }

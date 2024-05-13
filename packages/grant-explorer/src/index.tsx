@@ -32,11 +32,12 @@ import ViewProjectDetails from "./features/round/ViewProjectDetails";
 import ViewRound from "./features/round/ViewRoundPage";
 import AlloWrapper from "./features/api/AlloWrapper";
 import { merge } from "lodash";
+import { PostHogProvider } from "posthog-js/react";
 
 initSentry();
 initDatadog();
 initTagmanager();
-initPosthog();
+const posthog = initPosthog();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -71,63 +72,68 @@ const customRainbowKitTheme = merge(lightTheme(), {
 
 root.render(
   <React.StrictMode>
-    <ChakraProvider>
-      <WagmiConfig config={config}>
-        <RainbowKitProvider
-          theme={customRainbowKitTheme}
-          coolMode
-          chains={chains}
-        >
-          <RoundProvider>
-            <DataLayerProvider client={dataLayer}>
-              <AlloWrapper>
-                <HashRouter>
-                  <Routes>
-                    {/* Protected Routes */}
-                    <Route element={<Auth />} />
+    <PostHogProvider client={posthog}>
+      <ChakraProvider>
+        <WagmiConfig config={config}>
+          <RainbowKitProvider
+            theme={customRainbowKitTheme}
+            coolMode
+            chains={chains}
+          >
+            <RoundProvider>
+              <DataLayerProvider client={dataLayer}>
+                <AlloWrapper>
+                  <HashRouter>
+                    <Routes>
+                      {/* Protected Routes */}
+                      <Route element={<Auth />} />
 
-                    {/* Default Route */}
-                    <Route path="/" element={<LandingPage />} />
+                      {/* Default Route */}
+                      <Route path="/" element={<LandingPage />} />
 
-                    <Route path="/rounds" element={<ExploreRoundsPage />} />
-                    <Route path="/projects" element={<ExploreProjectsPage />} />
+                      <Route path="/rounds" element={<ExploreRoundsPage />} />
+                      {/* <Route
+                        path="/projects"
+                        element={<ExploreProjectsPage />}
+                      /> */}
 
-                    {/* Round Routes */}
-                    <Route
-                      path="/round/:chainId/:roundId"
-                      element={<ViewRound />}
-                    />
-                    <Route
-                      path="/round/:chainId/:roundId/:applicationId"
-                      element={<ViewProjectDetails />}
-                    />
+                      {/* Round Routes */}
+                      <Route
+                        path="/round/:chainId/:roundId"
+                        element={<ViewRound />}
+                      />
+                      <Route
+                        path="/round/:chainId/:roundId/:applicationId"
+                        element={<ViewProjectDetails />}
+                      />
 
-                    <Route path="/cart" element={<ViewCart />} />
+                      <Route path="/cart" element={<ViewCart />} />
 
-                    <Route path="/thankyou" element={<ThankYou />} />
+                      <Route path="/thankyou" element={<ThankYou />} />
 
-                    <Route
-                      path="/contributors/:address"
-                      element={<ViewContributionHistoryPage />}
-                    />
+                      <Route
+                        path="/contributors/:address"
+                        element={<ViewContributionHistoryPage />}
+                      />
 
-                    {/* Access Denied */}
-                    <Route path="/access-denied" element={<AccessDenied />} />
-                    <Route
-                      path="/collections/:collectionCid"
-                      element={<ExploreProjectsPage />}
-                    />
+                      {/* Access Denied */}
+                      <Route path="/access-denied" element={<AccessDenied />} />
+                      <Route
+                        path="/collections/:collectionCid"
+                        element={<ExploreProjectsPage />}
+                      />
 
-                    {/* 404 */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </HashRouter>
-              </AlloWrapper>
-            </DataLayerProvider>
-          </RoundProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
-    </ChakraProvider>
+                      {/* 404 */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </HashRouter>
+                </AlloWrapper>
+              </DataLayerProvider>
+            </RoundProvider>
+          </RainbowKitProvider>
+        </WagmiConfig>
+      </ChakraProvider>
+    </PostHogProvider>
   </React.StrictMode>
 );
 

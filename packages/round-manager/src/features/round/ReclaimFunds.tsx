@@ -13,9 +13,8 @@ import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
-import { useTokenPrice } from "common";
+import { payoutTokens, useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
-import { payoutTokens } from "../api/payoutTokens";
 import { useAllo } from "common";
 
 export default function ReclaimFunds(props: {

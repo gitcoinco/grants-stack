@@ -2,8 +2,8 @@ import {
   AlloAbi,
   Allo as AlloV2Contract,
   CreateProfileArgs,
-  DirectGrantsStrategy,
-  DirectGrantsStrategyTypes,
+  DirectGrantsLiteStrategy,
+  DirectGrantsLiteStrategyTypes,
   DonationVotingMerkleDistributionDirectTransferStrategyAbi,
   DonationVotingMerkleDistributionStrategy,
   DonationVotingMerkleDistributionStrategyTypes,
@@ -24,7 +24,13 @@ import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
 import { UpdateRoundParams, MatchingStatsData, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
-import { Result, dateToEthereumTimestamp, error, success } from "../common";
+import {
+  Result,
+  UINT64_MAX,
+  dateToEthereumTimestamp,
+  error,
+  success,
+} from "../common";
 import { WaitUntilIndexerSynced } from "../indexer";
 import { IpfsUploader } from "../ipfs";
 import {
@@ -45,15 +51,35 @@ function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
   let strategyAddresses;
   switch (chainId) {
     case ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID:
-      throw new Error("ZkSync era mainnet is not supported");
     case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID:
-      throw new Error("ZkSync era testnet is not supported");
+      strategyAddresses = {
+        [RoundCategory.QuadraticFunding]:
+          "0x61E288cf14f196CF8a6104ec421ae17c7f16a749",
+        [RoundCategory.Direct]: "0x9710eedFD45a2ce5E6b09303a1E51c0cd600Fc88",
+      };
+      break;
 
     case ChainId.SEI_DEVNET:
       strategyAddresses = {
         [RoundCategory.QuadraticFunding]:
           "0x029dFAf686DfA0efdace5132ba422e9279D50b5b",
-        [RoundCategory.Direct]: "0x45181C4fD52d4d350380B3D42091b80065c702Ef",
+        [RoundCategory.Direct]: "0xdA62767Da1402398d81C8288b37DE1CC8C8fDcA0",
+      };
+      break;
+
+    case ChainId.LUKSO:
+      strategyAddresses = {
+        [RoundCategory.QuadraticFunding]:
+          "0x91b5eeE385D8e0cfd49FD94D4C7aE15e1F17e0A2",
+        [RoundCategory.Direct]: "0xF21E0915a0b7c541483962Cc7fB4705bBd4D5248",
+      };
+      break;
+
+    case ChainId.LUKSO_TESTNET:
+      strategyAddresses = {
+        [RoundCategory.QuadraticFunding]:
+          "0x91b5eeE385D8e0cfd49FD94D4C7aE15e1F17e0A2",
+        [RoundCategory.Direct]: "0xdA62767Da1402398d81C8288b37DE1CC8C8fDcA0",
       };
       break;
 
@@ -61,7 +87,7 @@ function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
       strategyAddresses = {
         [RoundCategory.QuadraticFunding]:
           "0x787eC93Dd71a90563979417879F5a3298389227f",
-        [RoundCategory.Direct]: "0x8564d522b19836b7F5B4324E7Ee8Cb41810E9F9e",
+        [RoundCategory.Direct]: "0x79A5EEc2C87Cd2116195E71af7A38647f89C8Ffa",
       };
       break;
   }
@@ -71,12 +97,18 @@ function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
 function applicationStatusToNumber(status: ApplicationStatus) {
   switch (status) {
     case "PENDING":
-    case "IN_REVIEW":
       return 1n;
     case "APPROVED":
       return 2n;
     case "REJECTED":
       return 3n;
+    case "APPEAL":
+      return 4n;
+    case "IN_REVIEW":
+      return 5n;
+    case "CANCELLED":
+      return 6n;
+
     default:
       throw new Error(`Unknown status ${status}`);
   }
@@ -198,10 +230,6 @@ export class AlloV2 implements Allo {
         60_000,
         publicClient
       );
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
       return receipt;
     } else {
       throw tx.error;
@@ -459,23 +487,23 @@ export class AlloV2 implements Allo {
 
         token = getAddress(alloToken);
       } else if (args.roundData.roundCategory === RoundCategory.Direct) {
-        const initStrategyData: DirectGrantsStrategyTypes.InitializeParams = {
-          registryGating: true,
+        const initStrategyData: DirectGrantsLiteStrategyTypes.InitializeData = {
+          useRegistryAnchor: true,
           metadataRequired: true,
-          grantAmountRequired: true,
           registrationStartTime: dateToEthereumTimestamp(
             args.roundData.roundStartTime
-          ), // in seconds, must be in future
-          registrationEndTime: dateToEthereumTimestamp(
-            args.roundData.roundEndTime
-          ), // in seconds, must be after registrationStartTime
+          ),
+          registrationEndTime: args.roundData.roundEndTime
+            ? dateToEthereumTimestamp(args.roundData.roundEndTime)
+            : UINT64_MAX, // in seconds, must be after registrationStartTime
         };
 
-        const strategy = new DirectGrantsStrategy({
+        const strategy = new DirectGrantsLiteStrategy({
           chain: this.chainId,
         });
 
-        initStrategyDataEncoded = strategy.getInitializeData(initStrategyData);
+        initStrategyDataEncoded =
+          await strategy.getInitializeData(initStrategyData);
       } else {
         throw new Error(
           `Unsupported round type ${args.roundData.roundCategory}`
@@ -499,7 +527,9 @@ export class AlloV2 implements Allo {
         token,
         amount: 0n, // we send 0 tokens to the pool, we fund it later
         metadata: { protocol: 1n, pointer: roundIpfsResult.value },
-        managers: args.roundData.roundOperators ?? [],
+        managers: (args.roundData.roundOperators ?? []).map((operator) =>
+          getAddress(operator)
+        ),
       };
 
       const txData = this.allo.createPool(createPoolArgs);
@@ -612,20 +642,14 @@ export class AlloV2 implements Allo {
         }
 
         case RoundCategory.Direct: {
-          const strategyInstance = new DirectGrantsStrategy({
+          const strategyInstance = new DirectGrantsLiteStrategy({
             chain: this.chainId,
             poolId: BigInt(args.roundId),
           });
 
-          const answers = metadata.application.answers;
-          const amountAnswer = answers.find(
-            (a) => a.question === "Amount requested"
-          );
-
           registerRecipientTx = strategyInstance.getRegisterRecipientData({
             registryAnchor: args.projectId,
             recipientAddress: metadata.application.recipient,
-            grantAmount: BigInt((amountAnswer?.answer as string) ?? 0),
             metadata: {
               protocol: 1n,
               pointer: ipfsResult.value,
@@ -683,6 +707,7 @@ export class AlloV2 implements Allo {
       index: number;
       status: ApplicationStatus;
     }[];
+    strategy?: RoundCategory;
   }): AlloOperation<
     Result<void>,
     {
@@ -692,19 +717,37 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-      if (args.applicationsToUpdate.some((app) => app.status === "IN_REVIEW")) {
-        throw new AlloError("DirectGrants is not supported yet!");
+      let strategyInstance;
+
+      switch (args.strategy) {
+        case RoundCategory.QuadraticFunding: {
+          strategyInstance = new DonationVotingMerkleDistributionStrategy({
+            chain: this.chainId,
+            poolId: BigInt(args.roundId),
+            address: args.strategyAddress,
+          });
+          break;
+        }
+
+        case RoundCategory.Direct: {
+          strategyInstance = new DirectGrantsLiteStrategy({
+            chain: this.chainId,
+            poolId: BigInt(args.roundId),
+            address: args.strategyAddress,
+          });
+          break;
+        }
+
+        default:
+          return error(new AlloError("Unsupported strategy"));
       }
 
-      const strategyInstance = new DonationVotingMerkleDistributionStrategy(
-        {
-          chain: this.chainId,
-          poolId: BigInt(args.roundId),
-          address: args.strategyAddress,
-        }
-      );
-
-      const totalApplications = await strategyInstance.recipientsCounter();
+      let totalApplications = 0n;
+      try {
+        totalApplications = await strategyInstance.recipientsCounter();
+      } catch (error) {
+        totalApplications = BigInt(args.currentApplications.length + 1);
+      }
 
       const rows = buildUpdatedRowsOfApplicationStatuses({
         applicationsToUpdate: args.applicationsToUpdate,
@@ -1058,14 +1101,14 @@ export class AlloV2 implements Allo {
         case RoundCategory.Direct: {
           // NOTE: TEST AFTER CREATION WORKS ON UI
 
-          const strategyInstance = new DirectGrantsStrategy({
+          const strategyInstance = new DirectGrantsLiteStrategy({
             chain: this.chainId,
             poolId: BigInt(args.roundId),
             address: args.roundAddress,
           });
 
           if (data.applicationsStartTime && data.applicationsEndTime) {
-            updateTimestampTxn = strategyInstance.getUpdatePoolTimestampsData(
+            updateTimestampTxn = strategyInstance.updatePoolTimestamps(
               dateToEthereumTimestamp(data.applicationsStartTime),
               dateToEthereumTimestamp(data.applicationsEndTime)
             );
@@ -1204,6 +1247,72 @@ export class AlloV2 implements Allo {
       emit("indexingStatus", success(null));
 
       return success(null);
+    });
+  }
+
+  payoutDirectGrants(args: {
+    roundId: Hex | number;
+    token: Hex;
+    amount: bigint;
+    recipientAddress: Hex;
+    recipientId: Hex;
+    vault?: Hex;
+    applicationIndex?: number;
+  }): AlloOperation<
+    Result<{ blockNumber: bigint }>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const strategy = new DirectGrantsLiteStrategy({
+        chain: this.chainId,
+        poolId: BigInt(args.roundId),
+      });
+
+      const txData = strategy.getAllocateData([
+        {
+          token: args.token,
+          recipientId: args.recipientId,
+          amount: BigInt(args.amount.toString()),
+        },
+      ]);
+
+      const tx = await sendRawTransaction(this.transactionSender, {
+        to: txData.to,
+        data: txData.data,
+        value: BigInt(txData.value),
+      });
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to payout direct grants");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(void 0));
+
+      return success({
+        blockNumber: receipt.blockNumber,
+      });
     });
   }
 }

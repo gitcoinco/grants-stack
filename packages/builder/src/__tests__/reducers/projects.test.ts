@@ -35,6 +35,7 @@ describe("projects reducer", () => {
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
             distributionTransaction: null,
+            anchorAddress: addressFrom(123) as `0x${string}`,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -71,6 +72,7 @@ describe("projects reducer", () => {
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
             distributionTransaction: null,
+            anchorAddress: addressFrom(123) as `0x${string}`,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -116,6 +118,7 @@ describe("projects reducer", () => {
           metadataCid: "0x1",
           metadata: {},
           distributionTransaction: null,
+          anchorAddress: addressFrom(123) as `0x${string}`,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -159,6 +162,7 @@ describe("projects reducer", () => {
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
             distributionTransaction: null,
+            anchorAddress: addressFrom(123) as `0x${string}`,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -201,6 +205,7 @@ describe("projects reducer", () => {
           metadataCid: "0x2",
           metadata: {} as ProjectApplicationMetadata,
           distributionTransaction: null,
+          anchorAddress: addressFrom(123) as `0x${string}`,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -240,6 +245,7 @@ describe("projects reducer", () => {
           metadataCid: "0x1",
           metadata: {} as ProjectApplicationMetadata,
           distributionTransaction: null,
+          anchorAddress: addressFrom(123) as `0x${string}`,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -276,6 +282,7 @@ describe("projects reducer", () => {
           metadataCid: "0x2",
           metadata: {} as ProjectApplicationMetadata,
           distributionTransaction: null,
+          anchorAddress: addressFrom(123) as `0x${string}`,
           round: {
             applicationsStartTime: "0",
             applicationsEndTime: "0",
@@ -329,6 +336,7 @@ describe("projects reducer", () => {
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
             distributionTransaction: null,
+            anchorAddress: addressFrom(123) as `0x${string}`,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -365,6 +373,7 @@ describe("projects reducer", () => {
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
             distributionTransaction: null,
+            anchorAddress: addressFrom(123) as `0x${string}`,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -399,6 +408,7 @@ describe("projects reducer", () => {
             metadataCid: "0x2",
             metadata: {} as ProjectApplicationMetadata,
             distributionTransaction: null,
+            anchorAddress: addressFrom(123) as `0x${string}`,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -433,6 +443,7 @@ describe("projects reducer", () => {
             metadataCid: "0x3",
             metadata: {} as ProjectApplicationMetadata,
             distributionTransaction: null,
+            anchorAddress: addressFrom(123) as `0x${string}`,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -467,6 +478,7 @@ describe("projects reducer", () => {
             metadataCid: "0x4",
             metadata: {} as ProjectApplicationMetadata,
             distributionTransaction: null,
+            anchorAddress: addressFrom(123) as `0x${string}`,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -503,6 +515,7 @@ describe("projects reducer", () => {
             metadataCid: "0x1",
             metadata: {} as ProjectApplicationMetadata,
             distributionTransaction: null,
+            anchorAddress: addressFrom(123) as `0x${string}`,
             round: {
               applicationsStartTime: "0",
               applicationsEndTime: "0",
@@ -548,6 +561,7 @@ describe("projects reducer", () => {
       metadataCid: "0x3",
       metadata: {},
       distributionTransaction: null,
+      anchorAddress: addressFrom(123) as `0x${string}`,
       round: {
         applicationsStartTime: "0",
         applicationsEndTime: "0",

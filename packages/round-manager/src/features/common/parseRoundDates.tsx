@@ -24,25 +24,31 @@ export function parseRoundDates(round: RoundDates) {
     application: {
       iso: {
         start: formatUTCDateAsISOString(round.applicationsStartTime),
-        end: moment(round.applicationsEndTime).isSame(maxDateForUint256) ? (
-          <span dangerouslySetInnerHTML={{ __html: noEndTime }} />
-        ) : (
-          formatUTCDateAsISOString(round.applicationsEndTime)
-        ),
+        end:
+          moment(round.applicationsEndTime).isSame(maxDateForUint256) ||
+          !moment(round.applicationsEndTime).isValid() ? (
+            <span dangerouslySetInnerHTML={{ __html: noEndTime }} />
+          ) : (
+            formatUTCDateAsISOString(round.applicationsEndTime)
+          ),
       },
       local_iso: {
         start: formatLocalDateAsISOString(round.applicationsStartTime),
-        end: moment(round.applicationsEndTime).isSame(maxDateForUint256) ? (
-          <span dangerouslySetInnerHTML={{ __html: noEndTime }} />
-        ) : (
-          formatLocalDateAsISOString(round.applicationsEndTime)
-        ),
+        end:
+          moment(round.applicationsEndTime).isSame(maxDateForUint256) ||
+          !moment(round.applicationsEndTime).isValid() ? (
+            <span dangerouslySetInnerHTML={{ __html: noEndTime }} />
+          ) : (
+            formatLocalDateAsISOString(round.applicationsEndTime)
+          ),
       },
       utc: {
         start: getUTCTime(round.applicationsStartTime),
-        end: moment(round.applicationsEndTime).isSame(maxDateForUint256)
-          ? ""
-          : `(${getUTCTime(round.applicationsEndTime)})`,
+        end:
+          moment(round.applicationsEndTime).isSame(maxDateForUint256) ||
+          !moment(round.applicationsEndTime).isValid()
+            ? ""
+            : `(${getUTCTime(round.applicationsEndTime)})`,
       },
       local: {
         start: getLocalTime(round.applicationsStartTime),
@@ -54,25 +60,31 @@ export function parseRoundDates(round: RoundDates) {
     round: {
       iso: {
         start: formatUTCDateAsISOString(round.roundStartTime),
-        end: moment(round.roundEndTime).isSame(maxDateForUint256) ? (
-          <span dangerouslySetInnerHTML={{ __html: noEndTime }} />
-        ) : (
-          formatUTCDateAsISOString(round.roundEndTime)
-        ),
+        end:
+          moment(round.roundEndTime).isSame(maxDateForUint256) ||
+          !moment(round.applicationsEndTime).isValid() ? (
+            <span dangerouslySetInnerHTML={{ __html: noEndTime }} />
+          ) : (
+            formatUTCDateAsISOString(round.roundEndTime)
+          ),
       },
       local_iso: {
         start: formatLocalDateAsISOString(round.roundStartTime),
-        end: moment(round.roundEndTime).isSame(maxDateForUint256) ? (
-          <span dangerouslySetInnerHTML={{ __html: noEndTime }} />
-        ) : (
-          formatLocalDateAsISOString(round.roundEndTime)
-        ),
+        end:
+          moment(round.roundEndTime).isSame(maxDateForUint256) ||
+          !moment(round.applicationsEndTime).isValid() ? (
+            <span dangerouslySetInnerHTML={{ __html: noEndTime }} />
+          ) : (
+            formatLocalDateAsISOString(round.roundEndTime)
+          ),
       },
       utc: {
         start: `(${getUTCTime(round.roundStartTime)})`,
-        end: moment(round.roundEndTime).isSame(maxDateForUint256)
-          ? ""
-          : `(${getUTCTime(round.roundEndTime)})`,
+        end:
+          moment(round.roundEndTime).isSame(maxDateForUint256) ||
+          !moment(round.applicationsEndTime).isValid()
+            ? ""
+            : `(${getUTCTime(round.roundEndTime)})`,
       },
       local: {
         start: getLocalTime(round.roundStartTime),

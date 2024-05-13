@@ -9,7 +9,11 @@ import {
 import "@testing-library/jest-dom/extend-expect";
 import ApplicationDirectPayout from "../ApplicationDirectPayout";
 import { makeGrantApplicationData, makeRoundData } from "../../../test-utils";
-import { ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT } from "common";
+import {
+  AlloContext,
+  AlloV2,
+  ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
+} from "common";
 
 import { useWallet } from "../../common/Auth";
 import { useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
@@ -19,6 +23,7 @@ import moment from "moment";
 import { parseUnits } from "ethers/lib/utils.js";
 import { usePayout } from "../../../context/application/usePayout";
 import { usePayouts } from "../usePayouts";
+import { DataLayer, DataLayerContext } from "data-layer";
 
 jest.mock("../../../types/generated/typechain");
 jest.mock("../../common/Auth");
@@ -70,6 +75,38 @@ const correctAnswerBlocks = [
     answer: "0x444",
   },
 ];
+
+const backend = new AlloV2({
+  chainId: 1,
+  ipfsUploader: jest.fn(),
+  transactionSender: {
+    send: jest.fn(),
+    wait: jest.fn(),
+    address: jest.fn(),
+  },
+  waitUntilIndexerSynced: jest.fn(),
+});
+
+const client = new DataLayer({
+  indexer: {
+    baseUrl: "https://mock-indexer.com",
+  },
+  search: {
+    baseUrl: "https://mock-search.com",
+  },
+  collections: {
+    googleSheetsUrl: "https://mock-google-sheets.com",
+  },
+  fetch: jest.fn(),
+  ipfs: {
+    gateway: "https://mock-ipfs.com",
+  },
+  subgraph: {
+    endpointsByChainId: {
+      1: "https://mock-subgraph.com",
+    },
+  },
+});
 
 describe("<ApplicationDirectPayout />", () => {
   let mockAllowance: jest.Mock;
@@ -131,7 +168,13 @@ describe("<ApplicationDirectPayout />", () => {
     });
 
     try {
-      render(<ApplicationDirectPayout {...mockProps} />);
+      render(
+        <DataLayerContext.Provider value={client}>
+          <AlloContext.Provider value={{ backend }}>
+            <ApplicationDirectPayout {...mockProps} />
+          </AlloContext.Provider>
+        </DataLayerContext.Provider>
+      );
     } catch (error: any) {
       expect(error.message).toBe('"Payout token" not found in answers!');
     }
@@ -169,7 +212,13 @@ describe("<ApplicationDirectPayout />", () => {
     });
 
     try {
-      render(<ApplicationDirectPayout {...mockProps} />);
+      render(
+        <DataLayerContext.Provider value={client}>
+          <AlloContext.Provider value={{ backend }}>
+            <ApplicationDirectPayout {...mockProps} />
+          </AlloContext.Provider>
+        </DataLayerContext.Provider>
+      );
     } catch (error: any) {
       expect(error.message).toContain("Token info not found for chain id");
     }
@@ -194,7 +243,13 @@ describe("<ApplicationDirectPayout />", () => {
       data: [],
     });
 
-    render(<ApplicationDirectPayout {...mockProps} />);
+    render(
+      <DataLayerContext.Provider value={client}>
+        <AlloContext.Provider value={{ backend }}>
+          <ApplicationDirectPayout {...mockProps} />
+        </AlloContext.Provider>
+      </DataLayerContext.Provider>
+    );
 
     expect(
       screen.queryByText("Payouts have not been made yet.")
@@ -240,7 +295,13 @@ describe("<ApplicationDirectPayout />", () => {
       ],
     });
 
-    render(<ApplicationDirectPayout {...mockProps} />);
+    render(
+      <DataLayerContext.Provider value={client}>
+        <AlloContext.Provider value={{ backend }}>
+          <ApplicationDirectPayout {...mockProps} />
+        </AlloContext.Provider>
+      </DataLayerContext.Provider>
+    );
 
     const tbody = screen.getByTestId("direct-payout-payments-table");
     const filas = within(tbody).getAllByRole("row");
@@ -272,7 +333,13 @@ describe("<ApplicationDirectPayout />", () => {
       data: [],
     });
 
-    render(<ApplicationDirectPayout {...mockProps} />);
+    render(
+      <DataLayerContext.Provider value={client}>
+        <AlloContext.Provider value={{ backend }}>
+          <ApplicationDirectPayout {...mockProps} />
+        </AlloContext.Provider>
+      </DataLayerContext.Provider>
+    );
 
     const button = screen.getByTestId("trigger-payment");
     fireEvent.click(button);
@@ -305,7 +372,13 @@ describe("<ApplicationDirectPayout />", () => {
       data: [],
     });
 
-    render(<ApplicationDirectPayout {...mockProps} />);
+    render(
+      <DataLayerContext.Provider value={client}>
+        <AlloContext.Provider value={{ backend }}>
+          <ApplicationDirectPayout {...mockProps} />
+        </AlloContext.Provider>
+      </DataLayerContext.Provider>
+    );
 
     const inputAmount = screen.getByTestId("payout-amount-input");
     const inputAddress = screen.getByTestId("payout-amount-address");
@@ -347,7 +420,13 @@ describe("<ApplicationDirectPayout />", () => {
       data: [],
     });
 
-    render(<ApplicationDirectPayout {...mockProps} />);
+    render(
+      <DataLayerContext.Provider value={client}>
+        <AlloContext.Provider value={{ backend }}>
+          <ApplicationDirectPayout {...mockProps} />
+        </AlloContext.Provider>
+      </DataLayerContext.Provider>
+    );
 
     const inputAmount = screen.getByTestId("payout-amount-input");
     const inputAddress = screen.getByTestId("payout-amount-address");

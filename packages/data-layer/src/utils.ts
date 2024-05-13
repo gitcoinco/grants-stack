@@ -39,6 +39,7 @@ export const strategyNameToCategory = (
   switch (name) {
     case "allov1.Direct":
     case "allov2.DirectGrantsSimpleStrategy":
+    case "allov2.DirectGrantsLiteStrategy":
       return RoundCategory.Direct;
 
     case "allov1.QF":

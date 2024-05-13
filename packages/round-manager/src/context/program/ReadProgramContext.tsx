@@ -9,7 +9,6 @@ import { getProgramById, listPrograms } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
 import { Web3Provider } from "@ethersproject/providers";
 import { DataLayer, useDataLayer } from "data-layer";
-import { getAlloVersion } from "common/src/config";
 import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
 
 export interface ReadProgramState {

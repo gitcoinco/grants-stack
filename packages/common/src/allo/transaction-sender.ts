@@ -279,8 +279,8 @@ export async function sendTransaction<
     | { address: Address; value: bigint; data: Hex }
 ): Promise<Result<Hex>> {
   try {
-    let data;
-    let value;
+    let data: Hex | undefined;
+    let value: bigint | undefined;
 
     if ("value" in args) {
       value = args.value;

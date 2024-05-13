@@ -1,33 +1,14 @@
 import useSWR, { SWRResponse } from "swr";
-import { useDataLayer, Collection } from "data-layer";
+import { CommunityCollection } from "../community";
 import { CollectionV1, parseCollection } from "../collections";
 import { getConfig } from "common/src/config";
+import communityCollections from "../community";
 
 const config = getConfig();
 
-export const useCollections = (): SWRResponse<Collection[]> => {
-  const dataLayer = useDataLayer();
-
+export const useCollections = (): SWRResponse<CommunityCollection[]> => {
   return useSWR(["collections"], async () => {
-    const collections = await dataLayer.getProjectCollections();
-    return collections;
-  });
-};
-
-export const useCollection = (
-  id: string | null
-): SWRResponse<Collection | undefined> => {
-  const dataLayer = useDataLayer();
-  return useSWR(id === null ? null : ["collections", id], async () => {
-    if (id === null) {
-      // The first argument to useSRW will ensure that this function never gets
-      // called if options is `null`. If it's still called, we fail early and
-      // clearly.
-      throw new Error("Bug");
-    }
-
-    const collection = await dataLayer.getProjectCollectionById(id);
-    return collection === null ? undefined : collection;
+    return communityCollections;
   });
 };
 

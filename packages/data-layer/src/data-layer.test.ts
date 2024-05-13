@@ -67,6 +67,7 @@ const mockApplications: ProjectApplicationWithRound[] = [
     totalAmountDonatedInUsd: 0,
     uniqueDonorsCount: 0,
     distributionTransaction: null,
+    anchorAddress: getAddress("0xe849b2a694184b8739a04c915518330757cdb133"),
     round: {
       strategyName: "allov1.QF",
       applicationsStartTime: "2024-02-20T17:27:40+00:00",
@@ -573,7 +574,9 @@ describe("v2 projects retrieval", () => {
       fetch: fetchMock,
       search: { baseUrl: "https://example.com" },
       subgraph: { endpointsByChainId: {} },
-      indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
+      indexer: {
+        baseUrl: "https://grants-stack-indexer-v2.gitcoin.co/graphql",
+      },
     });
 
     const project = await dataLayer.getProjectById({
@@ -611,7 +614,9 @@ describe("v2 projects retrieval", () => {
       fetch: fetchMock,
       search: { baseUrl: "https://example.com" },
       subgraph: { endpointsByChainId: {} },
-      indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
+      indexer: {
+        baseUrl: "https://grants-stack-indexer-v2.gitcoin.co/graphql",
+      },
     });
 
     const projects = await dataLayer.getProjectsByAddress({
@@ -645,7 +650,9 @@ describe("v2 projects retrieval", () => {
       fetch: fetchMock,
       search: { baseUrl: "https://example.com" },
       subgraph: { endpointsByChainId: {} },
-      indexer: { baseUrl: "https://indexer-staging.fly.dev/graphql" },
+      indexer: {
+        baseUrl: "https://grants-stack-indexer-v2.gitcoin.co/graphql",
+      },
     });
 
     const applications = await dataLayer.getApplicationsByProjectIds({

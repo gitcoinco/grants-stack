@@ -1,3 +1,4 @@
+import { isInfiniteDate } from "common";
 import { getConfig } from "common/src/config";
 import PinataClient from "common/src/services/pinata";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../assets";
@@ -67,7 +68,7 @@ export const formatTimeUTC = (ts: number) => {
 export const formatDateFromString = (ts: string) =>
   new Date(ts).toLocaleDateString();
 
-export const isInfinite = (number: Number) =>
-  number === Number.MAX_SAFE_INTEGER || !number;
+export const isInfinite = (number: Number): boolean =>
+  isInfiniteDate(new Date(number.toString()));
 
 export const formatDateAsNumber = (ts: string) => Date.parse(ts) / 1000;

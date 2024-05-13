@@ -6,8 +6,11 @@ import {
   IPFSObject,
   MatchingStatsData,
   Program,
+  RevisedMatch,
 } from "./types";
 import { ChainId } from "common";
+import { useEffect, useState } from "react";
+import Papa from "papaparse";
 
 // NB: number keys are coerced into strings for JS object keys
 export const CHAINS: Record<ChainId, Program["chain"]> = {
@@ -110,6 +113,26 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     id: ChainId.SEI_DEVNET,
     name: "SEI Devnet",
     logo: "/logos/sei.png",
+  },
+  [ChainId.LUKSO]: {
+    id: ChainId.LUKSO,
+    name: "Lukso",
+    logo: "/logos/lukso-logo.svg",
+  },
+  [ChainId.LUKSO_TESTNET]: {
+    id: ChainId.LUKSO_TESTNET,
+    name: "Lukso Testnet",
+    logo: "/logos/lukso-logo.svg",
+  },
+  [ChainId.CELO]: {
+    id: ChainId.CELO,
+    name: "Celo",
+    logo: "/logos/celo-logo.svg",
+  },
+  [ChainId.CELO_ALFAJORES]: {
+    id: ChainId.CELO_ALFAJORES,
+    name: "Celo Alfajores",
+    logo: "/logos/celo-logo.svg",
   },
 };
 
@@ -340,4 +363,58 @@ export const formatCurrency = (
   ).toLocaleString("en-US", {
     maximumFractionDigits: fraction || 3,
   });
+};
+
+export const useMatchCSVParser = (file: File | null) => {
+  const [data, setData] = useState<RevisedMatch[] | undefined>(undefined);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<Error | undefined>(undefined);
+
+  useEffect(() => {
+    if (!file) {
+      setData(undefined);
+      setError(undefined);
+      return;
+    }
+
+    const parseCSV = (file: File) => {
+      setLoading(true);
+      const reader = new FileReader();
+      reader.onload = () => {
+        const text = reader.result as string;
+        Papa.parse(text, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const matches: RevisedMatch[] = results.data.map((row: any) => ({
+              revisedContributionCount: parseInt(row["contributionsCount"]),
+              revisedMatch: BigInt(row["matched"]),
+              matched: BigInt(row["matched"]),
+              contributionsCount: parseInt(row["contributionsCount"]),
+              projectId: row["projectId"],
+              applicationId: row["applicationId"],
+              projectName: row["projectName"],
+              payoutAddress: row["payoutAddress"],
+            }));
+            setData(matches);
+            setLoading(false);
+          },
+          error: (error: Error) => {
+            setError(error);
+            setLoading(false);
+          },
+        });
+      };
+      reader.onerror = (error: Event) => {
+        setError(error as unknown as Error);
+        setLoading(false);
+      };
+      reader.readAsText(file);
+    };
+
+    parseCSV(file);
+  }, [file]);
+
+  return { data, loading, error };
 };

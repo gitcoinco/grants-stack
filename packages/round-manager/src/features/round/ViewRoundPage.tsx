@@ -56,7 +56,9 @@ import AlloV2 from "common/src/icons/AlloV2";
 export const isDirectRound = (round: Round | undefined) => {
   return (
     round?.payoutStrategy?.strategyName &&
-    getRoundStrategyType(round.payoutStrategy.strategyName) === "DirectGrants"
+    getRoundStrategyType(round.payoutStrategy.strategyName).includes(
+      "DirectGrants"
+    )
   );
 };
 
@@ -129,10 +131,8 @@ export default function ViewRoundPage() {
                 {round?.tags?.includes("allo-v2") && <AlloV2 color="black" />}
               </div>
               <div className="flex flex-row flex-wrap relative gap-2 md:gap-8 xl:gap-36 pr-44">
-                {!isDirectRound(round) && (
-                  <ApplicationOpenDateRange round={round} />
-                )}
-                <RoundOpenDateRange round={round} />
+                <ApplicationOpenDateRange round={round} />
+                {!isDirectRound(round) && <RoundOpenDateRange round={round} />}
                 <div className="absolute right-0">
                   <ViewGrantsExplorerButton
                     iconStyle="h-4 w-4"
@@ -623,7 +623,6 @@ export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
 
 export function RoundOpenDateRange({ round }: { round: RoundDates }) {
   const res = parseRoundDates(round);
-
   return (
     <div className="flex gap-2 text-sm">
       <ClockIcon className="h-5 w-5 text-grey-400" />
@@ -663,7 +662,7 @@ export function RoundBadgeStatus({ round }: { round: Round }) {
         round.applicationsStartTime,
         round.applicationsEndTime || now
       )) ||
-    (roundStrategyType === "DirectGrants" && now.isBefore(roundEnds))
+    (roundStrategyType === "DirectGrants" && now.isBetween(roundEnds, now))
   ) {
     return (
       <div

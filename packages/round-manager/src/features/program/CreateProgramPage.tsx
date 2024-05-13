@@ -18,8 +18,7 @@ import { ProgressStatus, ProgressStep } from "../api/types";
 import { CreateProgramState, useCreateProgram } from "./useCreateProgram";
 import ReactTooltip from "react-tooltip";
 import { CHAINS } from "../api/utils";
-import { ChainId } from "common/src/chain-ids";
-import { AlloError } from "common";
+import { AlloError, ChainId} from "common";
 
 type FormData = {
   name: string;
@@ -253,7 +252,7 @@ export default function CreateProgram() {
                     </label>
 
                     <div className="opacity-50 flex mt-1 py-[6px] shadow-sm px-3 border rounded-md border-grey-100">
-                      {CHAINS[chain.id as ChainId] ? (
+                      {CHAINS[chain.id as ChainId] ? ( 
                         <>
                           <img
                             src={CHAINS[chain.id as ChainId]?.logo}

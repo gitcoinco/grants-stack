@@ -4,7 +4,12 @@ import {
   VerifiableCredential,
 } from "@gitcoinco/passport-sdk-types";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import { PassportVerifierWithExpiration, formatDateWithOrdinal, renderToHTML, useParams } from "common";
+import {
+  PassportVerifierWithExpiration,
+  formatDateWithOrdinal,
+  renderToHTML,
+  useParams,
+} from "common";
 import { getAlloVersion } from "common/src/config";
 import { formatDistanceToNowStrict } from "date-fns";
 import React, {
@@ -34,6 +39,8 @@ import { useCartStorage } from "../../store";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import { GrantList } from "./KarmaGrant/GrantList";
 import { useGap } from "../api/gap";
+import { StatList } from "./OSO/ImpactStats";
+import { useOSO } from "../api/oso";
 import { CheckIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { DataLayer, useDataLayer } from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
@@ -117,9 +124,13 @@ export default function ViewProjectDetails() {
   const round = application && mapApplicationToRound(application);
   round && (round.chainId = Number(chainId));
   const isSybilDefenseEnabled =
-    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true;
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
+    round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
 
   const { grants } = useGap(projectToRender?.projectRegistryId as string);
+  const { stats } = useOSO(
+    projectToRender?.projectMetadata.projectGithub as string
+  );
 
   const currentTime = new Date();
   const isAfterRoundEndDate =
@@ -178,7 +189,6 @@ export default function ViewProjectDetails() {
   const {
     projectMetadata: { title, description = "", bannerImg },
   } = projectToRender ?? { projectMetadata: {} };
-
   const projectDetailsTabs = useMemo(
     () => [
       {
@@ -202,11 +212,16 @@ export default function ViewProjectDetails() {
         ),
       },
       {
-        name: "Milestone updates",
-        content: <GrantList grants={grants} />,
+        name: "Impact Measurement",
+        content: (
+          <React.Fragment>
+            <StatList stats={stats} />
+            <GrantList grants={grants} />
+          </React.Fragment>
+        ),
       },
     ],
-    [grants, projectToRender, description]
+    [stats, grants, projectToRender, description]
   );
 
   const handleTabChange = (tabIndex: number) => {
@@ -216,7 +231,11 @@ export default function ViewProjectDetails() {
   return (
     <>
       <DefaultLayout>
-        {isAfterRoundEndDate && <RoundEndedBanner />}
+        {isAfterRoundEndDate && (
+          <div className="relative top-6">
+            <RoundEndedBanner />
+          </div>
+        )}
         <div className="flex flex-row justify-between my-8">
           <div className="flex items-center pt-2" data-testid="bread-crumbs">
             <Breadcrumb items={breadCrumbs} />
@@ -550,7 +569,7 @@ export function ProjectStats() {
     (isInfiniteDate(round.roundEndTime) || round.roundEndTime > new Date());
 
   return (
-    <div className="p-4 gap-4 grid grid-cols-3 md:flex md:flex-col text-blue-800">
+    <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
       <Stat
         isLoading={!application}
         value={`$${application?.totalAmountDonatedInUsd.toFixed(2)}`}
@@ -584,7 +603,7 @@ export function ProjectStats() {
   );
 }
 
-function Stat({
+export function Stat({
   value,
   children,
   isLoading,
@@ -660,10 +679,11 @@ async function isVerified(args: {
   project: Project | undefined;
   dataLayer: DataLayer;
 }) {
-  const { verifiableCredential, provider, project, dataLayer } = args;
+  const { verifiableCredential, provider, project } = args;
 
   const passportVerifier = new PassportVerifierWithExpiration();
-  const  vcHasValidProof = await passportVerifier.verifyCredential(verifiableCredential);
+  const vcHasValidProof =
+    await passportVerifier.verifyCredential(verifiableCredential);
 
   const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
   const providerMatchesProject = vcProviderMatchesProject(

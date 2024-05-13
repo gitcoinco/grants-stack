@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fireEvent, screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
-import { ChainId } from "common";
+import { ChainId, getPayoutTokenOptions } from "common";
 
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import QuadraticFundingForm from "../QuadraticFundingForm";
-import { getPayoutTokenOptions } from "../../api/payoutTokens";
 
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({

@@ -1,3 +1,4 @@
+/* eslint-disable no-unexpected-multiline */
 import { ChainId, getTokenPrice, NATIVE, submitPassportLite } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
@@ -183,10 +184,8 @@ export function SummaryContainer() {
   const currentPermitDeadline =
     rounds && rounds.length > 0
       ? [...rounds]
-          .sort(
-            (a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime()
-          )[rounds.length - 1]
-          .roundEndTime.getTime()
+          .sort((a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime())
+          [rounds.length - 1].roundEndTime.getTime()
       : 0;
 
   const [emptyInput, setEmptyInput] = useState(false);
@@ -349,7 +348,8 @@ export function SummaryContainer() {
           permitDeadline: currentPermitDeadline,
         })),
         walletClient,
-        allo
+        allo,
+        dataLayer
       );
     } catch (error) {
       console.error(error);

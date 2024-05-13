@@ -3,6 +3,7 @@ import { BrowserTracing } from "@sentry/tracing";
 import {
   ReportingObserver as ReportingObserverIntegration,
   CaptureConsole as CaptureConsoleIntegration,
+  ExtraErrorData,
 } from "@sentry/integrations";
 
 export const initSentry = () => {
@@ -15,7 +16,9 @@ export const initSentry = () => {
         levels: ["error", "warn"],
       }),
       new Sentry.Replay(),
+      new ExtraErrorData({ depth: 10 }),
     ],
+    normalizeDepth: 11,
     // This sets the sample rate to be 10%. You may want this to be 100% while
     // in development and sample at a lower rate in production
     replaysSessionSampleRate: 0.1,

@@ -15,17 +15,26 @@ import {
   BulkUpdateGrantApplicationState,
   initialBulkUpdateGrantApplicationState,
 } from "../../../context/application/BulkUpdateGrantApplicationContext";
-import { updatePayoutApplicationStatuses } from "../../api/application";
 import { ProgressStatus } from "../../api/types";
 import { errorModalDelayMs } from "../../../constants";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import { ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT } from "common";
-import { AlloOperation, useAllo } from "common";
+import { AlloOperation, useAllo, AlloV1 } from "common";
 
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
   useAllo: jest.fn(),
 }));
+
+jest.mock("common/src/allo/backends/allo-v1");
+
+const mockBulkUpdateApplicationStatus = jest.fn().mockResolvedValue({
+  type: "success",
+});
+
+jest
+  .spyOn(AlloV1.prototype, "bulkUpdateApplicationStatus")
+  .mockImplementation(mockBulkUpdateApplicationStatus);
 
 jest.mock("../../api/application");
 jest.mock("../../common/Auth", () => ({
@@ -321,7 +330,6 @@ describe("<ApplicationsReceived />", () => {
       });
 
       it("starts the bulk update process when confirm is selected", async () => {
-        (updatePayoutApplicationStatuses as jest.Mock).mockResolvedValue("");
         setupInBulkSelectionMode();
 
         const inReviewButton = screen.queryAllByTestId("in-review-button")[0];
@@ -339,12 +347,12 @@ describe("<ApplicationsReceived />", () => {
         fireEvent.click(confirmationModalConfirmButton);
 
         await waitFor(() => {
-          expect(updatePayoutApplicationStatuses).toBeCalled();
+          expect(mockBulkUpdateApplicationStatus).toBeCalled();
         });
 
-        expect(updatePayoutApplicationStatuses).toBeCalled();
-        const calls = (updatePayoutApplicationStatuses as jest.Mock).mock.calls;
-        expect(calls[0][0]).toEqual(payoutStrategyId);
+        expect(mockBulkUpdateApplicationStatus).toBeCalled();
+        const calls = (mockBulkUpdateApplicationStatus as jest.Mock).mock.calls;
+        expect(calls[0][0].strategyAddress).toEqual(payoutStrategyId);
       });
 
       it("closes confirmation when cancel is selected", async () => {
@@ -384,7 +392,7 @@ describe("<ApplicationsReceived />", () => {
   describe("when processing bulk action fails", () => {
     beforeEach(() => {
       const transactionBlockNumber = 10;
-      (updatePayoutApplicationStatuses as jest.Mock).mockResolvedValue({
+      (mockBulkUpdateApplicationStatus as jest.Mock).mockResolvedValue({
         transactionBlockNumber,
       });
 

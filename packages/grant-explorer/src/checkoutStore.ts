@@ -20,13 +20,13 @@ import {
   signPermitDai,
 } from "./features/api/voting";
 import { groupBy, uniq } from "lodash-es";
-import { datadogLogs } from "@datadog/browser-logs";
 import { getEnabledChains } from "./app/chainConfig";
 import { WalletClient } from "wagmi";
 import { getContract, getPublicClient } from "@wagmi/core";
 import { getPermitType } from "common/dist/allo/voting";
 import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 import { getConfig } from "common/src/config";
+import { DataLayer } from "data-layer";
 
 type ChainMap<T> = Record<ChainId, T>;
 
@@ -53,7 +53,8 @@ interface CheckoutState {
   checkout: (
     chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
     walletClient: WalletClient,
-    allo: Allo
+    allo: Allo,
+    dataLayer: DataLayer
   ) => Promise<void>;
   getCheckedOutProjects: () => CartProject[];
   checkedOutProjects: CartProject[];
@@ -201,7 +202,13 @@ export const useCheckoutStore = create<CheckoutState>()(
 
             get().setPermitStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
           } catch (e) {
-            console.error(e);
+            if (!(e instanceof UserRejectedRequestError)) {
+              console.error("permit error", e, {
+                donations,
+                chainId,
+                tokenAddress: token.address,
+              });
+            }
             get().setPermitStatusForChain(chainId, ProgressStatus.IS_ERROR);
             return;
           }
@@ -210,13 +217,12 @@ export const useCheckoutStore = create<CheckoutState>()(
             get().setPermitStatusForChain(chainId, ProgressStatus.IS_ERROR);
             return;
           }
+        } else {
+          /** When voting via native token, we just set the permit status to success */
+          get().setPermitStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
         }
 
         try {
-          /** When voting via native token, we just set the permit status to success */
-          if (!sig) {
-            get().setPermitStatusForChain(chainId, ProgressStatus.IS_SUCCESS);
-          }
           get().setVoteStatusForChain(chainId, ProgressStatus.IN_PROGRESS);
 
           /* Group donations by round */
@@ -229,6 +235,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           );
 
           const groupedEncodedVotes: Record<string, Hex[]> = {};
+
           for (const roundId in groupedDonations) {
             groupedEncodedVotes[roundId] = isV2
               ? encodedQFAllocation(token, groupedDonations[roundId])
@@ -270,26 +277,11 @@ export const useCheckoutStore = create<CheckoutState>()(
           );
 
           if (receipt.status === "reverted") {
-            console.error(
-              `vote on chain ${chainId} - roundIds ${Object.keys(
-                donations.map((d) => d.roundId)
-              )}, token ${token.name}`,
-              receipt,
-              sig,
-              token
-            );
-
-            throw new Error("vote failed", {
-              cause: receipt,
+            throw new Error("donate transaction reverted", {
+              cause: { receipt },
             });
           }
 
-          console.log(
-            "Voting successful for chain",
-            chainId,
-            " receipt",
-            receipt
-          );
           /* Remove checked out projects from cart */
           donations.forEach((donation) => {
             useCartStorage.getState().remove(donation);
@@ -304,15 +296,25 @@ export const useCheckoutStore = create<CheckoutState>()(
             checkedOutProjects: [...get().checkedOutProjects, ...donations],
           });
         } catch (error) {
-          datadogLogs.logger.error(
-            `error: vote - ${error}. Data - ${donations.toString()}`
-          );
-          console.error(
-            `vote on chain ${chainId} - roundIds ${Object.keys(
-              donations.map((d) => d.roundId)
-            )}, token ${token.name}`,
-            error
-          );
+          let context: Record<string, unknown> = {
+            chainId,
+            donations,
+            token,
+          };
+
+          if (error instanceof Error) {
+            context = {
+              ...context,
+              error: error.message,
+              cause: error.cause,
+            };
+          }
+
+          // do not log user rejections
+          if (!(error instanceof UserRejectedRequestError)) {
+            console.error("donation error", error, context);
+          }
+
           get().setVoteStatusForChain(chainId, ProgressStatus.IS_ERROR);
           throw error;
         }

@@ -1,6 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { InformationCircleIcon } from "@heroicons/react/solid";
-import { getConfig } from "common/src/config";
 import { BigNumber, ethers } from "ethers";
 import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
@@ -15,9 +14,14 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { classNames, useAllo, useTokenPrice } from "common";
+import {
+  PayoutToken,
+  classNames,
+  payoutTokens,
+  useAllo,
+  useTokenPrice,
+} from "common";
 import { assertAddress } from "common/src/address";
-import { PayoutToken, payoutTokens } from "../api/payoutTokens";
 import { formatUnits } from "viem";
 
 export function useContractAmountFunded(args: {
@@ -219,7 +223,6 @@ export default function FundContract(props: {
     matchingFundPayoutToken?.decimal ?? 18
   );
   // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
-  const alloVersion = getConfig().allo.version;
 
   const tokenDetailUser =
     matchingFundPayoutToken?.address == ethers.constants.AddressZero
