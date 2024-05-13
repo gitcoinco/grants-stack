@@ -14,9 +14,14 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { classNames, useAllo, useTokenPrice } from "common";
+import {
+  PayoutToken,
+  classNames,
+  payoutTokens,
+  useAllo,
+  useTokenPrice,
+} from "common";
 import { assertAddress } from "common/src/address";
-import { PayoutToken, payoutTokens } from "../api/payoutTokens";
 import { formatUnits } from "viem";
 
 export function useContractAmountFunded(args: {

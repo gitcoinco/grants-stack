@@ -1,7 +1,7 @@
 import { ProgressStatus, ProgressStep } from "../../features/api/types";
 import { Erc20__factory } from "../../types/generated/typechain";
 import { ethers } from "ethers";
-import { PayoutToken } from "../../features/api/payoutTokens";
+import { PayoutToken } from "common";
 import { Allo } from "common";
 import { Hex } from "viem";
 import { datadogRum } from "@datadog/browser-rum";

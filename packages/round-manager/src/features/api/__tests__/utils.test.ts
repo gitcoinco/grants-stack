@@ -5,7 +5,7 @@ import { fetchFromIPFS, generateApplicationSchema, pinToIPFS } from "../utils";
 
 import { graphql_fetch } from "common";
 import {
-  initialQuestionsQF,
+  getInitialQuestionsQF,
   initialRequirements,
 } from "../../round/RoundApplicationForm";
 
@@ -322,7 +322,7 @@ describe("graphql_fetch", () => {
 describe("generateApplicationSchema", () => {
   it("should return valid application schema", () => {
     const expectedSchema = {
-      questions: initialQuestionsQF
+      questions: getInitialQuestionsQF(1)
         .filter((q) => !q.metadataExcluded)
         .map((question) => ({
           title: question.title,
@@ -346,7 +346,7 @@ describe("generateApplicationSchema", () => {
     };
 
     const schema = generateApplicationSchema(
-      initialQuestionsQF,
+      getInitialQuestionsQF(1),
       initialRequirements
     );
 

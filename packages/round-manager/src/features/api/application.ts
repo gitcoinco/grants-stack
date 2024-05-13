@@ -2,7 +2,7 @@ import { ERC20Contract } from "./contracts";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import { Signer } from "@ethersproject/abstract-signer";
-import { PayoutToken } from "./payoutTokens";
+import { PayoutToken } from "common";
 
 export const fundRoundContract = async (
   roundId: string,

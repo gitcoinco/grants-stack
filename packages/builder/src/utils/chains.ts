@@ -21,6 +21,10 @@ import {
   sepolia,
   scroll,
   seiDevnet,
+  customCelo as celo,
+  customCeloAlfajores as celoAlfajores,
+  customLukso as lukso,
+  customLuksoTestnet as luksoTestnet,
 } from "common/src/chains";
 import { getConfig } from "common/src/config";
 import { polygonMumbai } from "@wagmi/core/chains";
@@ -32,6 +36,8 @@ const availableChains: { [key: string]: Chain } = {
   fantom,
   optimism: customOptimism,
   pgn,
+  celo,
+  celoAlfajores,
   arbitrum,
   avalanche,
   polygon: customPolygon,
@@ -46,6 +52,8 @@ const availableChains: { [key: string]: Chain } = {
   zkSyncEraTestnet,
   sepolia,
   seiDevnet,
+  lukso,
+  luksoTestnet,
 };
 
 const stagingChains = [
@@ -69,6 +77,10 @@ const stagingChains = [
   zkSyncEraTestnet,
   sepolia,
   seiDevnet,
+  celo,
+  celoAlfajores,
+  lukso,
+  luksoTestnet,
 ];
 
 const productionChains = [
@@ -83,6 +95,8 @@ const productionChains = [
   base,
   scroll,
   seiDevnet,
+  celo,
+  lukso,
 ];
 
 export function getEnabledChainsAndProviders() {

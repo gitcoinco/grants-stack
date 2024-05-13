@@ -8,7 +8,7 @@ import {
   UploadIcon,
 } from "@heroicons/react/solid";
 import { useDropzone } from "react-dropzone";
-import { classNames, isGG20Round } from "common";
+import { PayoutToken, classNames, payoutTokens, isGG20Round } from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRoundMatchingFunds } from "../../../hooks";
 import {
@@ -30,7 +30,6 @@ import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
 import { roundApplicationsToCSV } from "../../api/exports";
-import { PayoutToken, payoutTokens } from "../../api/payoutTokens";
 import { DistributionMatch } from "data-layer";
 import { utils } from "ethers";
 import { useContractAmountFunded } from "../FundContract";

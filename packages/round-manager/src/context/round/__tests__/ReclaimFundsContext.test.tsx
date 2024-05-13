@@ -90,19 +90,19 @@ describe("useReclaimFunds Errors", () => {
   });
 
   it("sets reclaim status to error when invoking fund fails", async () => {
-    alloBackend.withdrawFundsFromStrategy = jest.fn().mockImplementation(() => {
-      return new AlloOperation(async () => {
-        return error(new Error("test error"));
-      });
-    });
+    alloBackend.withdrawFundsFromStrategy = jest
+      .fn()
+      .mockResolvedValueOnce(new Error("test error"));
 
     renderWithProvider(<TestUseReclaimFundsComponent {...testParams} />);
 
     fireEvent.click(screen.getByTestId("reclaim-funds"));
 
-    expect(
-      await screen.findByTestId(`reclaim-status-is-${ProgressStatus.IS_ERROR}`)
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(`reclaim-status-is-${ProgressStatus.IS_ERROR}`)
+      ).toBeInTheDocument();
+    });
   });
 
   it("if reclaim fails, resets reclaim status when reclaim contract is retried", async () => {

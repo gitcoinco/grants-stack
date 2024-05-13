@@ -14,31 +14,34 @@ export default class RoundApplicationBuilder {
 
   private roundAddress: string;
 
-  private chainName: string;
-
-  private lit: Lit;
+  private lit?: Lit;
 
   constructor(
     enableEncryption: boolean,
     project: Project,
     ram: RoundApplicationMetadata,
     roundAddress: string,
-    chainName: string
+    chainName?: string
   ) {
     this.enableEncryption = enableEncryption;
     this.project = project;
     this.ram = ram;
     this.roundAddress = roundAddress;
-    this.chainName = chainName;
-    const litInit = {
-      chain: chainName,
-      contract: this.roundAddress,
-    };
 
-    this.lit = new Lit(litInit);
+    if (chainName) {
+      const litInit = {
+        chain: chainName,
+        contract: this.roundAddress,
+      };
+      this.lit = new Lit(litInit);
+    }
   }
 
   async encryptAnswer(answer: string) {
+    if (!this.lit) {
+      throw new Error("lit not initialized");
+    }
+
     if (!this.enableEncryption) {
       return {
         ciphertext: answer,
