@@ -7,6 +7,7 @@ import z from "zod";
 import { ChainId } from "./chain-ids";
 import { Round } from "data-layer";
 import { getAlloVersion, getConfig } from "./config";
+import moment from 'moment-timezone';
 
 export * from "./icons";
 export * from "./markdown";
@@ -238,7 +239,6 @@ export const formatLocalDateAsISOString = (date: Date): string => {
 };
 
 export function getTimezoneName() {
-  const moment = require('moment-timezone');
   const today = new Date();
   const userTimeZone = moment.tz.guess();
   const formattedDate = moment(today).tz(userTimeZone).format('z')
