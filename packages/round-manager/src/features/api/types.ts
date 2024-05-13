@@ -8,7 +8,7 @@ import { RoundVisibilityType } from "common";
 import { BigNumber } from "ethers";
 import { Address } from "viem";
 import { SchemaQuestion } from "./utils";
-import { RoundForManager, SybilDefense } from "data-layer";
+import { AddressAndRole, RoundForManager, SybilDefense } from "data-layer";
 
 export type Network = "optimism" | "fantom" | "pgn";
 
@@ -239,6 +239,10 @@ export interface Round {
    * Addresses of wallets that will have admin privileges to operate the Grant program
    */
   operatorWallets?: Array<string>;
+  /**
+   * List of addresses and their roles in the round
+   */
+  roles?: AddressAndRole[];
   /**
    * List of projects approved for the round
    */
