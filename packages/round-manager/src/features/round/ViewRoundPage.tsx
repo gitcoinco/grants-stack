@@ -366,7 +366,7 @@ export default function ViewRoundPage() {
                       <ViewRoundSettings id={round?.id} />
                     </Tab.Panel>
                     <Tab.Panel>
-                      <ViewManageTeam />
+                      <ViewManageTeam round={round} />
                     </Tab.Panel>
                     {!isDirectRound(round) && (
                       <>
