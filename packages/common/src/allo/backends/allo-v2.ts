@@ -51,15 +51,13 @@ function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
   let strategyAddresses;
   switch (chainId) {
     case ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID:
+    case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID:
       strategyAddresses = {
         [RoundCategory.QuadraticFunding]:
           "0x61E288cf14f196CF8a6104ec421ae17c7f16a749",
-        [RoundCategory.Direct]: "0x0000000000000000000000000000000000000000",
+        [RoundCategory.Direct]: "0x9710eedFD45a2ce5E6b09303a1E51c0cd600Fc88",
       };
       break;
-
-    case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID:
-      throw new Error("ZkSync era testnet is not supported");
 
     case ChainId.SEI_DEVNET:
       strategyAddresses = {
