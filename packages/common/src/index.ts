@@ -240,7 +240,7 @@ export function getTimezoneName() {
   const short = today.toLocaleDateString(undefined);
   const full = today.toLocaleDateString(undefined, { timeZoneName: "short" });
 
-  return full.replace(short, "").substring(2);
+  return full.replace(short, "").replace(/[^A-Z]+/g, "");
 }
 
 export const getLocalTime = (date: Date): string => {
