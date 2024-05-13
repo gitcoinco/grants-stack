@@ -177,7 +177,7 @@ export default function ViewProgram() {
               </div>
               {/* Status */}
               <div
-                className={`text-xs sm:h-[20px] sm:text-left text-center h-[30px] w-full inline-flex flex-col justify-center px-3 ml-auto mr-6
+                className={`text-xs h-[20px] inline-flex flex-col justify-center px-3 ml-auto mr-6
                   ${
                     getRoundDescriptionStatus(round) ===
                     "Applications not started"
