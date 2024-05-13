@@ -256,7 +256,7 @@ export default function ViewProgram() {
             Round.
           </p>
           <div className="w-full px-12">
-            {true && (
+            {getAlloVersion() === "allo-v2" && (
               <>
                 <button
                   onClick={() => setGrantType("quadraticFunding")}
@@ -295,10 +295,7 @@ export default function ViewProgram() {
                     className="object-cover pl-6 pr-4"
                   />
                 </button>
-              </>
-            )}
-            {true && (
-              <>
+
                 <button
                   onClick={() => setGrantType("directGrant")}
                   className={`flex w-full rounded border  ${
