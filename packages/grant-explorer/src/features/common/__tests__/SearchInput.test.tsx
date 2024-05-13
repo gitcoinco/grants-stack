@@ -16,7 +16,7 @@ describe("<SortFilterDropdown />", () => {
     const mockOnChange = vi.fn();
     render(<SortFilterDropdown onChange={mockOnChange} />);
 
-    fireEvent.change(screen.getByPlaceholderText("Select Filter"), {
+    fireEvent.change(screen.getByTestId("sort-filter-dropdown"), {
       target: { value: "round_desc" },
     });
 

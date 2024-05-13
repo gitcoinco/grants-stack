@@ -1,6 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { InformationCircleIcon } from "@heroicons/react/solid";
-import { getConfig } from "common/src/config";
 import { BigNumber, ethers } from "ethers";
 import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
@@ -219,7 +218,6 @@ export default function FundContract(props: {
     matchingFundPayoutToken?.decimal ?? 18
   );
   // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
-  const alloVersion = getConfig().allo.version;
 
   const tokenDetailUser =
     matchingFundPayoutToken?.address == ethers.constants.AddressZero

@@ -46,7 +46,7 @@ export function buildUpdatedRowsOfApplicationStatuses(args: {
   statusToNumber: (status: ApplicationStatus) => bigint;
   bitsPerStatus: number;
 }): { index: bigint; statusRow: bigint }[] {
-  if (args.bitsPerStatus % 2 !== 0) {
+  if (args.bitsPerStatus > 1 && args.bitsPerStatus % 2 !== 0) {
     throw new Error("bitsPerStatus must be a multiple of 2");
   }
 

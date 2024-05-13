@@ -3,7 +3,6 @@ import {
   AlloProvider,
   AlloV1,
   AlloV2,
-  ChainId,
   createEthersTransactionSender,
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,

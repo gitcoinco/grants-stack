@@ -3,7 +3,7 @@ import { Program, Web3Instance } from "./types";
 import { datadogLogs } from "@datadog/browser-logs";
 import { ChainId } from "common";
 import { DataLayer } from "data-layer";
-import { getAlloVersion, getConfig } from "common/src/config";
+import { getAlloVersion } from "common/src/config";
 
 /**
  * Fetch a list of programs

@@ -13,7 +13,7 @@ import {
 } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
-import moment, { Moment } from "moment";
+import moment from "moment";
 import { Fragment, useEffect, useState } from "react";
 import Datetime from "react-datetime";
 import {
@@ -56,6 +56,7 @@ import { ethers } from "ethers";
 import { getConfig } from "common/src/config";
 import { zeroAddress } from "viem";
 import { NATIVE } from "common/dist/allo/common";
+import { isInfiniteDate } from "common/src/allo/common";
 import { SybilDefense } from "data-layer";
 
 type EditMode = {
@@ -175,8 +176,14 @@ export default function ViewRoundSettings(props: { id?: string }) {
 
   /* All DG rounds have rolling applications enabled */
   useEffect(() => {
-    if (round && isDirectRound(round)) {
+    if (
+      round && round.applicationsEndTime &&
+      isInfiniteDate(round.applicationsEndTime) &&
+      isDirectRound(round)
+    ) {      
       setRollingApplicationsEnabled(true);
+    } else {
+      setRollingApplicationsEnabled(false);
     }
   }, [round]);
 
@@ -342,8 +349,8 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const roundEndDateTime = noRoundEndDate
     ? ""
     : round.roundEndTime
-    ? `${getUTCDate(round.roundEndTime)} ${getUTCTime(round.roundEndTime)}`
-    : "...";
+      ? `${getUTCDate(round.roundEndTime)} ${getUTCTime(round.roundEndTime)}`
+      : "...";
 
   const hasRoundEnded = moment().isAfter(moment(round.roundEndTime));
   const canEditOnlyRoundEndDate = moment().isAfter(
@@ -1294,15 +1301,19 @@ function RoundApplicationPeriod(props: {
     return inputTime.isBefore(moment());
   };
 
+  const showApplicationPeriod =
+    (isV2 && isDirectRound(editedRound)) || !isDirectRound(editedRound);
+  const showRoundPeriod =
+    (!isV2 && isDirectRound(editedRound)) || !isDirectRound(editedRound);
+
   return (
     <div className="w-full w-10/12">
       <span className="mt-4 inline-flex text-gray-400 mb-4">
-        What are the dates for the{" "}
-        {!isDirectRound(editedRound) ? "Applications and" : ""} Round voting
-        period(s)?
+        What are the dates for the Applications
+        {showApplicationPeriod ? "" : " and Round voting"} period(s)?
       </span>
       <div className="grid grid-cols-2 grid-rows-1 gap-4 mb-4">
-        {!isDirectRound(editedRound) && (
+        {showApplicationPeriod && (
           <>
             <div>
               <div
@@ -1349,11 +1360,7 @@ function RoundApplicationPeriod(props: {
                               utc={true}
                               dateFormat={"YYYY/MM/DD"}
                               timeFormat={"HH:mm UTC"}
-                              isValidDate={
-                                isV2
-                                  ? (current: Moment) => true
-                                  : disablePastDate
-                              }
+                              isValidDate={isV2 ? () => true : disablePastDate}
                               inputProps={{
                                 id: "applicationsStartTime",
                                 placeholder: "",
@@ -1432,32 +1439,41 @@ function RoundApplicationPeriod(props: {
                     </div>
                   )}
                   <div className="flex items-center mt-2">
-                    <input
-                      id="rollingApplications"
-                      name="rollingApplications"
-                      type="checkbox"
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                      checked={rollingApplicationsEnabled}
-                      disabled={
-                        !props.editMode.canEdit ||
-                        moment(editedRound.applicationsEndTime).isBefore(
-                          new Date()
-                        )
-                      }
-                      onChange={() => {
-                        setRollingApplicationsEnabled(
-                          !rollingApplicationsEnabled
-                        );
-                        props.setEditedRound({
-                          ...props.editedRound,
-                          applicationsEndTime: props.editedRound.roundEndTime,
-                        });
-                        props.setValue(
-                          "applicationsEndTime",
-                          props.editedRound.roundEndTime
-                        );
-                      }}
+                    <Controller
+                      name="roundEndTimeDisabled"
+                      control={props.control}
+                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                      render={({ field: { value, ...fieldProps } }) => (
+                        <input
+                          {...fieldProps}
+                          {...props.register("roundEndTimeDisabled")}
+                          id="rollingApplications"
+                          name="rollingApplications"
+                          type="checkbox"
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                          checked={rollingApplicationsEnabled}
+                          disabled={
+                            !props.editMode.canEdit ||
+                            moment(editedRound.applicationsEndTime).isBefore(
+                              new Date()
+                            )
+                          }
+                          onChange={(e) => {
+                            const isChecked = e.target.checked;
+                            setRollingApplicationsEnabled(isChecked);
+                            const newEndTime = isChecked
+                              ? new Date(maxDateForUint256)
+                              : moment(new Date()).add(1, "days").toDate();
+                            props.setEditedRound({
+                              ...props.editedRound,
+                              applicationsEndTime: newEndTime,
+                            });
+                            props.setValue("applicationsEndTime", newEndTime);
+                          }}
+                        />
+                      )}
                     />
+
                     <label
                       htmlFor="rollingApplications"
                       className="ml-2 block text-sm text-grey-400"
@@ -1582,19 +1598,19 @@ function RoundApplicationPeriod(props: {
                     <p className="text-[10px] pl-2 -mb-[7px]">End Date</p>
                     <input
                       type="text"
-                      className={`${
-                        !props.editMode.canEdit ||
-                        rollingApplicationsEnabled ||
-                        timeHasPassed(
-                          moment(props.editedRound.applicationsEndTime)
-                        )
-                          ? "bg-grey-50 text-gray-400"
-                          : ""
-                      } border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
+                      className={`
+                        ${
+                          !props.editMode.canEdit ||
+                          rollingApplicationsEnabled ||
+                          timeHasPassed(
+                            moment(props.editedRound.applicationsEndTime)
+                          )
+                            ? "bg-grey-50 text-gray-400"
+                            : ""
+                        } 
+                        ${rollingApplicationsEnabled ? "invisible" : ""}
+                        border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
                       defaultValue={`${getUTCDate(
-                        editedRound.applicationsEndTime
-                      )} ${getUTCTime(editedRound.applicationsEndTime)}`}
-                      value={`${getUTCDate(
                         editedRound.applicationsEndTime
                       )} ${getUTCTime(editedRound.applicationsEndTime)}`}
                       disabled
@@ -1606,235 +1622,246 @@ function RoundApplicationPeriod(props: {
           </>
         )}
 
-        <div>
-          <div
-            className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
-          >
-            Round
-          </div>
-          <div className="leading-8 font-normal">
-            {props.editMode.canEdit &&
-            (isV2 ||
-              !moment(editedRound.roundStartTime).isBefore(new Date())) ? (
-              <div className="col-span-6 sm:col-span-3">
-                <div
-                  className={`${
-                    !props.editMode.canEdit ? "bg-grey-50" : ""
-                  } relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                    props.errors.roundStartTime
-                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                  }`}
-                >
-                  <p className="block text-[10px]">Start Date</p>
-                  <Controller
-                    name="roundStartTime"
-                    control={props.control}
-                    render={({ field }) => (
-                      <div>
-                        <Datetime
-                          {...field}
-                          {...props.register("roundStartTime")}
-                          closeOnSelect
-                          onChange={(date) => {
-                            setRoundStartDate(moment(date));
-                            field.onChange(moment(date).toDate());
-                            props.setEditedRound({
-                              ...props.editedRound,
-                              roundStartTime: moment(date).toDate(),
-                            });
-                          }}
-                          utc={true}
-                          dateFormat={"YYYY/MM/DD"}
-                          timeFormat={"HH:mm UTC"}
-                          isValidDate={
-                            isV2 ? (current: Moment) => true : disablePastDate
-                          }
-                          inputProps={{
-                            id: "roundStartTime",
-                            placeholder: "",
-                            className: `${
-                              !props.editMode.canEdit ? "bg-grey-50" : ""
-                            } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
-                          }}
-                        />
-                        <div className="absolute inset-y-2 right-0 pr-3 flex items-center pointer-events-none">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    )}
-                  />
-                </div>
-                {props.errors.roundStartTime && (
-                  <p
-                    className="text-xs text-pink-500 mt-1"
-                    data-testid="round-start-date-error"
-                  >
-                    {props.errors.roundStartTime?.message}
-                  </p>
-                )}
-              </div>
-            ) : (
+        {showRoundPeriod && (
+          <>
+            <div>
               <div
-                className={`${
-                  !props.editMode.canEdit ||
-                  timeHasPassed(moment(props.editedRound.roundStartTime))
-                    ? "bg-grey-50"
-                    : ""
-                } relative border rounded-md shadow-sm focus-within:ring-1 ${
-                  props.errors.roundStartTime
-                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                }`}
+                className={
+                  "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
+                }
               >
-                <p className="text-[10px] pl-2 -mb-[7px]">Start Date</p>
-                <input
-                  type="text"
-                  className={`${
-                    !props.editMode.canEdit ||
-                    timeHasPassed(moment(props.editedRound.roundStartTime))
-                      ? "bg-grey-50 text-gray-400"
-                      : ""
-                  } border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
-                  defaultValue={`${getUTCDate(
-                    editedRound.roundStartTime
-                  )} ${getUTCTime(editedRound.roundStartTime)}`}
-                  disabled
-                />
+                Round
               </div>
-            )}
-          </div>
-        </div>
-        <div>
-          <div
-            className={"text-sm leading-5 pb-1 flex items-center gap-1 mb-2"}
-          >
-            &nbsp;
-          </div>
-          <div className="leading-8 font-normal">
-            {props.editMode.canEdit &&
-            !moment(editedRound.roundEndTime).isBefore(new Date()) ? (
-              <div className="col-span-6 sm:col-span-3">
-                <div
-                  className={`${
-                    !props.editMode.canEdit ? "bg-grey-50 text-gray-400" : ""
-                  } relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
-                    props.errors.roundEndTime
-                      ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                      : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                  }`}
-                >
-                  <p className="block text-[10px]">End Date</p>
-                  <Controller
-                    name="roundEndTime"
-                    control={props.control}
-                    render={({ field }) => (
-                      <div>
-                        <Datetime
-                          {...field}
-                          {...props.register("roundEndTime")}
-                          value={
-                            noRoundEndDate
-                              ? ""
-                              : `${getUTCDate(
-                                  editedRound.roundEndTime
-                                )} ${getUTCTime(editedRound.roundEndTime)}`
-                          }
-                          closeOnSelect
-                          onChange={(date) => {
-                            field.onChange(moment(date).toDate());
-                            !rollingApplicationsEnabled
-                              ? props.setEditedRound({
+              <div className="leading-8 font-normal">
+                {props.editMode.canEdit &&
+                (isV2 ||
+                  !moment(editedRound.roundStartTime).isBefore(new Date())) ? (
+                  <div className="col-span-6 sm:col-span-3">
+                    <div
+                      className={`${
+                        !props.editMode.canEdit ? "bg-grey-50" : ""
+                      } relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
+                        props.errors.roundStartTime
+                          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                          : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                      }`}
+                    >
+                      <p className="block text-[10px]">Start Date</p>
+                      <Controller
+                        name="roundStartTime"
+                        control={props.control}
+                        render={({ field }) => (
+                          <div>
+                            <Datetime
+                              {...field}
+                              {...props.register("roundStartTime")}
+                              closeOnSelect
+                              onChange={(date) => {
+                                setRoundStartDate(moment(date));
+                                field.onChange(moment(date).toDate());
+                                props.setEditedRound({
                                   ...props.editedRound,
-                                  roundEndTime: moment(date).toDate(),
-                                })
-                              : props.setEditedRound({
-                                  ...props.editedRound,
-                                  roundEndTime: moment(date).toDate(),
-                                  applicationsEndTime: moment(date).toDate(),
+                                  roundStartTime: moment(date).toDate(),
                                 });
-                          }}
-                          utc={true}
-                          dateFormat={"YYYY/MM/DD"}
-                          timeFormat={"HH:mm UTC"}
-                          isValidDate={disableBeforeRoundStartDate}
-                          inputProps={{
-                            id: "roundEndTime",
-                            placeholder: "",
-                            className: `${
-                              !props.editMode.canEdit
-                                ? "bg-grey-50"
-                                : "text-gray-900"
-                            } block w-full border-0 p-0 placeholder-grey-400 focus:ring-0 text-sm`,
-                          }}
-                        />
-                        <div className="absolute inset-y-2 right-0 pr-3 flex items-center pointer-events-none">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                              clipRule="evenodd"
+                              }}
+                              utc={true}
+                              dateFormat={"YYYY/MM/DD"}
+                              timeFormat={"HH:mm UTC"}
+                              isValidDate={isV2 ? () => true : disablePastDate}
+                              inputProps={{
+                                id: "roundStartTime",
+                                placeholder: "",
+                                className: `${
+                                  !props.editMode.canEdit ? "bg-grey-50" : ""
+                                } block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm`,
+                              }}
                             />
-                          </svg>
-                        </div>
-                      </div>
+                            <div className="absolute inset-y-2 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                      />
+                    </div>
+                    {props.errors.roundStartTime && (
+                      <p
+                        className="text-xs text-pink-500 mt-1"
+                        data-testid="round-start-date-error"
+                      >
+                        {props.errors.roundStartTime?.message}
+                      </p>
                     )}
-                  />
-                </div>
-                {props.errors.roundEndTime && (
-                  <p
-                    className="text-xs text-pink-500 mt-1"
-                    data-testid="round-end-date-error"
+                  </div>
+                ) : (
+                  <div
+                    className={`${
+                      !props.editMode.canEdit ||
+                      timeHasPassed(moment(props.editedRound.roundStartTime))
+                        ? "bg-grey-50"
+                        : ""
+                    } relative border rounded-md shadow-sm focus-within:ring-1 ${
+                      props.errors.roundStartTime
+                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
                   >
-                    {props.errors.roundEndTime?.message}
-                  </p>
+                    <p className="text-[10px] pl-2 -mb-[7px]">Start Date</p>
+                    <input
+                      type="text"
+                      className={`${
+                        !props.editMode.canEdit ||
+                        timeHasPassed(moment(props.editedRound.roundStartTime))
+                          ? "bg-grey-50 text-gray-400"
+                          : ""
+                      } border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
+                      defaultValue={`${getUTCDate(
+                        editedRound.roundStartTime
+                      )} ${getUTCTime(editedRound.roundStartTime)}`}
+                      disabled
+                    />
+                  </div>
                 )}
               </div>
-            ) : (
+            </div>
+            <div>
               <div
-                className={`${
-                  !props.editMode.canEdit ? "bg-grey-50 text-gray-400" : ""
-                } relative border rounded-md shadow-sm focus-within:ring-1 ${
-                  props.errors.roundEndTime
-                    ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
-                    : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
-                }`}
+                className={
+                  "text-sm leading-5 pb-1 flex items-center gap-1 mb-2"
+                }
               >
-                <p className="text-[10px] pl-2 -mb-[7px]">End Date</p>
-                <input
-                  type="text"
-                  className={`${
-                    !props.editMode.canEdit ? "bg-grey-50 text-gray-400" : ""
-                  } border-0 pt-0 pl-2 -mt-2 text-sm`}
-                  value={
-                    noRoundEndDate
-                      ? ""
-                      : `${getUTCDate(editedRound.roundEndTime)} ${getUTCTime(
-                          editedRound.roundEndTime
-                        )}`
-                  }
-                  disabled
-                />
+                &nbsp;
               </div>
-            )}
-          </div>
-        </div>
+              <div className="leading-8 font-normal">
+                {props.editMode.canEdit &&
+                !moment(editedRound.roundEndTime).isBefore(new Date()) ? (
+                  <div className="col-span-6 sm:col-span-3">
+                    <div
+                      className={`${
+                        !props.editMode.canEdit
+                          ? "bg-grey-50 text-gray-400"
+                          : ""
+                      } relative border rounded-md px-3 pb-2 mb-2 shadow-sm focus-within:ring-1 ${
+                        props.errors.roundEndTime
+                          ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                          : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                      }`}
+                    >
+                      <p className="block text-[10px]">End Date</p>
+                      <Controller
+                        name="roundEndTime"
+                        control={props.control}
+                        render={({ field }) => (
+                          <div>
+                            <Datetime
+                              {...field}
+                              {...props.register("roundEndTime")}
+                              value={
+                                noRoundEndDate
+                                  ? ""
+                                  : `${getUTCDate(
+                                      editedRound.roundEndTime
+                                    )} ${getUTCTime(editedRound.roundEndTime)}`
+                              }
+                              closeOnSelect
+                              onChange={(date) => {
+                                field.onChange(moment(date).toDate());
+                                !rollingApplicationsEnabled
+                                  ? props.setEditedRound({
+                                      ...props.editedRound,
+                                      roundEndTime: moment(date).toDate(),
+                                    })
+                                  : props.setEditedRound({
+                                      ...props.editedRound,
+                                      roundEndTime: moment(date).toDate(),
+                                      applicationsEndTime:
+                                        moment(date).toDate(),
+                                    });
+                              }}
+                              utc={true}
+                              dateFormat={"YYYY/MM/DD"}
+                              timeFormat={"HH:mm UTC"}
+                              isValidDate={disableBeforeRoundStartDate}
+                              inputProps={{
+                                id: "roundEndTime",
+                                placeholder: "",
+                                className: `${
+                                  !props.editMode.canEdit
+                                    ? "bg-grey-50"
+                                    : "text-gray-900"
+                                } block w-full border-0 p-0 placeholder-grey-400 focus:ring-0 text-sm`,
+                              }}
+                            />
+                            <div className="absolute inset-y-2 right-0 pr-3 flex items-center pointer-events-none">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                      />
+                    </div>
+                    {props.errors.roundEndTime && (
+                      <p
+                        className="text-xs text-pink-500 mt-1"
+                        data-testid="round-end-date-error"
+                      >
+                        {props.errors.roundEndTime?.message}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    className={`${
+                      !props.editMode.canEdit ? "bg-grey-50 text-gray-400" : ""
+                    } relative border rounded-md shadow-sm focus-within:ring-1 ${
+                      props.errors.roundEndTime
+                        ? "border-red-300 text-red-900 placeholder-red-300 focus-within:outline-none focus-within:border-red-500 focus-within: ring-red-500"
+                        : "border-gray-300 focus-within:border-indigo-600 focus-within:ring-indigo-600"
+                    }`}
+                  >
+                    <p className="text-[10px] pl-2 -mb-[7px]">End Date</p>
+                    <input
+                      type="text"
+                      className={`${
+                        !props.editMode.canEdit
+                          ? "bg-grey-50 text-gray-400"
+                          : ""
+                      } border-0 pt-0 pl-2 -mt-2 text-sm`}
+                      value={
+                        noRoundEndDate
+                          ? ""
+                          : `${getUTCDate(editedRound.roundEndTime)} ${getUTCTime(
+                              editedRound.roundEndTime
+                            )}`
+                      }
+                      disabled
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

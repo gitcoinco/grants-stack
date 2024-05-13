@@ -1,4 +1,3 @@
-import { Input } from "common/src/styles";
 import { Dispatch, SetStateAction } from "react";
 import { ReactComponent as Search } from "../../assets/search-grey.svg";
 
@@ -14,9 +13,11 @@ export const SortFilterDropdown = (props: SortFilterDropdownProps) => {
       </span>
       <select
         className="border-0 cursor-pointer text-violet-400 text-sm"
-        placeholder="Select Filter"
+        name="Select Filter"
+        data-testid="sort-filter-dropdown"
         onChange={props.onChange}
       >
+        <option value="" disabled>Select Filter</option>
         <option value="round_asc">Round End (Earliest)</option>
         <option value="round_desc">Round Start (Earliest)</option>
       </select>
@@ -38,9 +39,11 @@ export const GrantRoundTypeFilterDropdown = (
       </span>
       <select
         className="border-0 cursor-pointer text-violet-400 text-sm"
-        placeholder="All"
+        name="All"
+        data-testid="sort-filter-dropdown-all"
         onChange={props.onChange}
       >
+        <option value="" disabled>Select Filter</option>
         <option value="round_type_all">All Round Types</option>
         <option value="round_type_quadratic">Quadratic Funding</option>
         <option value="round_type_direct">Direct Grant</option>
@@ -56,7 +59,7 @@ export const SearchInput = (props: {
   return (
     <div className="relative">
       <Search className="absolute h-4 w-4 mt-3 ml-3" />
-      <Input
+      <input
         className="w-full lg:w-64 h-8 rounded-full pl-10 active:border-violet-400"
         type="text"
         placeholder="Search..."
