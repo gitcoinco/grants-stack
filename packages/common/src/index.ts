@@ -238,11 +238,12 @@ export const formatLocalDateAsISOString = (date: Date): string => {
 };
 
 export function getTimezoneName() {
+  const moment = require('moment-timezone');
   const today = new Date();
-  const short = today.toLocaleDateString(undefined);
-  const full = today.toLocaleDateString(undefined, { timeZoneName: "short" });
+  const userTimeZone = moment.tz.guess();
+  const formattedDate = moment(today).tz(userTimeZone).format('z')
 
-  return full.replace(short, "").replace(/[^A-Z]+/g, "");
+  return formattedDate;
 }
 
 export const getLocalTime = (date: Date): string => {
