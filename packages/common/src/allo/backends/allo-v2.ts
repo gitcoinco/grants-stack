@@ -51,30 +51,35 @@ function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
   let strategyAddresses;
   switch (chainId) {
     case ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID:
+    case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID:
       strategyAddresses = {
         [RoundCategory.QuadraticFunding]:
           "0x61E288cf14f196CF8a6104ec421ae17c7f16a749",
-        [RoundCategory.Direct]: "0x0000000000000000000000000000000000000000",
+        [RoundCategory.Direct]: "0x9710eedFD45a2ce5E6b09303a1E51c0cd600Fc88",
       };
       break;
-
-    case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID:
-      throw new Error("ZkSync era testnet is not supported");
 
     case ChainId.SEI_DEVNET:
       strategyAddresses = {
         [RoundCategory.QuadraticFunding]:
           "0x029dFAf686DfA0efdace5132ba422e9279D50b5b",
-        [RoundCategory.Direct]: "0x0000000000000000000000000000000000000000",
+        [RoundCategory.Direct]: "0xdA62767Da1402398d81C8288b37DE1CC8C8fDcA0",
       };
       break;
 
     case ChainId.LUKSO:
+      strategyAddresses = {
+        [RoundCategory.QuadraticFunding]:
+          "0x91b5eeE385D8e0cfd49FD94D4C7aE15e1F17e0A2",
+        [RoundCategory.Direct]: "0xF21E0915a0b7c541483962Cc7fB4705bBd4D5248",
+      };
+      break;
+
     case ChainId.LUKSO_TESTNET:
       strategyAddresses = {
         [RoundCategory.QuadraticFunding]:
           "0x91b5eeE385D8e0cfd49FD94D4C7aE15e1F17e0A2",
-        [RoundCategory.Direct]: "0x0000000000000000000000000000000000000000",
+        [RoundCategory.Direct]: "0xdA62767Da1402398d81C8288b37DE1CC8C8fDcA0",
       };
       break;
 
@@ -82,7 +87,7 @@ function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
       strategyAddresses = {
         [RoundCategory.QuadraticFunding]:
           "0x787eC93Dd71a90563979417879F5a3298389227f",
-        [RoundCategory.Direct]: "0x06F6e8D66435a02bcB67d54B280FDdb0C823dD7B", // todo: only on sepolia and only for testing
+        [RoundCategory.Direct]: "0x79A5EEc2C87Cd2116195E71af7A38647f89C8Ffa",
       };
       break;
   }
