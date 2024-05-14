@@ -30,7 +30,7 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 jest.mock("data-layer", () => ({
   ...jest.requireActual("data-layer"),
   useDataLayer: () => ({
-   getRoundById: jest.fn(),
+    getRoundById: jest.fn(),
   }),
 }));
 
@@ -173,6 +173,7 @@ describe("View Round", () => {
     expect(screen.getByText("Fund Round")).toBeInTheDocument();
     expect(screen.getByText("Grant Applications")).toBeInTheDocument();
     expect(screen.getByText("Round Settings")).toBeInTheDocument();
+    expect(screen.getByText("Manage Team")).toBeInTheDocument();
     expect(screen.getByText("Round Stats")).toBeInTheDocument();
     expect(screen.getByText("Round Results")).toBeInTheDocument();
     expect(screen.getByText("Fund Grantees")).toBeInTheDocument();
@@ -200,6 +201,7 @@ describe("View Round", () => {
     expect(screen.getByTestId("side-nav-bar")).toBeInTheDocument();
     expect(screen.getByText("Grant Applications")).toBeInTheDocument();
     expect(screen.getByText("Round Settings")).toBeInTheDocument();
+    expect(screen.getByText("Manage Team")).toBeInTheDocument();
     expect(screen.queryAllByText("Fund Contract").length).toBe(0);
     expect(screen.queryAllByText("Round Stats").length).toBe(0);
     expect(screen.queryAllByText("Round Results").length).toBe(0);
