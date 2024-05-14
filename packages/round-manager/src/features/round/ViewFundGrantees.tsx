@@ -309,8 +309,8 @@ export function PayProjectsTable(props: {
         .batchDistributeFunds({
           payoutStrategy:
             alloVersion === "allo-v1"
-              ? getAddress(props.round.payoutStrategy.id)
-              : getAddress(props.round.id),
+              ? getAddress(props.round.id)
+              : getAddress(props.round.payoutStrategy.id),
           allProjects: props.allProjects,
           projectIdsToBePaid: selectedProjects.map((p) => p.projectId),
         })
