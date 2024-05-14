@@ -27,7 +27,7 @@ export const SeiIcon =
 export const celoIcon =
   "https://ipfs.io/ipfs/QmQ16s5NLSQCRpaETRqBAq93hWU8nuDebZMT5D4JhQumf6";
 export const luksoIcon =
-  "https://ipfs.io/ipfs/QmV51pWBAZipPDcoNMV2on8VevmRgpmm3xjntpyhpKzNWx";
+  "https://ipfs.io/ipfs/QmZvBXAuN56WkYYoJPpQRDzCesfTQ1VQSKnTBxUqf1CzoJ";
 
 const config = getConfig();
 
@@ -385,7 +385,7 @@ export const customCeloAlfajores = {
 
 export const customLukso = {
   id: 42,
-  name: "Lukso",
+  name: "LUKSO",
   network: "Lukso",
   iconUrl: luksoIcon,
   nativeCurrency: {
@@ -411,7 +411,7 @@ export const customLukso = {
 
 export const customLuksoTestnet = {
   id: 4201,
-  name: "Lukso Testnet",
+  name: "LUKSO Testnet",
   network: "Lukso Testnet",
   iconUrl: luksoIcon,
   nativeCurrency: {
