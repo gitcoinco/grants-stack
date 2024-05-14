@@ -1163,7 +1163,7 @@ export class AlloV2 implements Allo {
   }
 
   batchDistributeFunds(args: {
-    payoutStrategy: Address;
+    payoutStrategyOrPoolId: string;
     allProjects: MatchingStatsData[];
     projectIdsToBePaid: string[];
   }): AlloOperation<
@@ -1175,7 +1175,7 @@ export class AlloV2 implements Allo {
     }
   > {
     return new AlloOperation(async ({ emit }) => {
-      const poolId = BigInt(args.payoutStrategy);
+      const poolId = BigInt(args.payoutStrategyOrPoolId);
       const recipientIds: Address[] = args.projectIdsToBePaid.map((id) =>
         getAddress(id)
       );

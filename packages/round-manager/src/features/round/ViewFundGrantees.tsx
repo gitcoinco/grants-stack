@@ -307,10 +307,10 @@ export function PayProjectsTable(props: {
     if (roundId) {
       const result = await allo
         .batchDistributeFunds({
-          payoutStrategy:
+          payoutStrategyOrPoolId:
             alloVersion === "allo-v1"
-              ? getAddress(props.round.id)
-              : getAddress(props.round.payoutStrategy.id),
+              ? getAddress(props.round.payoutStrategy.id)
+              : props.round.id,
           allProjects: props.allProjects,
           projectIdsToBePaid: selectedProjects.map((p) => p.projectId),
         })

@@ -203,7 +203,7 @@ export interface Allo {
   >;
 
   batchDistributeFunds: (args: {
-    payoutStrategy: Address;
+    payoutStrategyOrPoolId: string;
     allProjects: MatchingStatsData[];
     projectIdsToBePaid: string[];
   }) => AlloOperation<

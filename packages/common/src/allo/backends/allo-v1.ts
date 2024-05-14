@@ -491,8 +491,8 @@ export class AlloV1 implements Allo {
             args.roundData.applicationsEndTime
               ? dateToEthereumTimestamp(args.roundData.applicationsEndTime)
               : args.roundData.roundEndTime
-                ? dateToEthereumTimestamp(args.roundData.roundEndTime)
-                : maxUint256,
+              ? dateToEthereumTimestamp(args.roundData.roundEndTime)
+              : maxUint256,
             dateToEthereumTimestamp(args.roundData.roundStartTime),
             args.roundData.roundEndTime
               ? dateToEthereumTimestamp(args.roundData.roundEndTime)
@@ -984,7 +984,7 @@ export class AlloV1 implements Allo {
   }
 
   batchDistributeFunds(args: {
-    payoutStrategy: Address;
+    payoutStrategyOrPoolId: string;
     allProjects: MatchingStatsData[];
     projectIdsToBePaid: string[];
   }): AlloOperation<
@@ -1029,7 +1029,7 @@ export class AlloV1 implements Allo {
       });
 
       const txResult = await sendTransaction(this.transactionSender, {
-        address: args.payoutStrategy,
+        address: getAddress(args.payoutStrategyOrPoolId),
         abi: MerklePayoutStrategyImplementationABI,
         functionName: "payout",
         args: [projectsWithMerkleProof],
