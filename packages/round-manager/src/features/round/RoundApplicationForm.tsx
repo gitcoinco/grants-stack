@@ -102,15 +102,6 @@ export const getInitialQuestionsDirect = (chainId: number) => [
   },
   {
     id: 3,
-    title: "Amount requested",
-    required: true,
-    encrypted: false,
-    hidden: true,
-    type: "number",
-    fixed: false,
-  },
-  {
-    id: 4,
     title: "Payout wallet address",
     required: true,
     encrypted: false,
@@ -120,7 +111,7 @@ export const getInitialQuestionsDirect = (chainId: number) => [
     metadataExcluded: true,
   },
   {
-    id: 5,
+    id: 4,
     title: "Milestones",
     required: true,
     encrypted: false,
@@ -128,7 +119,7 @@ export const getInitialQuestionsDirect = (chainId: number) => [
     type: "paragraph",
   },
   {
-    id: 6,
+    id: 5,
     title: "Funding Sources",
     required: true,
     encrypted: false,
@@ -136,7 +127,7 @@ export const getInitialQuestionsDirect = (chainId: number) => [
     type: "short-answer",
   },
   {
-    id: 7,
+    id: 6,
     title: "Team Size",
     required: true,
     encrypted: false,
