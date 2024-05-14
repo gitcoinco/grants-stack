@@ -18,6 +18,9 @@ const ExploreRoundsPage = () => {
   // Pass the filter from the search params and build the graphql query
   const rounds = useFilterRounds(filter, getEnabledChains());
 
+  const publicRounds = rounds.data?.filter(round => round.roundMetadata.roundType?.toLowerCase() !== "private");
+  rounds.data = publicRounds;
+
   const sectionTitle = getExplorerPageTitle(filter);
 
   return (
@@ -25,7 +28,7 @@ const ExploreRoundsPage = () => {
       <LandingHero />
 
       <LandingSection
-        title={`${sectionTitle} (${rounds.data?.length ?? 0})`}
+        title={`${sectionTitle} (${rounds?.data?.length ?? 0})`}
         className="flex-wrap"
         action={<RoundsFilter />}
       >

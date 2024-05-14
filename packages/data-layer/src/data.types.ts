@@ -508,6 +508,7 @@ export type TimeFilterVariables = {
   applicationsEndTime?: TimeFilter;
   donationsStartTime?: TimeFilter;
   donationsEndTime?: TimeFilter;
+  or?: any;
 };
 
 export type RoundsQueryVariables = {
