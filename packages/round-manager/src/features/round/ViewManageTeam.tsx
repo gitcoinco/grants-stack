@@ -1,6 +1,7 @@
 import { AddressAndRole } from "data-layer";
 import { Round } from "../api/types";
 import { useMemo } from "react";
+import { useEnsName } from "wagmi";
 
 const sortDataByRole = (data: AddressAndRole[]): AddressAndRole[] => {
   return data.sort((a, b) => {
@@ -18,12 +19,9 @@ export default function ViewManageTeam(props: { round: Round | undefined }) {
   return (
     <div>
       <p className="font-bold text-lg mt-2 mb-2">Manage Team</p>
+      <p className="text-sm text-gray-400 mb-2">View who is on your team.</p>
       <p className="text-sm text-gray-400 mb-2">
-        Add or remove admins and operators to your team.{" "}
-      </p>
-      <p className="text-sm text-gray-400 mb-2">
-        Make sure to have at least two admins at all times for security
-        purposes.
+        Only admins can add others to your team.
       </p>
       <p className="text-md mt-6 mb-4">View Members</p>
       <div className="overflow-x-auto">
@@ -54,11 +52,9 @@ export default function ViewManageTeam(props: { round: Round | undefined }) {
             {sortedRoles.map((item: AddressAndRole, index) => (
               <tr key={index}>
                 <td className="w-1/4 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
-                  User
+                  User{index + 1}
                 </td>
-                <td className="w-2/4 px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                  {item.address}
-                </td>
+                <AddressRow address={item.address} />
                 <td className="w-1/4 px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                   {item.role === "ADMIN" ? "Admin" : "Operator"}
                 </td>
@@ -68,5 +64,19 @@ export default function ViewManageTeam(props: { round: Round | undefined }) {
         </table>
       </div>
     </div>
+  );
+}
+
+function AddressRow(props: { address: string }) {
+  const { data: ensName } = useEnsName({
+    address: props.address as `0x${string}`,
+    chainId: 1,
+  });
+  console.log("ensName", ensName);
+
+  return (
+    <td className="w-2/4 px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+      {ensName || props.address}
+    </td>
   );
 }
