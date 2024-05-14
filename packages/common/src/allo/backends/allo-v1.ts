@@ -1173,6 +1173,34 @@ export class AlloV1 implements Allo {
       return success(args.roundId);
     });
   }
+
+  addPoolManager(args: { poolId: string; manager: Address }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const result = new AlloError("Unsupported on v1");
+      return error(result); 
+    });    
+  }
+
+  removePoolManager(args: { poolId: string; manager: Address }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const result = new AlloError("Unsupported on v1");
+      return error(result); 
+    });
+  }
 }
 
 // todo: move this out?

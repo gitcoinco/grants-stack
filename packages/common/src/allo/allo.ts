@@ -213,6 +213,30 @@ export interface Allo {
       indexingStatus: Result<null>;
     }
   >;
+
+  addPoolManager: (args: {
+    poolId: Hex;
+    manager: Address;
+  }) => AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  >;
+
+  removePoolManager: (args: {
+    poolId: Hex;
+    manager: Address;
+  }) => AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  >;
 }
 
 export { AlloOperation };
