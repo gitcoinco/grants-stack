@@ -7,6 +7,7 @@ import z from "zod";
 import { ChainId } from "./chain-ids";
 import { Round } from "data-layer";
 import { getAlloVersion, getConfig } from "./config";
+import moment from 'moment-timezone';
 
 export * from "./icons";
 export * from "./markdown";
@@ -226,6 +227,46 @@ export const getUTCDate = (date: Date): string => {
 
 export const getUTCDateTime = (date: Date): string => {
   return `${getUTCDate(date)} ${getUTCTime(date)}`;
+};
+
+export const formatLocalDateAsISOString = (date: Date): string => {
+  // @ts-expect-error remove when DG support is merged
+  if (isNaN(date)) {
+    return "";
+  }
+  const localString = getLocalDate(date);
+  return localString;
+};
+
+export function getTimezoneName() {
+  const today = new Date();
+  const userTimeZone = moment.tz.guess();
+  const formattedDate = moment(today).tz(userTimeZone).format('z')
+
+  return formattedDate;
+}
+
+export const getLocalTime = (date: Date): string => {
+  const localTime = [
+    padSingleDigitNumberWithZero(date.getHours()),
+    padSingleDigitNumberWithZero(date.getMinutes()),
+  ];
+
+  return localTime.join(":") + " " + getTimezoneName();
+};
+
+export const getLocalDate = (date: Date): string => {
+  const localDate = [
+    padSingleDigitNumberWithZero(date.getFullYear()),
+    padSingleDigitNumberWithZero(date.getMonth() + 1),
+    padSingleDigitNumberWithZero(date.getDate()),
+  ];
+
+  return localDate.join("/");
+};
+
+export const getLocalDateTime = (date: Date): string => {
+  return `${getLocalDate(date)} ${getLocalTime(date)}`;
 };
 
 export const useTokenPrice = (tokenId: string | undefined) => {

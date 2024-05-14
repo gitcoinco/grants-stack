@@ -1,4 +1,9 @@
-import { formatUTCDateAsISOString, getUTCTime } from "common";
+import {
+  formatUTCDateAsISOString,
+  formatLocalDateAsISOString,
+  getUTCTime,
+  getLocalTime,
+} from "common";
 import moment from "moment";
 import { maxDateForUint256 } from "../../constants";
 import { Round } from "../api/types";
@@ -27,6 +32,16 @@ export function parseRoundDates(round: RoundDates) {
             formatUTCDateAsISOString(round.applicationsEndTime)
           ),
       },
+      local_iso: {
+        start: formatLocalDateAsISOString(round.applicationsStartTime),
+        end:
+          moment(round.applicationsEndTime).isSame(maxDateForUint256) ||
+          !moment(round.applicationsEndTime).isValid() ? (
+            <span dangerouslySetInnerHTML={{ __html: noEndTime }} />
+          ) : (
+            formatLocalDateAsISOString(round.applicationsEndTime)
+          ),
+      },
       utc: {
         start: getUTCTime(round.applicationsStartTime),
         end:
@@ -34,6 +49,12 @@ export function parseRoundDates(round: RoundDates) {
           !moment(round.applicationsEndTime).isValid()
             ? ""
             : `(${getUTCTime(round.applicationsEndTime)})`,
+      },
+      local: {
+        start: getLocalTime(round.applicationsStartTime),
+        end: moment(round.applicationsEndTime).isSame(maxDateForUint256)
+          ? ""
+          : `(${getLocalTime(round.applicationsEndTime)})`,
       },
     },
     round: {
@@ -47,6 +68,16 @@ export function parseRoundDates(round: RoundDates) {
             formatUTCDateAsISOString(round.roundEndTime)
           ),
       },
+      local_iso: {
+        start: formatLocalDateAsISOString(round.roundStartTime),
+        end:
+          moment(round.roundEndTime).isSame(maxDateForUint256) ||
+          !moment(round.applicationsEndTime).isValid() ? (
+            <span dangerouslySetInnerHTML={{ __html: noEndTime }} />
+          ) : (
+            formatLocalDateAsISOString(round.roundEndTime)
+          ),
+      },
       utc: {
         start: `(${getUTCTime(round.roundStartTime)})`,
         end:
@@ -54,6 +85,12 @@ export function parseRoundDates(round: RoundDates) {
           !moment(round.applicationsEndTime).isValid()
             ? ""
             : `(${getUTCTime(round.roundEndTime)})`,
+      },
+      local: {
+        start: getLocalTime(round.roundStartTime),
+        end: moment(round.roundEndTime).isSame(maxDateForUint256)
+          ? ""
+          : `(${getLocalTime(round.roundEndTime)})`,
       },
     },
   };

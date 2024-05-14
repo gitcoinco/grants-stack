@@ -32,6 +32,7 @@
     "ethers": "^5.6.5",
     "framer-motion": "^10.12.7",
     "markdown-it": "^13.0.1",
+    "moment-timezone": "^0.5.45",
     "react": "^18.2.0",
     "react-hook-form": "^7.42.1",
     "react-router": "^6",

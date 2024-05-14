@@ -10,6 +10,8 @@ import {
   getPayoutTokenOptions,
   getUTCDate,
   getUTCTime,
+  getLocalDate,
+  getLocalTime,
   payoutTokens,
   useAllo,
 } from "common";
@@ -57,6 +59,7 @@ import { ethers } from "ethers";
 import { getConfig } from "common/src/config";
 import { zeroAddress } from "viem";
 import { NATIVE } from "common/dist/allo/common";
+import { getTimezoneName } from "common/src/index";
 import { isInfiniteDate } from "common/src/allo/common";
 import { SybilDefense } from "data-layer";
 
@@ -350,7 +353,7 @@ export default function ViewRoundSettings(props: { id?: string }) {
   const roundEndDateTime = noRoundEndDate
     ? ""
     : round.roundEndTime
-      ? `${getUTCDate(round.roundEndTime)} ${getUTCTime(round.roundEndTime)}`
+      ? `${getLocalDate(round.roundEndTime)} ${getLocalTime(round.roundEndTime)}`
       : "...";
 
   const hasRoundEnded = moment().isAfter(moment(round.roundEndTime));
@@ -1358,9 +1361,9 @@ function RoundApplicationPeriod(props: {
                                   applicationsStartTime: moment(date).toDate(),
                                 });
                               }}
-                              utc={true}
+                              utc={false}
                               dateFormat={"YYYY/MM/DD"}
-                              timeFormat={"HH:mm UTC"}
+                              timeFormat={`HH:mm [${getTimezoneName()}]`}
                               isValidDate={isV2 ? () => true : disablePastDate}
                               inputProps={{
                                 id: "applicationsStartTime",
@@ -1431,9 +1434,9 @@ function RoundApplicationPeriod(props: {
                               ? "bg-grey-50 text-gray-400"
                               : ""
                           }`}
-                          defaultValue={`${getUTCDate(
+                          defaultValue={`${getLocalDate(
                             editedRound.applicationsStartTime
-                          )} ${getUTCTime(editedRound.applicationsStartTime)}`}
+                          )} ${getLocalTime(editedRound.applicationsStartTime)}`}
                           disabled
                         />
                       </div>
@@ -1542,9 +1545,9 @@ function RoundApplicationPeriod(props: {
                                 applicationsEndTime: moment(date).toDate(),
                               });
                             }}
-                            utc={true}
+                            utc={false}
                             dateFormat={"YYYY/MM/DD"}
-                            timeFormat={"HH:mm UTC"}
+                            timeFormat={`HH:mm [${getTimezoneName()}]`}
                             isValidDate={disableBeforeApplicationStartDate}
                             inputProps={{
                               id: "applicationsEndTime",
@@ -1611,9 +1614,9 @@ function RoundApplicationPeriod(props: {
                         } 
                         ${rollingApplicationsEnabled ? "invisible" : ""}
                         border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
-                      defaultValue={`${getUTCDate(
+                      defaultValue={`${getLocalDate(
                         editedRound.applicationsEndTime
-                      )} ${getUTCTime(editedRound.applicationsEndTime)}`}
+                      )} ${getLocalTime(editedRound.applicationsEndTime)}`}
                       disabled
                     />
                   </div>
@@ -1665,9 +1668,9 @@ function RoundApplicationPeriod(props: {
                                   roundStartTime: moment(date).toDate(),
                                 });
                               }}
-                              utc={true}
+                              utc={false}
                               dateFormat={"YYYY/MM/DD"}
-                              timeFormat={"HH:mm UTC"}
+                              timeFormat={`HH:mm [${getTimezoneName()}]`}
                               isValidDate={isV2 ? () => true : disablePastDate}
                               inputProps={{
                                 id: "roundStartTime",
@@ -1726,9 +1729,9 @@ function RoundApplicationPeriod(props: {
                           ? "bg-grey-50 text-gray-400"
                           : ""
                       } border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
-                      defaultValue={`${getUTCDate(
+                      defaultValue={`${getLocalDate(
                         editedRound.roundStartTime
-                      )} ${getUTCTime(editedRound.roundStartTime)}`}
+                      )} ${getLocalTime(editedRound.roundStartTime)}`}
                       disabled
                     />
                   </div>
@@ -1770,9 +1773,9 @@ function RoundApplicationPeriod(props: {
                               value={
                                 noRoundEndDate
                                   ? ""
-                                  : `${getUTCDate(
+                                  : `${getLocalDate(
                                       editedRound.roundEndTime
-                                    )} ${getUTCTime(editedRound.roundEndTime)}`
+                                    )} ${getLocalTime(editedRound.roundEndTime)}`
                               }
                               closeOnSelect
                               onChange={(date) => {
@@ -1789,9 +1792,9 @@ function RoundApplicationPeriod(props: {
                                         moment(date).toDate(),
                                     });
                               }}
-                              utc={true}
+                              utc={false}
                               dateFormat={"YYYY/MM/DD"}
-                              timeFormat={"HH:mm UTC"}
+                              timeFormat={`HH:mm [${getTimezoneName()}]`}
                               isValidDate={disableBeforeRoundStartDate}
                               inputProps={{
                                 id: "roundEndTime",
@@ -1851,7 +1854,7 @@ function RoundApplicationPeriod(props: {
                       value={
                         noRoundEndDate
                           ? ""
-                          : `${getUTCDate(editedRound.roundEndTime)} ${getUTCTime(
+                          : `${getLocalDate(editedRound.roundEndTime)} ${getLocalTime(
                               editedRound.roundEndTime
                             )}`
                       }
