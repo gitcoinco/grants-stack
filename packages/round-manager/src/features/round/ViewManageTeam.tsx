@@ -72,7 +72,6 @@ function AddressRow(props: { address: string }) {
     address: props.address as `0x${string}`,
     chainId: 1,
   });
-  console.log("ensName", ensName);
 
   return (
     <td className="w-2/4 px-6 py-4 whitespace-nowrap text-sm text-gray-400">
