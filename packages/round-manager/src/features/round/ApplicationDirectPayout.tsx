@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import ProgressModal from "../common/ProgressModal";
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import ReactTooltip from "react-tooltip";
@@ -15,16 +15,18 @@ import { Button, Input } from "common/src/styles";
 import { BigNumber, ethers } from "ethers";
 import { AnswerBlock, GrantApplication, Round } from "../api/types";
 import {
+  PayoutToken,
   formatUTCDateAsISOString,
   getPayoutTokenOptions,
   getUTCTime,
   getLocalTime,
+  payoutTokens,
   useAllo,
 } from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { usePayouts } from "./usePayouts";
-import { Hex } from "viem";
+import { Hex, isAddress, zeroAddress } from "viem";
 import { useDataLayer } from "data-layer";
 import { getConfig } from "common/src/config";
 
@@ -70,6 +72,14 @@ export default function ApplicationDirectPayout({
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
+  const [tokenInfo, setTokenInfo] = useState(
+    getPayoutTokenOptions(chain.id)[0]
+  );
+  const [selectedToken, setSelectedToken] = useState<Hex | "custom">(
+    tokenInfo.address
+  );
+  const [customTokenInput, setCustomTokenInput] = useState("");
+
   const network = useNetwork();
 
   const allInputs = watch();
@@ -83,29 +93,70 @@ export default function ApplicationDirectPayout({
     dataLayer,
   });
 
+  // todo; remove this
   // find answer with question "Payout token"
-  const payoutTokenAnswer = answerBlocks?.find(
-    (a) => a.question === "Payout token"
-  );
-  if (payoutTokenAnswer === undefined) {
-    throw Error('"Payout token" not found in answers!');
-  }
+  // const payoutTokenAnswer = answerBlocks?.find(
+  //   (a) => a.question === "Payout token"
+  // );
+  // if (payoutTokenAnswer === undefined) {
+  //   throw Error('"Payout token" not found in answers!');
+  // }
   // find token info based on payoutTokenAnswer
   const tokensByChainInfo = getPayoutTokenOptions(chain.id);
-  const tokenInfo = tokensByChainInfo.find(
-    (t) => t.name.toLowerCase() === payoutTokenAnswer.answer?.toLowerCase()
-  );
 
-  if (!tokenInfo) {
-    throw Error(
-      `Token info not found for chain id: ${chain.id} and token ${payoutTokenAnswer}!`
-    );
-  }
   // get payout wallet address
   const payoutWalletAddress = application.recipient;
   if (payoutWalletAddress === undefined) {
     throw Error('"Payout wallet address" not found in answers!');
   }
+
+  const noToken = () => {
+    return {
+      name: " ",
+      address: zeroAddress,
+      decimal: 1,
+      chainId: chain.id,
+    };
+  };
+
+  const handleTokenChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    if (event.target.value === "custom") {
+      // fetch symbol and decimals
+      setSelectedToken("custom");
+      setTokenInfo(noToken());
+    } else {
+      const selectedTokenId = event.target.value;
+      const selectedTokenInfo = tokensByChainInfo.find(
+        (token) => token.address === selectedTokenId
+      );
+
+      if (selectedTokenInfo) {
+        setSelectedToken(selectedTokenInfo.address);
+        setTokenInfo(selectedTokenInfo); // Assuming setTokenInfo is a function to update tokenInfo
+      }
+    }
+  };
+
+  const handleCustomTokenInputChange = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const tokenValue = event.target.value;
+    setCustomTokenInput(tokenValue);
+    if (isAddress(tokenValue) && signer) {
+      const erc20 = Erc20__factory.connect(tokenValue, signer);
+      const name = await erc20.symbol();
+      const decimal = await erc20.decimals();
+      const customTokenInfo = {
+        name: name,
+        address: tokenValue,
+        decimal: decimal,
+        chainId: chain.id,
+      };
+      setTokenInfo(customTokenInfo);
+    } else {
+      setTokenInfo(noToken());
+    }
+  };
 
   const getAmountWithFee = () => {
     const amount = Number(allInputs.amount) || 0;
@@ -259,9 +310,13 @@ export default function ApplicationDirectPayout({
                             <td className="text-sm leading-5 px-2 text-gray-400 text-left text-ellipsis overflow-hidden">
                               {ethers.utils.formatUnits(
                                 payout.amount,
-                                tokenInfo.decimal
+                                payoutTokens.find(
+                                  (p) => p.address === payout.tokenAddress
+                                )?.decimal || 18
                               )}{" "}
-                              {tokenInfo.name}
+                              {payoutTokens.find(
+                                (p) => p.address === payout.tokenAddress
+                              )?.name || " "}
                             </td>
                             <td className="text-sm leading-5 px-2 text-gray-400 text-left">
                               {formatUTCDateAsISOString(
@@ -314,7 +369,43 @@ export default function ApplicationDirectPayout({
           className="grid grid-cols-1 gap-4 sm:items-start shadow-sm text-grey-500 rounded border border-solid border-gray-100"
         >
           <div className="pt-7 pb-3.5 px-6 flex flex-col gap-4">
+            <div className="dropdown">
+              <label htmlFor="" className="block text-sm">
+                <p className="text-sm">
+                  <span>Select Token</span>
+                  <span className="text-right text-violet-400 float-right text-xs mt-1">
+                    *Required
+                  </span>
+                </p>
+              </label>
+              <div className="relative mt-2 rounded-md shadow-sm">
+                <select
+                  value={selectedToken}
+                  onChange={handleTokenChange}
+                  className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                >
+                  <option value="">Select a token</option>
+                  {tokensByChainInfo.map((token) => (
+                    <option key={token.address} value={token.address}>
+                      {token.name}
+                    </option>
+                  ))}
+                  <option value="custom">Custom Token</option>{" "}
+                </select>
+                {selectedToken === "custom" && ( // Conditionally render custom token input
+                  <input
+                    type="text"
+                    value={customTokenInput}
+                    onChange={handleCustomTokenInputChange}
+                    className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md mt-2"
+                    placeholder="Enter custom token address"
+                  />
+                )}
+              </div>
+            </div>
+
             <div className="inputBox">
+              {/* add dropdown here */}
               <label htmlFor="" className="block text-sm">
                 <p className="text-sm">
                   <span>Amount</span>

@@ -13,6 +13,7 @@ export function usePayouts(args: {
       amount: string;
       createdAt: string;
       txnHash: string;
+      tokenAddress: string;
     }[]
   >(
     args.roundId !== undefined && args.projectId !== undefined
@@ -40,6 +41,7 @@ export function usePayouts(args: {
           amount: payout.amount,
           createdAt: payout.timestamp,
           txnHash: payout.transactionHash,
+          tokenAddress: payout.tokenAddress,
         };
       });
 
