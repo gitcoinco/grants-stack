@@ -10,6 +10,7 @@ import { RoundsFilter } from "./RoundsFilter";
 import { getExplorerPageTitle } from "./utils/getExplorerPageTitle";
 import { RoundsGrid } from "./RoundsGrid";
 import { getEnabledChains } from "../../app/chainConfig";
+import { useMemo } from "react";
 
 const ExploreRoundsPage = () => {
   const [params] = useSearchParams();
@@ -18,6 +19,9 @@ const ExploreRoundsPage = () => {
   // Pass the filter from the search params and build the graphql query
   const rounds = useFilterRounds(filter, getEnabledChains());
 
+  const publicRounds = useMemo(() => rounds.data?.filter(round => round.roundMetadata.roundType?.toLowerCase() !== "private"), [rounds]);
+  rounds.data = publicRounds;
+
   const sectionTitle = getExplorerPageTitle(filter);
 
   return (
@@ -25,7 +29,7 @@ const ExploreRoundsPage = () => {
       <LandingHero />
 
       <LandingSection
-        title={`${sectionTitle} (${rounds.data?.length ?? 0})`}
+        title={`${sectionTitle} (${rounds?.data?.length ?? 0})`}
         className="flex-wrap"
         action={<RoundsFilter />}
       >

@@ -501,6 +501,7 @@ export type TimeFilter = {
   lessThan?: string;
   greaterThanOrEqualTo?: string;
   lessThanOrEqualTo?: string;
+  isNull?: boolean;
 };
 
 export type TimeFilterVariables = {
@@ -508,6 +509,7 @@ export type TimeFilterVariables = {
   applicationsEndTime?: TimeFilter;
   donationsStartTime?: TimeFilter;
   donationsEndTime?: TimeFilter;
+  or?: TimeFilterVariables[];
 };
 
 export type RoundsQueryVariables = {

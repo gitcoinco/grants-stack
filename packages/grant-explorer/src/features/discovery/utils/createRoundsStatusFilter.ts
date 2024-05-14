@@ -7,21 +7,19 @@ export const createISOTimestamp = (timestamp = 0) => {
 };
 
 const ONE_DAY_IN_MILISECONDS = 3600 * 24 * 1000;
-const ONE_YEAR_IN_MILISECONDS = ONE_DAY_IN_MILISECONDS * 365 * 1000;
 
 function getStatusFilter(status: string): TimeFilterVariables {
   const currentTimestamp = createISOTimestamp();
-  const futureTimestamp = createISOTimestamp(ONE_YEAR_IN_MILISECONDS);
 
   switch (status) {
     case RoundStatus.active:
       return {
         // Round must have started and not ended yet
         donationsStartTime: { lessThan: currentTimestamp },
-        donationsEndTime: {
-          greaterThan: currentTimestamp,
-          lessThan: futureTimestamp,
-        },
+        or: [
+          { donationsEndTime: { greaterThan: currentTimestamp} },
+          { donationsEndTime: { isNull: true } },
+        ]
       };
     case RoundStatus.taking_applications:
       return {
