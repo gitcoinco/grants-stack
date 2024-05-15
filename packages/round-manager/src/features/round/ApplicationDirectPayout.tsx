@@ -128,7 +128,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
 
       if (selectedTokenInfo) {
         setSelectedToken(selectedTokenInfo.address);
-        setTokenInfo(selectedTokenInfo); // Assuming setTokenInfo is a function to update tokenInfo
+        setTokenInfo(selectedTokenInfo);
       }
     }
   };
