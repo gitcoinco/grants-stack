@@ -45,6 +45,7 @@ import Erc20ABI from "../abis/erc20";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { BigNumber, utils } from "ethers";
+import { Distribution } from "@allo-team/allo-v2-sdk/dist/strategies/DonationVotingMerkleDistributionStrategy/types";
 
 function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
   let strategyAddresses;
@@ -1187,7 +1188,7 @@ export class AlloV2 implements Allo {
         args.projectIdsToBePaid.includes(project.anchorAddress ?? "")
       );
 
-      const projectsWithMerkleProof: ProjectWithMerkleProof[] = [];
+      const projectsWithMerkleProof: Distribution[] = [];
 
       projectsToBePaid.forEach((project) => {
         if (!project.index) {
@@ -1211,22 +1212,30 @@ export class AlloV2 implements Allo {
         const validMerkleProof = tree.getProof(distribution);
 
         projectsWithMerkleProof.push({
-          index: distribution[0],
-          recipientId: distribution[1],
-          amount: distribution[3],
-          merkleProof: validMerkleProof,
+          index: BigInt(distribution[0]),
+          recipientId: distribution[1] as Address,
+          amount: BigInt(distribution[3].toString()),
+          merkleProof: validMerkleProof as Address[],
         });
+
+        console.log("projectsWithMerkleProof", projectsWithMerkleProof);
+
       });
 
-      const projectsWithMerkleProofBytes = serializeProjects(
-        projectsWithMerkleProof
+      const strategy = new DonationVotingMerkleDistributionStrategy({
+        chain: this.chainId,
+        poolId: poolId,
+      });
+
+      const txData = strategy.distribute(
+        recipientIds,
+        projectsWithMerkleProof,
       );
 
-      const txResult = await sendTransaction(this.transactionSender, {
-        address: this.allo.address(),
-        abi: AlloAbi,
-        functionName: "distribute",
-        args: [poolId, recipientIds, projectsWithMerkleProofBytes],
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: txData.to,
+        data: txData.data,
+        value: BigInt(txData.value),
       });
 
       emit("transaction", txResult);
