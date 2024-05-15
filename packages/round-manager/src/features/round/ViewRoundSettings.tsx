@@ -108,8 +108,12 @@ const generateUpdateRoundData = (
     )
   ) {
     const decimals = getPayoutTokenOptions(dNewRound.chainId).find(
-      (token) => token.address === dNewRound.token
+      (token) => token.address.toLowerCase() === dNewRound.token.toLowerCase()
     )?.decimal;
+
+    if (!decimals) {
+      throw new Error("Token decimals not found");
+    }
 
     const matchAmount = ethers.utils.parseUnits(
       dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toString(),
@@ -181,10 +185,11 @@ export default function ViewRoundSettings(props: { id?: string }) {
   /* All DG rounds have rolling applications enabled */
   useEffect(() => {
     if (
-      round && round.applicationsEndTime &&
+      round &&
+      round.applicationsEndTime &&
       isInfiniteDate(round.applicationsEndTime) &&
       isDirectRound(round)
-    ) {      
+    ) {
       setRollingApplicationsEnabled(true);
     } else {
       setRollingApplicationsEnabled(false);
