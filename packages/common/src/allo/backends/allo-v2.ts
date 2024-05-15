@@ -1184,14 +1184,18 @@ export class AlloV2 implements Allo {
 
       // Filter projects to be paid from matching results
       const projectsToBePaid = matchingResults.filter((project) =>
-        args.projectIdsToBePaid.includes(project.projectId)
+        args.projectIdsToBePaid.includes(project.anchorAddress ?? "")
       );
 
       const projectsWithMerkleProof: ProjectWithMerkleProof[] = [];
 
       projectsToBePaid.forEach((project) => {
         if (!project.index) {
-          throw new AlloError("Project index is required");
+          if (project.index === 0) {
+            // do nothing
+          } else {
+            throw new AlloError("Project index is required");
+          }
         }
         if (!project.anchorAddress) {
           throw new AlloError("Anchor address is required");
