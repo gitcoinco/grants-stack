@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import ProgressModal from "../common/ProgressModal";
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import ReactTooltip from "react-tooltip";
@@ -15,7 +15,7 @@ import { Button, Input } from "common/src/styles";
 import { BigNumber, ethers } from "ethers";
 import { AnswerBlock, GrantApplication, Round } from "../api/types";
 import {
-  PayoutToken,
+  NATIVE,
   formatUTCDateAsISOString,
   getPayoutTokenOptions,
   getUTCTime,
@@ -52,11 +52,7 @@ type Props = {
   answerBlocks: AnswerBlock[];
 };
 
-export default function ApplicationDirectPayout({
-  round,
-  application,
-  answerBlocks,
-}: Props) {
+export default function ApplicationDirectPayout({ round, application }: Props) {
   const { chain, address, signer } = useWallet();
   const { triggerPayout, progressSteps: payoutProgressSteps } = usePayout();
   const [isPayoutProgressModelOpen, setIsPayoutProgressModelOpen] =
@@ -72,13 +68,25 @@ export default function ApplicationDirectPayout({
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
-  const [tokenInfo, setTokenInfo] = useState(
-    getPayoutTokenOptions(chain.id)[0]
-  );
+
+  const isV2 = getConfig().allo.version === "allo-v2";
+  // in v1 you can't use native payout token
+  const tokensByChainInfo = isV2
+    ? getPayoutTokenOptions(chain.id)
+    : getPayoutTokenOptions(chain.id).filter(
+        (t) =>
+          t.address.toLowerCase() !== NATIVE.toLowerCase() &&
+          t.address !== zeroAddress
+      );
+
+  const [tokenInfo, setTokenInfo] = useState(tokensByChainInfo[0]);
   const [selectedToken, setSelectedToken] = useState<Hex | "custom">(
     tokenInfo.address
   );
   const [customTokenInput, setCustomTokenInput] = useState("");
+  const [payoutTokensMap, setPayoutTokensMap] = useState<
+    Map<string, { decimal: number; name: string; totalAmount: BigNumber }>
+  >(new Map());
 
   const network = useNetwork();
 
@@ -93,18 +101,6 @@ export default function ApplicationDirectPayout({
     dataLayer,
   });
 
-  // todo; remove this
-  // find answer with question "Payout token"
-  // const payoutTokenAnswer = answerBlocks?.find(
-  //   (a) => a.question === "Payout token"
-  // );
-  // if (payoutTokenAnswer === undefined) {
-  //   throw Error('"Payout token" not found in answers!');
-  // }
-  // find token info based on payoutTokenAnswer
-  const tokensByChainInfo = getPayoutTokenOptions(chain.id);
-
-  // get payout wallet address
   const payoutWalletAddress = application.recipient;
   if (payoutWalletAddress === undefined) {
     throw Error('"Payout wallet address" not found in answers!');
@@ -112,7 +108,7 @@ export default function ApplicationDirectPayout({
 
   const noToken = () => {
     return {
-      name: " ",
+      name: "",
       address: zeroAddress,
       decimal: 1,
       chainId: chain.id,
@@ -123,7 +119,7 @@ export default function ApplicationDirectPayout({
     if (event.target.value === "custom") {
       // fetch symbol and decimals
       setSelectedToken("custom");
-      setTokenInfo(noToken());
+      setTokenInfo({ ...noToken(), name: "custom" });
     } else {
       const selectedTokenId = event.target.value;
       const selectedTokenInfo = tokensByChainInfo.find(
@@ -137,15 +133,33 @@ export default function ApplicationDirectPayout({
     }
   };
 
+  const fetchTokenData = async (
+    tokenAddress: string
+  ): Promise<{ name: string; decimal: number }> => {
+    if (!signer) return { name: "", decimal: 0 };
+
+    try {
+      const erc20 = Erc20__factory.connect(tokenAddress, signer);
+      const name = await erc20.symbol();
+      const decimal = await erc20.decimals();
+
+      return {
+        name,
+        decimal,
+      };
+    } catch (error) {
+      console.error(error);
+      return { name: "", decimal: 0 };
+    }
+  };
+
   const handleCustomTokenInputChange = async (
     event: ChangeEvent<HTMLInputElement>
   ) => {
     const tokenValue = event.target.value;
     setCustomTokenInput(tokenValue);
-    if (isAddress(tokenValue) && signer) {
-      const erc20 = Erc20__factory.connect(tokenValue, signer);
-      const name = await erc20.symbol();
-      const decimal = await erc20.decimals();
+    if (isAddress(tokenValue)) {
+      const { name, decimal } = await fetchTokenData(tokenValue);
       const customTokenInfo = {
         name: name,
         address: tokenValue,
@@ -187,19 +201,25 @@ export default function ApplicationDirectPayout({
       tokenInfo.decimal
     );
 
-    const erc20 = Erc20__factory.connect(tokenInfo.address, signer);
-    const allowance = await erc20.allowance(
-      data.address,
-      round.payoutStrategy.id
-    );
+    let allowance = BigNumber.from(0);
+
     if (
-      allowance.lt(amountWithFeeBN) &&
-      address.toLowerCase() !== data.address.toLowerCase()
+      tokenInfo.address !== zeroAddress &&
+      tokenInfo.address.toLowerCase() !== NATIVE.toLowerCase()
     ) {
-      setPayoutError({
-        message: `In order to continue you need to allow the payout strategy contract with address ${round.payoutStrategy.id} to spend ${amountWithFee} ${tokenInfo.name} tokens.`,
-      });
-      return;
+      const erc20 = Erc20__factory.connect(tokenInfo.address, signer);
+      allowance = await erc20.allowance(data.address, round.payoutStrategy.id);
+      if (
+        allowance.lt(amountWithFeeBN) &&
+        address.toLowerCase() !== data.address.toLowerCase()
+      ) {
+        setPayoutError({
+          message: `In order to continue you need to allow the payout strategy contract with address ${round.payoutStrategy.id} to spend ${amountWithFee} ${tokenInfo.name} tokens.`,
+        });
+        return;
+      }
+    } else {
+      allowance = amountWithFeeBN;
     }
 
     setIsPayoutProgressModelOpen(true);
@@ -241,6 +261,62 @@ export default function ApplicationDirectPayout({
       }
     }
   };
+
+  useEffect(() => {
+    const createPayoutTokenMap = async () => {
+      const map: Map<
+        string,
+        {
+          decimal: number;
+          name: string;
+          totalAmount: BigNumber;
+        }
+      > = new Map([]);
+
+      const filteredPayouts = payouts?.filter(
+        (p) => p.applicationIndex === application.applicationIndex
+      );
+
+      if (filteredPayouts) {
+        for (const payout of filteredPayouts) {
+          const token = map.get(payout.tokenAddress.toLowerCase());
+          if (!token) {
+            const token = payoutTokens.find(
+              (p) =>
+                p.address.toLowerCase() === payout.tokenAddress.toLowerCase()
+            );
+
+            let decimal = 0;
+            let name = "";
+
+            if (!token) {
+              // Token not found in the list, fetch from contract
+              const tokenData = await fetchTokenData(payout.tokenAddress);
+              decimal = tokenData.decimal;
+              name = tokenData.name;
+            } else {
+              decimal = token.decimal;
+              name = token.name;
+            }
+
+            map.set(payout.tokenAddress.toLowerCase(), {
+              decimal,
+              name,
+              totalAmount: BigNumber.from(payout.amount),
+            });
+          } else {
+            map.set(payout.tokenAddress.toLowerCase(), {
+              decimal: token.decimal,
+              name: token.name,
+              totalAmount: token.totalAmount.add(BigNumber.from(payout.amount)),
+            });
+          }
+        }
+      }
+      setPayoutTokensMap(map);
+    };
+    createPayoutTokenMap();
+  }, [payouts]);
 
   return (
     <>
@@ -310,13 +386,13 @@ export default function ApplicationDirectPayout({
                             <td className="text-sm leading-5 px-2 text-gray-400 text-left text-ellipsis overflow-hidden">
                               {ethers.utils.formatUnits(
                                 payout.amount,
-                                payoutTokens.find(
-                                  (p) => p.address === payout.tokenAddress
+                                payoutTokensMap.get(
+                                  payout.tokenAddress.toLowerCase()
                                 )?.decimal || 18
                               )}{" "}
-                              {payoutTokens.find(
-                                (p) => p.address === payout.tokenAddress
-                              )?.name || " "}
+                              {payoutTokensMap.get(
+                                payout.tokenAddress.toLowerCase()
+                              )?.name || "N/A"}
                             </td>
                             <td className="text-sm leading-5 px-2 text-gray-400 text-left">
                               {formatUTCDateAsISOString(
@@ -336,23 +412,15 @@ export default function ApplicationDirectPayout({
                     className="text-sm text-gray-400 text-left flex gap-4 content-center"
                     data-testid="direct-payout-payments-total"
                   >
-                    <span>Total paid out:</span>
-                    <span>
-                      {ethers.utils.formatUnits(
-                        payouts
-                          .filter(
-                            (p) =>
-                              p.applicationIndex ===
-                              application.applicationIndex
-                          )
-                          .reduce(
-                            (sum, payout) => sum.add(payout.amount),
-                            BigNumber.from(0)
-                          ),
-                        tokenInfo.decimal
-                      )}{" "}
-                      {tokenInfo.name}
-                    </span>
+                    <span>Total paid out: </span>
+                    {Array.from(payoutTokensMap.values()).map(
+                      (t, index, arr) => (
+                        <span key={index}>
+                          {`${ethers.utils.formatUnits(t.totalAmount, t.decimal || 18)} ${t.name}`}
+                          {index < arr.length - 1 && ", "}
+                        </span>
+                      )
+                    )}
                   </p>
                 </div>
               </>
@@ -400,6 +468,11 @@ export default function ApplicationDirectPayout({
                     className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md mt-2"
                     placeholder="Enter custom token address"
                   />
+                )}
+                {tokenInfo.name === "" && (
+                  <p className="text-xs text-pink-500">
+                    Token address invalid or token not found.
+                  </p>
                 )}
               </div>
             </div>

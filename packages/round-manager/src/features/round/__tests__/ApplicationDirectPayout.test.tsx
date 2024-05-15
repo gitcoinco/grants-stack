@@ -279,18 +279,21 @@ describe("<ApplicationDirectPayout />", () => {
           applicationIndex: 1,
           createdAt: (moment().subtract(3, "day").valueOf() / 1000).toString(),
           txnHash: "0x00001",
+          tokenAddress: mockAddress,
         },
         {
           amount: parseUnits("2", 18).toString(),
           applicationIndex: 1,
           createdAt: (moment().subtract(2, "day").valueOf() / 1000).toString(),
           txnHash: "0x00002",
+          tokenAddress: mockAddress,
         },
         {
           amount: parseUnits("20", 18).toString(),
           applicationIndex: 2, // NOTE: This payout is for a different application
           createdAt: (moment().subtract(1, "day").valueOf() / 1000).toString(),
           txnHash: "0x00003",
+          tokenAddress: mockAddress,
         },
       ],
     });
@@ -310,7 +313,7 @@ describe("<ApplicationDirectPayout />", () => {
     expect(filas.length).toBe(2);
     expect(filas[0].textContent).toContain("0x00001");
     expect(filas[1].textContent).toContain("0x00002");
-    expect(totalPaidOut.textContent).toContain("3.0 DAI");
+    expect(totalPaidOut.textContent).toContain("Total paid out: 3.0 ETH");
   });
 
   it("should not trigger payout if not amount or vault address is entered", async () => {
