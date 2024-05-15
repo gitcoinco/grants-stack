@@ -1217,9 +1217,6 @@ export class AlloV2 implements Allo {
           amount: BigInt(distribution[3].toString()),
           merkleProof: validMerkleProof as Address[],
         });
-
-        console.log("projectsWithMerkleProof", projectsWithMerkleProof);
-
       });
 
       const strategy = new DonationVotingMerkleDistributionStrategy({
