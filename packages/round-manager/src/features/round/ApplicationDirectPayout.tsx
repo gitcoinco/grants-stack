@@ -117,7 +117,6 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
 
   const handleTokenChange = (event: ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value === "custom") {
-      // fetch symbol and decimals
       setSelectedToken("custom");
       setTokenInfo({ ...noToken(), name: "custom" });
     } else {
