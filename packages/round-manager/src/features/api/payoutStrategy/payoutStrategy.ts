@@ -71,6 +71,10 @@ export const useGroupProjectsByPaymentStatus = (
             matchPoolPercentage: matchingStatsData.matchPoolPercentage,
             projectId: matchingStatsData.projectId,
             applicationId: matchingStatsData.applicationId,
+            anchorAddress: applications?.find(
+              (application) =>
+                application.projectId === matchingStatsData.projectId
+            )?.anchorAddress,
             matchAmountInToken: BigNumber.from(
               matchingStatsData.matchAmountInToken
             ),
@@ -81,7 +85,7 @@ export const useGroupProjectsByPaymentStatus = (
           };
         }
       ) ?? [],
-    [round.matchingDistribution?.matchingDistribution]
+    [round.matchingDistribution?.matchingDistribution, applications]
   );
 
   useEffect(() => {

@@ -312,7 +312,10 @@ export function PayProjectsTable(props: {
               ? getAddress(props.round.payoutStrategy.id)
               : props.round.id,
           allProjects: props.allProjects,
-          projectIdsToBePaid: selectedProjects.map((p) => p.projectId),
+          projectIdsToBePaid:
+            alloVersion === "allo-v1"
+              ? selectedProjects.map((p) => p.projectId)
+              : selectedProjects.map((p) => p.anchorAddress ?? ""),
         })
         .on("transaction", (result) => {
           if (result.type === "error") {

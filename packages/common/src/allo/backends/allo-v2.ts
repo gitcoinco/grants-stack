@@ -44,7 +44,6 @@ import { PermitSignature, getPermitType } from "../voting";
 import Erc20ABI from "../abis/erc20";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
-import { generateMerkleTree } from "./allo-v1";
 import { BigNumber, utils } from "ethers";
 
 function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
@@ -1181,7 +1180,7 @@ export class AlloV2 implements Allo {
       );
 
       // Generate merkle tree
-      const { tree, matchingResults } = generateMerkleTree(args.allProjects);
+      const { tree, matchingResults } = generateMerkleTreeV2(args.allProjects);
 
       // Filter projects to be paid from matching results
       const projectsToBePaid = matchingResults.filter((project) =>
@@ -1194,11 +1193,14 @@ export class AlloV2 implements Allo {
         if (!project.index) {
           throw new AlloError("Project index is required");
         }
-        const distribution: [number, string, BigNumber, string] = [
+        if (!project.anchorAddress) {
+          throw new AlloError("Anchor address is required");
+        }
+        const distribution: [number, string, string, BigNumber] = [
           project.index,
-          project.applicationId,
+          project.anchorAddress,
+          project.projectPayoutAddress,
           project.matchAmountInToken,
-          project.projectId,
         ];
 
         // Generate merkle proof
@@ -1207,7 +1209,7 @@ export class AlloV2 implements Allo {
         projectsWithMerkleProof.push({
           index: distribution[0],
           recipientId: distribution[1],
-          amount: distribution[2],
+          amount: distribution[3],
           merkleProof: validMerkleProof,
         });
       });
@@ -1339,4 +1341,41 @@ export type ProjectWithMerkleProof = {
   recipientId: string;
   amount: BigNumber;
   merkleProof: string[];
+};
+
+/**
+ * Generate merkle tree
+ *
+ * To get merkle Proof: tree.getProof(distributions[0]);
+ * @param matchingResults MatchingStatsData[]
+ * @returns
+ */
+export const generateMerkleTreeV2 = (
+  matchingResults: MatchingStatsData[]
+): {
+  distribution: [number, string, string, BigNumber][];
+  tree: StandardMerkleTree<[number, string, string, BigNumber]>;
+  matchingResults: MatchingStatsData[];
+} => {
+  const distribution: [number, string, string, BigNumber][] = [];
+
+  matchingResults.forEach((matchingResult, index) => {
+    matchingResults[index].index = index;
+
+    distribution.push([
+      index,
+      matchingResult.anchorAddress ?? "",
+      matchingResult.projectPayoutAddress,
+      matchingResult.matchAmountInToken, // TODO: FIX
+    ]);
+  });
+
+  const tree = StandardMerkleTree.of(distribution, [
+    "uint256",
+    "address",
+    "address",
+    "uint256",
+  ]);
+
+  return { distribution, tree, matchingResults };
 };
