@@ -281,7 +281,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
         for (const payout of filteredPayouts) {
           const token = map.get(payout.tokenAddress.toLowerCase());
           if (!token) {
-            const token = payoutTokens.find(
+            const pToken = payoutTokens.find(
               (p) =>
                 p.address.toLowerCase() === payout.tokenAddress.toLowerCase()
             );
@@ -289,14 +289,14 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
             let decimal = 0;
             let name = "";
 
-            if (!token) {
+            if (!pToken) {
               // Token not found in the list, fetch from contract
               const tokenData = await fetchTokenData(payout.tokenAddress);
               decimal = tokenData.decimal;
               name = tokenData.name;
             } else {
-              decimal = token.decimal;
-              name = token.name;
+              decimal = pToken.decimal;
+              name = pToken.name;
             }
 
             map.set(payout.tokenAddress.toLowerCase(), {
