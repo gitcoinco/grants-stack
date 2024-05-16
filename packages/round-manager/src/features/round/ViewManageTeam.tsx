@@ -11,7 +11,16 @@ const sortDataByRole = (data: AddressAndRole[]): AddressAndRole[] => {
   });
 };
 
-export default function ViewManageTeam(props: { round: Round | undefined }) {
+export default function ViewManageTeam(props: {
+  round: Round | undefined;
+  userAddress: string;
+}) {
+  const isAdmin = props.round?.roles?.some(
+    (role) =>
+      role.address.toLowerCase() === props.userAddress.toLowerCase() &&
+      role.role === "ADMIN"
+  );
+
   const sortedRoles = useMemo(() => {
     return sortDataByRole(props.round?.roles || []);
   }, [props.round?.roles]);
@@ -19,9 +28,15 @@ export default function ViewManageTeam(props: { round: Round | undefined }) {
   return (
     <div>
       <p className="font-bold text-lg mt-2 mb-2">Manage Team</p>
-      <p className="text-sm text-gray-400 mb-2">View who is on your team.</p>
       <p className="text-sm text-gray-400 mb-2">
-        Only admins can add others to your team.
+        {isAdmin
+          ? "Add or remove admins and operators to your team. "
+          : "View who is on your team."}
+      </p>
+      <p className="text-sm text-gray-400 mb-2">
+        {isAdmin
+          ? "Make sure to have at least two admins at all times for security purposes."
+          : "Only admins can add others to your team."}
       </p>
       <p className="text-md mt-6 mb-4">View Members</p>
       <div className="overflow-x-auto">
