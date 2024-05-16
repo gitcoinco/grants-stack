@@ -128,6 +128,7 @@ function indexerV2RoundToRound(round: RoundForManager): Round {
     },
     ownedBy: round.projectId,
     operatorWallets: operatorWallets,
+    roles: round.roles,
     finalized: false,
     tags: round.tags,
     createdByAddress: round.createdByAddress,
