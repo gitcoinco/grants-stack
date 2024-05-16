@@ -229,7 +229,7 @@ describe("View Fund Grantees", () => {
       expect(screen.getByText("Wallet Address")).toBeInTheDocument();
       expect(screen.getByText("Matching %")).toBeInTheDocument();
       expect(screen.getByText("Payout Amount")).toBeInTheDocument();
-      expect(screen.getByText("Payout funds (Disabled)")).toBeInTheDocument();
+      expect(screen.getByText("Payout funds")).toBeInTheDocument();
     });
 
     it("displays exact list of projects in table which are to be paid", async () => {
@@ -246,7 +246,7 @@ describe("View Fund Grantees", () => {
       ).toBeInTheDocument();
     });
 
-    it.skip("Should show the confirmation modal and close on cancel", async () => {
+    it("Should show the confirmation modal and close on cancel", async () => {
       (useBalance as jest.Mock).mockImplementation(() => ({
         data: { formatted: "0", value: ethers.utils.parseEther("1000") },
         error: null,
@@ -272,7 +272,7 @@ describe("View Fund Grantees", () => {
       expect(screen.queryByText("Confirm Decision")).not.toBeInTheDocument();
     });
 
-    it.skip("Should show the progress modal", async () => {
+    it("Should show the progress modal", async () => {
       (useBalance as jest.Mock).mockImplementation(() => ({
         data: { formatted: "0", value: ethers.utils.parseEther("1000") },
         error: null,
@@ -296,7 +296,7 @@ describe("View Fund Grantees", () => {
       });
     });
 
-    it.skip("Should show the warning when not enough funds in contract", async () => {
+    it("Should show the warning when not enough funds in contract", async () => {
       (useBalance as jest.Mock).mockImplementation(() => ({
         data: { formatted: "0", value: "0" },
         error: null,

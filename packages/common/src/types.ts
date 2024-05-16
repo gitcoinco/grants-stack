@@ -36,6 +36,7 @@ export type MatchingStatsData = {
   matchPoolPercentage: number;
   projectId: string;
   applicationId: string;
+  anchorAddress?: string;
   matchAmountInToken: BigNumber;
   originalMatchAmountInToken: BigNumber;
   projectPayoutAddress: string;
