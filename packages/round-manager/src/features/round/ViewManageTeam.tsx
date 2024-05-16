@@ -11,10 +11,37 @@ const sortDataByRole = (data: AddressAndRole[]): AddressAndRole[] => {
   });
 };
 
+const filterRoles = (data: AddressAndRole[]): AddressAndRole[] => {
+  return data.reduce((acc: AddressAndRole[], current) => {
+    const existingIndex = acc.findIndex(
+      (item) => item.address === current.address
+    );
+
+    // Check if this address is already included
+    if (existingIndex === -1) {
+      // If not included, simply add the current item
+      acc.push(current);
+    } else if (
+      acc[existingIndex].role !== "ADMIN" &&
+      current.role === "ADMIN"
+    ) {
+      // If the existing item is not an Admin but the current is, replace it
+      acc[existingIndex] = current;
+    }
+    return acc;
+  }, []);
+};
+
 export default function ViewManageTeam(props: { round: Round | undefined }) {
+  // Show Admin role first, then Operator
   const sortedRoles = useMemo(() => {
     return sortDataByRole(props.round?.roles || []);
   }, [props.round?.roles]);
+
+  // If an address is an Admin & Operator, only show Admin in the UI
+  const filteredRoles = useMemo(() => {
+    return filterRoles(sortedRoles);
+  }, [sortedRoles]);
 
   return (
     <div>
@@ -49,7 +76,7 @@ export default function ViewManageTeam(props: { round: Round | undefined }) {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-100">
-            {sortedRoles.map((item: AddressAndRole, index) => (
+            {filteredRoles.map((item: AddressAndRole, index) => (
               <tr key={index}>
                 <td className="w-1/4 py-4 whitespace-nowrap text-sm font-medium text-gray-400">
                   User{index + 1}
