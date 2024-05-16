@@ -2,6 +2,8 @@ import { AddressAndRole } from "data-layer";
 import { Round } from "../api/types";
 import { useMemo } from "react";
 import { useEnsName } from "wagmi";
+import { Button } from "common/src/styles";
+import { FaEdit } from "react-icons/fa";
 
 const sortDataByRole = (data: AddressAndRole[]): AddressAndRole[] => {
   return data.sort((a, b) => {
@@ -32,7 +34,15 @@ const filterRoles = (data: AddressAndRole[]): AddressAndRole[] => {
   }, []);
 };
 
-export default function ViewManageTeam(props: { round: Round | undefined }) {
+export default function ViewManageTeam(props: {
+  round: Round | undefined;
+  userAddress: string;
+}) {
+  const isAdmin = props.round?.roles?.some(
+    (role) =>
+      role.address.toLowerCase() === props.userAddress.toLowerCase() &&
+      role.role === "ADMIN"
+  );
   // Show Admin role first, then Operator
   const sortedRoles = useMemo(() => {
     return sortDataByRole(props.round?.roles || []);
@@ -43,13 +53,53 @@ export default function ViewManageTeam(props: { round: Round | undefined }) {
     return filterRoles(sortedRoles);
   }, [sortedRoles]);
 
+  const isEditMode = false;
+
   return (
     <div>
       <p className="font-bold text-lg mt-2 mb-2">Manage Team</p>
-      <p className="text-sm text-gray-400 mb-2">View who is on your team.</p>
-      <p className="text-sm text-gray-400 mb-2">
-        Only admins can add others to your team.
-      </p>
+      <div className="flex flex-row items-center justify-between">
+        <div>
+          <p className="text-sm text-gray-400 mb-2">
+            {isAdmin
+              ? "Add or remove admins and operators to your team. "
+              : "View who is on your team."}
+          </p>
+          <p className="text-sm text-gray-400 mb-2">
+            {isAdmin
+              ? "Make sure to have at least two admins at all times for security purposes."
+              : "Admins and operators have the same privileges, but only admins can add or remove operators."}
+          </p>
+        </div>
+        <div>
+          {isEditMode ? (
+            <>
+              <Button
+                className="mr-4"
+                type="button"
+                $variant="outline"
+                data-testid="cancel-button"
+              >
+                Cancel
+              </Button>
+              <Button data-testid="update-round-button" type="submit">
+                Update Round
+              </Button>
+            </>
+          ) : (
+            <Button
+              data-testid="edit-round-button"
+              type="button"
+              $variant="outline"
+            >
+              <span className="flex flex-row items-center">
+                <FaEdit className="mr-2 mb-1" />
+                <span>Edit Round</span>
+              </span>
+            </Button>
+          )}
+        </div>
+      </div>
       <p className="text-md mt-6 mb-4">View Members</p>
       <div className="overflow-x-auto">
         <table className="min-w-full">
