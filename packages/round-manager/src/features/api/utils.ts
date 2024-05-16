@@ -316,42 +316,6 @@ export const getTxExplorerForContract = (
       return `https://arbiscan.io/address/${contractAddress}`;
   }
 };
-/**
- * Generate merkle tree
- *
- * To get merkle Proof: tree.getProof(distributions[0]);
- * @param matchingResults MatchingStatsData[]
- * @returns
- */
-export const generateMerkleTree = (
-  matchingResults: MatchingStatsData[]
-): {
-  distribution: [number, string, BigNumber, string][];
-  tree: StandardMerkleTree<[number, string, BigNumber, string]>;
-  matchingResults: MatchingStatsData[];
-} => {
-  const distribution: [number, string, BigNumber, string][] = [];
-
-  matchingResults.forEach((matchingResult, index) => {
-    matchingResults[index].index = index;
-
-    distribution.push([
-      index,
-      matchingResult.projectPayoutAddress,
-      matchingResult.matchAmountInToken, // TODO: FIX
-      matchingResult.projectId,
-    ]);
-  });
-
-  const tree = StandardMerkleTree.of(distribution, [
-    "uint256",
-    "address",
-    "uint256",
-    "bytes32",
-  ]);
-
-  return { distribution, tree, matchingResults };
-};
 
 export const formatCurrency = (
   value: BigNumber,
