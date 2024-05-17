@@ -247,7 +247,7 @@ export const SEPOLIA_TOKENS: VotingToken[] = [
     name: "USDC",
     chainId: ChainId.SEPOLIA,
     address: "0x78e0D07C4A08adFfe610113310163b40E7e47e81",
-    decimal: 6,
+    decimal: 18,
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
     defaultForVoting: false,
