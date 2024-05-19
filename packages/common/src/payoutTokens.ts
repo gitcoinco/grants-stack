@@ -1,9 +1,7 @@
 import { ChainId, RedstoneTokenIds } from "./chain-ids";
 import { ethers } from "ethers";
-import { Address, sepolia } from "wagmi";
-import { getChain, getTokensByChainId } from "@grants-labs/gitcoin-chain-data";
-import { TTokenRecord } from "@grants-labs/gitcoin-chain-data/dist/types";
-import { get } from "http";
+import { Address } from "wagmi";
+import { getTokensByChainId } from "@grants-labs/gitcoin-chain-data";
 
 export type PayoutToken = {
   name: string;

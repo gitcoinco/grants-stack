@@ -7,12 +7,12 @@ import {
   RoundCategory,
   UpdateRoundParams,
   MatchingStatsData,
-  VotingToken,
 } from "../types";
 import { Result } from "./common";
 import { AlloOperation } from "./operation";
 import { TransactionReceipt } from "./transaction-sender";
 import { PermitSignature } from "./voting";
+import { TDonationToken } from "@grants-labs/gitcoin-chain-data";
 
 export type CreateRoundArguments = {
   roundData: {
@@ -114,7 +114,7 @@ export interface Allo {
   donate: (
     publicClient: PublicClient,
     chainId: ChainId,
-    token: VotingToken,
+    token: TDonationToken,
     groupedVotes: Record<string, Hex[]>,
     groupedAmounts: Record<string, bigint> | bigint[],
     nativeTokenAmount: bigint,

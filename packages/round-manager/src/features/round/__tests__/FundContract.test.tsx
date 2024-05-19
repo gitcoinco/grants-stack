@@ -18,11 +18,7 @@ import {
 } from "../../../test-utils";
 import { ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
-import {
-  getTokensByChainId,
-  TPayoutToken,
-} from "@grants-labs/gitcoin-chain-data";
-import { useContractAmountFunded } from "../FundContract";
+import { getTokensByChainId } from "@grants-labs/gitcoin-chain-data";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextDecoder } = require("util");
@@ -81,7 +77,7 @@ describe("fund contract tab", () => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
         id: mockRoundData.id,
-        payoutToken: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+        payoutToken: "0x0000000000000000000000000000000000000000",
       };
     });
 
@@ -92,7 +88,7 @@ describe("fund contract tab", () => {
   it("displays fund contract tab", async () => {
     mockRoundData = makeRoundData({
       // Ensure the token address matches the mocked token data
-      token: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      token: "0x0000000000000000000000000000000000000000",
       chainId: 1,
     });
 
@@ -123,12 +119,11 @@ describe("fund contract tab", () => {
       return {
         data: [
           {
-            name: "USDC",
+            name: "ETH",
             chainId: 1,
-            address: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-            redstoneTokenId: "USDC",
-            decimal: 6,
-            logo: "path/to/usdc/logo.png",
+            address: "0x0000000000000000000000000000000000000000",
+            redstoneTokenId: "ETH",
+            decimal: 18,
           },
         ],
       };

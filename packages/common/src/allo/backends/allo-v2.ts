@@ -22,7 +22,7 @@ import {
 } from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
-import { UpdateRoundParams, MatchingStatsData, VotingToken } from "../../types";
+import { UpdateRoundParams, MatchingStatsData } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import {
   Result,
@@ -46,6 +46,7 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { BigNumber, utils } from "ethers";
 import { Distribution } from "@allo-team/allo-v2-sdk/dist/strategies/DonationVotingMerkleDistributionStrategy/types";
+import { TDonationToken } from "@grants-labs/gitcoin-chain-data/dist/types";
 
 function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
   let strategyAddresses;
@@ -151,7 +152,7 @@ export class AlloV2 implements Allo {
   async donate(
     publicClient: PublicClient,
     chainId: ChainId,
-    token: VotingToken,
+    token: TDonationToken,
     groupedVotes: Record<string, Hex[]>,
     groupedAmounts: Record<string, bigint> | bigint[],
     nativeTokenAmount: bigint,

@@ -21,7 +21,6 @@ import {
   UpdateAction,
   UpdateRoundParams,
   MatchingStatsData,
-  VotingToken,
 } from "../../types";
 import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
 import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
@@ -58,6 +57,7 @@ import { BigNumber } from "ethers";
 import DirectPayoutStrategyImplementation from "../abis/allo-v1/DirectPayoutStrategyImplementation";
 import { hexZeroPad } from "ethers/lib/utils.js";
 import { getTokensByChainId } from "@grants-labs/gitcoin-chain-data";
+import { TDonationToken } from "@grants-labs/gitcoin-chain-data/dist/types";
 
 function createProjectId(args: {
   chainId: number;
@@ -111,7 +111,7 @@ export class AlloV1 implements Allo {
   async donate(
     publicClient: PublicClient,
     chainId: ChainId,
-    token: VotingToken,
+    token: TDonationToken,
     groupedVotes: Record<string, Hex[]>,
     groupedAmounts: Record<string, bigint> | bigint[],
     nativeTokenAmount: bigint,

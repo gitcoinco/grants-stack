@@ -27,6 +27,10 @@ import { getPermitType } from "common/dist/allo/voting";
 import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
+import {
+  TDonationToken,
+  getTokensByChainId,
+} from "@grants-labs/gitcoin-chain-data";
 
 type ChainMap<T> = Record<ChainId, T>;
 
@@ -117,8 +121,14 @@ export const useCheckoutStore = create<CheckoutState>()(
         [chain: number]: CartProject[];
       };
 
-      const getVotingTokenForChain =
-        useCartStorage.getState().getVotingTokenForChain;
+      // : TDonationToken
+      const getVotingTokenForChain = async (chainId: number) =>
+        (await getTokensByChainId(chainId)).donation[0] as TDonationToken;
+
+      // fixme: this is a hack to get the token for mainnet/ update to use actual chainId
+      const donationToken = await getVotingTokenForChain(Number(1) as number);
+
+      // useCartStorage.getState().getVotingTokenForChain;
 
       const totalDonationPerChain = Object.fromEntries(
         Object.entries(projectsByChain).map(([key, value]) => [
@@ -127,11 +137,7 @@ export const useCheckoutStore = create<CheckoutState>()(
             .map((project) => project.amount)
             .reduce(
               (acc, amount) =>
-                acc +
-                parseUnits(
-                  amount ? amount : "0",
-                  getVotingTokenForChain(Number(key) as ChainId).decimal
-                ),
+                acc + parseUnits(amount ? amount : "0", donationToken.decimal),
               0n
             ),
         ])
@@ -150,7 +156,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         /* Switch to the current chain */
         await switchToChain(chainId, walletClient, get);
 
-        const token = getVotingTokenForChain(chainId);
+        const token = await getVotingTokenForChain(chainId);
 
         let sig;
         let nonce;
