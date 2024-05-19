@@ -14,19 +14,18 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import {
-  PayoutToken,
-  classNames,
-  payoutTokens,
-  useAllo,
-  useTokenPrice,
-} from "common";
+import { classNames, useAllo, useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
 import { formatUnits } from "viem";
+import {
+  getTokensByChainId,
+  TPayoutToken,
+} from "@grants-labs/gitcoin-chain-data";
 
+// fixme: move this to its own hook
 export function useContractAmountFunded(args: {
   round: Round | undefined;
-  payoutToken: PayoutToken | undefined;
+  payoutToken: TPayoutToken | undefined;
 }):
   | {
       isLoading: true;
@@ -47,6 +46,8 @@ export function useContractAmountFunded(args: {
       };
     } {
   const { round, payoutToken } = args;
+  console.log("useContractAmountFunded args:", args);
+
   const isAlloV2 = round?.tags?.includes("allo-v2");
 
   const { data: balanceData, error: balanceError } = useBalance(
@@ -62,9 +63,15 @@ export function useContractAmountFunded(args: {
         }
   );
 
+  console.log("Balance Data:", balanceData);
+  console.log("Balance Error:", balanceError);
+
   const { data: priceData, error: priceError } = useTokenPrice(
     payoutToken?.redstoneTokenId
   );
+
+  console.log("Price Data:", priceData);
+  console.log("Price Error:", priceError);
 
   if (isAlloV2) {
     if (round !== undefined) {
@@ -148,6 +155,7 @@ export default function FundContract(props: {
     string | undefined
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
+  const [payoutTokens, setPayoutTokens] = useState<TPayoutToken[]>([]);
 
   const { chain } = useNetwork() || {};
   const chainId = chain?.id ?? 5;
@@ -205,8 +213,19 @@ export default function FundContract(props: {
     props.roundId,
   ]);
 
+  useEffect(() => {
+    const fetchPayoutTokens = async (chainId: number) => {
+      const tokens = await getTokensByChainId(chainId);
+
+      setPayoutTokens(tokens.payout);
+    };
+
+    fetchPayoutTokens(chainId);
+  }, [chainId]);
+
   const matchingFundPayoutToken =
     props.round &&
+    payoutTokens &&
     payoutTokens.filter(
       (t) =>
         t.address.toLowerCase() === props.round?.token?.toLowerCase() &&

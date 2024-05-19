@@ -15,7 +15,7 @@ import {
 } from "viem";
 import { AnyJson, ChainId, TransactionBuilder } from "../..";
 import { parseChainId } from "../../chains";
-import { payoutTokens } from "../../payoutTokens";
+// import { payoutTokens } from "../../payoutTokens";
 import {
   RoundCategory,
   UpdateAction,
@@ -57,6 +57,7 @@ import MerklePayoutStrategyImplementationABI from "../abis/allo-v1/MerklePayoutS
 import { BigNumber } from "ethers";
 import DirectPayoutStrategyImplementation from "../abis/allo-v1/DirectPayoutStrategyImplementation";
 import { hexZeroPad } from "ethers/lib/utils.js";
+import { getTokensByChainId } from "@grants-labs/gitcoin-chain-data";
 
 function createProjectId(args: {
   chainId: number;
@@ -491,8 +492,8 @@ export class AlloV1 implements Allo {
             args.roundData.applicationsEndTime
               ? dateToEthereumTimestamp(args.roundData.applicationsEndTime)
               : args.roundData.roundEndTime
-              ? dateToEthereumTimestamp(args.roundData.roundEndTime)
-              : maxUint256,
+                ? dateToEthereumTimestamp(args.roundData.roundEndTime)
+                : maxUint256,
             dateToEthereumTimestamp(args.roundData.roundStartTime),
             args.roundData.roundEndTime
               ? dateToEthereumTimestamp(args.roundData.roundEndTime)
@@ -505,6 +506,10 @@ export class AlloV1 implements Allo {
         if (isQF) {
           // Ensure tokenAmount is normalized to token decimals
           const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
+
+          // Note: uses the new SDK
+          const tokens = await getTokensByChainId(this.chainId);
+          const payoutTokens = tokens.payout;
           const pyToken = payoutTokens.filter(
             (t) =>
               t.address.toLowerCase() === args.roundData.token.toLowerCase()

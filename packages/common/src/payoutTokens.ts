@@ -1,6 +1,9 @@
 import { ChainId, RedstoneTokenIds } from "./chain-ids";
 import { ethers } from "ethers";
-import { Address } from "wagmi";
+import { Address, sepolia } from "wagmi";
+import { getChain, getTokensByChainId } from "@grants-labs/gitcoin-chain-data";
+import { TTokenRecord } from "@grants-labs/gitcoin-chain-data/dist/types";
+import { get } from "http";
 
 export type PayoutToken = {
   name: string;
@@ -36,6 +39,7 @@ export const TokenNamesAndLogos = {
   LYX: "/logos/lukso-logo.svg",
   CUSD: "/logos/cusd-logo.png",
 } as const;
+
 const MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
@@ -70,7 +74,6 @@ const MAINNET_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["mkUSD"],
   },
 ];
-
 const SEPOLIA_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
@@ -97,7 +100,6 @@ const SEPOLIA_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
-
 const OPTIMISM_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "DAI",
@@ -184,7 +186,6 @@ const FANTOM_TESTNET_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["FTM"],
   },
 ];
-
 const ZKSYNC_ERA_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
@@ -203,7 +204,6 @@ const ZKSYNC_ERA_TESTNET_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["DAI"],
   },
 ];
-
 const ZKSYNC_ERA_MAINNET_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
@@ -246,7 +246,6 @@ const ZKSYNC_ERA_MAINNET_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["MUTE"],
   },
 ];
-
 const PGN_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "TEST",
@@ -289,7 +288,6 @@ const PGN_MAINNET_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["DAI"],
   },
 ];
-
 const BASE_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
@@ -308,7 +306,6 @@ const BASE_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
-
 const ARBITRUM_GOERLI_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
@@ -441,7 +438,6 @@ const POLYGON_MUMBAI_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
-
 const SCROLL_TOKENS: PayoutToken[] = [
   {
     name: "ETH",
@@ -460,7 +456,6 @@ const SCROLL_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["USDC"],
   },
 ];
-
 const SEI_TOKENS: PayoutToken[] = [
   {
     name: "SEI",
@@ -471,7 +466,6 @@ const SEI_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["SEI"],
   },
 ];
-
 const LUKSO_TOKENS: PayoutToken[] = [
   {
     name: "LYX",
@@ -482,7 +476,6 @@ const LUKSO_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["LYX"],
   },
 ];
-
 const LUKSO_TESTNET_TOKENS: PayoutToken[] = [
   {
     name: "LYX",
@@ -493,7 +486,6 @@ const LUKSO_TESTNET_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["LYX"],
   },
 ];
-
 const CELO_TOKENS: PayoutToken[] = [
   {
     name: "CELO",
@@ -512,7 +504,6 @@ const CELO_TOKENS: PayoutToken[] = [
     redstoneTokenId: RedstoneTokenIds["CUSD"],
   },
 ];
-
 const CELO_ALFAJORES_TOKENS: PayoutToken[] = [
   {
     name: "CELO",
@@ -549,7 +540,25 @@ export const payoutTokens = [
   ...CELO_ALFAJORES_TOKENS,
 ];
 
+export const getPayoutTokens = async (
+  chainId: ChainId
+): Promise<PayoutToken[]> => {
+  const tokens = await getTokensByChainId(chainId);
+
+  console.log("payout tokens for chain ID ", chainId, tokens);
+
+  return tokens.payout.map((token) => ({
+    name: token.name,
+    chainId: chainId,
+    address: token.address,
+    decimal: token.decimal,
+    logo: token.logo,
+    redstoneTokenId: token.redstoneTokenId,
+  }));
+};
+
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {
   const tokens = payoutTokens.filter((token) => token.chainId === chainId);
+
   return tokens.length > 0 ? tokens : MAINNET_TOKENS;
 };
