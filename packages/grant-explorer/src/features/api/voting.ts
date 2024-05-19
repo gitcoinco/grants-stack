@@ -13,8 +13,7 @@ import {
 } from "viem";
 import { CartProject } from "./types";
 import { WalletClient } from "wagmi";
-import { VotingToken } from "common";
-import { NATIVE } from "common/dist/allo/common";
+import { TToken, NATIVE } from "common";
 
 type SignPermitProps = {
   walletClient: WalletClient;
@@ -149,7 +148,7 @@ export const signPermitDai = async ({
 };
 
 export function encodeQFVotes(
-  donationToken: VotingToken,
+  donationToken: TToken,
   donations: Pick<
     CartProject,
     "amount" | "recipient" | "projectRegistryId" | "applicationIndex"
@@ -158,7 +157,7 @@ export function encodeQFVotes(
   return donations.map((donation) => {
     const vote = [
       getAddress(donationToken.address),
-      parseUnits(donation.amount, donationToken.decimal),
+      parseUnits(donation.amount, donationToken.decimals),
       getAddress(donation.recipient),
       donation.projectRegistryId as Hex,
       BigInt(donation.applicationIndex),
@@ -172,7 +171,7 @@ export function encodeQFVotes(
 }
 
 export function encodedQFAllocation(
-  donationToken: VotingToken,
+  donationToken: TToken,
   donations: Pick<
     CartProject,
     | "amount"
@@ -200,7 +199,7 @@ export function encodedQFAllocation(
           [
             [
               getAddress(tokenAddress),
-              parseUnits(donation.amount, donationToken.decimal),
+              parseUnits(donation.amount, donationToken.decimals),
             ],
             0n, // nonce, since permit type is none
             0n, // deadline, since permit type is none

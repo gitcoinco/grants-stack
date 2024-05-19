@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import ProgressModal from "../common/ProgressModal";
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import ReactTooltip from "react-tooltip";
@@ -17,10 +17,12 @@ import { AnswerBlock, GrantApplication, Round } from "../api/types";
 import {
   NATIVE,
   formatUTCDateAsISOString,
-  getPayoutTokenOptions,
   getUTCTime,
-  payoutTokens,
   useAllo,
+  TToken,
+  getPayoutTokens,
+  ChainId,
+  getTokens,
 } from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
@@ -70,10 +72,12 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
 
   const isV2 = getConfig().allo.version === "allo-v2";
   // in v1 you can't use native payout token
-  const tokensByChainInfo = isV2
-    ? getPayoutTokenOptions(chain.id)
-    : getPayoutTokenOptions(chain.id).filter(
-        (t) =>
+  const tokensByChainInfo: TToken[] = isV2
+    ? getPayoutTokens(chain.id).filter(
+        (t: TToken) => t.address.toLowerCase() !== NATIVE.toLowerCase()
+      )
+    : getPayoutTokens(chain.id).filter(
+        (t: TToken) =>
           t.address.toLowerCase() !== NATIVE.toLowerCase() &&
           t.address !== zeroAddress
       );
@@ -107,17 +111,17 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
 
   const noToken = () => {
     return {
-      name: "",
+      code: "",
       address: zeroAddress,
-      decimal: 1,
-      chainId: chain.id,
+      decimals: 1,
+      canVote: false,
     };
   };
 
   const handleTokenChange = (event: ChangeEvent<HTMLSelectElement>) => {
     if (event.target.value === "custom") {
       setSelectedToken("custom");
-      setTokenInfo({ ...noToken(), name: "custom" });
+      setTokenInfo({ ...noToken(), code: "custom" });
     } else {
       const selectedTokenId = event.target.value;
       const selectedTokenInfo = tokensByChainInfo.find(
@@ -131,25 +135,28 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
     }
   };
 
-  const fetchTokenData = async (
-    tokenAddress: string
-  ): Promise<{ name: string; decimal: number }> => {
-    if (!signer) return { name: "", decimal: 0 };
+  const fetchTokenData = useCallback(
+    async (
+      tokenAddress: string
+    ): Promise<{ name: string; decimal: number }> => {
+      if (!signer) return { name: "", decimal: 0 };
 
-    try {
-      const erc20 = Erc20__factory.connect(tokenAddress, signer);
-      const name = await erc20.symbol();
-      const decimal = await erc20.decimals();
+      try {
+        const erc20 = Erc20__factory.connect(tokenAddress, signer);
+        const name = await erc20.symbol();
+        const decimal = await erc20.decimals();
 
-      return {
-        name,
-        decimal,
-      };
-    } catch (error) {
-      console.error(error);
-      return { name: "", decimal: 0 };
-    }
-  };
+        return {
+          name,
+          decimal,
+        };
+      } catch (error) {
+        console.error(error);
+        return { name: "", decimal: 0 };
+      }
+    },
+    [signer]
+  );
 
   const handleCustomTokenInputChange = async (
     event: ChangeEvent<HTMLInputElement>
@@ -159,10 +166,10 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
     if (isAddress(tokenValue)) {
       const { name, decimal } = await fetchTokenData(tokenValue);
       const customTokenInfo = {
-        name: name,
+        code: name,
         address: tokenValue,
-        decimal: decimal,
-        chainId: chain.id,
+        decimals: decimal,
+        canVote: false,
       };
       setTokenInfo(customTokenInfo);
     } else {
@@ -191,12 +198,12 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
 
     const amountBN = ethers.utils.parseUnits(
       data.amount.toString(),
-      tokenInfo.decimal
+      tokenInfo.decimals
     );
     const amountWithFee = getAmountWithFee();
     const amountWithFeeBN = ethers.utils.parseUnits(
       amountWithFee.toString(),
-      tokenInfo.decimal
+      tokenInfo.decimals
     );
 
     let allowance = BigNumber.from(0);
@@ -212,7 +219,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
         address.toLowerCase() !== data.address.toLowerCase()
       ) {
         setPayoutError({
-          message: `In order to continue you need to allow the payout strategy contract with address ${round.payoutStrategy.id} to spend ${amountWithFee} ${tokenInfo.name} tokens.`,
+          message: `In order to continue you need to allow the payout strategy contract with address ${round.payoutStrategy.id} to spend ${amountWithFee} ${tokenInfo.code} tokens.`,
         });
         return;
       }
@@ -260,6 +267,19 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
     }
   };
 
+  const defaultTokens: Record<ChainId, TToken> = Object.entries(
+    getTokens()
+  ).reduce(
+    (acc, [chainId, tokens]) => {
+      const votingToken = tokens.find((token) => token.canVote);
+      if (votingToken) {
+        acc[Number(chainId) as ChainId] = votingToken;
+      }
+      return acc;
+    },
+    {} as Record<ChainId, TToken>
+  );
+
   useEffect(() => {
     const createPayoutTokenMap = async () => {
       const map: Map<
@@ -279,22 +299,24 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
         for (const payout of filteredPayouts) {
           const token = map.get(payout.tokenAddress.toLowerCase());
           if (!token) {
-            const pToken = payoutTokens.find(
-              (p) =>
-                p.address.toLowerCase() === payout.tokenAddress.toLowerCase()
+            const pTokenEntry = Object.entries(defaultTokens).find(
+              ([, token]) =>
+                token.address.toLowerCase() ===
+                payout.tokenAddress.toLowerCase()
             );
 
             let decimal = 0;
             let name = "";
 
-            if (!pToken) {
+            if (!pTokenEntry) {
               // Token not found in the list, fetch from contract
               const tokenData = await fetchTokenData(payout.tokenAddress);
               decimal = tokenData.decimal;
               name = tokenData.name;
             } else {
-              decimal = pToken.decimal;
-              name = pToken.name;
+              const pToken = pTokenEntry[1]; // Extract the TToken from the found entry
+              decimal = pToken.decimals;
+              name = pToken.code;
             }
 
             map.set(payout.tokenAddress.toLowerCase(), {
@@ -311,10 +333,11 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
           }
         }
       }
+
       setPayoutTokensMap(map);
     };
     createPayoutTokenMap();
-  }, [payouts]);
+  }, [payouts, fetchTokenData, application.applicationIndex, defaultTokens]);
 
   return (
     <>
@@ -451,9 +474,9 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
                   className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                 >
                   <option value="">Select a token</option>
-                  {tokensByChainInfo.map((token) => (
+                  {tokensByChainInfo.map((token: TToken) => (
                     <option key={token.address} value={token.address}>
-                      {token.name}
+                      {token.code}
                     </option>
                   ))}
                   <option value="custom">Custom Token</option>{" "}
@@ -467,7 +490,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
                     placeholder="Enter custom token address"
                   />
                 )}
-                {tokenInfo.name === "" && (
+                {tokenInfo.code === "" && (
                   <p className="text-xs text-pink-500">
                     Token address invalid or token not found.
                   </p>
@@ -488,13 +511,13 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
               <div className="relative mt-2 rounded-md shadow-sm">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2 pr-2">
                   <span className="text-gray-400 sm:text-sm">
-                    {tokenInfo.name}
+                    {tokenInfo.code}
                   </span>
                 </div>
                 <Input
                   {...register("amount")}
                   className={`block w-full rounded-md border-gray-300   ${
-                    tokenInfo.name.length <= 4 ? "pl-12" : "pl-16"
+                    tokenInfo.code.length <= 4 ? "pl-12" : "pl-16"
                   } focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400 h-10`}
                   type="number"
                   placeholder="Enter payout amount"
@@ -616,14 +639,14 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
                 <strong>Important:</strong>
                 <p>
                   Make sure the vault address has a balance of at least{" "}
-                  {getAmountWithFee()} {tokenInfo.name}.
+                  {getAmountWithFee()} {tokenInfo.code}.
                 </p>
                 {allInputs.address &&
                   address.toLowerCase() !== allInputs.address.toLowerCase() && (
                     <p>
                       Make sure the vault address has allowed the payout
                       contract with address {round.payoutStrategy.id} to spend{" "}
-                      {getAmountWithFee()} {tokenInfo.name}.
+                      {getAmountWithFee()} {tokenInfo.code}.
                     </p>
                   )}
               </span>

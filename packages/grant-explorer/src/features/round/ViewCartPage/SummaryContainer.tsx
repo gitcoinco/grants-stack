@@ -100,7 +100,7 @@ export function SummaryContainer() {
               acc +
               parseUnits(
                 amount ? amount : "0",
-                getVotingTokenForChain(parseChainId(key)).decimal
+                getVotingTokenForChain(parseChainId(key)).decimals
               ),
             0n
           ),
@@ -364,13 +364,14 @@ export function SummaryContainer() {
       return Promise.all(
         Object.keys(totalDonationsPerChain).map((chainId) =>
           getTokenPrice(
-            getVotingTokenForChain(parseChainId(chainId)).redstoneTokenId
+            getVotingTokenForChain(parseChainId(chainId))
+              .redstoneTokenId as string
           ).then((price) => {
             return (
               Number(
                 formatUnits(
                   totalDonationsPerChain[chainId],
-                  getVotingTokenForChain(parseChainId(chainId)).decimal
+                  getVotingTokenForChain(parseChainId(chainId)).decimals
                 )
               ) * Number(price)
             );
@@ -399,7 +400,7 @@ export function SummaryContainer() {
           .map((proj) => ({
             amount: parseUnits(
               proj.amount ?? "0",
-              getVotingTokenForChain(parseChainId(proj.chainId)).decimal ?? 18
+              getVotingTokenForChain(parseChainId(proj.chainId)).decimals ?? 18
             ),
             grantAddress: proj.recipient,
             voter: address ?? zeroAddress,

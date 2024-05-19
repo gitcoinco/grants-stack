@@ -17,6 +17,7 @@ export * from "./payoutTokens";
 
 export { PassportVerifierWithExpiration } from "./credentialVerifier";
 export { ChainId };
+export * from "@gitcoin/gitcoin-chain-data";
 
 export function useParams<T extends Record<string, string> = never>() {
   return useRouterParams<T>() as T;
@@ -467,7 +468,7 @@ export function roundToPassportURLMap(round: Round) {
 }
 
 export * from "./allo/transaction-builder";
-export type { VotingToken } from "./types";
+// export type { VotingToken } from "./types";
 
 export const txBlockExplorerLinks: Record<ChainId, string> = {
   [ChainId.DEV1]: "",

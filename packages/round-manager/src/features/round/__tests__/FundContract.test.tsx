@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { useTokenPrice } from "common";
+import { useTokenPrice, getPayoutTokens } from "common";
 import { useParams } from "react-router-dom";
 import {
   useAccount,
@@ -25,6 +25,10 @@ global.TextDecoder = TextDecoder;
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
+
+jest.mock("../FundContract", () => ({
+  useContractAmountFunded: jest.fn(),
+}));
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
@@ -57,6 +61,7 @@ jest.mock("common", () => ({
   ...jest.requireActual("common"),
   useTokenPrice: jest.fn(),
   useAllo: jest.fn(),
+  getPayoutTokens: jest.fn(),
 }));
 
 jest.mock("data-layer", () => ({
@@ -70,6 +75,7 @@ describe("fund contract tab", () => {
     (useParams as jest.Mock).mockImplementation(() => {
       return {
         id: mockRoundData.id,
+        payoutToken: "0x0000000000000000000000000000000000000000",
       };
     });
 
@@ -78,7 +84,11 @@ describe("fund contract tab", () => {
   });
 
   it("displays fund contract tab", async () => {
-    mockRoundData = makeRoundData();
+    mockRoundData = makeRoundData({
+      // Ensure the token address matches the mocked token data
+      token: "0x0000000000000000000000000000000000000000",
+      chainId: 1,
+    });
 
     (useTokenPrice as jest.Mock).mockImplementation(() => ({
       data: "100",
@@ -102,6 +112,42 @@ describe("fund contract tab", () => {
       },
     }));
 
+    (getPayoutTokens as jest.Mock).mockImplementation((chainId) => {
+      console.log(`Mock getPayoutTokens called with chainId: ${chainId}`);
+      return {
+        data: [
+          {
+            name: "ETH",
+            chainId: 1,
+            address: "0x0000000000000000000000000000000000000000",
+            redstoneTokenId: "ETH",
+            decimal: 18,
+          },
+        ],
+      };
+    });
+
+    // (useContractAmountFunded as jest.Mock).mockImplementation(
+    //   ({ round, payoutToken }: { round: Round; payoutToken: TPayoutToken }) => {
+    //     console.log("useContractAmountFunded args:", { round, payoutToken });
+    //     if (!round || !payoutToken) {
+    //       return {
+    //         isLoading: true,
+    //         error: undefined,
+    //         data: undefined,
+    //       };
+    //     }
+    //     return {
+    //       isLoading: false,
+    //       error: undefined,
+    //       data: {
+    //         fundedAmount: BigInt(1e18), // 1 token in 18 decimals
+    //         fundedAmountInUsd: 1000,
+    //       },
+    //     };
+    //   }
+    // );
+
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithReadProgramContext(
@@ -114,7 +160,9 @@ describe("fund contract tab", () => {
       )
     );
     const fundContractTab = screen.getByTestId("fund-contract");
+
     fireEvent.click(fundContractTab);
+
     expect(screen.getByText("Details")).toBeInTheDocument();
     expect(screen.getByText("Contract Address:")).toBeInTheDocument();
     expect(screen.getByText("Payout token:")).toBeInTheDocument();

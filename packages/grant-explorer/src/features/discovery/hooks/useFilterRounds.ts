@@ -12,6 +12,7 @@ import { isEmpty } from "lodash";
 import { useMemo } from "react";
 import { AlloVersion } from "data-layer/dist/data-layer.types";
 import { getAlloVersion } from "common/src/config";
+import { TChain } from "common";
 
 export type StrategyName =
   | ""
@@ -74,7 +75,7 @@ export const ROUNDS_ENDING_SOON_FILTER: RoundSelectionParams & {
 
 export const useFilterRounds = (
   where: RoundSelectionParams,
-  chains: Chain[]
+  chains: TChain[]
 ): SWRResponse<RoundGetRound[]> => {
   const chainIds =
     where.network === undefined || where.network.trim() === ""

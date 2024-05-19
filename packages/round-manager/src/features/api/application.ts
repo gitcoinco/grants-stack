@@ -2,12 +2,12 @@ import { ERC20Contract } from "./contracts";
 import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import { Signer } from "@ethersproject/abstract-signer";
-import { PayoutToken } from "common";
+import { TToken } from "common";
 
 export const fundRoundContract = async (
   roundId: string,
   signer: Signer,
-  payoutToken: PayoutToken,
+  payoutToken: TToken,
   amount: BigNumber
 ): Promise<{ txBlockNumber: number; txHash: string }> => {
   // checksum conversion

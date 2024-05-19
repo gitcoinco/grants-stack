@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { fireEvent, screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
-import { ChainId, getPayoutTokenOptions } from "common";
+import { ChainId, getPayoutTokens } from "common";
 
 import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
@@ -43,7 +43,7 @@ describe("<QuadraticFundingForm />", () => {
   });
 
   it("renders a dropdown list of tokens when payout token input is clicked", async () => {
-    const options = getPayoutTokenOptions(ChainId.OPTIMISM_MAINNET_CHAIN_ID);
+    const options = getPayoutTokens(ChainId.OPTIMISM_MAINNET_CHAIN_ID);
 
     const payoutTokenSelection = screen.getByTestId("payout-token-select");
     fireEvent.click(payoutTokenSelection);

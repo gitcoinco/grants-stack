@@ -8,7 +8,7 @@ import {
   UploadIcon,
 } from "@heroicons/react/solid";
 import { useDropzone } from "react-dropzone";
-import { PayoutToken, classNames, payoutTokens, isGG20Round } from "common";
+import { classNames, isGG20Round, getPayoutTokens, TToken } from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRoundMatchingFunds } from "../../../hooks";
 import {
@@ -168,7 +168,6 @@ export default function ViewRoundResultsWrapper() {
 function ViewRoundResultsWithId({ id }: { id: string }) {
   const round = useRoundById(id.toLowerCase());
   const applications = useApplicationsByRoundId(id.toLowerCase());
-  const chainId = round?.round?.chainId;
 
   if (
     round.fetchRoundStatus === ProgressStatus.IN_PROGRESS ||
@@ -189,10 +188,12 @@ function ViewRoundResultsWithId({ id }: { id: string }) {
 
   const matchTokenAddress = round.round.token;
 
-  const matchToken = payoutTokens.find(
-    (t) =>
-      t.address.toLowerCase() == matchTokenAddress.toLowerCase() &&
-      t.chainId == chainId
+  if (round.round.chainId === undefined) {
+    return <div>Invalid chain id</div>;
+  }
+
+  const matchToken = getPayoutTokens(round.round.chainId).find(
+    (t) => t.address.toLowerCase() == matchTokenAddress.toLowerCase()
   );
 
   if (matchToken === undefined) {
@@ -218,7 +219,7 @@ function ViewRoundResults({
   roundId: string;
   applications: GrantApplication[];
   round: Round;
-  matchToken: PayoutToken;
+  matchToken: TToken;
 }) {
   const { chain } = useNetwork();
   const { data: signer } = useSigner();
@@ -875,7 +876,7 @@ function MatchingDistributionPreview(props: {
   matchingFundsError: Error | undefined;
   shouldShowRevisedTable: boolean;
   round: Round;
-  matchToken: PayoutToken | undefined;
+  matchToken: TToken | undefined;
 }) {
   return (
     <>
@@ -958,20 +959,20 @@ function MatchingDistributionPreview(props: {
                               {Number(
                                 utils.formatUnits(
                                   match.matched,
-                                  props.matchToken?.decimal
+                                  props.matchToken?.decimals
                                 )
                               ).toFixed(4)}{" "}
-                              {props.matchToken?.name}
+                              {props.matchToken?.code}
                             </td>
                             {props.shouldShowRevisedTable && (
                               <td className="text-sm leading-5 px-2 text-gray-400 text-left">
                                 {Number(
                                   utils.formatUnits(
                                     match.revisedMatch,
-                                    props.matchToken?.decimal
+                                    props.matchToken?.decimals
                                   )
                                 ).toFixed(4)}{" "}
-                                {props.matchToken?.name}
+                                {props.matchToken?.code}
                               </td>
                             )}
                             <td className="text-sm leading-5 px-2 text-gray-400 text-left">
@@ -1022,7 +1023,7 @@ function RoundSaturationView(props: {
   roundSaturation: number;
   sumOfMatches: bigint;
   round: Round;
-  matchToken: PayoutToken;
+  matchToken: TToken;
 }) {
   return (
     <div className="flex flex-col mt-4 gap-1 mb-3">
@@ -1303,8 +1304,8 @@ function ViewTransactionButton(props: {
   );
 }
 
-function formatUnits(value: bigint, matchToken?: PayoutToken) {
-  return `${Number(utils.formatUnits(value, matchToken?.decimal)).toFixed(
+function formatUnits(value: bigint, matchToken?: TToken) {
+  return `${Number(utils.formatUnits(value, matchToken?.decimals)).toFixed(
     4
-  )} ${matchToken?.name}`;
+  )} ${matchToken?.code}`;
 }

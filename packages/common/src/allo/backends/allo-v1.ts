@@ -15,13 +15,12 @@ import {
 } from "viem";
 import { AnyJson, ChainId, TransactionBuilder } from "../..";
 import { parseChainId } from "../../chains";
-import { payoutTokens } from "../../payoutTokens";
+// import { payoutTokens } from "../../payoutTokens";
 import {
   RoundCategory,
   UpdateAction,
   UpdateRoundParams,
   MatchingStatsData,
-  VotingToken,
 } from "../../types";
 import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
 import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
@@ -57,6 +56,8 @@ import MerklePayoutStrategyImplementationABI from "../abis/allo-v1/MerklePayoutS
 import { BigNumber } from "ethers";
 import DirectPayoutStrategyImplementation from "../abis/allo-v1/DirectPayoutStrategyImplementation";
 import { hexZeroPad } from "ethers/lib/utils.js";
+import { getTokensByChainId } from "@gitcoin/gitcoin-chain-data";
+import { TToken } from "@gitcoin/gitcoin-chain-data/dist/types";
 
 function createProjectId(args: {
   chainId: number;
@@ -110,7 +111,7 @@ export class AlloV1 implements Allo {
   async donate(
     publicClient: PublicClient,
     chainId: ChainId,
-    token: VotingToken,
+    token: TToken,
     groupedVotes: Record<string, Hex[]>,
     groupedAmounts: Record<string, bigint> | bigint[],
     nativeTokenAmount: bigint,
@@ -505,13 +506,17 @@ export class AlloV1 implements Allo {
         if (isQF) {
           // Ensure tokenAmount is normalized to token decimals
           const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
-          const pyToken = payoutTokens.filter(
+
+          // Note: uses the new SDK
+          const tokens = getTokensByChainId(this.chainId);
+          const payoutTokens = tokens;
+          const payoutToken = payoutTokens.filter(
             (t) =>
               t.address.toLowerCase() === args.roundData.token.toLowerCase()
           )[0];
           parsedTokenAmount = parseUnits(
             tokenAmount.toString(),
-            pyToken.decimal
+            payoutToken.decimals
           );
         }
 

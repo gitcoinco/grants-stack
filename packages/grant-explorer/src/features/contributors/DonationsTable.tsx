@@ -1,9 +1,8 @@
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
-import { CHAINS } from "../api/utils";
 import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
-import { ChainId, VotingToken } from "common";
+import { ChainId, TToken, getChains } from "common";
 import { formatUnits } from "viem";
 import { Contribution } from "data-layer";
 import {
@@ -16,9 +15,11 @@ import {
 import { useState } from "react";
 import moment from "moment";
 
+const CHAINS = getChains();
+
 export function DonationsTable(props: {
   contributions: Contribution[];
-  tokens: Record<string, VotingToken>;
+  tokens: Record<string, TToken>;
   activeRound: boolean;
 }) {
   return (
@@ -42,7 +43,7 @@ export function DonationsTable(props: {
 
 function RoundsTableWithAccordian(props: {
   contributions: Contribution[];
-  tokens: Record<string, VotingToken>;
+  tokens: Record<string, TToken>;
   activeRound: boolean;
 }) {
   const nestedContributionsForRound = props.contributions.reduce(
@@ -162,7 +163,7 @@ function TableHeader() {
 
 function InnerTable(props: {
   contributions: Contribution[];
-  tokens: Record<string, VotingToken>;
+  tokens: Record<string, TToken>;
   activeRound: boolean;
 }) {
   return (
@@ -199,8 +200,8 @@ function InnerTable(props: {
                       if (token) {
                         formattedAmount = `${formatUnits(
                           BigInt(contribution.amount),
-                          token.decimal
-                        )} ${token.name}`;
+                          token.decimals
+                        )} ${token.code}`;
                       }
 
                       return (
@@ -253,12 +254,12 @@ function InnerTable(props: {
 
 function Table(props: {
   contributions: Contribution[];
-  tokens: Record<string, VotingToken>;
+  tokens: Record<string, TToken>;
   activeRound: boolean;
 }) {
   const roundInfo = props.contributions[0];
   const chainId = roundInfo.chainId;
-  const chainLogo = CHAINS[roundInfo.chainId as ChainId]?.logo;
+  const chainLogo = CHAINS[roundInfo.chainId as ChainId]?.icon;
   const roundName = roundInfo.round.roundMetadata.name;
 
   const sortedContributions = props.contributions;
@@ -283,8 +284,8 @@ function Table(props: {
     if (token) {
       formattedAmount = `${formatUnits(
         BigInt(totalContributionInMatchingToken),
-        token.decimal
-      )} ${token.name}`;
+        token.decimals
+      )} ${token.code}`;
     }
   });
 

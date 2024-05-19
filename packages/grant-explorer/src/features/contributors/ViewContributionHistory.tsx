@@ -1,7 +1,7 @@
 import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { getChainIds, votingTokens } from "../api/utils";
+import { getChainIds } from "../api/utils";
 import Navbar from "../common/Navbar";
 import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
@@ -11,7 +11,7 @@ import { useContributionHistory } from "../api/round";
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { isAddress } from "viem";
-import { VotingToken, dateToEthereumTimestamp } from "common";
+import { ChainId, TToken, dateToEthereumTimestamp, getTokens } from "common";
 import { Contribution } from "data-layer";
 
 const DonationHistoryBanner = lazy(
@@ -42,6 +42,19 @@ export function ViewContributionHistoryPage() {
     </>
   );
 }
+
+const defaultVotingTokens: Record<ChainId, TToken> = Object.entries(
+  getTokens()
+).reduce(
+  (acc, [chainId, tokens]) => {
+    const votingToken = tokens.find((token) => token.canVote);
+    if (votingToken) {
+      acc[Number(chainId) as ChainId] = votingToken;
+    }
+    return acc;
+  },
+  {} as Record<ChainId, TToken>
+);
 
 function ViewContributionHistoryFetcher(props: {
   address: string;
@@ -82,12 +95,12 @@ function ViewContributionHistoryFetcher(props: {
   }, [props.address, ensAvatar]);
 
   // tokens is a map of token address + chainId to token
-  const tokens = Object.fromEntries(
-    votingTokens.map((token) => [
-      token.address.toLowerCase() + "-" + token.chainId,
-      token,
-    ])
-  );
+  // todo: make sure this is working as expected
+  const tokens = Object.entries(defaultVotingTokens).map((tokens) => {
+    return {
+      [tokens[0]]: tokens[1],
+    };
+  })[0];
 
   if (contributionHistory.type === "loading") {
     return <div>Loading...</div>;
@@ -115,7 +128,7 @@ function ViewContributionHistoryFetcher(props: {
 }
 
 export function ViewContributionHistory(props: {
-  tokens: Record<string, VotingToken>;
+  tokens: Record<string, TToken>;
   contributions: { chainIds: number[]; data: Contribution[] };
   address: string;
   addressLogo: string;

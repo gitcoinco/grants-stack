@@ -1,5 +1,4 @@
 import "@rainbow-me/rainbowkit/styles.css";
-
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
@@ -7,80 +6,56 @@ import {
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { createClient, configureChains } from "wagmi";
-import {
-  fantom,
-  fantomTestnet,
-  mainnet,
-  optimism,
-  Chain,
-  arbitrum,
-  arbitrumGoerli,
-  avalancheFuji,
-  avalanche,
-  polygon,
-  polygonMumbai,
-} from "wagmi/chains";
-
-import {
-  pgn,
-  pgnTestnet,
-  base,
-  scroll,
-  zkSyncEraMainnet,
-  // zkSyncEraTestnet,
-  sepolia,
-  // seiDevnet,
-  seiMainnet,
-  customLukso as lukso,
-  customLuksoTestnet as luksoTestnet,
-  customCelo as celo,
-  customCeloAlfajores as celoAlfajores,
-} from "common/src/chains";
+import { createClient, configureChains, Chain } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
-import { getConfig } from "common/src/config";
-
-const config = getConfig();
+import { TChain, getChains } from "common";
+import { zeroAddress } from "viem";
 
 const testnetChains = () => {
-  return [
-    { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
-    // zkSyncEraTestnet,
-    pgnTestnet,
-    arbitrumGoerli,
-    polygonMumbai,
-    avalancheFuji,
-    sepolia,
-    // seiDevnet,
-    luksoTestnet,
-    celoAlfajores,
-  ];
+  return getChains().filter((chain) => chain.type === "testnet");
 };
 
 const mainnetChains = () => {
-  return [
-    mainnet,
-    optimism,
-    pgn,
-    arbitrum,
-    avalanche,
-    polygon,
-    zkSyncEraMainnet,
-    base,
-    scroll,
-    seiMainnet,
-    { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
-    lukso,
-    celo,
-  ];
+  return getChains().filter((chain) => chain.type === "mainnet");
 };
 
-const allChains: Chain[] =
+const allChains: TChain[] =
   process.env.REACT_APP_ENV === "development"
     ? [...testnetChains(), ...mainnetChains()]
     : [...mainnetChains()];
+
+// Map the TChain to Chain type. This is required until we update the dependencies.
+const allChainsMap: Chain[] = allChains.map((chain) => {
+  // Filter by zero address to get the native token
+  const nativeToken = chain.tokens.find(
+    (token) => token.address === zeroAddress
+  );
+  // Map the TChain to Chain
+  const mappedChain: Chain = {
+    id: chain.id,
+    name: chain.name,
+    network: chain.name,
+    nativeCurrency: {
+      name: nativeToken?.code as string,
+      symbol: nativeToken?.code as string,
+      decimals: nativeToken?.decimals as number,
+    },
+    rpcUrls: {
+      default: {
+        http: [chain.rpc],
+        webSocket: undefined,
+      },
+      public: {
+        http: [chain.rpc],
+        webSocket: undefined,
+      },
+    },
+  };
+
+  return mappedChain;
+});
 
 /* TODO: remove hardcoded value once we have environment variables validation */
 const projectId =
@@ -101,7 +76,7 @@ if (config.blockchain.alchemyId !== undefined) {
 }
 
 export const { chains, provider, webSocketProvider } = configureChains(
-  allChains,
+  allChainsMap,
   providers
 );
 

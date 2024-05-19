@@ -10,7 +10,7 @@ import React, {
 
 import { ProgressStatus } from "../../features/api/types";
 
-import { Allo, PayoutToken } from "common";
+import { Allo, TToken } from "common";
 
 export interface FundContractState {
   tokenApprovalStatus: ProgressStatus;
@@ -29,7 +29,7 @@ export type FundContractParams = {
   allo: Allo;
   roundId: string;
   fundAmount: number;
-  payoutToken: PayoutToken;
+  payoutToken: TToken;
   requireTokenApproval?: boolean;
 };
 
@@ -151,7 +151,7 @@ async function _fundContract({
 
   try {
     const amount = ethers.utils
-      .parseUnits(fundAmount.toString(), payoutToken.decimal)
+      .parseUnits(fundAmount.toString(), payoutToken.decimals)
       .toBigInt();
 
     context.setTokenApprovalStatus(ProgressStatus.IN_PROGRESS);

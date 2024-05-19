@@ -4,7 +4,7 @@ import DefaultLogoImage from "../../../assets/default_logo.png";
 import { Link } from "react-router-dom";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { renderToPlainText, VotingToken } from "common";
+import { renderToPlainText, TToken } from "common";
 import { Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
 
@@ -15,7 +15,7 @@ export function ProjectInCart(
     projects: CartProject[];
     roundRoutePath: string;
     last?: boolean;
-    selectedPayoutToken: VotingToken;
+    selectedPayoutToken: TToken;
     payoutTokenPrice: number;
     removeProjectFromCart: (project: CartProject) => void;
     showMatchingEstimate: boolean;
@@ -98,7 +98,7 @@ export function ProjectInCart(
             }}
             className="w-[100px] sm:w-[80px] text-center border border-black"
           />
-          <p className="m-auto">{props.selectedPayoutToken.name}</p>
+          <p className="m-auto">{props.selectedPayoutToken.code}</p>
           {props.payoutTokenPrice && (
             <div className="m-auto px-2 min-w-max flex flex-col">
               <span className="text-sm text-grey-400 ">

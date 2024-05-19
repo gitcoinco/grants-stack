@@ -5,6 +5,7 @@ import { CartProject, ProgressStatus } from "./features/api/types";
 import { Allo, ChainId } from "common";
 import { useCartStorage } from "./store";
 import {
+  Address,
   Hex,
   InternalRpcError,
   parseAbi,
@@ -27,6 +28,7 @@ import { getPermitType } from "common/dist/allo/voting";
 import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
+import { TToken, getTokensByChainId } from "common";
 
 type ChainMap<T> = Record<ChainId, T>;
 
@@ -120,6 +122,8 @@ export const useCheckoutStore = create<CheckoutState>()(
       const getVotingTokenForChain =
         useCartStorage.getState().getVotingTokenForChain;
 
+      // useCartStorage.getState().getVotingTokenForChain;
+
       const totalDonationPerChain = Object.fromEntries(
         Object.entries(projectsByChain).map(([key, value]) => [
           Number(key) as ChainId,
@@ -130,7 +134,7 @@ export const useCheckoutStore = create<CheckoutState>()(
                 acc +
                 parseUnits(
                   amount ? amount : "0",
-                  getVotingTokenForChain(Number(key) as ChainId).decimal
+                  getVotingTokenForChain(Number(key) as ChainId).decimals
                 ),
               0n
             ),
@@ -150,7 +154,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         /* Switch to the current chain */
         await switchToChain(chainId, walletClient, get);
 
-        const token = getVotingTokenForChain(chainId);
+        const token = await getVotingTokenForChain(chainId);
 
         let sig;
         let nonce;
@@ -246,7 +250,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           for (const roundId in groupedDonations) {
             groupedAmounts[roundId] = groupedDonations[roundId].reduce(
               (acc, donation) =>
-                acc + parseUnits(donation.amount, token.decimal),
+                acc + parseUnits(donation.amount, token.decimals),
               0n
             );
           }
@@ -254,7 +258,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           const amountArray: bigint[] = [];
           for (const roundId in groupedDonations) {
             groupedDonations[roundId].map((donation) => {
-              amountArray.push(parseUnits(donation.amount, token.decimal));
+              amountArray.push(parseUnits(donation.amount, token.decimals));
             });
           }
 
@@ -366,10 +370,26 @@ async function switchToChain(
           chain: {
             id: nextChainData.id,
             name: nextChainData.name,
-            network: nextChainData.network,
-            nativeCurrency: nextChainData.nativeCurrency,
-            rpcUrls: nextChainData.rpcUrls,
-            blockExplorers: nextChainData.blockExplorers,
+            network: nextChainData.blockExplorer,
+            nativeCurrency: {
+              decimals: nextChainData.tokens.find(
+                (token) => token.address === zeroAddress
+              )?.decimals as number,
+              name: nextChainData.tokens.find(
+                (token) => token.address === zeroAddress
+              )?.code as string,
+              symbol: nextChainData.tokens.find(
+                (token) => token.address === zeroAddress
+              )?.code as string,
+            },
+            rpcUrls: {
+              default: {
+                http: [nextChainData.rpc],
+              },
+              public: {
+                http: [nextChainData.rpc],
+              },
+            },
           },
         });
       } catch (e) {

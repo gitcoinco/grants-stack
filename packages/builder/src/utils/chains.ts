@@ -1,107 +1,100 @@
 import { Chain } from "@rainbow-me/rainbowkit";
-import { arbitrum, arbitrumGoerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-import {
-  pgn,
-  pgnTestnet,
-  zkSyncEraMainnet,
-  zkSyncEraTestnet,
-  devChain1,
-  devChain2,
-  avalanche,
-  avalancheFuji,
-  fantom,
-  base,
-  fantomTestnet,
-  customOptimism,
-  customPolygon,
-  customMainnet,
-  sepolia,
-  scroll,
-  seiDevnet,
-  seiMainnet,
-  customCelo as celo,
-  customCeloAlfajores as celoAlfajores,
-  customLukso as lukso,
-  customLuksoTestnet as luksoTestnet,
-} from "common/src/chains";
 import { getConfig } from "common/src/config";
-import { polygonMumbai } from "@wagmi/core/chains";
+import { getChains, TChain } from "common";
+import { zeroAddress } from "viem";
 
-const availableChains: { [key: string]: Chain } = {
-  dev1: devChain1,
-  dev2: devChain2,
-  mainnet: customMainnet,
-  fantom,
-  optimism: customOptimism,
-  pgn,
-  celo,
-  celoAlfajores,
-  arbitrum,
-  avalanche,
-  polygon: customPolygon,
-  base,
-  scroll,
-  fantomTestnet,
-  pgnTestnet,
-  arbitrumGoerli,
-  polygonMumbai,
-  avalancheFuji,
-  zkSyncEraMainnet,
-  zkSyncEraTestnet,
-  sepolia,
-  seiDevnet,
-  seiMainnet,
-  lukso,
-  luksoTestnet,
-};
+const testnetChains = () =>
+  getChains().filter((chain) => chain.type === "testnet");
 
-const stagingChains = [
-  devChain1,
-  devChain2,
-  customOptimism,
-  fantomTestnet,
-  fantom,
-  customMainnet,
-  pgnTestnet,
-  pgn,
-  arbitrum,
-  base,
-  scroll,
-  arbitrumGoerli,
-  customPolygon,
-  polygonMumbai,
-  avalanche,
-  avalancheFuji,
-  zkSyncEraMainnet,
-  zkSyncEraTestnet,
-  sepolia,
-  seiDevnet,
-  seiMainnet,
-  celo,
-  celoAlfajores,
-  lukso,
-  luksoTestnet,
-];
+const mainnetChains = () =>
+  getChains().filter((chain) => chain.type === "mainnet");
 
-const productionChains = [
-  customMainnet,
-  fantom,
-  customOptimism,
-  pgn,
-  arbitrum,
-  avalanche,
-  customPolygon,
-  zkSyncEraMainnet,
-  base,
-  scroll,
-  seiDevnet,
-  seiMainnet,
-  celo,
-  lukso,
-];
+const allChains: TChain[] =
+  process.env.REACT_APP_ENV === "development"
+    ? [...testnetChains(), ...mainnetChains()]
+    : [...mainnetChains()];
+
+// Map the TChain to Chain type. This is required until we update the dependencies.
+const allChainsMap: Chain[] = allChains.map((chain) => {
+  // Filter by zero address to get the native token
+  const nativeToken = chain.tokens.find(
+    (token) => token.address === zeroAddress
+  );
+  // Map the TChain to Chain
+  const mappedChain: Chain = {
+    id: chain.id,
+    name: chain.name,
+    network: chain.name,
+    nativeCurrency: {
+      name: nativeToken?.code as string,
+      symbol: nativeToken?.code as string,
+      decimals: nativeToken?.decimals as number,
+    },
+    rpcUrls: {
+      default: {
+        http: [chain.rpc],
+        webSocket: undefined,
+      },
+      public: {
+        http: [chain.rpc],
+        webSocket: undefined,
+      },
+    },
+  };
+
+  return mappedChain;
+});
+
+const stagingChains = testnetChains().map((chain) => {
+  const mappedChain: Chain = {
+    id: chain.id,
+    name: chain.name,
+    network: chain.name,
+    nativeCurrency: {
+      name: chain.tokens[0].code,
+      symbol: chain.tokens[0].code,
+      decimals: chain.tokens[0].decimals,
+    },
+    rpcUrls: {
+      default: {
+        http: [chain.rpc],
+        webSocket: undefined,
+      },
+      public: {
+        http: [chain.rpc],
+        webSocket: undefined,
+      },
+    },
+  };
+  return mappedChain;
+});
+
+const productionChains = mainnetChains().map((chain) => {
+  const mappedChain: Chain = {
+    id: chain.id,
+    name: chain.name,
+    network: chain.name,
+    nativeCurrency: {
+      name: chain.tokens[0].code,
+      symbol: chain.tokens[0].code,
+      decimals: chain.tokens[0].decimals,
+    },
+    rpcUrls: {
+      default: {
+        http: [chain.rpc],
+        webSocket: undefined,
+      },
+      public: {
+        http: [chain.rpc],
+        webSocket: undefined,
+      },
+    },
+  };
+  return mappedChain;
+});
 
 export function getEnabledChainsAndProviders() {
   const config = getConfig();
@@ -123,14 +116,20 @@ export function getEnabledChainsAndProviders() {
       ? chainsOverride.split(",").map((name) => name.trim())
       : [];
 
+  let usingDevOnlyChains = true;
+
   if (selectedChainsNames.length > 0) {
     // if REACT_APP_CHAINS_OVERRIDE is specified we use those
     selectedChainsNames.forEach((name) => {
-      const chain = availableChains[name];
+      // if it's not a local dev chain, it means we are using external
+      // chains and we need infura/alchemy ids to be set
+      if (!/^dev[1-9]+$/.test(name)) {
+        usingDevOnlyChains = false;
+      }
+
+      const chain = allChainsMap.find((c) => c.name === name);
       if (chain === undefined) {
-        throw new Error(
-          `availableChains doesn't contain a chain called "${name}"`
-        );
+        throw new Error(`allChains doesn't contain a chain called "${name}"`);
       }
 
       chains.push(chain);

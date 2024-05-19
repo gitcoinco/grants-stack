@@ -24,8 +24,8 @@ export function RoundMatchAmountBadge({
   });
   const nativePayoutToken = getPayoutToken(tokenAddress, chainId);
 
-  const symbol = data?.symbol ?? nativePayoutToken?.name ?? "ETH";
-  const decimals = data?.decimals ?? nativePayoutToken?.decimal ?? 18;
+  const symbol = data?.symbol ?? nativePayoutToken?.code ?? "ETH";
+  const decimals = data?.decimals ?? nativePayoutToken?.decimals ?? 18;
 
   const matchAmountNormalized = formatUnits(BigInt(matchAmount), decimals);
 

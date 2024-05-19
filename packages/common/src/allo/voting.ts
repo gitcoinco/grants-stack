@@ -1,4 +1,4 @@
-import { VotingToken } from "../types";
+import { TToken } from "@gitcoin/gitcoin-chain-data/dist/types";
 
 export type PermitSignature = {
   v: number;
@@ -11,11 +11,8 @@ export type PermitSignature = {
  *
  * Old DAI permit type is only implemented on Ethereum and Polygon PoS. Check /docs/DAI.md for more info.
  * */
-export const getPermitType = (token: VotingToken): PermitType => {
-  if (
-    /DAI/i.test(token.name) &&
-    ([1, 137, 11155111].includes(token.chainId))
-  ) {
+export const getPermitType = (token: TToken): PermitType => {
+  if (/DAI/i.test(token.code)) {
     return "dai";
   } else {
     return "eip2612";
