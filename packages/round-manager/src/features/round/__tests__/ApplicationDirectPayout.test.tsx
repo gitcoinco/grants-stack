@@ -101,11 +101,6 @@ const client = new DataLayer({
   ipfs: {
     gateway: "https://mock-ipfs.com",
   },
-  subgraph: {
-    endpointsByChainId: {
-      1: "https://mock-subgraph.com",
-    },
-  },
 });
 
 describe("<ApplicationDirectPayout />", () => {

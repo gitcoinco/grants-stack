@@ -31,10 +31,6 @@ vi.mock("../../api/utils", async () => {
     await vi.importActual<typeof import("../../api/utils")>("../../api/utils");
   return {
     ...actual,
-    __deprecated_graphql_fetch: vi
-      .fn()
-      .mockReturnValue({ data: { rounds: [] } }),
-    __deprecated_fetchFromIPFS: vi.fn(),
   };
 });
 

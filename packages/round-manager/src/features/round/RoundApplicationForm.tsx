@@ -331,7 +331,7 @@ export function RoundApplicationForm(props: {
     },
     {
       name: "Indexing",
-      description: "The subgraph is indexing the data.",
+      description: "The data is being indexed.",
       status: indexingStatus,
     },
     {

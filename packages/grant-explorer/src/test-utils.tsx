@@ -8,7 +8,6 @@ import {
   RoundContext,
   RoundState,
 } from "./context/RoundContext";
-import { __deprecated_RoundMetadata } from "./features/api/round";
 import { CartProject, ProjectMetadata, Round } from "./features/api/types";
 import { parseUnits } from "viem";
 import { ChainId } from "common";
@@ -100,8 +99,8 @@ const makeTimestamp = (days?: number) =>
   Math.floor(Number(faker.date.soon(days)) / 1000).toString();
 
 export const makeRoundMetadata = (
-  overrides?: Partial<__deprecated_RoundMetadata>
-): __deprecated_RoundMetadata => ({
+  overrides?: Partial<any>
+): any => ({
   name: faker.company.name(),
   roundType: "public",
   eligibility: {
@@ -117,7 +116,7 @@ export const makeRoundMetadata = (
 
 export const makeRoundOverviewData = (
   overrides?: Partial<RoundGetRound>,
-  roundMetadataOverrides?: Partial<__deprecated_RoundMetadata>
+  roundMetadataOverrides?: Partial<any>
 ): RoundGetRound => {
   return {
     id: faker.finance.ethereumAddress(),

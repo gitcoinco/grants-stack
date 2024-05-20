@@ -387,8 +387,6 @@ export { AlloV1 } from "./allo/backends/allo-v1";
 export { AlloV2 } from "./allo/backends/allo-v2";
 export {
   createWaitForIndexerSyncTo,
-  getCurrentSubgraphBlockNumber,
-  waitForSubgraphSyncTo,
 } from "./allo/indexer";
 export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
@@ -438,8 +436,6 @@ export interface Web3Instance {
   provider: Web3Provider;
   signer?: Signer;
 }
-
-export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
 
 export function roundToPassportIdAndKeyMap(round: Round): {
   communityId: string;

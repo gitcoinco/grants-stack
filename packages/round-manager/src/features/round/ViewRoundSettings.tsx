@@ -8,8 +8,6 @@ import {
   RoundVisibilityType,
   classNames,
   getPayoutTokenOptions,
-  getUTCDate,
-  getUTCTime,
   getLocalDate,
   getLocalTime,
   payoutTokens,

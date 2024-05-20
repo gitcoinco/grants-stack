@@ -14,14 +14,6 @@ import { getEnabledChains } from "../../../app/chainConfig";
 
 // Mock the API calls
 
-// Create empty mock functions - we will set these inside the tests.
-const { __deprecated_graphql_fetch, __deprecated_fetchFromIPFS } = vi.hoisted(
-  () => ({
-    __deprecated_graphql_fetch: vi.fn(),
-    __deprecated_fetchFromIPFS: vi.fn(),
-  })
-);
-
 vi.mock("common", async () => {
   const actual = await vi.importActual<typeof import("common")>("common");
   return {
@@ -35,8 +27,6 @@ vi.mock("../../api/utils", async () => {
     await vi.importActual<typeof import("../../api/utils")>("../../api/utils");
   return {
     ...actual,
-    __deprecated_graphql_fetch,
-    __deprecated_fetchFromIPFS,
   };
 });
 
@@ -70,11 +60,6 @@ vi.mock("wagmi", async () => {
 });
 
 describe("LandingPage", () => {
-  beforeEach(() => {
-    // Reset the mocks before each test
-    __deprecated_graphql_fetch.mockReset();
-    __deprecated_fetchFromIPFS.mockReset();
-  });
 
   it("renders landing page", () => {
     renderWithContext(<LandingPage />);
@@ -95,12 +80,6 @@ describe("LandingPage", () => {
         ),
       }),
     } as unknown as DataLayer;
-
-    // Return the same metadata that was created by the mock
-    __deprecated_fetchFromIPFS.mockImplementation(async (cid: string) => {
-      return mockedRounds.find((round) => round.roundMetadataCid === cid)
-        ?.roundMetadata;
-    });
 
     renderWithContext(<LandingPage />, { dataLayer: mockDataLayer });
 

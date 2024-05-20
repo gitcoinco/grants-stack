@@ -11,9 +11,7 @@ import {
 import {
   CalendarIcon,
   ChainId,
-  formatUTCDateAsISOString,
   getRoundStrategyTitle,
-  getUTCTime,
   getLocalTime,
   formatLocalDateAsISOString,
   renderToPlainText,

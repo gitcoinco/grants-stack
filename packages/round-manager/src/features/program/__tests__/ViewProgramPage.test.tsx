@@ -3,7 +3,6 @@ import { render, screen } from "@testing-library/react";
 import {
   ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
-  formatUTCDateAsISOString,
   formatLocalDateAsISOString,
 } from "common";
 import {
