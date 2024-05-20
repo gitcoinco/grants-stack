@@ -1,4 +1,4 @@
-import {,
+import {
   pinToIPFS,
   dateFromMs,
   getDaysLeft,

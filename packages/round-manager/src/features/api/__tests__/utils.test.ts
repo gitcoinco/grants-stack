@@ -1,9 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { enableFetchMocks, FetchMock } from "jest-fetch-mock";
-
-import { ChainId } from "common";
 import { fetchFromIPFS, generateApplicationSchema, pinToIPFS } from "../utils";
-
-import { graphql_fetch } from "common";
 import {
   getInitialQuestionsQF,
   initialRequirements,

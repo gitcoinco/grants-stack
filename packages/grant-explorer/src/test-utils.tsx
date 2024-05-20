@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Mocked } from "vitest";
 import { faker } from "@faker-js/faker";
 import { render } from "@testing-library/react";
