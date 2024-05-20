@@ -1,6 +1,6 @@
-import { formatUnits, getAddress, zeroAddress } from "viem";
+import { formatUnits, getAddress } from "viem";
 import { Badge } from "../common/styles";
-import { useToken } from "wagmi";
+import { useReadContracts } from "wagmi";
 import { getPayoutToken } from "../api/utils";
 import { ChainId } from "common";
 
@@ -17,15 +17,28 @@ export function RoundMatchAmountBadge({
   matchAmount,
   tokenAddress,
 }: RoundCardStatProps) {
-  const { data } = useToken({
-    address: getAddress(tokenAddress),
-    chainId: Number(chainId),
-    enabled: tokenAddress !== zeroAddress,
+  // Note: useToken was depreciated for this...
+  const result = useReadContracts({
+    contracts: [
+      {
+        address: getAddress(tokenAddress),
+        functionName: "getBalance",
+        // todo: get the user address from the wallet
+        args: ["0x3f15B8c6F9939879Cb030D6dd935348E57109637"],
+        abi: ["function getBalance() view returns (uint256)"],
+        chainId: Number(chainId),
+      },
+    ],
+    // address: getAddress(tokenAddress),
+    // chainId: Number(chainId),
+    // enabled: tokenAddress !== zeroAddress,
   });
-  const nativePayoutToken = getPayoutToken(tokenAddress, chainId);
+  // const nativePayoutToken = getPayoutToken(tokenAddress, chainId);
 
-  const symbol = data?.symbol ?? nativePayoutToken?.name ?? "ETH";
-  const decimals = data?.decimals ?? nativePayoutToken?.decimal ?? 18;
+  console.log("The damn result", result);
+
+  const symbol = ""; //result?.data.symbol ?? nativePayoutToken?.name ?? "ETH";
+  const decimals = 18; //result?.decimals ?? nativePayoutToken?.decimal ?? 18;
 
   const matchAmountNormalized = formatUnits(BigInt(matchAmount), decimals);
 

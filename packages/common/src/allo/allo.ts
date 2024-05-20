@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Signer } from "@ethersproject/abstract-signer";
 import { ApplicationStatus, DistributionMatch, Round } from "data-layer";
 import { Address, Hex, PublicClient } from "viem";
@@ -112,7 +113,7 @@ export interface Allo {
   >;
 
   donate: (
-    publicClient: PublicClient,
+    publicClient: any,
     chainId: ChainId,
     token: VotingToken,
     groupedVotes: Record<string, Hex[]>,

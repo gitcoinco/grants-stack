@@ -59,7 +59,7 @@ function ViewContributionHistoryFetcher(props: {
   });
 
   const { data: ensAvatar } = useEnsAvatar({
-    name: ensName,
+    name: ensName ?? "",
     chainId: 1,
   });
 

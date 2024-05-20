@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Abi, ExtractAbiEventNames } from "abitype";
 import ethers from "ethers";
 import {
@@ -123,8 +124,8 @@ export function createEthersTransactionSender(
 }
 
 export function createViemTransactionSender(
-  walletClient: WalletClient,
-  publicClient: PublicClient
+  walletClient: any,
+  publicClient: any
 ): TransactionSender {
   return {
     async send(tx: TransactionData): Promise<Hex> {

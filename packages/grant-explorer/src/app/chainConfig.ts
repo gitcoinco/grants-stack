@@ -1,7 +1,6 @@
 import {
   avalanche,
   avalancheFuji,
-  Chain,
   fantom,
   fantomTestnet,
   mainnet,
@@ -9,7 +8,7 @@ import {
   polygon,
   polygonMumbai,
 } from "wagmi/chains";
-import { arbitrum, arbitrumGoerli } from "viem/chains";
+import { Chain, arbitrum, arbitrumGoerli } from "viem/chains";
 import {
   pgnTestnet,
   pgn,
@@ -62,14 +61,14 @@ const MAINNET_CHAINS = [
   celo,
 ].map(ensureValidChainId);
 
-export const getEnabledChains = (): Chain[] => {
+export const getEnabledChains = (): [Chain, ...Chain[]] => {
   switch (process.env.REACT_APP_ENV) {
     case "development":
-      return [...TESTNET_CHAINS, ...MAINNET_CHAINS];
+      return [...TESTNET_CHAINS, ...MAINNET_CHAINS] as [Chain, ...Chain[]];
     case "production":
-      return MAINNET_CHAINS;
+      return [...MAINNET_CHAINS] as [Chain, ...Chain[]];
     case "test":
-      return MAINNET_CHAINS;
+      return [...MAINNET_CHAINS] as [Chain, ...Chain[]];
     default:
       throw new Error(
         `Unrecognized REACT_APP_ENV: ${process.env.REACT_APP_ENV}`

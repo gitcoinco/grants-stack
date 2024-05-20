@@ -8,7 +8,7 @@ import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import { useAccount, useWalletClient } from "wagmi";
+import { useAccount } from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
@@ -33,9 +33,9 @@ import { isPresent } from "ts-is-present";
 import { useAllo } from "../../api/AlloWrapper";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
+import { walletClient } from "../../../app/wagmi";
 
 export function SummaryContainer() {
-  const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
   const { address, isConnected } = useAccount();
   const {
@@ -71,6 +71,7 @@ export function SummaryContainer() {
       await Promise.all(
         chainIds.map(async (chainId) => {
           const votingToken = getVotingTokenForChain(chainId);
+          // fixme: replace `fetchBalance` with `readContracts`
           const { value } = await fetchBalance({
             address: address ?? zeroAddress,
             token:

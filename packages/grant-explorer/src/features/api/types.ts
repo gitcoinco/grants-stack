@@ -1,6 +1,5 @@
+import { WalletClient } from "@wagmi/core";
 import { ChainId } from "common";
-import { WalletClient } from "wagmi";
-
 import type { Project } from "data-layer";
 
 export type {

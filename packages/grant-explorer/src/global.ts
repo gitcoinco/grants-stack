@@ -1,6 +1,5 @@
 import { IPFS } from "ipfs-core-types";
-import { PublicClient } from "@wagmi/core";
-import { WalletClient } from "wagmi";
+import { PublicClient, WalletClient } from "@wagmi/core";
 
 export interface Global {
   web3Provider: PublicClient | undefined;

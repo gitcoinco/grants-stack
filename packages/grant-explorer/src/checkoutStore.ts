@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
@@ -5,6 +6,7 @@ import { CartProject, ProgressStatus } from "./features/api/types";
 import { Allo, ChainId } from "common";
 import { useCartStorage } from "./store";
 import {
+  getContract,
   Hex,
   InternalRpcError,
   parseAbi,
@@ -21,12 +23,12 @@ import {
 } from "./features/api/voting";
 import { groupBy, uniq } from "lodash-es";
 import { getEnabledChains } from "./app/chainConfig";
-import { WalletClient } from "wagmi";
-import { getContract, getPublicClient } from "@wagmi/core";
+import { sepolia } from "@wagmi/core";
 import { getPermitType } from "common/dist/allo/voting";
 import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
+import { publicClient, walletClient } from "./app/wagmi";
 
 type ChainMap<T> = Record<ChainId, T>;
 
@@ -52,7 +54,7 @@ interface CheckoutState {
    * We get the data necessary to construct the votes from the cart store */
   checkout: (
     chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
-    walletClient: WalletClient,
+    walletClient: any,
     allo: Allo,
     dataLayer: DataLayer
   ) => Promise<void>;
@@ -100,7 +102,7 @@ export const useCheckoutStore = create<CheckoutState>()(
     },
     checkout: async (
       chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
-      walletClient: WalletClient,
+      walletClient: any,
       allo: Allo
     ) => {
       const chainIdsToCheckOut = chainsToCheckout.map((chain) => chain.chainId);
@@ -168,8 +170,9 @@ export const useCheckoutStore = create<CheckoutState>()(
                 "function nonces(address) public view returns (uint256)",
                 "function name() public view returns (string)",
               ]),
-              walletClient,
-              chainId,
+              // todo: get the current `Chain` object
+              client: publicClient(sepolia),
+
             });
             nonce = await erc20Contract.read.nonces([owner]);
             const tokenName = await erc20Contract.read.name();
@@ -259,9 +262,8 @@ export const useCheckoutStore = create<CheckoutState>()(
           }
 
           const receipt = await allo.donate(
-            getPublicClient({
-              chainId,
-            }),
+            // fixme: this needs to be current `Chain` object
+            publicClient(sepolia),
             chainId,
             token,
             groupedEncodedVotes,
@@ -337,7 +339,7 @@ export const useCheckoutStore = create<CheckoutState>()(
  * if the chain is not present in the wallet, it will add it, and then switch */
 async function switchToChain(
   chainId: ChainId,
-  walletClient: WalletClient,
+  walletClient: any,
   get: () => CheckoutState
 ) {
   get().setChainSwitchStatusForChain(chainId, ProgressStatus.IN_PROGRESS);
@@ -366,7 +368,7 @@ async function switchToChain(
           chain: {
             id: nextChainData.id,
             name: nextChainData.name,
-            network: nextChainData.network,
+            // network: nextChainData.network,
             nativeCurrency: nextChainData.nativeCurrency,
             rpcUrls: nextChainData.rpcUrls,
             blockExplorers: nextChainData.blockExplorers,
