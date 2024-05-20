@@ -96,12 +96,13 @@ export default function ViewProjectDetails() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
   const {
     chainId,
-    roundId,
+    roundId: paramRoundId,
     applicationId: paramApplicationId,
   } = useProjectDetailsParams();
   const dataLayer = useDataLayer();
   const { address: walletAddress } = useAccount();
 
+  const roundId = paramRoundId.toLowerCase();
   let applicationId: string;
 
   /// handle URLs where the application ID is ${roundId}-${applicationId}
@@ -549,12 +550,12 @@ function Sidebar(props: {
 
 export function ProjectStats() {
   const { chainId, roundId, applicationId } = useProjectDetailsParams();
-  const { round } = useRoundById(Number(chainId), roundId);
+  const { round } = useRoundById(Number(chainId), roundId.toLowerCase());
   const dataLayer = useDataLayer();
   const { data: application } = useApplication(
     {
       chainId: Number(chainId as string),
-      roundId,
+      roundId: roundId.toLowerCase(),
       applicationId: applicationId,
     },
     dataLayer

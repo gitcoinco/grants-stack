@@ -11,6 +11,7 @@ import {
 import {
   CalendarIcon,
   ChainId,
+  VotingToken,
   formatUTCDateAsISOString,
   getRoundStrategyTitle,
   getUTCTime,
@@ -19,7 +20,6 @@ import {
   renderToPlainText,
   truncateDescription,
   useTokenPrice,
-  VotingToken,
 } from "common";
 import { Button, Input } from "common/src/styles";
 import AlloV1 from "common/src/icons/AlloV1";
@@ -142,7 +142,7 @@ export default function ViewRound() {
             <BeforeRoundStart
               round={round}
               chainId={chainId}
-              roundId={roundId}
+              roundId={roundId.toLowerCase()}
             />
           )}
 
@@ -150,7 +150,7 @@ export default function ViewRound() {
             <AfterRoundStart
               round={round}
               chainId={Number(chainId)}
-              roundId={roundId}
+              roundId={roundId.toLowerCase()}
               isBeforeRoundEndDate={isBeforeRoundEndDate}
               isAfterRoundEndDate={isAfterRoundEndDate}
             />
@@ -317,7 +317,7 @@ function AfterRoundStart(props: {
   const nativePayoutToken = votingTokens.find(
     (t) =>
       t.chainId === Number(props.chainId) &&
-      t.address === getAddress(props.round.token)
+      t.address.toLowerCase() === getAddress(props.round.token).toLowerCase()
   );
 
   const tokenData = data ?? {
@@ -1230,7 +1230,7 @@ function PreRoundPage(props: {
   const nativePayoutToken = votingTokens.find(
     (t) =>
       t.chainId === Number(chainId) &&
-      t.address === getAddress(props.round.token)
+      t.address.toLowerCase() === getAddress(props.round.token).toLowerCase()
   );
 
   const tokenData = data ?? {
