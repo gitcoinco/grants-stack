@@ -12,7 +12,7 @@ import {
 import { CartProject, ProjectMetadata, Round } from "./features/api/types";
 import { parseUnits } from "viem";
 import { ChainId } from "common";
-import { DataLayer, DataLayerProvider, RoundGetRound } from "data-layer";
+import { DataLayer, DataLayerProvider, RoundGetRound, RoundMetadata } from "data-layer";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -100,8 +100,8 @@ const makeTimestamp = (days?: number) =>
   Math.floor(Number(faker.date.soon(days)) / 1000).toString();
 
 export const makeRoundMetadata = (
-  overrides?: Partial<any>
-): any => ({
+  overrides?: Partial<RoundMetadata>
+): RoundMetadata => ({
   name: faker.company.name(),
   roundType: "public",
   eligibility: {
