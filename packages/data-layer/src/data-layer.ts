@@ -24,7 +24,6 @@ import {
   Contribution,
   RoundForExplorer,
   ExpandedApplicationRef,
-  Payout,
   RoundApplicationPayout,
 } from "./data.types";
 import {

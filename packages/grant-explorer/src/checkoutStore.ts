@@ -28,7 +28,7 @@ import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
 import {
-  TDonationToken,
+  TToken,
   getTokensByChainId,
 } from "@grants-labs/gitcoin-chain-data";
 
@@ -121,9 +121,9 @@ export const useCheckoutStore = create<CheckoutState>()(
         [chain: number]: CartProject[];
       };
 
-      // : TDonationToken
+      // : TToken
       const getVotingTokenForChain = async (chainId: number) =>
-        (await getTokensByChainId(chainId)).donation[0] as TDonationToken;
+        (await getTokensByChainId(chainId))[0] as TToken;
 
       // fixme: this is a hack to get the token for mainnet/ update to use actual chainId
       const donationToken = await getVotingTokenForChain(Number(1) as number);
@@ -137,7 +137,7 @@ export const useCheckoutStore = create<CheckoutState>()(
             .map((project) => project.amount)
             .reduce(
               (acc, amount) =>
-                acc + parseUnits(amount ? amount : "0", donationToken.decimal),
+                acc + parseUnits(amount ? amount : "0", donationToken.decimals),
               0n
             ),
         ])
@@ -252,7 +252,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           for (const roundId in groupedDonations) {
             groupedAmounts[roundId] = groupedDonations[roundId].reduce(
               (acc, donation) =>
-                acc + parseUnits(donation.amount, token.decimal),
+                acc + parseUnits(donation.amount, token.decimals),
               0n
             );
           }
@@ -260,7 +260,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           const amountArray: bigint[] = [];
           for (const roundId in groupedDonations) {
             groupedDonations[roundId].map((donation) => {
-              amountArray.push(parseUnits(donation.amount, token.decimal));
+              amountArray.push(parseUnits(donation.amount, token.decimals));
             });
           }
 

@@ -41,7 +41,7 @@
     "@emotion/styled": "^11",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
-    "@grants-labs/gitcoin-chain-data": "^1.0.20",
+    "@grants-labs/gitcoin-chain-data": "^1.0.39",
     "@headlessui/react": "^1.7.4",
     "@heroicons/react": "^2.0.13",
     "@playwright/test": "^1.41.1",

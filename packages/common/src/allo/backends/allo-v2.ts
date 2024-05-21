@@ -46,7 +46,7 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { BigNumber, utils } from "ethers";
 import { Distribution } from "@allo-team/allo-v2-sdk/dist/strategies/DonationVotingMerkleDistributionStrategy/types";
-import { TDonationToken } from "@grants-labs/gitcoin-chain-data/dist/types";
+import { TToken } from "@grants-labs/gitcoin-chain-data/dist/types";
 
 function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
   let strategyAddresses;
@@ -152,7 +152,7 @@ export class AlloV2 implements Allo {
   async donate(
     publicClient: PublicClient,
     chainId: ChainId,
-    token: TDonationToken,
+    token: TToken,
     groupedVotes: Record<string, Hex[]>,
     groupedAmounts: Record<string, bigint> | bigint[],
     nativeTokenAmount: bigint,

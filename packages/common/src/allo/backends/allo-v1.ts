@@ -57,7 +57,7 @@ import { BigNumber } from "ethers";
 import DirectPayoutStrategyImplementation from "../abis/allo-v1/DirectPayoutStrategyImplementation";
 import { hexZeroPad } from "ethers/lib/utils.js";
 import { getTokensByChainId } from "@grants-labs/gitcoin-chain-data";
-import { TDonationToken } from "@grants-labs/gitcoin-chain-data/dist/types";
+import { TToken } from "@grants-labs/gitcoin-chain-data/dist/types";
 
 function createProjectId(args: {
   chainId: number;
@@ -111,7 +111,7 @@ export class AlloV1 implements Allo {
   async donate(
     publicClient: PublicClient,
     chainId: ChainId,
-    token: TDonationToken,
+    token: TToken,
     groupedVotes: Record<string, Hex[]>,
     groupedAmounts: Record<string, bigint> | bigint[],
     nativeTokenAmount: bigint,
@@ -508,15 +508,15 @@ export class AlloV1 implements Allo {
           const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
 
           // Note: uses the new SDK
-          const tokens = await getTokensByChainId(this.chainId);
-          const payoutTokens = tokens.payout;
-          const pyToken = payoutTokens.filter(
+          const tokens = getTokensByChainId(this.chainId);
+          const payoutTokens = tokens;
+          const payoutToken = payoutTokens.filter(
             (t) =>
               t.address.toLowerCase() === args.roundData.token.toLowerCase()
           )[0];
           parsedTokenAmount = parseUnits(
             tokenAmount.toString(),
-            pyToken.decimal
+            payoutToken.decimals
           );
         }
 
