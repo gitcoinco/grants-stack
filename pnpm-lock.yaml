@@ -358,8 +358,8 @@ importers:
   packages/common:
     dependencies:
       '@allo-team/allo-v2-sdk':
-        specifier: ^1.0.72
-        version: 1.0.72(@typechain/ethers-v6@0.5.1)(ethers@5.7.2)(typechain@8.3.2)(typescript@5.4.5)(zod@3.22.4)
+        specifier: ^1.0.75
+        version: 1.0.75(@typechain/ethers-v6@0.5.1)(ethers@5.7.2)(typechain@8.3.2)(typescript@5.4.5)(zod@3.22.4)
       '@ethersproject/abstract-signer':
         specifier: ^5.7.0
         version: 5.7.0
@@ -1286,8 +1286,8 @@ packages:
     resolution: {integrity: sha512-UK0bHA7hh9cR39V+4gl2/NnBBjoXIxkuWAPCaY4X7fbH4L/azIi7ilWOCjMUYfpJgraLUAqkRi2BqrjME8Rynw==}
     dev: false
 
-  /@allo-team/allo-v2-sdk@1.0.72(@typechain/ethers-v6@0.5.1)(ethers@5.7.2)(typechain@8.3.2)(typescript@5.4.5)(zod@3.22.4):
-    resolution: {integrity: sha512-/vQ6DI6X7TlrgsU9vfVCihwkOWJkZjOiOSfyA7LiH3tSo9EVyhgEXtwirNExnbJEgKpI/Mm5wzQMfX3gW+om7A==}
+  /@allo-team/allo-v2-sdk@1.0.75(@typechain/ethers-v6@0.5.1)(ethers@5.7.2)(typechain@8.3.2)(typescript@5.4.5)(zod@3.22.4):
+    resolution: {integrity: sha512-QO0WxGb9raCVdocUNC7/keQFQyd3YIMwT3vW9j5LBQNcli73EL4vAnDGyoXp6DOsQK8AnIWHcS6D7X1C56xAeQ==}
     engines: {node: '>=16.15.0', npm: '>=8.5.5'}
     dependencies:
       '@typechain/hardhat': 9.1.0(@typechain/ethers-v6@0.5.1)(ethers@5.7.2)(hardhat@2.22.3)(typechain@8.3.2)
