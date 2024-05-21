@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Mocked } from "vitest";
 import { faker } from "@faker-js/faker";
 import { render } from "@testing-library/react";
@@ -117,7 +116,7 @@ export const makeRoundMetadata = (
 
 export const makeRoundOverviewData = (
   overrides?: Partial<RoundGetRound>,
-  roundMetadataOverrides?: Partial<any>
+  roundMetadataOverrides?: Partial<RoundMetadata>
 ): RoundGetRound => {
   return {
     id: faker.finance.ethereumAddress(),
