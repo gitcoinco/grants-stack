@@ -55,9 +55,6 @@ const dataLayer = new DataLayer({
   ipfs: {
     gateway: getConfig().ipfs.baseUrl,
   },
-  subgraph: {
-    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
-  },
   indexer: {
     baseUrl: `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`,
   },

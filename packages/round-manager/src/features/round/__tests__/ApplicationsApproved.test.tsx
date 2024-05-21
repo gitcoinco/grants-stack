@@ -36,7 +36,6 @@ jest
   .mockImplementation(mockBulkUpdateApplicationStatus);
 
 jest.mock("../../api/application");
-jest.mock("../../api/subgraph");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({

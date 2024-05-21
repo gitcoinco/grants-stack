@@ -55,9 +55,6 @@ const dataLayerConfig = new DataLayer({
       pageSize: 50,
     },
   },
-  subgraph: {
-    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
-  },
   indexer: {
     baseUrl: `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`,
   },
