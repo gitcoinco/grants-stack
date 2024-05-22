@@ -1306,9 +1306,9 @@ export class AlloV1 implements Allo {
       indexingStatus: Result<null>;
     }
   > {
-    return new AlloOperation(async ({ emit }) => {
+    return new AlloOperation(async () => {
       const result = new AlloError("Unsupported on v1");
-      return error(result);
+      return error(result, args);
     });
   }
 }
