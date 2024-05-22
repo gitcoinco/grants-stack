@@ -6,10 +6,15 @@ import { datadogLogs } from "@datadog/browser-logs";
 
 type SetStatusFn = React.Dispatch<SetStateAction<ProgressStatus>>;
 
+export enum AddOrRemove {
+  ADD = "add",
+  REMOVE = "remove",
+}
+
 export type UpdateRolesData = {
   roundId: string;
   manager: Hex;
-  addOrRemove: "add" | "remove";
+  addOrRemove: AddOrRemove;
   allo: Allo;
 };
 

@@ -10,8 +10,11 @@ import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useAllo } from "common";
-import { useUpdateRoles } from "../../context/round/UpdateRolesContext";
-import { Hex } from "viem";
+import {
+  AddOrRemove,
+  useUpdateRoles,
+} from "../../context/round/UpdateRolesContext";
+import { Hex, isAddress } from "viem";
 import { set } from "lodash";
 
 const sortDataByRole = (data: AddressAndRole[]): AddressAndRole[] => {
@@ -49,7 +52,7 @@ export default function ViewManageTeam(props: {
 }) {
   const [editMode, setEditMode] = useState<boolean>(false);
   const [manager, setManager] = useState<string>();
-  const [addOrRemove, setAddOrRemove] = useState<"add" | "remove">("add");
+  const [addOrRemove, setAddOrRemove] = useState<AddOrRemove>(AddOrRemove.ADD);
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
@@ -203,13 +206,25 @@ export default function ViewManageTeam(props: {
                 type="button"
                 className="inline-flex items-center px-4 py-2 shadow-sm text-md rounded"
                 onClick={() => {
-                  setAddOrRemove("add");
+                  setAddOrRemove(AddOrRemove.ADD);
                   setOpenConfirmationModal(true);
                 }}
               >
                 Add
               </Button>
             </div>
+            {manager && manager !== "" && !isAddress(manager) && (
+              <p className="text-xs text-pink-500">
+                Invalid wallet address. Please try again.
+              </p>
+            )}
+            {filteredRoles.some(
+              (role) => role.address.toLowerCase() === manager?.toLowerCase()
+            ) && (
+              <p className="text-xs text-pink-500">
+                Duplicate wallet address. Please try again.
+              </p>
+            )}
           </div>
         )}
 
@@ -243,7 +258,7 @@ export default function ViewManageTeam(props: {
                       className="text-red-100 w-8"
                       onClick={() => {
                         setManager(item.address);
-                        setAddOrRemove("remove");
+                        setAddOrRemove(AddOrRemove.REMOVE);
                         setOpenConfirmationModal(true);
                       }}
                     />
