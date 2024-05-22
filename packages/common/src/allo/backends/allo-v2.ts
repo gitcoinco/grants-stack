@@ -1224,10 +1224,7 @@ export class AlloV2 implements Allo {
         poolId: poolId,
       });
 
-      const txData = strategy.distribute(
-        recipientIds,
-        projectsWithMerkleProof,
-      );
+      const txData = strategy.distribute(recipientIds, projectsWithMerkleProof);
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: txData.to,
@@ -1325,6 +1322,100 @@ export class AlloV2 implements Allo {
       return success({
         blockNumber: receipt.blockNumber,
       });
+    });
+  }
+
+  addPoolManager(args: { poolId: string; manager: Address }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const txData = this.allo.addPoolManager(
+        BigInt(args.poolId),
+        args.manager
+      );
+
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: txData.to,
+        data: txData.data,
+        value: BigInt(txData.value),
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return error(txResult.error);
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to add pool manager");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
+    });
+  }
+
+  removePoolManager(args: { poolId: string; manager: Address }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const txData = this.allo.removePoolManager(
+        BigInt(args.poolId),
+        args.manager
+      );
+
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: txData.to,
+        data: txData.data,
+        value: BigInt(txData.value),
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return error(txResult.error);
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to add pool manager");
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
     });
   }
 }
