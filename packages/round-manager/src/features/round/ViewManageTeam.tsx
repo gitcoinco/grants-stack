@@ -9,6 +9,10 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
 import { datadogLogs } from "@datadog/browser-logs";
+import { useAllo } from "common";
+import { useUpdateRoles } from "../../context/round/UpdateRolesContext";
+import { Hex } from "viem";
+import { set } from "lodash";
 
 const sortDataByRole = (data: AddressAndRole[]): AddressAndRole[] => {
   return data.sort((a, b) => {
@@ -43,15 +47,18 @@ export default function ViewManageTeam(props: {
   round: Round | undefined;
   userAddress: string;
 }) {
-
   const [editMode, setEditMode] = useState<boolean>(false);
-  
-  const [addTeamMember, setAddTeamMember] = useState(false);
-  const [removeTeamMember, setRemoveTeamMember] = useState(false);
+  const [manager, setManager] = useState<string>();
+  const [addOrRemove, setAddOrRemove] = useState<"add" | "remove">("add");
 
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
+
+  const allo = useAllo();
+
+  const { updateRoles, contractUpdatingStatus, indexingStatus } =
+    useUpdateRoles();
 
   const onCancelEdit = () => {
     setEditMode(false);
@@ -77,57 +84,51 @@ export default function ViewManageTeam(props: {
     return filterRoles(sortedRoles);
   }, [sortedRoles]);
 
+  const isTeamMembersLoading =
+    contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
+    indexingStatus == ProgressStatus.IN_PROGRESS;
 
-  // const isTeamMembersLoading =
-  // contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
-  // indexingStatus == ProgressStatus.IN_PROGRESS;
-
-  const progressSteps : ProgressStep[] = [
-    // {
-    //   name: "Updating",
-    //   description: `Updating the team members for the round`,
-    //   status: contractUpdatingStatus,
-    // },
-    // {
-    //   name: "Indexing",
-    //   description: "Indexing the data.",
-    //   status: indexingStatus,
-    // },
-    // {
-    //   name: "Redirecting",
-    //   description: "Just another moment while we finish things up.",
-    //   status:
-    //     indexingStatus === ProgressStatus.IS_SUCCESS
-    //       ? ProgressStatus.IN_PROGRESS
-    //       : ProgressStatus.NOT_STARTED,
-    // },
+  const progressSteps: ProgressStep[] = [
+    {
+      name: "Updating",
+      description: `Updating the team members for the round`,
+      status: contractUpdatingStatus,
+    },
+    {
+      name: "Indexing",
+      description: "Indexing the data.",
+      status: indexingStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        indexingStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
   ];
 
   const handleUpdateTeam = async () => {
-    if (!addTeamMember &&  !removeTeamMember) {
+    if (!allo || !manager || !props.round?.id) {
       return;
     }
 
     try {
       setOpenProgressModal(true);
       setOpenConfirmationModal(false);
-  // ----------> MEH FIX
-  //     await bulkUpdateGrantApplications({
-  //       allo,
-  //       roundId: id,
-  //       applications: applications,
-  //       roundStrategy: getRoundStrategyType(
-  //         applications[0].payoutStrategy.strategyName
-  //       ),
-  //       roundStrategyAddress: applications[0].payoutStrategy.id,
-  //       selectedApplications: selected.filter(
-  //         (application) => application.status === "REJECTED"
-  //       ),
-  //     });
+      await updateRoles({
+        roundId: props.round.id,
+        manager: manager as Hex,
+        addOrRemove,
+        allo,
+      });
       setEditMode(false);
       setOpenProgressModal(false);
     } catch (error) {
-      datadogLogs.logger.error(`error: handleUpdateTeam - ${error}, id: ${props.round?.id}`);
+      datadogLogs.logger.error(
+        `error: handleUpdateTeam - ${error}, id: ${props.round?.id}`
+      );
       console.error("handleUpdateTeam", error);
     }
   };
@@ -181,24 +182,34 @@ export default function ViewManageTeam(props: {
       </div>
       <p className="text-md mt-6 mb-4">View Members</p>
       <div className="overflow-x-auto">
-
         {editMode && (
-          <div className="grid grid-cols-1 grid-rows-1 gap-4 mb-4">
+          <div className="mb-4">
             <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
               <span>Wallet address</span>
               <span className="text-right text-violet-400 float-right text-xs mt-1">
                 *Required
               </span>
             </div>
-
-            <input
-              className="border border-gray-200 rounded-lg w-full h-10 px-3 py-2 text-sm leading-5"
-              type="text"
-              placeholder="0x"
-              value="Wallet Address"
-            />
-
-            // MEH FIX: ADD BUTTON
+            <div className="flex items-center gap-2">
+              <input
+                className="border border-gray-200 rounded-lg h-10 px-3 py-2 text-sm leading-5 flex-grow"
+                type="text"
+                placeholder="0x"
+                value={manager}
+                onChange={(e) => setManager(e.target.value)}
+              />
+              <Button
+                $variant="solid"
+                type="button"
+                className="inline-flex items-center px-4 py-2 shadow-sm text-md rounded"
+                onClick={() => {
+                  setAddOrRemove("add");
+                  setOpenConfirmationModal(true);
+                }}
+              >
+                Add
+              </Button>
+            </div>
           </div>
         )}
 
@@ -226,11 +237,15 @@ export default function ViewManageTeam(props: {
                 <td className="w-1/4 px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                   {item.role === "ADMIN" ? "Admin" : "Operator"}
                 </td>
-                {editMode && !isAdmin && (
+                {editMode && item.role !== "ADMIN" && (
                   <td>
                     <XCircleIcon
-                      className="text-red-100"
-                      onClick={openConfirmationModal}
+                      className="text-red-100 w-8"
+                      onClick={() => {
+                        setManager(item.address);
+                        setAddOrRemove("remove");
+                        setOpenConfirmationModal(true);
+                      }}
                     />
                   </td>
                 )}
@@ -247,7 +262,8 @@ export default function ViewManageTeam(props: {
         body={
           <>
             <p className="text-sm text-grey-400">
-              {"Are you sure you want update the team members?"} // meh : update text
+              {"Are you sure you want update the team members?"} // meh : update
+              text
             </p>
           </>
         }
@@ -265,7 +281,6 @@ export default function ViewManageTeam(props: {
         tryAgainFn={handleUpdateTeam}
         doneFn={handleDone}
       />
-  
     </div>
   );
 }

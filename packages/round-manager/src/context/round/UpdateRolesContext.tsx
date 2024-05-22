@@ -21,7 +21,7 @@ export interface UpdateRolesState {
 }
 
 export const initialUpdateRolesState: UpdateRolesState = {
-  contractUpdatingStatus: ProgressStatus.NOT_STARTED,
+  contractUpdatingStatus: ProgressStatus.IN_PROGRESS,
   setContractUpdatingStatus: () => {
     /* empty */
   },
@@ -109,7 +109,7 @@ export const useUpdateRoles = () => {
 
   const { setContractUpdatingStatus, setIndexingStatus } = context;
 
-  const UpdateRoles = async (UpdateRolesData: UpdateRolesData) => {
+  const updateRoles = async (UpdateRolesData: UpdateRolesData) => {
     setContractUpdatingStatus(initialUpdateRolesState.contractUpdatingStatus);
     setIndexingStatus(initialUpdateRolesState.indexingStatus);
 
@@ -120,7 +120,7 @@ export const useUpdateRoles = () => {
   };
 
   return {
-    UpdateRoles,
+    updateRoles,
     contractUpdatingStatus: context.contractUpdatingStatus,
     indexingStatus: context.indexingStatus,
   };

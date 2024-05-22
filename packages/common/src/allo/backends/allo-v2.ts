@@ -1360,6 +1360,7 @@ export class AlloV2 implements Allo {
         receipt = await this.transactionSender.wait(txResult.value);
         emit("transactionStatus", success(receipt));
       } catch (err) {
+        console.log(err);
         const result = new AlloError("Failed to add pool manager");
         emit("transactionStatus", error(result));
         return error(result);
