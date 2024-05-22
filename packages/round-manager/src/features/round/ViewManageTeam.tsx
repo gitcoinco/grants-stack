@@ -154,9 +154,7 @@ export default function ViewManageTeam(props: {
               : "View who is on your team."}
           </p>
           <p className="text-sm text-gray-400 mb-2">
-            {isAdmin
-              ? "Make sure to have at least two admins at all times for security purposes."
-              : "Admins and operators have the same privileges, but only admins can add or remove operators."}
+            Admins and operators have the same privileges, but only admins can add or remove operators.
           </p>
         </div>
         <div>
