@@ -90,9 +90,6 @@ export default function ViewManageTeam(props: {
 
   const isTeamMembersLoading = indexingStatus == ProgressStatus.IN_PROGRESS;
 
-  console.log("TEAM", isTeamMembersLoading)
-  console.log("CON", contractUpdatingStatus)
-  console.log("INDE", indexingStatus)
 
   const progressSteps: ProgressStep[] = [
     {
