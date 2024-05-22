@@ -15,6 +15,7 @@ import {
   useUpdateRoles,
 } from "../../context/round/UpdateRolesContext";
 import { Hex, isAddress } from "viem";
+import { PlusIcon } from "@heroicons/react/solid";
 
 const sortDataByRole = (data: AddressAndRole[]): AddressAndRole[] => {
   return data.sort((a, b) => {
@@ -187,6 +188,7 @@ export default function ViewManageTeam(props: {
       <div className="overflow-x-auto">
         {editMode && (
           <div className="my-4 w-100 max-w-[32rem]">
+            <p className="text-gray-400 text-md mb-5">Invite Member</p>
             <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
               <span>Wallet address</span>
               <span className="text-right text-violet-400 float-right text-xs mt-1">
@@ -201,32 +203,37 @@ export default function ViewManageTeam(props: {
                 value={manager || ""}
                 onChange={(e) => setManager(e.target.value)}
               />
-              <Button
-                $variant="solid"
-                type="button"
-                className="inline-flex items-center px-4 py-2 shadow-sm text-md rounded"
-                onClick={() => {
-                  setAddOrRemove(AddOrRemove.ADD);
-                  setOpenConfirmationModal(true);
-                }}
-              >
-                Add
-              </Button>
             </div>
             {manager && manager !== "" && !isAddress(manager) && (
-              <p className="text-xs text-pink-500">
+              <p className="mt-3 text-xs text-pink-500">
                 Invalid wallet address. Please try again.
               </p>
             )}
             {filteredRoles.some(
               (role) => role.address.toLowerCase() === manager?.toLowerCase()
             ) && (
-              <p className="text-xs text-pink-500">
+              <p className="mt-3 text-xs text-pink-500">
                 Duplicate wallet address. Please try again.
               </p>
             )}
+
+            <Button
+              type="button"
+              className="mt-3 text-sm inline-flex bg-violet-100 text-violet-600 justify-center"
+              onClick={() => {
+                setAddOrRemove(AddOrRemove.ADD);
+                setOpenConfirmationModal(true);
+              }}
+            >
+              <div className="flex flex-row justify-center">
+                <PlusIcon className="h-5 w-5 text-violet-400 font-medium align-middle mt-[1px]" />
+                <span className="ml-2 text-violet-400 font-medium">Add user</span>
+              </div>
+            </Button>
           </div>
         )}
+
+        <p className="text-gray-400 text-md my-5">View Members</p>
 
         <table className="min-w-full">
           <thead>
