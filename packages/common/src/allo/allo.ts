@@ -232,21 +232,10 @@ export interface Allo {
     }
   >;
 
-  addPoolManager: (args: {
-    poolId: Hex;
+  managePoolManager: (args: {
+    poolId: string;
     manager: Address;
-  }) => AlloOperation<
-    Result<null>,
-    {
-      transaction: Result<Hex>;
-      transactionStatus: Result<TransactionReceipt>;
-      indexingStatus: Result<null>;
-    }
-  >;
-
-  removePoolManager: (args: {
-    poolId: Hex;
-    manager: Address;
+    addOrRemove: "add" | "remove";
   }) => AlloOperation<
     Result<null>,
     {

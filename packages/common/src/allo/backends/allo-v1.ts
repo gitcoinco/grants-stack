@@ -1294,21 +1294,11 @@ export class AlloV1 implements Allo {
     });
   }
 
-  addPoolManager(args: { poolId: string; manager: Address }): AlloOperation<
-    Result<null>,
-    {
-      transaction: Result<Hex>;
-      transactionStatus: Result<TransactionReceipt>;
-      indexingStatus: Result<null>;
-    }
-  > {
-    return new AlloOperation(async ({ emit }) => {
-      const result = new AlloError("Unsupported on v1");
-      return error(result);
-    });
-  }
-
-  removePoolManager(args: { poolId: string; manager: Address }): AlloOperation<
+  managePoolManager(args: {
+    poolId: string;
+    manager: Address;
+    addOrRemove: "add" | "remove";
+  }): AlloOperation<
     Result<null>,
     {
       transaction: Result<Hex>;
@@ -1322,7 +1312,6 @@ export class AlloV1 implements Allo {
     });
   }
 }
-
 // todo: move this out?
 export type CreateRoundArgs = {
   roundMetadata: { protocol: bigint; pointer: string };
