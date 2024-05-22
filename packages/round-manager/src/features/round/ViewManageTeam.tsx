@@ -227,7 +227,7 @@ export default function ViewManageTeam(props: {
             >
               <div className="flex flex-row justify-center">
                 <PlusIcon className="h-5 w-5 text-violet-400 font-medium align-middle mt-[1px]" />
-                <span className="ml-2 text-violet-400 font-medium">Add user</span>
+                <span className="ml-2 text-violet-400 font-medium">Add Member</span>
               </div>
             </Button>
           </div>
