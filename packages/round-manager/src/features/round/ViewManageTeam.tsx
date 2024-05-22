@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useEnsName } from "wagmi";
 import { Button } from "common/src/styles";
 import { FaEdit } from "react-icons/fa";
-import { XCircleIcon } from "@heroicons/react/outline";
+import { XIcon } from "@heroicons/react/outline";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ProgressModal from "../common/ProgressModal";
 import ErrorModal from "../common/ErrorModal";
@@ -15,7 +15,6 @@ import {
   useUpdateRoles,
 } from "../../context/round/UpdateRolesContext";
 import { Hex, isAddress } from "viem";
-import { set } from "lodash";
 
 const sortDataByRole = (data: AddressAndRole[]): AddressAndRole[] => {
   return data.sort((a, b) => {
@@ -64,6 +63,7 @@ export default function ViewManageTeam(props: {
     useUpdateRoles();
 
   const onCancelEdit = () => {
+    setManager("");
     setEditMode(false);
   };
 
@@ -87,9 +87,11 @@ export default function ViewManageTeam(props: {
     return filterRoles(sortedRoles);
   }, [sortedRoles]);
 
-  const isTeamMembersLoading =
-    contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
-    indexingStatus == ProgressStatus.IN_PROGRESS;
+  const isTeamMembersLoading = indexingStatus == ProgressStatus.IN_PROGRESS;
+
+  console.log("TEAM", isTeamMembersLoading)
+  console.log("CON", contractUpdatingStatus)
+  console.log("INDE", indexingStatus)
 
   const progressSteps: ProgressStep[] = [
     {
@@ -128,6 +130,7 @@ export default function ViewManageTeam(props: {
       });
       setEditMode(false);
       setOpenProgressModal(false);
+      handleDone();
     } catch (error) {
       datadogLogs.logger.error(
         `error: handleUpdateTeam - ${error}, id: ${props.round?.id}`
@@ -183,10 +186,9 @@ export default function ViewManageTeam(props: {
           )}
         </div>
       </div>
-      <p className="text-md mt-6 mb-4">View Members</p>
       <div className="overflow-x-auto">
         {editMode && (
-          <div className="mb-4">
+          <div className="my-4 w-100 max-w-[32rem]">
             <div className="text-sm leading-5 pb-1 items-center gap-1 mb-2">
               <span>Wallet address</span>
               <span className="text-right text-violet-400 float-right text-xs mt-1">
@@ -198,7 +200,7 @@ export default function ViewManageTeam(props: {
                 className="border border-gray-200 rounded-lg h-10 px-3 py-2 text-sm leading-5 flex-grow"
                 type="text"
                 placeholder="0x"
-                value={manager}
+                value={manager || ""}
                 onChange={(e) => setManager(e.target.value)}
               />
               <Button
@@ -233,7 +235,7 @@ export default function ViewManageTeam(props: {
             <tr>
               <th
                 scope="col"
-                className="w-2/3 px-6 py-3 text-left text-base font-medium text-gray-500 tracking-wider"
+                className="w-2/3 py-3 text-left text-base font-medium text-gray-500 tracking-wider"
               >
                 Wallet address
               </th>
@@ -254,8 +256,8 @@ export default function ViewManageTeam(props: {
                 </td>
                 {editMode && item.role !== "ADMIN" && (
                   <td>
-                    <XCircleIcon
-                      className="text-red-100 w-8"
+                    <XIcon
+                      className="text-red-100 w-6"
                       onClick={() => {
                         setManager(item.address);
                         setAddOrRemove(AddOrRemove.REMOVE);
@@ -275,12 +277,11 @@ export default function ViewManageTeam(props: {
         confirmButtonText={isTeamMembersLoading ? "Confirming..." : "Confirm"}
         confirmButtonAction={handleUpdateTeam}
         body={
-          <>
-            <p className="text-sm text-grey-400">
-              {"Are you sure you want update the team members?"} // meh : update
-              text
-            </p>
-          </>
+          <p className="text-sm text-grey-400">
+            Are you sure you want 
+            {addOrRemove == AddOrRemove.ADD ? " add " : " remove "}
+            {manager} as a team member?
+          </p>
         }
         isOpen={openConfirmationModal}
         setIsOpen={setOpenConfirmationModal}
@@ -307,7 +308,7 @@ function AddressRow(props: { address: string }) {
   });
 
   return (
-    <td className="w-2/4 px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+    <td className="w-2/4 py-4 whitespace-nowrap text-sm text-gray-400">
       {ensName || props.address}
     </td>
   );
