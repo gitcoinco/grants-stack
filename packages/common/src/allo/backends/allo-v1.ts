@@ -1307,8 +1307,8 @@ export class AlloV1 implements Allo {
     }
   > {
     return new AlloOperation(async () => {
-      const result = new AlloError("Unsupported on v1");
-      return error(result, args);
+      const result = new AlloError(`Unsupported on v1 ${args}`);
+      return error(result);
     });
   }
 }
