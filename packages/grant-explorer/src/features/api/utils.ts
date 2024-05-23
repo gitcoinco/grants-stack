@@ -2,7 +2,6 @@
 import { CartProject, IPFSObject, Round } from "./types";
 import {
   ChainId,
-  graphQlEndpoints,
   NATIVE,
   ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_DIRECT_OLD,
@@ -982,16 +981,6 @@ export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
   votingTokensMap[chainId];
 
 /**
- * Fetch subgraph network for provided web3 network
- * The backticks are here to work around a failure of a test that tetsts graphql_fetch,
- * and fails if the endpoint is undefined, so we convert the undefined to a string here in order not to fail the test.
- *
- * @param chainId - The chain ID of the blockchain
- * @returns the subgraph endpoint
- */
-const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
-
-/**
  * Fetch the correct transaction explorer for the provided web3 network
  *
  * @param chainId - The chain ID of the blockchain
@@ -1000,60 +989,6 @@ const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
  */
 export const getTxExplorerTxLink = (chainId: ChainId, txHash: string) => {
   return txBlockExplorerLinks[chainId] + txHash;
-};
-
-/**
- * Fetch data from a GraphQL endpoint
- *
- * @param query - The query to be executed
- * @param chainId - The chain ID of the blockchain indexed by the subgraph
- * @param variables - The variables to be used in the query
- * @param fromProjectRegistry - Override to fetch from grant hub project registry subgraph
- * @returns The result of the query
- */
-export const __deprecated_graphql_fetch = async (
-  query: string,
-  chainId: ChainId,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  variables: object = {},
-  fromProjectRegistry = false
-) => {
-  let endpoint = getGraphQLEndpoint(chainId);
-
-  if (fromProjectRegistry) {
-    endpoint = endpoint.replace("grants-round", "grants-hub");
-  }
-
-  return fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query, variables }),
-  }).then((resp) => {
-    if (resp.ok) {
-      return resp.json();
-    }
-
-    return Promise.reject(resp);
-  });
-};
-
-/**
- * Fetch data from IPFS
- *
- * @param cid - the unique content identifier that points to the data
- */
-export const __deprecated_fetchFromIPFS = (cid: string) => {
-  return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
-  ).then((resp) => {
-    if (resp.ok) {
-      return resp.json();
-    }
-
-    return Promise.reject(resp);
-  });
 };
 
 /**

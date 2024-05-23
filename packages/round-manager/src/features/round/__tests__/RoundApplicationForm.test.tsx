@@ -14,7 +14,6 @@ import { RoundCategory } from "data-layer";
 import { errorModalDelayMs } from "../../../constants";
 import { useCreateRoundStore } from "../../../stores/createRoundStore";
 import { saveToIPFS } from "../../api/ipfs";
-import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import {
   ApplicationMetadata,
   ProgressStatus,
@@ -29,7 +28,6 @@ import {
 
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
-jest.mock("../../api/subgraph");
 jest.mock("../../common/Auth");
 jest.mock("../../api/payoutStrategy/payoutStrategy");
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -86,7 +84,6 @@ describe("<RoundApplicationForm />", () => {
       address: "0x0",
     });
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
-    (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue(0);
   });
 
   describe("when saving metadata fails", () => {

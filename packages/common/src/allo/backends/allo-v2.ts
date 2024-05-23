@@ -9,6 +9,8 @@ import {
   DonationVotingMerkleDistributionStrategyTypes,
   Registry,
   RegistryAbi,
+  StrategyFactory,
+  StrategyFactoryDVMDTAbi,
   TransactionData,
 } from "@allo-team/allo-v2-sdk";
 import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
@@ -455,6 +457,11 @@ export class AlloV2 implements Allo {
       let initStrategyDataEncoded: Address;
       let token: Address = getAddress(NATIVE);
 
+      let strategyAddress = getStrategyAddress(
+        args.roundData.roundCategory,
+        this.chainId
+      );
+
       if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
         const initStrategyData: DonationVotingMerkleDistributionStrategyTypes.InitializeData =
           {
@@ -474,6 +481,48 @@ export class AlloV2 implements Allo {
             ), // in seconds, must be after allocationStartTime
             allowedTokens: [], // allow all tokens
           };
+
+        if (
+          [
+            ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+            ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+          ].includes(this.chainId)
+        ) {
+          // Deploy Strategy using Factory
+          const strategyFactory = new StrategyFactory({
+            chain: this.chainId,
+            factoryType: "DVMDT",
+          });
+
+          const txData = strategyFactory.getCreateStrategyDataByChainId(this.chainId);
+
+          const txResult = await sendRawTransaction(this.transactionSender, {
+            to: txData.to,
+            data: txData.data,
+            value: BigInt(txData.value),
+          });
+
+          if (txResult.type === "error") {
+            return txResult;
+          }
+
+          try {
+            const receipt = await this.transactionSender.wait(txResult.value);
+
+            const strategyCreatedEvent = decodeEventFromReceipt({
+              abi: StrategyFactoryDVMDTAbi,
+              receipt,
+              event: "StrategyCreated",
+            });
+
+            // Update strategy address with the deployed strategy
+            strategyAddress = strategyCreatedEvent.strategy;
+          } catch (err) {
+            const result = new AlloError("Failed to apply to round");
+            emit("transactionStatus", error(result));
+            return error(result);
+          }
+        }
 
         const strategy = new DonationVotingMerkleDistributionStrategy({
           chain: this.chainId,
@@ -498,6 +547,48 @@ export class AlloV2 implements Allo {
             : UINT64_MAX, // in seconds, must be after registrationStartTime
         };
 
+        if (
+          [
+            ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+            ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+          ].includes(this.chainId)
+        ) {
+          // Deploy Strategy using Factory
+          const strategyFactory = new StrategyFactory({
+            chain: this.chainId,
+            factoryType: "DGL",
+          });
+
+          const txData = strategyFactory.getCreateStrategyDataByChainId(this.chainId);
+
+
+          const txResult = await sendRawTransaction(this.transactionSender, {
+            to: txData.to,
+            data: txData.data,
+            value: BigInt(txData.value),
+          });
+
+          if (txResult.type === "error") {
+            return txResult;
+          }
+          
+          try {
+            const receipt = await this.transactionSender.wait(txResult.value);
+            const strategyCreatedEvent = decodeEventFromReceipt({
+              abi: StrategyFactoryDVMDTAbi,
+              receipt,
+              event: "StrategyCreated",
+            });
+
+            // Update strategy address with the deployed strategy
+            strategyAddress = strategyCreatedEvent.strategy;
+          } catch (err) {
+            const result = new AlloError("Failed to apply to round");
+            emit("transactionStatus", error(result));
+            return error(result);
+          }
+        }
+
         const strategy = new DirectGrantsLiteStrategy({
           chain: this.chainId,
         });
@@ -519,10 +610,7 @@ export class AlloV2 implements Allo {
 
       const createPoolArgs: CreatePoolArgs = {
         profileId: profileId as Hex,
-        strategy: getStrategyAddress(
-          args.roundData.roundCategory,
-          this.chainId
-        ),
+        strategy: strategyAddress,
         initStrategyData: initStrategyDataEncoded,
         token,
         amount: 0n, // we send 0 tokens to the pool, we fund it later
@@ -532,7 +620,20 @@ export class AlloV2 implements Allo {
         ),
       };
 
-      const txData = this.allo.createPool(createPoolArgs);
+      let txData: TransactionData;
+
+      if (
+        [
+          ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
+          ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+        ].includes(this.chainId)
+      ) {
+        // Deploy Strategy using Factory
+        txData = this.allo.createPoolWithCustomStrategy(createPoolArgs);
+      } else {
+        // Deploy Strategy using Cloning of approved strategies
+        txData = this.allo.createPool(createPoolArgs);
+      }
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: txData.to,
@@ -1224,10 +1325,7 @@ export class AlloV2 implements Allo {
         poolId: poolId,
       });
 
-      const txData = strategy.distribute(
-        recipientIds,
-        projectsWithMerkleProof,
-      );
+      const txData = strategy.distribute(recipientIds, projectsWithMerkleProof);
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: txData.to,
