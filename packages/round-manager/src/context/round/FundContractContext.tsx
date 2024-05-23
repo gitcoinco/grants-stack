@@ -30,6 +30,7 @@ export type FundContractParams = {
   roundId: string;
   fundAmount: number;
   payoutToken: PayoutToken;
+  requireTokenApproval?: boolean;
 };
 
 type SubmitFundParams = FundContractParams & {
@@ -144,6 +145,7 @@ async function _fundContract({
   roundId,
   fundAmount,
   payoutToken,
+  requireTokenApproval,
 }: SubmitFundParams) {
   resetToInitialState(context);
 
@@ -159,6 +161,7 @@ async function _fundContract({
         roundId,
         tokenAddress: payoutToken.address,
         amount,
+        requireTokenApproval,
       })
       .on("tokenApprovalStatus", (tx) => {
         if (tx.type === "error") {

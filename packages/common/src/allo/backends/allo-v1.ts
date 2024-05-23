@@ -491,8 +491,8 @@ export class AlloV1 implements Allo {
             args.roundData.applicationsEndTime
               ? dateToEthereumTimestamp(args.roundData.applicationsEndTime)
               : args.roundData.roundEndTime
-              ? dateToEthereumTimestamp(args.roundData.roundEndTime)
-              : maxUint256,
+                ? dateToEthereumTimestamp(args.roundData.roundEndTime)
+                : maxUint256,
             dateToEthereumTimestamp(args.roundData.roundStartTime),
             args.roundData.roundEndTime
               ? dateToEthereumTimestamp(args.roundData.roundEndTime)
@@ -740,6 +740,7 @@ export class AlloV1 implements Allo {
     tokenAddress: Address;
     roundId: string;
     amount: bigint;
+    requireTokenApproval?: boolean;
   }): AlloOperation<
     Result<null>,
     {
@@ -754,7 +755,10 @@ export class AlloV1 implements Allo {
       const roundAddress = getAddress(args.roundId);
       let tx;
 
-      if (args.tokenAddress === zeroAddress) {
+      if (
+        args.tokenAddress === zeroAddress ||
+        args.requireTokenApproval === false
+      ) {
         emit("tokenApprovalStatus", success(null));
       } else {
         const approvalTx = await sendTransaction(this.transactionSender, {

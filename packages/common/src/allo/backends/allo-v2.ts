@@ -895,6 +895,7 @@ export class AlloV2 implements Allo {
     tokenAddress: Address;
     roundId: string;
     amount: bigint;
+    requrieTokenApproval?: boolean;
   }): AlloOperation<
     Result<null>,
     {
@@ -911,7 +912,10 @@ export class AlloV2 implements Allo {
 
       const poolId = BigInt(args.roundId);
 
-      if (args.tokenAddress === zeroAddress) {
+      if (
+        args.tokenAddress === zeroAddress ||
+        args.requrieTokenApproval === false
+      ) {
         emit("tokenApprovalStatus", success(null));
       } else {
         const approvalTx = await sendTransaction(this.transactionSender, {

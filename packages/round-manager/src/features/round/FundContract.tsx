@@ -22,7 +22,10 @@ import {
   useTokenPrice,
 } from "common";
 import { assertAddress } from "common/src/address";
-import { formatUnits } from "viem";
+import { formatUnits, zeroAddress } from "viem";
+import { Erc20__factory } from "../../types/generated/typechain";
+import { useWallet } from "../common/Auth";
+import { getAlloAddress } from "common/src/allo/backends/allo-v2";
 
 export function useContractAmountFunded(args: {
   round: Round | undefined;
@@ -138,6 +141,7 @@ export default function FundContract(props: {
 }) {
   const { address } = useAccount();
   const navigate = useNavigate();
+  const { signer } = useWallet();
 
   const [amountToFund, setAmountToFund] = useState("");
   const [insufficientBalance, setInsufficientBalance] = useState(false);
@@ -654,6 +658,32 @@ export default function FundContract(props: {
         setOpenProgressModal(true);
       }, errorModalDelayMs);
 
+      let tokenAllowance = BigNumber.from(0);
+
+      let requireTokenApproval = false;
+
+      const alloVersion = props.round?.tags?.includes("allo-v2") ? "v2" : "v1";
+      const roundAddress =
+        alloVersion === "v1" ? props.round?.id : getAlloAddress(chainId);
+
+      if (
+        matchingFundPayoutToken?.address !== undefined &&
+        matchingFundPayoutToken?.address !== zeroAddress &&
+        signer
+      ) {
+        const erc20 = Erc20__factory.connect(
+          matchingFundPayoutToken?.address,
+          signer
+        );
+        tokenAllowance = await erc20.allowance(
+          address as string,
+          roundAddress as string
+        );
+        if (tokenAllowance.lt(BigNumber.from(amountToFund))) {
+          requireTokenApproval = true;
+        }
+      }
+
       await fundContract({
         allo,
         roundId: props.roundId,
@@ -661,6 +691,7 @@ export default function FundContract(props: {
           parseFloat(amountToFund).toFixed(matchingFundPayoutToken.decimal)
         ),
         payoutToken: matchingFundPayoutToken,
+        requireTokenApproval,
       });
     } catch (error) {
       if (error === Logger.errors.TRANSACTION_REPLACED) {
