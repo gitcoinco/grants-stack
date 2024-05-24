@@ -150,6 +150,7 @@ export interface Allo {
     tokenAddress: Address;
     roundId: string;
     amount: bigint;
+    requireTokenApproval?: boolean;
   }) => AlloOperation<
     Result<null>,
     {
