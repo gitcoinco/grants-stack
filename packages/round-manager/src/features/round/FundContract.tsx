@@ -662,6 +662,11 @@ export default function FundContract(props: {
 
       let requireTokenApproval = false;
 
+      const amount = ethers.utils.parseUnits(
+        amountToFund.toString(),
+        matchingFundPayoutToken.decimal
+      );
+
       const alloVersion = props.round?.tags?.includes("allo-v2") ? "v2" : "v1";
       const roundAddress =
         alloVersion === "v1" ? props.round?.id : getAlloAddress(chainId);
@@ -679,7 +684,7 @@ export default function FundContract(props: {
           address as string,
           roundAddress as string
         );
-        if (tokenAllowance.lt(BigNumber.from(amountToFund))) {
+        if (tokenAllowance.lt(amount)) {
           requireTokenApproval = true;
         }
       }

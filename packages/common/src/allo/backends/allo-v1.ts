@@ -755,10 +755,7 @@ export class AlloV1 implements Allo {
       const roundAddress = getAddress(args.roundId);
       let tx;
 
-      if (
-        args.tokenAddress === zeroAddress ||
-        args.requireTokenApproval === false
-      ) {
+      if (args.tokenAddress === zeroAddress || !args.requireTokenApproval) {
         emit("tokenApprovalStatus", success(null));
       } else {
         const approvalTx = await sendTransaction(this.transactionSender, {

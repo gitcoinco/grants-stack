@@ -494,7 +494,9 @@ export class AlloV2 implements Allo {
             factoryType: "DVMDT",
           });
 
-          const txData = strategyFactory.getCreateStrategyDataByChainId(this.chainId);
+          const txData = strategyFactory.getCreateStrategyDataByChainId(
+            this.chainId
+          );
 
           const txResult = await sendRawTransaction(this.transactionSender, {
             to: txData.to,
@@ -559,8 +561,9 @@ export class AlloV2 implements Allo {
             factoryType: "DGL",
           });
 
-          const txData = strategyFactory.getCreateStrategyDataByChainId(this.chainId);
-
+          const txData = strategyFactory.getCreateStrategyDataByChainId(
+            this.chainId
+          );
 
           const txResult = await sendRawTransaction(this.transactionSender, {
             to: txData.to,
@@ -571,7 +574,7 @@ export class AlloV2 implements Allo {
           if (txResult.type === "error") {
             return txResult;
           }
-          
+
           try {
             const receipt = await this.transactionSender.wait(txResult.value);
             const strategyCreatedEvent = decodeEventFromReceipt({
@@ -895,7 +898,7 @@ export class AlloV2 implements Allo {
     tokenAddress: Address;
     roundId: string;
     amount: bigint;
-    requrieTokenApproval?: boolean;
+    requireTokenApproval?: boolean;
   }): AlloOperation<
     Result<null>,
     {
@@ -912,10 +915,7 @@ export class AlloV2 implements Allo {
 
       const poolId = BigInt(args.roundId);
 
-      if (
-        args.tokenAddress === zeroAddress ||
-        args.requrieTokenApproval === false
-      ) {
+      if (args.tokenAddress === zeroAddress || !args.requireTokenApproval) {
         emit("tokenApprovalStatus", success(null));
       } else {
         const approvalTx = await sendTransaction(this.transactionSender, {
