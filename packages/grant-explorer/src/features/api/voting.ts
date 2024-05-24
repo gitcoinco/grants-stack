@@ -15,7 +15,7 @@ import { CartProject } from "./types";
 import { WalletClient } from "wagmi";
 import { VotingToken } from "common";
 import { NATIVE } from "common/dist/allo/common";
-import { TToken } from "@grants-labs/gitcoin-chain-data";
+import { TToken } from "@gitcoin/gitcoin-chain-data";
 
 type SignPermitProps = {
   walletClient: WalletClient;

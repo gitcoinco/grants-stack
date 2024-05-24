@@ -14,18 +14,20 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { classNames, useAllo, useTokenPrice } from "common";
+import {
+  TToken,
+  classNames,
+  getPayoutTokens,
+  useAllo,
+  useTokenPrice,
+} from "common";
 import { assertAddress } from "common/src/address";
 import { formatUnits } from "viem";
-import {
-  getTokensByChainId,
-  TPayoutToken,
-} from "@grants-labs/gitcoin-chain-data";
 
 // fixme: move this to its own hook
 export function useContractAmountFunded(args: {
   round: Round | undefined;
-  payoutToken: TPayoutToken | undefined;
+  payoutToken: TToken | undefined;
 }):
   | {
       isLoading: true;
@@ -155,7 +157,7 @@ export default function FundContract(props: {
     string | undefined
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
-  const [payoutTokens, setPayoutTokens] = useState<TPayoutToken[]>([]);
+  const [payoutTokens, setPayoutTokens] = useState<TToken[]>([]);
 
   const { chain } = useNetwork() || {};
   const chainId = chain?.id ?? 5;
@@ -215,23 +217,21 @@ export default function FundContract(props: {
 
   useEffect(() => {
     const fetchPayoutTokens = async (chainId: number) => {
-      const tokens = await getTokensByChainId(chainId);
+      const tokens = getPayoutTokens(chainId);
 
-      setPayoutTokens(tokens.payout);
+      setPayoutTokens(tokens);
     };
 
     fetchPayoutTokens(chainId);
   }, [chainId]);
 
-  const matchingFundPayoutToken =
-    props.round &&
-    payoutTokens &&
-    payoutTokens.filter(
-      (t) =>
-        t.address.toLowerCase() === props.round?.token?.toLowerCase() &&
-        t.chainId === props.round?.chainId
-    )[0];
+  const tokens = props.round?.chainId
+    ? getPayoutTokens(props.round.chainId)
+    : [];
 
+  const matchingFundPayoutToken = tokens.find(
+    (t) => t.address.toLowerCase() === props.round?.token?.toLowerCase()
+  );
   const { isLoading, data } = useContractAmountFunded({
     round: props.round,
     payoutToken: matchingFundPayoutToken,
@@ -239,7 +239,7 @@ export default function FundContract(props: {
 
   const amountFundedInUnits = formatUnits(
     data?.fundedAmount ?? 0n,
-    matchingFundPayoutToken?.decimal ?? 18
+    matchingFundPayoutToken?.decimals ?? 18
   );
   // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
 
@@ -283,7 +283,7 @@ export default function FundContract(props: {
     const accountBalance = matchingFundPayoutTokenBalance?.value;
     const tokenBalance = ethers.utils.parseUnits(
       amountToFund,
-      matchingFundPayoutToken?.decimal
+      matchingFundPayoutToken?.decimals
     );
 
     if (!accountBalance || BigNumber.from(tokenBalance).gt(accountBalance)) {
@@ -381,14 +381,14 @@ export default function FundContract(props: {
         <div className="flex flex-row justify-start mt-6">
           <p className="text-sm w-1/3">Payout token:</p>
           <p className="flex flex-row text-sm">
-            {matchingFundPayoutToken?.logo ? (
+            {matchingFundPayoutToken?.icon ? (
               <img
-                src={matchingFundPayoutToken.logo}
+                src={matchingFundPayoutToken.icon}
                 alt=""
                 className="h-6 w-6 flex-shrink-0 rounded-full"
               />
             ) : null}
-            <span className="ml-2 pt-0.5">{matchingFundPayoutToken?.name}</span>
+            <span className="ml-2 pt-0.5">{matchingFundPayoutToken?.code}</span>
           </p>
         </div>
         <div className="flex flex-row justify-start mt-6">
@@ -399,7 +399,7 @@ export default function FundContract(props: {
                 minimumFractionDigits: 5,
               })
               .replace(/\.?0+$/, "")}{" "}
-            {matchingFundPayoutToken?.name}{" "}
+            {matchingFundPayoutToken?.code}{" "}
             {matchingFundsInUSD && matchingFundsInUSD > 0 ? (
               <span className="text-sm text-slate-400 ml-2">
                 ${matchingFundsInUSD.toFixed(2)} USD
@@ -473,7 +473,7 @@ export default function FundContract(props: {
             <div className="flex flex-row justify-start mt-6">
               <p className="text-sm w-1/3">Amount funded:</p>
               <p className="text-sm">
-                {amountFundedInUnits} {matchingFundPayoutToken?.name}{" "}
+                {amountFundedInUnits} {matchingFundPayoutToken?.code}{" "}
                 {tokenBalanceInUSD && Number(tokenBalanceInUSD) > 0 ? (
                   <span className="text-sm text-slate-400 ml-2">
                     ${tokenBalanceInUSD.toFixed(2)} USD
@@ -490,7 +490,7 @@ export default function FundContract(props: {
                     minimumFractionDigits: 5,
                   })
                   .replace(/\.?0+$/, "")}{" "}
-                {matchingFundPayoutToken?.name}{" "}
+                {matchingFundPayoutToken?.code}{" "}
                 {amountLeftToFundInUSD !== undefined &&
                 amountLeftToFundInUSD > 0 ? (
                   <span className="text-sm text-slate-400 ml-2">
@@ -630,7 +630,7 @@ export default function FundContract(props: {
   function ConfirmationModalBody() {
     const amountInUSD =
       Number(
-        parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimal)
+        parseFloat(amountToFund).toFixed(matchingFundPayoutToken?.decimals)
       ) * Number(data);
     return (
       <div>
@@ -639,7 +639,7 @@ export default function FundContract(props: {
             AMOUNT TO BE FUNDED
           </div>
           <div className="font-bold mb-1">
-            {amountToFund} {matchingFundPayoutToken?.name}
+            {amountToFund} {matchingFundPayoutToken?.code}
           </div>
           {amountInUSD > 0 ? (
             <div className="text-md text-slate-400 mb-6">
@@ -677,7 +677,7 @@ export default function FundContract(props: {
         allo,
         roundId: props.roundId,
         fundAmount: Number(
-          parseFloat(amountToFund).toFixed(matchingFundPayoutToken.decimal)
+          parseFloat(amountToFund).toFixed(matchingFundPayoutToken.decimals)
         ),
         payoutToken: matchingFundPayoutToken,
       });

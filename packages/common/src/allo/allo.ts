@@ -12,7 +12,7 @@ import { Result } from "./common";
 import { AlloOperation } from "./operation";
 import { TransactionReceipt } from "./transaction-sender";
 import { PermitSignature } from "./voting";
-import { TToken } from "@grants-labs/gitcoin-chain-data";
+import { TToken } from "@gitcoin/gitcoin-chain-data";
 
 export type CreateRoundArguments = {
   roundData: {

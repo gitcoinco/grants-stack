@@ -46,7 +46,7 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { BigNumber, utils } from "ethers";
 import { Distribution } from "@allo-team/allo-v2-sdk/dist/strategies/DonationVotingMerkleDistributionStrategy/types";
-import { TToken } from "@grants-labs/gitcoin-chain-data/dist/types";
+import { TToken } from "@gitcoin/gitcoin-chain-data";
 
 function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
   let strategyAddresses;
@@ -1225,10 +1225,7 @@ export class AlloV2 implements Allo {
         poolId: poolId,
       });
 
-      const txData = strategy.distribute(
-        recipientIds,
-        projectsWithMerkleProof,
-      );
+      const txData = strategy.distribute(recipientIds, projectsWithMerkleProof);
 
       const txResult = await sendRawTransaction(this.transactionSender, {
         to: txData.to,

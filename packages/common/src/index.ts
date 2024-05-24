@@ -17,6 +17,7 @@ export * from "./payoutTokens";
 
 export { PassportVerifierWithExpiration } from "./credentialVerifier";
 export { ChainId };
+export * from "@gitcoin/gitcoin-chain-data";
 
 export function useParams<T extends Record<string, string> = never>() {
   return useRouterParams<T>() as T;

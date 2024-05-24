@@ -8,7 +8,13 @@ import {
   UploadIcon,
 } from "@heroicons/react/solid";
 import { useDropzone } from "react-dropzone";
-import { PayoutToken, classNames, payoutTokens, isGG20Round } from "common";
+import {
+  PayoutToken,
+  classNames,
+  payoutTokens,
+  isGG20Round,
+  getPayoutTokens,
+} from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRoundMatchingFunds } from "../../../hooks";
 import {
@@ -189,10 +195,12 @@ function ViewRoundResultsWithId({ id }: { id: string }) {
 
   const matchTokenAddress = round.round.token;
 
-  const matchToken = payoutTokens.find(
-    (t) =>
-      t.address.toLowerCase() == matchTokenAddress.toLowerCase() &&
-      t.chainId == chainId
+  if (round.round.chainId === undefined) {
+    return <div>Invalid chain id</div>;
+  }
+
+  const matchToken = getPayoutTokens(round.round.chainId).find(
+    (t) => t.address.toLowerCase() == matchTokenAddress.toLowerCase()
   );
 
   if (matchToken === undefined) {

@@ -14,6 +14,7 @@ import {
   getLocalTime,
   payoutTokens,
   useAllo,
+  getPayoutTokens,
 } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
@@ -1876,15 +1877,11 @@ function RoundApplicationPeriod(props: {
   );
 }
 
-function getMatchingFundToken(
-  tokenAddress: string,
-  chainId: number | undefined
-) {
-  return payoutTokens.filter(
+function getMatchingFundToken(tokenAddress: string, chainId: number) {
+  return getPayoutTokens(chainId).filter(
     (t) =>
       t.address.toLowerCase() ==
-        (tokenAddress == NATIVE ? zeroAddress : tokenAddress.toLowerCase()) &&
-      t.chainId == chainId
+      (tokenAddress == NATIVE ? zeroAddress : tokenAddress.toLowerCase())
   )[0];
 }
 
@@ -1898,6 +1895,10 @@ function Funding(props: {
   errors: FieldErrors<Round>;
 }) {
   const { editedRound } = props;
+
+  if (editedRound.chainId === undefined) {
+    return <div>Invalid chain id</div>;
+  }
 
   const matchingFundPayoutToken =
     editedRound && getMatchingFundToken(editedRound.token, editedRound.chainId);
@@ -1928,7 +1929,7 @@ function Funding(props: {
             <input
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
-              defaultValue={matchingFundPayoutToken.name}
+              defaultValue={matchingFundPayoutToken.code}
               disabled
             />
           </div>
@@ -1943,10 +1944,10 @@ function Funding(props: {
 
           <div className="leading-8 flex font-normal">
             <input
-              size={matchingFundPayoutToken?.name?.length ?? 3}
+              size={matchingFundPayoutToken?.code?.length ?? 3}
               type="text"
               className="text-grey-400 disabled:bg-gray-50 rounded-l-md border border-gray-300 shadow-sm py-2 text-center bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-              defaultValue={matchingFundPayoutToken.name}
+              defaultValue={matchingFundPayoutToken.code}
               disabled
             />
             <Controller
@@ -2206,7 +2207,7 @@ function Funding(props: {
             (props.editedRound?.roundMetadata?.quadraticFundingConfig
               ?.matchingCapAmount ?? 0)
           ).toFixed(2)}{" "}
-          {matchingFundPayoutToken.name}).
+          {matchingFundPayoutToken.code}).
         </span>
       </div>
       <span className="mt-4 inline-flex font-light text-gray-400 mb-4">

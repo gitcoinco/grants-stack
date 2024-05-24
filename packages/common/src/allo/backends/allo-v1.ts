@@ -56,8 +56,8 @@ import MerklePayoutStrategyImplementationABI from "../abis/allo-v1/MerklePayoutS
 import { BigNumber } from "ethers";
 import DirectPayoutStrategyImplementation from "../abis/allo-v1/DirectPayoutStrategyImplementation";
 import { hexZeroPad } from "ethers/lib/utils.js";
-import { getTokensByChainId } from "@grants-labs/gitcoin-chain-data";
-import { TToken } from "@grants-labs/gitcoin-chain-data/dist/types";
+import { getTokensByChainId } from "@gitcoin/gitcoin-chain-data";
+import { TToken } from "@gitcoin/gitcoin-chain-data/dist/types";
 
 function createProjectId(args: {
   chainId: number;

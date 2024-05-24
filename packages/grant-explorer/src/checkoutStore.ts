@@ -27,10 +27,7 @@ import { getPermitType } from "common/dist/allo/voting";
 import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
-import {
-  TToken,
-  getTokensByChainId,
-} from "@grants-labs/gitcoin-chain-data";
+import { TToken, getTokensByChainId } from "@gitcoin/gitcoin-chain-data";
 
 type ChainMap<T> = Record<ChainId, T>;
 

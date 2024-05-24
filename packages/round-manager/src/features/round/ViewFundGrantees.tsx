@@ -4,6 +4,7 @@ import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react
 import {
   PayoutToken,
   classNames,
+  getPayoutTokens,
   getTxBlockExplorerLink,
   payoutTokens,
   useTokenPrice,
@@ -104,10 +105,14 @@ function FinalizedRoundContent(props: { round: Round }) {
   const [unpaidProjects, setUnpaidProjects] = useState<MatchingStatsData[]>([]);
   const [price, setPrice] = useState<number>(0);
 
-  const matchingFundPayoutToken: PayoutToken = payoutTokens.filter(
-    (t) =>
-      t.address.toLowerCase() == props.round.token.toLowerCase() &&
-      t.chainId == props.round.chainId
+  if (props.round.chainId === undefined) {
+    return <div>Invalid chain id</div>;
+  }
+
+  const matchingFundPayoutToken: PayoutToken = getPayoutTokens(
+    props.round.chainId
+  ).filter(
+    (t) => t.address.toLowerCase() == props.round.token.toLowerCase()
   )[0];
 
   const { data, error, loading } = useTokenPrice(

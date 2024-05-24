@@ -18,7 +18,7 @@ import {
 } from "../../../test-utils";
 import { ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
-import { getTokensByChainId } from "@grants-labs/gitcoin-chain-data";
+import { getTokensByChainId } from "@gitcoin/gitcoin-chain-data";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextDecoder } = require("util");
@@ -26,7 +26,7 @@ global.TextDecoder = TextDecoder;
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
-jest.mock("@grants-labs/gitcoin-chain-data", () => ({
+jest.mock("@gitcoin/gitcoin-chain-data", () => ({
   getTokensByChainId: jest.fn(),
 }));
 jest.mock("../FundContract", () => ({
