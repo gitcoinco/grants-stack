@@ -56,7 +56,7 @@ export default function ViewFundGrantees(props: {
     }
     setPaidProjects(projects["paid"]);
     setUnpaidProjects(projects["unpaid"]);
-  }, [data, error, loading, projects]);
+  }, [projects]);
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3">

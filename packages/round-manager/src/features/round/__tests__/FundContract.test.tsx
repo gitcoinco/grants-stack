@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { faker } from "@faker-js/faker";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { useTokenPrice } from "common";
+import { useTokenPrice, getPayoutTokens } from "common";
 import { useParams } from "react-router-dom";
 import {
   useAccount,
@@ -18,7 +18,6 @@ import {
 } from "../../../test-utils";
 import { ProgressStatus, Round } from "../../api/types";
 import ViewRoundPage from "../ViewRoundPage";
-import { getTokensByChainId } from "@gitcoin/gitcoin-chain-data";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { TextDecoder } = require("util");
@@ -26,9 +25,7 @@ global.TextDecoder = TextDecoder;
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi");
-jest.mock("@gitcoin/gitcoin-chain-data", () => ({
-  getTokensByChainId: jest.fn(),
-}));
+
 jest.mock("../FundContract", () => ({
   useContractAmountFunded: jest.fn(),
 }));
@@ -64,6 +61,7 @@ jest.mock("common", () => ({
   ...jest.requireActual("common"),
   useTokenPrice: jest.fn(),
   useAllo: jest.fn(),
+  getPayoutTokens: jest.fn(),
 }));
 
 jest.mock("data-layer", () => ({
@@ -114,8 +112,8 @@ describe("fund contract tab", () => {
       },
     }));
 
-    (getTokensByChainId as jest.Mock).mockImplementation((chainId) => {
-      console.log(`Mock getTokensByChainId called with chainId: ${chainId}`);
+    (getPayoutTokens as jest.Mock).mockImplementation((chainId) => {
+      console.log(`Mock getPayoutTokens called with chainId: ${chainId}`);
       return {
         data: [
           {

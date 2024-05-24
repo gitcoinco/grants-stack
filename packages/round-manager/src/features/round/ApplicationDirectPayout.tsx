@@ -72,7 +72,9 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
   const isV2 = getConfig().allo.version === "allo-v2";
   // in v1 you can't use native payout token
   const tokensByChainInfo: TToken[] = isV2
-    ? getPayoutTokens(chain.id).filter((t: TToken) => t.address !== zeroAddress)
+    ? getPayoutTokens(chain.id).filter(
+        (t: TToken) => t.address.toLowerCase() !== NATIVE.toLowerCase()
+      )
     : getPayoutTokens(chain.id).filter(
         (t: TToken) =>
           t.address.toLowerCase() !== NATIVE.toLowerCase() &&
