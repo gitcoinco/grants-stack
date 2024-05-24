@@ -385,7 +385,7 @@ export const customCeloAlfajores = {
 
 export const customLukso = {
   id: 42,
-  name: "Lukso",
+  name: "LUKSO",
   network: "Lukso",
   iconUrl: luksoIcon,
   iconBackground: "rgba(1, 1, 1, 0.0)",
