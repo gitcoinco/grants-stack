@@ -13,8 +13,7 @@ import {
 } from "viem";
 import { CartProject } from "./types";
 import { WalletClient } from "wagmi";
-import { TToken } from "common";
-import { NATIVE } from "common/dist/allo/common";
+import { TToken, NATIVE } from "common";
 
 type SignPermitProps = {
   walletClient: WalletClient;

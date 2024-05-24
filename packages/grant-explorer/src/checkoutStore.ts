@@ -27,6 +27,7 @@ import { getPermitType } from "common/dist/allo/voting";
 import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
+import { TToken, getTokensByChainId } from "common";
 
 type ChainMap<T> = Record<ChainId, T>;
 
