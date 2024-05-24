@@ -5,7 +5,7 @@ import {
   SelectorIcon,
 } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { PayoutToken, classNames, getPayoutTokenOptions } from "common";
+import { TToken, classNames, getPayoutTokens } from "common";
 import { Input } from "common/src/styles";
 import _ from "lodash";
 import { Fragment, useContext, useState } from "react";
@@ -94,15 +94,14 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
     };
 
   const { chain } = useWallet();
-  const payoutTokenOptions: PayoutToken[] = [
+  const payoutTokenOptions: TToken[] = [
     {
-      name: "Choose Payout Token",
-      chainId: chain.id,
+      code: "Choose Payout Token",
       address: "0x0",
       default: true,
-      decimal: 0,
+      decimals: 0,
     },
-    ...getPayoutTokenOptions(chain.id),
+    ...getPayoutTokens(chain.id),
   ];
 
   const {
@@ -266,7 +265,7 @@ function LeftSidebar() {
 
 function PayoutTokenButton(props: {
   errors: FieldErrors<Round>;
-  token?: PayoutToken;
+  token?: TToken;
 }) {
   const { token } = props;
   return (
@@ -279,19 +278,19 @@ function PayoutTokenButton(props: {
       data-testid="payout-token-select"
     >
       <span className="flex items-center">
-        {token?.logo ? (
+        {token?.icon ? (
           <img
-            src={token?.logo}
+            src={token?.icon}
             alt=""
             className="h-6 w-6 flex-shrink-0 rounded-full"
           />
         ) : null}
         {token?.default ? (
           <span className="ml-3 block truncate text-gray-400">
-            {token?.name}
+            {token?.code}
           </span>
         ) : (
-          <span className="ml-3 block truncate">{token?.name}</span>
+          <span className="ml-3 block truncate">{token?.code}</span>
         )}
       </span>
       <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
@@ -331,7 +330,7 @@ function PayoutTokenDropdown(props: {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   control: Control<Round>;
-  payoutTokenOptions: PayoutToken[];
+  payoutTokenOptions: TToken[];
 }) {
   const { field } = useController({
     name: "token",
@@ -372,7 +371,7 @@ function PayoutTokenDropdown(props: {
                     (token) =>
                       !token.default && (
                         <Listbox.Option
-                          key={token.name}
+                          key={token.code}
                           className={({ active }) =>
                             classNames(
                               active
@@ -387,9 +386,9 @@ function PayoutTokenDropdown(props: {
                           {({ selected, active }) => (
                             <>
                               <div className="flex items-center">
-                                {token.logo ? (
+                                {token.icon ? (
                                   <img
-                                    src={token.logo}
+                                    src={token.icon}
                                     alt=""
                                     className="h-6 w-6 flex-shrink-0 rounded-full"
                                   />
@@ -400,7 +399,7 @@ function PayoutTokenDropdown(props: {
                                     "ml-3 block truncate"
                                   )}
                                 >
-                                  {token.name}
+                                  {token.code}
                                 </span>
                               </div>
 
@@ -441,7 +440,7 @@ function MatchingFundsAvailable(props: {
   register: UseFormRegisterReturn<string>;
   errors: FieldErrors<Round>;
   token: string;
-  payoutTokenOptions: PayoutToken[];
+  payoutTokenOptions: TToken[];
 }) {
   // not sure why UseFormRegisterReturn only takes strings for react-hook-form
   return (
@@ -477,7 +476,7 @@ function MatchingFundsAvailable(props: {
             {
               props.payoutTokenOptions.find(
                 (token) => token.address === props.token
-              )?.name
+              )?.code
             }
           </span>
         </div>
@@ -500,7 +499,7 @@ function MatchingCap(props: {
   errors: FieldErrors<Round>;
   control?: Control<Round>;
   token: string;
-  payoutTokenOptions: PayoutToken[];
+  payoutTokenOptions: TToken[];
 }) {
   const { field: matchingCapField } = useController({
     name: "roundMetadata.quadraticFundingConfig.matchingCap",
@@ -680,7 +679,7 @@ function MatchingCap(props: {
         {
           props.payoutTokenOptions.find(
             (token) => token.address === props.token
-          )?.name
+          )?.code
         }
         )
       </div>

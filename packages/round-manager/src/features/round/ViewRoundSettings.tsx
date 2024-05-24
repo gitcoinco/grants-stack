@@ -7,12 +7,8 @@ import {
   ChainId,
   RoundVisibilityType,
   classNames,
-  getPayoutTokenOptions,
-  getUTCDate,
-  getUTCTime,
   getLocalDate,
   getLocalTime,
-  payoutTokens,
   useAllo,
   getPayoutTokens,
 } from "common";
@@ -108,9 +104,9 @@ const generateUpdateRoundData = (
       dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
     )
   ) {
-    const decimals = getPayoutTokenOptions(dNewRound.chainId).find(
+    const decimals = getPayoutTokens(dNewRound.chainId).find(
       (token) => token.address.toLowerCase() === dNewRound.token.toLowerCase()
-    )?.decimal;
+    )?.decimals;
 
     if (!decimals) {
       throw new Error("Token decimals not found");

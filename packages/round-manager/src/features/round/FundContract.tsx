@@ -157,7 +157,6 @@ export default function FundContract(props: {
     string | undefined
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
-  const [payoutTokens, setPayoutTokens] = useState<TToken[]>([]);
 
   const { chain } = useNetwork() || {};
   const chainId = chain?.id ?? 5;
@@ -214,16 +213,6 @@ export default function FundContract(props: {
     transactionReplaced,
     props.roundId,
   ]);
-
-  useEffect(() => {
-    const fetchPayoutTokens = async (chainId: number) => {
-      const tokens = getPayoutTokens(chainId);
-
-      setPayoutTokens(tokens);
-    };
-
-    fetchPayoutTokens(chainId);
-  }, [chainId]);
 
   const tokens = props.round?.chainId
     ? getPayoutTokens(props.round.chainId)

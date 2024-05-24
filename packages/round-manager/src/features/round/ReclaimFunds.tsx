@@ -13,7 +13,7 @@ import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
-import { getPayoutTokens, payoutTokens, useTokenPrice } from "common";
+import { getPayoutTokens, useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
 import { useAllo } from "common";
 

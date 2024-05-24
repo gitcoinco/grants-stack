@@ -1,10 +1,8 @@
-import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { BigNumber, ethers } from "ethers";
 import {
   ApplicationMetadata,
   InputType,
   IPFSObject,
-  MatchingStatsData,
   Program,
   RevisedMatch,
 } from "./types";

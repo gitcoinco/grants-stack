@@ -60,7 +60,6 @@ import {
   formatDateWithOrdinal,
   getRoundStrategyType,
   getUTCTime,
-  getLocalTime,
   useAllo,
   VerifiedCredentialState,
 } from "common";
