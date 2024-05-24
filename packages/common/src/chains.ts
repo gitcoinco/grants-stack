@@ -388,6 +388,7 @@ export const customLukso = {
   name: "LUKSO",
   network: "Lukso",
   iconUrl: luksoIcon,
+  iconBackground: "rgba(1, 1, 1, 0.0)",
   nativeCurrency: {
     name: "LYX",
     symbol: "LYX",
