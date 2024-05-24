@@ -152,7 +152,8 @@ export default function ViewManageTeam(props: {
               : "View who is on your team."}
           </p>
           <p className="text-sm text-gray-400 mb-2">
-            Admins and operators have the same privileges, but only admins can add or remove operators.
+            Admins and operators have the same privileges, but only admins can
+            add or remove operators.
           </p>
         </div>
         <div>
@@ -224,7 +225,9 @@ export default function ViewManageTeam(props: {
             >
               <div className="flex flex-row justify-center">
                 <PlusIcon className="h-5 w-5 text-violet-400 font-medium align-middle mt-[1px]" />
-                <span className="ml-2 text-violet-400 font-medium">Add Member</span>
+                <span className="ml-2 text-violet-400 font-medium">
+                  Add Member
+                </span>
               </div>
             </Button>
           </div>
@@ -259,7 +262,7 @@ export default function ViewManageTeam(props: {
                 {editMode && item.role !== "ADMIN" && (
                   <td>
                     <XIcon
-                      className="text-red-100 w-6"
+                      className="text-red-100 w-6 cursor-pointer"
                       onClick={() => {
                         setManager(item.address);
                         setAddOrRemove(AddOrRemove.REMOVE);
@@ -280,7 +283,7 @@ export default function ViewManageTeam(props: {
         confirmButtonAction={handleUpdateTeam}
         body={
           <p className="text-sm text-grey-400">
-            Are you sure you want 
+            Are you sure you want
             {addOrRemove == AddOrRemove.ADD ? " add " : " remove "}
             {manager} as a team member?
           </p>
