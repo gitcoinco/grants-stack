@@ -1,7 +1,6 @@
 import { Match } from "allo-indexer-client";
 import { getUTCDate, payoutTokens } from "common";
 import { getConfig } from "common/src/config";
-import { utils } from "ethers";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useChainId } from "wagmi";
@@ -10,6 +9,7 @@ import {
   useRoundApplications,
   useRoundMatchingFunds,
 } from "../../hooks";
+import { formatUnits, getAddress } from "viem";
 
 export default function ViewRoundStats() {
   const { id } = useParams();
@@ -17,7 +17,7 @@ export default function ViewRoundStats() {
   const alloVersion = getConfig().allo.version;
   const roundId =
     alloVersion === "allo-v1"
-      ? utils.getAddress(id?.toLowerCase() ?? "")
+      ? getAddress(id?.toLowerCase() ?? "")
       : (id as string);
 
   const { data: round } = useRound(roundId);
@@ -57,7 +57,7 @@ export default function ViewRoundStats() {
         <StatsCard
           text={
             round &&
-            `${utils.formatUnits(
+            `${formatUnits(
               round.matchAmount,
               matchToken?.decimal
             )} ${matchToken?.name}`

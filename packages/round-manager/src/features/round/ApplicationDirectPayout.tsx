@@ -12,7 +12,6 @@ import { ExternalLinkIcon } from "@heroicons/react/outline";
 import { Erc20__factory } from "../../types/generated/typechain";
 import { usePayout } from "../../context/application/usePayout";
 import { Button, Input } from "common/src/styles";
-import { BigNumber, ethers } from "ethers";
 import { AnswerBlock, GrantApplication, Round } from "../api/types";
 import {
   NATIVE,
@@ -25,7 +24,7 @@ import {
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { usePayouts } from "./usePayouts";
-import { Hex, isAddress, zeroAddress } from "viem";
+import { Hex, formatUnits, isAddress, parseUnits, zeroAddress } from "viem";
 import { useDataLayer } from "data-layer";
 import { getConfig } from "common/src/config";
 
@@ -84,7 +83,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
   );
   const [customTokenInput, setCustomTokenInput] = useState("");
   const [payoutTokensMap, setPayoutTokensMap] = useState<
-    Map<string, { decimal: number; name: string; totalAmount: BigNumber }>
+    Map<string, { decimal: number; name: string; totalAmount: bigint }>
   >(new Map());
 
   const network = useNetwork();
@@ -189,17 +188,17 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
       throw Error(`Round or signer not found!`);
     }
 
-    const amountBN = ethers.utils.parseUnits(
+    const amountBN = parseUnits(
       data.amount.toString(),
       tokenInfo.decimal
     );
     const amountWithFee = getAmountWithFee();
-    const amountWithFeeBN = ethers.utils.parseUnits(
+    const amountWithFeeBN = parseUnits(
       amountWithFee.toString(),
       tokenInfo.decimal
     );
 
-    let allowance = BigNumber.from(0);
+    let allowance = BigInt(0);
 
     if (
       tokenInfo.address !== zeroAddress &&
@@ -267,7 +266,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
         {
           decimal: number;
           name: string;
-          totalAmount: BigNumber;
+          totalAmount: bigint;
         }
       > = new Map([]);
 
@@ -300,13 +299,13 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
             map.set(payout.tokenAddress.toLowerCase(), {
               decimal,
               name,
-              totalAmount: BigNumber.from(payout.amount),
+              totalAmount: BigInt(payout.amount),
             });
           } else {
             map.set(payout.tokenAddress.toLowerCase(), {
               decimal: token.decimal,
               name: token.name,
-              totalAmount: token.totalAmount.add(BigNumber.from(payout.amount)),
+              totalAmount: token.totalAmount + BigInt(payout.amount),
             });
           }
         }
@@ -382,7 +381,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
                               </div>
                             </td>
                             <td className="text-sm leading-5 px-2 text-gray-400 text-left text-ellipsis overflow-hidden">
-                              {ethers.utils.formatUnits(
+                              {formatUnits(
                                 payout.amount,
                                 payoutTokensMap.get(
                                   payout.tokenAddress.toLowerCase()
@@ -414,7 +413,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
                     {Array.from(payoutTokensMap.values()).map(
                       (t, index, arr) => (
                         <span key={index}>
-                          {`${ethers.utils.formatUnits(t.totalAmount, t.decimal || 18)} ${t.name}`}
+                          {`${formatUnits(t.totalAmount, t.decimal || 18)} ${t.name}`}
                           {index < arr.length - 1 && ", "}
                         </span>
                       )

@@ -1,6 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { InformationCircleIcon } from "@heroicons/react/solid";
-import { BigNumber, ethers } from "ethers";
 import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +21,7 @@ import {
   useTokenPrice,
 } from "common";
 import { assertAddress } from "common/src/address";
-import { formatUnits, zeroAddress } from "viem";
+import { formatUnits, parseUnits, zeroAddress } from "viem";
 import { Erc20__factory } from "../../types/generated/typechain";
 import { useWallet } from "../common/Auth";
 import { getAlloAddress } from "common/src/allo/backends/allo-v2";
@@ -229,7 +228,7 @@ export default function FundContract(props: {
   // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
 
   const tokenDetailUser =
-    matchingFundPayoutToken?.address == ethers.constants.AddressZero
+    matchingFundPayoutToken?.address == zeroAddress
       ? { address: assertAddress(address) }
       : {
           address: assertAddress(address),
@@ -266,12 +265,12 @@ export default function FundContract(props: {
   function handleFundContract() {
     // check if signer has enough token balance
     const accountBalance = matchingFundPayoutTokenBalance?.value;
-    const tokenBalance = ethers.utils.parseUnits(
+    const tokenBalance = parseUnits(
       amountToFund,
-      matchingFundPayoutToken?.decimal
+      matchingFundPayoutToken!.decimal
     );
 
-    if (!accountBalance || BigNumber.from(tokenBalance).gt(accountBalance)) {
+    if (!accountBalance || tokenBalance > accountBalance) {
       setInsufficientBalance(true);
       return;
     } else {
@@ -658,11 +657,11 @@ export default function FundContract(props: {
         setOpenProgressModal(true);
       }, errorModalDelayMs);
 
-      let tokenAllowance = BigNumber.from(0);
+      let tokenAllowance = BigInt(0);
 
       let requireTokenApproval = false;
 
-      const amount = ethers.utils.parseUnits(
+      const amount = parseUnits(
         amountToFund.toString(),
         matchingFundPayoutToken.decimal
       );

@@ -8,7 +8,7 @@ import {
   payoutTokens,
   useTokenPrice,
 } from "common";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
@@ -29,7 +29,7 @@ import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
 import { assertAddress } from "common/src/address";
 import { useAllo } from "common";
-import { getAddress } from "viem";
+import { formatEther, getAddress } from "viem";
 import { getConfig } from "common/src/config";
 
 export default function ViewFundGrantees(props: {
@@ -225,7 +225,7 @@ export function PayProjectsTable(props: {
   );
 
   const tokenDetail =
-    props.token.address == ethers.constants.AddressZero
+    props.token.address == zeroAddress
       ? { address: assertAddress(props.round?.payoutStrategy.id) }
       : {
           address: assertAddress(props.round?.payoutStrategy.id),
@@ -625,7 +625,7 @@ export function PaidProjectsTable(props: {
                         {project.matchPoolPercentage * 100}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {ethers.utils.formatEther(
+                        {formatEther(
                           project.matchAmountInToken.toString()
                         )}
                         {" " + props.token.name.toUpperCase()}

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { utils } from "ethers";
 import {
   InboxInIcon as NoApplicationsForRoundIcon,
   DownloadIcon,
@@ -39,6 +38,7 @@ import { useWallet } from "../common/Auth";
 import { CheckIcon } from "@heroicons/react/solid";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import { exportAndDownloadCSV } from "./ApplicationsToApproveReject";
+import { getAddress } from "viem";
 
 // Move applications received in direct grants to In Review
 
@@ -224,7 +224,7 @@ export default function ApplicationsToReview() {
             $variant="outline"
             className="text-xs px-3 py-1 inline-block"
             disabled={isCsvExportLoading}
-            onClick={() => handleExportCsvClick(utils.getAddress(id), chain.id)}
+            onClick={() => handleExportCsvClick(getAddress(id), chain.id)}
           >
             {isCsvExportLoading ? (
               <>

@@ -9,6 +9,7 @@ import {
 import { ChainId } from "common";
 import { useEffect, useState } from "react";
 import Papa from "papaparse";
+import { formatUnits } from "viem";
 
 // NB: number keys are coerced into strings for JS object keys
 export const CHAINS: Record<ChainId, Program["chain"]> = {
@@ -316,12 +317,12 @@ export const getTxExplorerForContract = (
 };
 
 export const formatCurrency = (
-  value: BigNumber,
+  value: bigint,
   decimal: number,
   fraction?: number
 ) => {
   return parseFloat(
-    ethers.utils.formatUnits(value.toString(), decimal)
+    formatUnits(value, decimal)
   ).toLocaleString("en-US", {
     maximumFractionDigits: fraction || 3,
   });

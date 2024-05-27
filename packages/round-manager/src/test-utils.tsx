@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import { render } from "@testing-library/react";
 import { randomInt } from "crypto";
 import { BigNumber, ethers } from "ethers";
-import { formatBytes32String, parseEther } from "ethers/lib/utils";
+import { formatBytes32String } from "ethers/lib/utils";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import {
@@ -41,7 +41,7 @@ import {
   ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
 } from "common";
-import { zeroAddress } from "viem";
+import { parseEther, zeroAddress } from "viem";
 import { DistributionMatch } from "data-layer";
 
 export const mockedOperatorWallet = faker.finance.ethereumAddress();
@@ -95,7 +95,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     applicationsEndTime,
     roundStartTime,
     roundEndTime,
-    token: ethers.constants.AddressZero, // to match our token list
+    token: zeroAddress, // to match our token list
     votingStrategy: faker.finance.ethereumAddress(),
     payoutStrategy: {
       id: faker.finance.ethereumAddress(),
@@ -155,7 +155,7 @@ export const makeDirectGrantRoundData = (
     applicationsEndTime,
     roundStartTime,
     roundEndTime,
-    token: ethers.constants.AddressZero, // to match our token list
+    token: zeroAddress, // to match our token list
     votingStrategy: faker.finance.ethereumAddress(),
     payoutStrategy: {
       id: faker.finance.ethereumAddress(),
@@ -215,7 +215,7 @@ export type QFDistribution = {
   matchAmountInUSD: number;
   totalContributionsInUSD: number;
   matchPoolPercentage: number;
-  matchAmountInToken: BigNumber;
+  matchAmountInToken: bigint;
   projectPayoutAddress: string;
   uniqueContributorsCount: number;
   revisedMatch: bigint;

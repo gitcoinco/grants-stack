@@ -1,4 +1,3 @@
-import React from "react";
 import {
   fireEvent,
   render,
@@ -17,13 +16,12 @@ import {
 
 import { useWallet } from "../../common/Auth";
 import { useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
-import { BigNumber, ethers } from "ethers";
 import { Erc20__factory } from "../../../types/generated/typechain";
 import moment from "moment";
-import { parseUnits } from "ethers/lib/utils.js";
 import { usePayout } from "../../../context/application/usePayout";
 import { usePayouts } from "../usePayouts";
 import { DataLayer, DataLayerContext } from "data-layer";
+import { parseUnits, zeroAddress } from "viem";
 
 jest.mock("../../../types/generated/typechain");
 jest.mock("../../common/Auth");
@@ -31,7 +29,7 @@ jest.mock("wagmi");
 jest.mock("../../../context/application/usePayout");
 jest.mock("../usePayouts");
 
-const mockAddress = ethers.constants.AddressZero;
+const mockAddress = zeroAddress;
 const mockWallet = {
   provider: {
     network: {
@@ -112,7 +110,7 @@ describe("<ApplicationDirectPayout />", () => {
   });
 
   beforeEach(() => {
-    mockAllowance = jest.fn().mockResolvedValue(BigNumber.from("0"));
+    mockAllowance = jest.fn().mockResolvedValue(BigInt("0"));
 
     (Erc20__factory.connect as jest.Mock).mockImplementation(() => ({
       allowance: mockAllowance,

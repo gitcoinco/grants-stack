@@ -31,7 +31,6 @@ jest.mock("../../../actions/grantsMetadata", () => ({
 
 jest.mock("../../../utils/projects", () => ({
   ...jest.requireActual("../../../utils/projects"),
-  fetchProjectOwners: jest.fn(),
 }));
 
 describe("<Show />", () => {

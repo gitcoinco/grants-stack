@@ -1,18 +1,4 @@
-import { ChainId } from "common";
 import { RoundApplicationMetadata, RoundApplicationQuestion } from "data-layer";
-import { ethers } from "ethers";
-
-const generateUniqueRoundApplicationID = (
-  projectChainId: ChainId,
-  projectNumber: string,
-  projectRegistryAddress: string
-) =>
-  ethers.utils.solidityKeccak256(
-    ["uint256", "address", "uint256"],
-    [projectChainId, projectRegistryAddress, projectNumber]
-  );
-
-export default generateUniqueRoundApplicationID;
 
 export const parseRoundApplicationMetadata = (
   object: any

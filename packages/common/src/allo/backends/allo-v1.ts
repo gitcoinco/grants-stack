@@ -9,6 +9,7 @@ import {
   hexToBigInt,
   keccak256,
   maxUint256,
+  pad,
   parseAbiParameters,
   parseUnits,
   zeroAddress,
@@ -54,9 +55,7 @@ import { getPermitType, PermitSignature } from "../voting";
 import { MRC_CONTRACTS } from "../addresses/mrc";
 import Erc20ABI from "../abis/erc20";
 import MerklePayoutStrategyImplementationABI from "../abis/allo-v1/MerklePayoutStrategyImplementation";
-import { BigNumber } from "ethers";
 import DirectPayoutStrategyImplementation from "../abis/allo-v1/DirectPayoutStrategyImplementation";
-import { hexZeroPad } from "ethers/lib/utils.js";
 
 function createProjectId(args: {
   chainId: number;
@@ -1009,7 +1008,7 @@ export class AlloV1 implements Allo {
       const projectsWithMerkleProof: any[] = [];
 
       projectsToBePaid.forEach((project) => {
-        const distribution: [number, string, BigNumber, string] = [
+        const distribution: [number, string, BigInt, string] = [
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           project.index!,
           project.projectPayoutAddress,
@@ -1255,7 +1254,9 @@ export class AlloV1 implements Allo {
         projectId: args.recipientId,
         applicationIndex: BigInt(args.applicationIndex),
         allowanceModule: zeroAddress,
-        allowanceSignature: hexZeroPad("0x", 65) as `0x${string}`,
+        allowanceSignature: pad("0x", {
+          size: 65
+        }) as `0x${string}`,
       };
 
       const tx = await sendTransaction(this.transactionSender, {
@@ -1373,11 +1374,11 @@ function constructCreateRoundArgs({
 export const generateMerkleTree = (
   matchingResults: MatchingStatsData[]
 ): {
-  distribution: [number, string, BigNumber, string][];
-  tree: StandardMerkleTree<[number, string, BigNumber, string]>;
+  distribution: [number, string, BigInt, string][];
+  tree: StandardMerkleTree<[number, string, BigInt, string]>;
   matchingResults: MatchingStatsData[];
 } => {
-  const distribution: [number, string, BigNumber, string][] = [];
+  const distribution: [number, string, BigInt, string][] = [];
 
   matchingResults.forEach((matchingResult, index) => {
     matchingResults[index].index = index;
@@ -1385,7 +1386,7 @@ export const generateMerkleTree = (
     distribution.push([
       index,
       matchingResult.projectPayoutAddress,
-      matchingResult.matchAmountInToken, // TODO: FIX
+      matchingResult.matchAmountInToken,
       matchingResult.projectId,
     ]);
   });

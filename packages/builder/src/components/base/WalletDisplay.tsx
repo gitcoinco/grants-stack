@@ -13,7 +13,8 @@ import { useNavigate } from "react-router-dom";
 import { useAccount, useDisconnect } from "wagmi";
 import { web3AccountDisconnected } from "../../actions/web3";
 import { slugs } from "../../routes";
-import { shortAddress, isValidAddress } from "../../utils/wallet";
+import { shortAddress } from "../../utils/wallet";
+import { isAddress } from "viem";
 
 export default function WalletDisplay(): JSX.Element {
   const dispatch = useDispatch();
@@ -39,7 +40,7 @@ export default function WalletDisplay(): JSX.Element {
           <Avatar size="xs">
             <AvatarBadge boxSize="1.25em" bg={avatarBg} />
           </Avatar>{" "}
-          {isConnected && isValidAddress(address!)
+          {isConnected && isAddress(address!)
             ? shortAddress(address!)
             : "Not Connected"}
         </MenuButton>

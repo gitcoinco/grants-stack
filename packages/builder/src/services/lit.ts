@@ -1,9 +1,9 @@
-import { ethers } from "ethers";
 import { Buffer } from "buffer";
 import { Provider } from "@wagmi/core";
 import { getConfig } from "common/src/config";
 import { isJestRunning } from "common";
 import { global } from "../global";
+import { getAddress } from "viem";
 
 const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
 // @ts-ignore
@@ -49,7 +49,7 @@ export default class Lit {
    */
   constructor(initConfig: LitInit) {
     this.chain = initConfig.chain;
-    this.contract = ethers.utils.getAddress(initConfig.contract);
+    this.contract = getAddress(initConfig.contract);
   }
 
   /**

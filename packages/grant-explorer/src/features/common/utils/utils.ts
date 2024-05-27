@@ -1,4 +1,4 @@
-import { getAddress } from "ethers/lib/utils.js";
+import { getAddress } from "viem";
 
 export const getFormattedRoundId = (roundId?: string | number): string => {
   if (roundId === undefined) {

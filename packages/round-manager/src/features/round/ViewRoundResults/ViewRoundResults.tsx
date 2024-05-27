@@ -31,9 +31,9 @@ import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
 import { roundApplicationsToCSV } from "../../api/exports";
 import { DistributionMatch } from "data-layer";
-import { utils } from "ethers";
 import { useContractAmountFunded } from "../FundContract";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
+import { formatUnits } from "viem";
 
 // CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
@@ -956,9 +956,9 @@ function MatchingDistributionPreview(props: {
                             </td>
                             <td className="text-sm leading-5 px-2 text-gray-400 text-left">
                               {Number(
-                                utils.formatUnits(
+                                formatUnits(
                                   match.matched,
-                                  props.matchToken?.decimal
+                                  props.matchToken!.decimal
                                 )
                               ).toFixed(4)}{" "}
                               {props.matchToken?.name}
@@ -966,7 +966,7 @@ function MatchingDistributionPreview(props: {
                             {props.shouldShowRevisedTable && (
                               <td className="text-sm leading-5 px-2 text-gray-400 text-left">
                                 {Number(
-                                  utils.formatUnits(
+                                  formatUnits(
                                     match.revisedMatch,
                                     props.matchToken?.decimal
                                   )
@@ -1033,13 +1033,14 @@ function RoundSaturationView(props: {
         {`Current round saturation: ${props.roundSaturation.toFixed(2)}%`}
       </span>
       <span className="text-sm leading-5 font-normal text-left">
-        {`${formatUnits(
-          props.sumOfMatches,
-          props.matchToken
-        )} out of the ${formatUnits(
-          props.round.matchAmount,
-          props.matchToken
-        )} matching fund will be distributed to grantees.`}
+
+        {Number(formatUnits(props.sumOfMatches, props.matchToken?.decimal)).toFixed(4)}
+        {props.matchToken?.name}
+        out of the
+
+        {Number(formatUnits(props.round.matchAmount, props.matchToken?.decimal)).toFixed(4)}
+        {props.matchToken?.name}
+        matching fund will be distributed to grantees.
       </span>
     </div>
   );
@@ -1301,10 +1302,4 @@ function ViewTransactionButton(props: {
       </a>
     </>
   );
-}
-
-function formatUnits(value: bigint, matchToken?: PayoutToken) {
-  return `${Number(utils.formatUnits(value, matchToken?.decimal)).toFixed(
-    4
-  )} ${matchToken?.name}`;
 }

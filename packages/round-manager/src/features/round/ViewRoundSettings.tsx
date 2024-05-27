@@ -53,9 +53,8 @@ import {
 } from "./RoundDetailForm";
 import { isDirectRound } from "./ViewRoundPage";
 import { RoundCategory, UpdateRoundParams } from "common/dist/types";
-import { ethers } from "ethers";
 import { getConfig } from "common/src/config";
-import { zeroAddress } from "viem";
+import { parseUnits, zeroAddress } from "viem";
 import { NATIVE } from "common/dist/allo/common";
 import { getTimezoneName } from "common/src/index";
 import { isInfiniteDate } from "common/src/allo/common";
@@ -113,7 +112,7 @@ const generateUpdateRoundData = (
       throw new Error("Token decimals not found");
     }
 
-    const matchAmount = ethers.utils.parseUnits(
+    const matchAmount = parseUnits(
       dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toString(),
       decimals
     );

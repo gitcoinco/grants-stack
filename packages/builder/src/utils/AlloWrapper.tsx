@@ -3,20 +3,20 @@ import {
   AlloProvider,
   AlloV1,
   AlloV2,
-  createEthersTransactionSender,
   createPinataIpfsUploader,
+  createViemTransactionSender,
   createWaitForIndexerSyncTo,
   isChainIdSupported,
 } from "common";
 import { getConfig } from "common/src/config";
 import { useEffect, useState } from "react";
-import { useNetwork, useProvider, useSigner } from "wagmi";
+import { useNetwork, usePublicClient, useWalletClient } from "wagmi";
 import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const { chain } = useNetwork();
-  const web3Provider = useProvider();
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
+  const publicClient = usePublicClient();
   const chainID = chain?.id;
 
   const [backend, setBackend] = useState<Allo | null>(null);
@@ -24,7 +24,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   useEffect(() => {
     const chainIdSupported = chainID ? isChainIdSupported(chainID) : false;
 
-    if (!web3Provider || !signer || !chainID || !chainIdSupported) {
+    if (!publicClient || !walletClient || !chainID || !chainIdSupported) {
       setBackend(null);
     } else {
       const config = getConfig();
@@ -33,9 +33,9 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
       if (config.allo.version === "allo-v2") {
         alloBackend = new AlloV2({
           chainId: chainID,
-          transactionSender: createEthersTransactionSender(
-            signer,
-            web3Provider
+          transactionSender: createViemTransactionSender(
+            walletClient,
+            publicClient
           ),
           ipfsUploader: createPinataIpfsUploader({
             token: getConfig().pinata.jwt,
@@ -50,9 +50,9 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
       } else {
         alloBackend = new AlloV1({
           chainId: chainID,
-          transactionSender: createEthersTransactionSender(
-            signer,
-            web3Provider
+          transactionSender: createViemTransactionSender(
+            walletClient,
+            publicClient
           ),
           ipfsUploader: createPinataIpfsUploader({
             token: getConfig().pinata.jwt,
@@ -66,7 +66,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
         setBackend(alloBackend);
       }
     }
-  }, [web3Provider, signer, chainID]);
+  }, [publicClient, walletClient, chainID]);
 
   return (
     <AlloProvider backend={backend}>

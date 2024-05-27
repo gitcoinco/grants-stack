@@ -392,7 +392,6 @@ export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
 export { AlloContext, AlloProvider, useAllo } from "./allo/react";
 export {
-  createEthersTransactionSender,
   createMockTransactionSender,
   createViemTransactionSender,
   decodeEventFromReceipt,

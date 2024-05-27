@@ -61,7 +61,7 @@
     "papaparse": "^5.4.1",
     "ts-custom-error": "^3.3.1",
     "ts-essentials": "^9.4.1",
-    "viem": "^1.5.3",
+    "viem": "^2.5.0",
     "zod": "^3.22.2"
   },
   "peerDependencies": {

@@ -4,9 +4,8 @@ import { Allo, AnyJson, isJestRunning } from "common";
 import { getConfig } from "common/src/config";
 import { DataLayer, RoundCategory } from "data-layer";
 import { RoundApplicationAnswers } from "data-layer/dist/roundApplication.types";
-import { ethers } from "ethers";
 import { Dispatch } from "redux";
-import { Hex } from "viem";
+import { Hex, encodePacked, keccak256 } from "viem";
 import PinataClient from "common/src/services/pinata";
 import { global } from "../global";
 import { RootState } from "../reducers";
@@ -341,10 +340,10 @@ export const submitApplication =
 
     const { signer } = global;
 
-    const hash = ethers.utils.solidityKeccak256(
+    const hash = keccak256(encodePacked(
       ["string"],
       [deterministicApplication]
-    );
+    ));
 
     dispatch({
       type: ROUND_APPLICATION_LOADING,

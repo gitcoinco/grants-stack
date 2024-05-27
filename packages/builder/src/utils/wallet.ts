@@ -1,7 +1,5 @@
 import { datadogRum } from "@datadog/browser-rum";
-import { getAddress } from "@ethersproject/address";
 import { ChainId } from "common";
-import { ethers } from "ethers";
 import PGNIcon from "common/src/icons/PublicGoodsNetwork.svg";
 import AVAXIcon from "common/src/icons/AVAX.svg";
 import POLIcon from "common/src/icons/pol-logo.svg";
@@ -19,6 +17,7 @@ import {
   ARBIcon,
 } from "../assets";
 import { ChainName, chains } from "../contracts/deployments";
+import { getAddress } from "viem";
 
 export function shortAddress(address: string): string {
   try {
@@ -133,8 +132,4 @@ export function networkPrettyName(chainId: ChainId): string {
   const rawName = chains[chainId];
 
   return networkPrettyNames[rawName];
-}
-
-export function isValidAddress(address: string): boolean {
-  return ethers.utils.isAddress(address);
 }

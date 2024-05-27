@@ -3,6 +3,7 @@ import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import { Signer } from "@ethersproject/abstract-signer";
 import { PayoutToken } from "common";
+import { zeroAddress } from "viem";
 
 export const fundRoundContract = async (
   roundId: string,
@@ -17,7 +18,7 @@ export const fundRoundContract = async (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let tx: any = {};
 
-  if (payoutToken.address === ethers.constants.AddressZero) {
+  if (payoutToken.address === zeroAddress) {
     const txObj = {
       to: roundId,
       value: amount,

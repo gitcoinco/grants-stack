@@ -284,8 +284,8 @@ export type MatchingStatsData = {
   projectId: string;
   applicationId: string;
   anchorAddress?: string;
-  matchAmountInToken: BigNumber;
-  originalMatchAmountInToken: BigNumber;
+  matchAmountInToken: bigint;
+  originalMatchAmountInToken: bigint;
   projectPayoutAddress: string;
   status?: string;
   hash?: string;

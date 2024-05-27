@@ -29,7 +29,6 @@
     "data-layer": "workspace:*",
     "dompurify": "^2.4.3",
     "eslint-config-gitcoin": "workspace:*",
-    "ethers": "^5.6.5",
     "framer-motion": "^10.12.7",
     "markdown-it": "^13.0.1",
     "moment-timezone": "^0.5.45",
@@ -41,8 +40,8 @@
     "tailwind-styled-components": "^2.2.0",
     "tiny-emitter": "^2.1.0",
     "typescript": "latest",
-    "viem": "^1.5.3",
-    "wagmi": "0.12.19",
+    "viem": "^2.5.0",
+    "wagmi": "1.4.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {

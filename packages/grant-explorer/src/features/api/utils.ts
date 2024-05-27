@@ -11,7 +11,6 @@ import {
 import { RedstoneTokenIds } from "common/src/chain-ids";
 import { useSearchParams } from "react-router-dom";
 import { getAddress, zeroAddress } from "viem";
-import { ethers } from "ethers";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
@@ -554,7 +553,7 @@ const ARBITRUM_TOKENS: VotingToken[] = [
   {
     name: "ETH",
     chainId: ChainId.ARBITRUM,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
@@ -699,7 +698,7 @@ const AVALANCHE_TOKENS: VotingToken[] = [
   {
     name: "AVAX",
     chainId: ChainId.AVALANCHE,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["AVAX"],
     redstoneTokenId: RedstoneTokenIds["AVAX"],
@@ -733,7 +732,7 @@ const FUJI_TOKENS: VotingToken[] = [
   {
     name: "AVAX",
     chainId: ChainId.AVALANCHE,
-    address: ethers.constants.AddressZero,
+    address: zeroAddress,
     decimal: 18,
     logo: TokenNamesAndLogos["AVAX"],
     redstoneTokenId: RedstoneTokenIds["AVAX"],

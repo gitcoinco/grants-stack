@@ -1,6 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { ExclamationCircleIcon } from "@heroicons/react/outline";
-import { ethers } from "ethers";
 import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +15,7 @@ import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
 import { payoutTokens, useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
 import { useAllo } from "common";
+import { zeroAddress } from "viem";
 
 export default function ReclaimFunds(props: {
   round: Round | undefined;
@@ -128,7 +128,7 @@ function ReclaimFundsContent(props: {
     )[0];
 
   const tokenDetail =
-    matchingFundPayoutToken?.address == ethers.constants.AddressZero
+    matchingFundPayoutToken?.address == zeroAddress
       ? { address: assertAddress(payoutStrategy) }
       : {
           address: assertAddress(payoutStrategy),

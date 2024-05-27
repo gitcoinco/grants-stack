@@ -1,5 +1,5 @@
 import { ChainId } from "common";
-import { BigNumber, Signer } from "ethers";
+import { Signer } from "ethers";
 import { useEffect, useMemo, useState } from "react";
 import { directPayoutStrategyFactoryContract } from "../contracts";
 import { MatchingStatsData } from "../types";
@@ -75,10 +75,10 @@ export const useGroupProjectsByPaymentStatus = (
               (application) =>
                 application.projectId === matchingStatsData.projectId
             )?.anchorAddress,
-            matchAmountInToken: BigNumber.from(
+            matchAmountInToken: BigInt(
               matchingStatsData.matchAmountInToken
             ),
-            originalMatchAmountInToken: BigNumber.from(
+            originalMatchAmountInToken: BigInt(
               matchingStatsData.originalMatchAmountInToken
             ),
             projectPayoutAddress: matchingStatsData.projectPayoutAddress,

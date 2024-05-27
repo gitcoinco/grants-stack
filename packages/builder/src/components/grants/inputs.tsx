@@ -1,7 +1,6 @@
 import { Link, Tooltip } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
-import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import {
   AddressInputProps,
@@ -10,6 +9,7 @@ import {
   TextAreaProps,
 } from "../../types";
 import { getAddressType } from "../../utils/utils";
+import { isAddress } from "viem";
 
 const optionalSpan = (
   <span className="text-gray-400 inset-y-0 right-0 text-sm">Optional</span>
@@ -158,7 +158,7 @@ export function TextInputAddress({
   const { borderClass, feedbackColor } = styleInfo;
   const verificationHandler = async () => {
     if (onAddressType) {
-      if (typeof value === "string" && ethers.utils.isAddress(value)) {
+      if (typeof value === "string" && isAddress(value)) {
         const addressType = await getAddressType(value);
         onAddressType(addressType);
       } else {
