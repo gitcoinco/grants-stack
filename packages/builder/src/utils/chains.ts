@@ -151,19 +151,14 @@ export function getEnabledChainsAndProviders() {
     chains.push(...stagingChains);
   }
 
-  if (!usingDevOnlyChains) {
-    if (
-      process.env.NODE_ENV !== "test" &&
-      (config.blockchain.infuraId === undefined ||
-        config.blockchain.alchemyId === undefined)
-    ) {
-      throw new Error(
-        "REACT_APP_INFURA_ID and REACT_APP_ALCHEMY_ID must be set to use non-local chains"
-      );
-    }
-
+  if (config.blockchain.infuraId !== undefined) {
     providers.push(
-      infuraProvider({ apiKey: config.blockchain.infuraId!, priority: 0 }),
+      infuraProvider({ apiKey: config.blockchain.infuraId!, priority: 0 })
+    );
+  }
+
+  if (config.blockchain.alchemyId !== undefined) {
+    providers.push(
       alchemyProvider({ apiKey: config.blockchain.alchemyId!, priority: 1 })
     );
   }

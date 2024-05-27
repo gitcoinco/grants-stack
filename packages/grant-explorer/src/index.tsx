@@ -8,7 +8,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
-import { chains, config } from "./app/wagmi";
+import { chains, wagmiConfig } from "./app/wagmi";
 import { RoundProvider } from "./context/RoundContext";
 import { initDatadog } from "./datadog";
 import { initPosthog } from "./posthog";
@@ -71,7 +71,7 @@ root.render(
   <React.StrictMode>
     <PostHogProvider client={posthog}>
       <ChakraProvider>
-        <WagmiConfig config={config}>
+        <WagmiConfig config={wagmiConfig}>
           <RainbowKitProvider
             theme={customRainbowKitTheme}
             coolMode
