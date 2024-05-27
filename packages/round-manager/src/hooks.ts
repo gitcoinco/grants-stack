@@ -20,7 +20,7 @@ export function useAlloIndexerClient(): Client {
   return useMemo(() => {
     return new Client(
       fetch.bind(window),
-      process.env.REACT_APP_ALLO_API_URL ?? "",
+      process.env.REACT_APP_INDEXER_V2_API_URL ?? "",
       chain.id
     );
   }, [chain.id]);
