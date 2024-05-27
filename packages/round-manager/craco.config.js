@@ -3,6 +3,11 @@ const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const CracoEsbuildPlugin = require("craco-esbuild");
 const path = require("path");
 const { VerifyEnvPlugin } = require("verify-env");
+const { config } = require("dotenv");
+
+config({
+  path: path.join(__dirname, "../../.env"),
+});
 
 const plugins = [
   new webpack.ProvidePlugin({
