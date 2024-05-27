@@ -13,6 +13,7 @@ import { Result } from "./common";
 import { AlloOperation } from "./operation";
 import { TransactionReceipt } from "./transaction-sender";
 import { PermitSignature } from "./voting";
+import { Metadata } from "@allo-team/allo-v2-sdk";
 
 export type CreateRoundArguments = {
   roundData: {
@@ -151,6 +152,8 @@ export interface Allo {
     roundId: string;
     amount: bigint;
     requireTokenApproval?: boolean;
+    destinationContract?: Address;
+    metadata?: Metadata;
   }) => AlloOperation<
     Result<null>,
     {

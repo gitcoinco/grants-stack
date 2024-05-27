@@ -466,14 +466,10 @@ export const sepolia: Chain = {
   ...ethereumSepolia,
   rpcUrls: {
     default: {
-      http: [
-        `https://eth-sepolia.g.alchemy.com/v2/${config.blockchain.alchemyId}`,
-      ],
+      http: [`https://eth-sepolia.public.blastapi.io`],
     },
     public: {
-      http: [
-        `https://eth-sepolia.g.alchemy.com/v2/${config.blockchain.alchemyId}`,
-      ],
+      http: [`https://eth-sepolia.public.blastapi.io`],
     },
   },
 };

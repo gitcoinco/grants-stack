@@ -15,7 +15,11 @@ import {
 } from "@allo-team/allo-v2-sdk";
 import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
 import { MRC_CONTRACTS } from "../addresses/mrc";
-import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
+import {
+  CreatePoolArgs,
+  Metadata,
+  NATIVE,
+} from "@allo-team/allo-v2-sdk/dist/types";
 import {
   ApplicationStatus,
   DistributionMatch,
@@ -48,6 +52,7 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { BigNumber, utils } from "ethers";
 import { Distribution } from "@allo-team/allo-v2-sdk/dist/strategies/DonationVotingMerkleDistributionStrategy/types";
+import { fundPoolAbi } from "../abis/FundPool.abi";
 
 function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
   let strategyAddresses;
@@ -899,6 +904,8 @@ export class AlloV2 implements Allo {
     roundId: string;
     amount: bigint;
     requireTokenApproval?: boolean;
+    destinationContract?: Address;
+    metadata?: Metadata;
   }): AlloOperation<
     Result<null>,
     {
@@ -922,7 +929,7 @@ export class AlloV2 implements Allo {
           address: args.tokenAddress,
           abi: Erc20ABI,
           functionName: "approve",
-          args: [this.allo.address(), args.amount],
+          args: [args.destinationContract ?? this.allo.address(), args.amount],
         });
 
         if (approvalTx.type === "error") {
@@ -939,13 +946,27 @@ export class AlloV2 implements Allo {
         }
       }
 
-      const tx = await sendTransaction(this.transactionSender, {
-        address: this.allo.address(),
-        abi: AlloAbi,
-        functionName: "fundPool",
-        args: [poolId, args.amount],
-        value: args.tokenAddress === zeroAddress ? args.amount : 0n,
-      });
+      console.log("APPROVED!!!");
+
+      let tx;
+      if (args.destinationContract) {
+        console.log("FUNDING POOL!!!");
+        tx = await sendTransaction(this.transactionSender, {
+          address: args.destinationContract ?? this.allo.address(),
+          abi: fundPoolAbi,
+          functionName: "fundPool",
+          args: [poolId, args.amount, args.metadata!],
+          value: args.tokenAddress === zeroAddress ? args.amount : 0n,
+        });
+      } else {
+        tx = await sendTransaction(this.transactionSender, {
+          address: this.allo.address(),
+          abi: AlloAbi,
+          functionName: "fundPool",
+          args: [poolId, args.amount],
+          value: args.tokenAddress === zeroAddress ? args.amount : 0n,
+        });
+      }
 
       emit("transaction", tx);
 

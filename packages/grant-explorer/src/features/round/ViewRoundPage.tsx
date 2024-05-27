@@ -60,9 +60,9 @@ import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 const builderURL = process.env.REACT_APP_BUILDER_URL;
 import CartNotification from "../common/CartNotification";
 import { useCartStorage } from "../../store";
-import { useAccount, useToken } from "wagmi";
-import { getAddress } from "viem";
-import { getAlloVersion } from "common/src/config";
+import { useAccount, useToken, useWalletClient, useContractRead } from "wagmi";
+import { getAddress, parseAbi } from "viem";
+import { getAlloVersion, getConfig } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { getUnixTime } from "date-fns";
@@ -75,7 +75,14 @@ import {
 } from "@heroicons/react/24/outline";
 import { Box, Tab, Tabs } from "@chakra-ui/react";
 import GenericModal from "../common/GenericModal";
+import InfoModal from "../common/GenericModal";
+import { abi } from "./misc/FundPool.abi";
+import { parseUnits } from "ethers/lib/utils.js";
+import PinataClient from "common/src/services/pinata";
+import { ethers } from "ethers";
+import { useAllo } from "../api/AlloWrapper";
 
+const FUNDING_ADDRESS = "0xD96f38C107C63a61749Ac26c8762E231c9E9643b";
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
@@ -222,8 +229,9 @@ function AfterRoundStart(props: {
   isBeforeRoundEndDate?: boolean;
   isAfterRoundEndDate?: boolean;
 }) {
+  type Ad = { image: string; url: string };
   const { round, chainId, roundId } = props;
-
+  const [showAdModal, setShowAdModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>();
   const [randomizedProjects, setRandomizedProjects] = useState<Project[]>();
@@ -237,6 +245,21 @@ function AfterRoundStart(props: {
     useState<Project>({} as Project);
   const [isProjectsLoading, setIsProjectsLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(0);
+  const [adCid, setAdCid] = useState<Ad>({ image: "", url: "" });
+
+  const walletClient = useWalletClient();
+  const { data: maxFundings } = useContractRead({
+    address: FUNDING_ADDRESS,
+    abi: abi,
+    functionName: "maxFundings",
+    args: [BigInt(roundId)],
+  });
+
+  console.log("=====================>");
+  console.log("maxFundings", maxFundings);
+  const maxAmount = maxFundings?.[1] ?? 0;
+  const totalMaxAmount = maxFundings?.[2] ?? 0;
+  const adMeta = maxFundings?.[3];
 
   const disableAddToCartButton =
     (alloVersion === "allo-v2" && roundId.startsWith("0x")) ||
@@ -248,7 +271,22 @@ function AfterRoundStart(props: {
         setShowCartNotification(false);
       }, 3000);
     }
-  }, [showCartNotification]);
+    if (adMeta) {
+      const {
+        ipfs: { baseUrl: ipfsBaseUrl },
+      } = getConfig();
+
+      // fetch ad meta from ipfs
+      const getImage = async () => {
+        console.log(`${ipfsBaseUrl}/${adMeta.pointer}`);
+        const response = await fetch(`${ipfsBaseUrl}/ipfs/${adMeta.pointer}`);
+        console.log("response", response);
+        setAdCid((await response.json()) as unknown as Ad);
+        console.log("adCid", adCid);
+      };
+      getImage();
+    }
+  }, [showCartNotification, adMeta]);
 
   const renderCartNotification = () => {
     return (
@@ -420,6 +458,109 @@ function AfterRoundStart(props: {
     ? round.applicationsEndTime
     : round.roundEndTime;
 
+  const AdModalContent = () => {
+    const [amount, setAmount] = useState<number>(0);
+    const [bannerImg, setBannerImg] = useState<string>();
+    const [adUrl, setAdUrl] = useState<string>();
+    const config = getConfig();
+    const pinataClient = new PinataClient(config);
+    const allo = useAllo();
+
+    // upload image from url to ipfs
+    const handleIpfsUpload = async () => {
+      // load image from url
+      if (!bannerImg) return;
+      const response = await fetch(bannerImg);
+      const blob = await response.blob();
+      console.log("blob", blob);
+      const cid = (await pinataClient.pinFile(blob)).IpfsHash;
+      const finalCid = (await pinataClient.pinJSON({ image: cid, url: adUrl }))
+        .IpfsHash;
+
+      return finalCid;
+    };
+
+    const handleSend = async (cid: string) => {
+      const amountInDecimal = ethers.utils
+        .parseUnits(amount.toString(), 18)
+        .toBigInt();
+
+      if (!allo) return;
+      await allo
+        .fundRound({
+          tokenAddress: round.token as `0x{string}`,
+          roundId: roundId,
+          amount: amountInDecimal,
+          requireTokenApproval: true,
+          destinationContract: FUNDING_ADDRESS,
+          metadata: {
+            protocol: 1n,
+            pointer: cid,
+          },
+        })
+        .execute();
+
+      window.location.reload();
+    };
+
+    console.log(tokenData);
+    console.log("maxAmount", maxAmount);
+    const parsedMaxAmount = ethers.utils.formatUnits(maxAmount.toString(), 18);
+
+    console.log("parsedMaxAmount", parsedMaxAmount.toString());
+    return (
+      <div className="flex flex-col items-center">
+        <p className="text-center mb-4">
+          Advertise your project to increase visibility and attract more
+          donations.
+        </p>
+        <p className="text-center mb-4">
+          You need to fund at least {(Number(parsedMaxAmount) + 1).toFixed(0)}{" "}
+          {tokenData.symbol} to advertise your project.
+        </p>
+        <label className="text-sm" htmlFor="amount">
+          Amount to fund
+        </label>
+        <input
+          className="w-40 border border-grey-300 rounded h-8 p-2 mb-3"
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+        />
+        <label className="text-sm" htmlFor="banner">
+          Banner Image URL
+        </label>
+        <input
+          className="w-40 border border-grey-300 rounded h-8 p-2 mb-3"
+          type="text"
+          value={bannerImg}
+          onChange={(e) => setBannerImg(e.target.value)}
+        />
+        <label className="text-sm" htmlFor="url">
+          Ad URL
+        </label>
+        <input
+          className="w-40 border border-grey-300 rounded h-8 p-2 mb-3"
+          type="text"
+          value={adUrl}
+          onChange={(e) => setAdUrl(e.target.value)}
+        />
+
+        <Button
+          className="w-48"
+          onClick={async () => {
+            const cid = await handleIpfsUpload();
+            if (cid) {
+              await handleSend(cid);
+            }
+          }}
+        >
+          Advertise
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <>
       <DefaultLayout>
@@ -444,12 +585,36 @@ function AfterRoundStart(props: {
         </div>
 
         <section>
+          {adCid && adCid.image && adCid.url && (
+            <div onClick={() => window.open(adCid.url, "_blank")}>
+              <ProjectBanner
+                bannerImgCid={adCid.image}
+                // {cid ?? null}
+                classNameOverride="h-32 w-full object-cover lg:h-80 rounded md:rounded-3xl mb-4"
+                resizeHeight={160}
+              />
+            </div>
+          )}
+          <InfoModal
+            title={"Advertise your Project"}
+            isOpen={showAdModal}
+            setIsOpen={() => setShowAdModal(false)}
+            body={AdModalContent()}
+          />
+          <div className="flex items-center justify-between pb-4">
+            <div>
+              {isAlloV1 && <AlloV1 color="black" />}
+              {!isAlloV1 && <AlloV2 color="black" />}
+            </div>
+            <div
+              className="ml-4 cursor-pointer"
+              onClick={() => setShowAdModal(true)}
+            >
+              Fund and Advertise
+            </div>
+          </div>
           <div className="flex flex-col md:items-center md:justify-between md:gap-8 md:flex-row md:mb-0 mb-4">
             <div>
-              <div className="pb-4">
-                {isAlloV1 && <AlloV1 color="black" />}
-                {!isAlloV1 && <AlloV2 color="black" />}
-              </div>
               <div className="flex items-center gap-4 mb-4">
                 <h1
                   data-testid="round-title"

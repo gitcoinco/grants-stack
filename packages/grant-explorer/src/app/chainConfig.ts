@@ -40,9 +40,9 @@ const TESTNET_CHAINS = [
   arbitrumGoerli,
   avalancheFuji,
   polygonMumbai,
-  // zkSyncEraTestnet,
+  zkSyncEraTestnet,
   sepolia,
-  // seiDevnet,
+  seiDevnet,
   luksoTestnet,
   celoAlfajores,
 ].map(ensureValidChainId);
