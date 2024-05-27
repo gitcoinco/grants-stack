@@ -22,7 +22,7 @@ import {
   RoundApplicationAnswers,
   RoundCategory,
 } from "data-layer";
-import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
+import { Abi, Address, Hex, PublicClient, encodeAbiParameters, getAddress, zeroAddress } from "viem";
 import { AnyJson, ChainId } from "../..";
 import { UpdateRoundParams, MatchingStatsData, VotingToken } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
@@ -46,7 +46,7 @@ import { PermitSignature, getPermitType } from "../voting";
 import Erc20ABI from "../abis/erc20";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
-import { BigNumber, utils } from "ethers";
+import { utils } from "ethers";
 import { Distribution } from "@allo-team/allo-v2-sdk/dist/strategies/DonationVotingMerkleDistributionStrategy/types";
 
 function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
@@ -1306,7 +1306,7 @@ export class AlloV2 implements Allo {
         if (!project.anchorAddress) {
           throw new AlloError("Anchor address is required");
         }
-        const distribution: [number, string, string, BigNumber] = [
+        const distribution: [number, string, string, bigint] = [
           project.index,
           project.anchorAddress,
           project.projectPayoutAddress,
@@ -1484,7 +1484,7 @@ export class AlloV2 implements Allo {
 }
 
 export function serializeProject(project: ProjectWithMerkleProof) {
-  return utils.defaultAbiCoder.encode(
+  return encodeAbiParameters(
     ["uint256", "address", "uint256", "bytes32[]"],
     [
       project.index,
@@ -1497,13 +1497,13 @@ export function serializeProject(project: ProjectWithMerkleProof) {
 
 export function serializeProjects(projects: ProjectWithMerkleProof[]): Hex {
   const serializedProjects = projects.map(serializeProject);
-  return utils.defaultAbiCoder.encode(["bytes[]"], [serializedProjects]) as Hex;
+  return encodeAbiParameters(["bytes[]"], [serializedProjects]) as Hex;
 }
 
 export type ProjectWithMerkleProof = {
   index: number;
   recipientId: string;
-  amount: BigNumber;
+  amount: bigint;
   merkleProof: string[];
 };
 
@@ -1517,11 +1517,11 @@ export type ProjectWithMerkleProof = {
 export const generateMerkleTreeV2 = (
   matchingResults: MatchingStatsData[]
 ): {
-  distribution: [number, string, string, BigNumber][];
-  tree: StandardMerkleTree<[number, string, string, BigNumber]>;
+  distribution: [number, string, string, bigint][];
+  tree: StandardMerkleTree<[number, string, string, bigint]>;
   matchingResults: MatchingStatsData[];
 } => {
-  const distribution: [number, string, string, BigNumber][] = [];
+  const distribution: [number, string, string, bigint][] = [];
 
   matchingResults.forEach((matchingResult, index) => {
     matchingResults[index].index = index;
