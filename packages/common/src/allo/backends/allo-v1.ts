@@ -1294,8 +1294,25 @@ export class AlloV1 implements Allo {
       });
     });
   }
-}
 
+  managePoolManager(args: {
+    poolId: string;
+    manager: Address;
+    addOrRemove: "add" | "remove";
+  }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async () => {
+      const result = new AlloError(`Unsupported on v1 ${args}`);
+      return error(result);
+    });
+  }
+}
 // todo: move this out?
 export type CreateRoundArgs = {
   roundMetadata: { protocol: bigint; pointer: string };

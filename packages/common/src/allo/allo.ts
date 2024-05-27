@@ -232,6 +232,19 @@ export interface Allo {
       indexingStatus: Result<void>;
     }
   >;
+
+  managePoolManager: (args: {
+    poolId: string;
+    manager: Address;
+    addOrRemove: "add" | "remove";
+  }) => AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  >;
 }
 
 export { AlloOperation };
