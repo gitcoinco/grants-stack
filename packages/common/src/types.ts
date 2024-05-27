@@ -2,7 +2,6 @@ import { Round } from "data-layer";
 import { Hex } from "viem";
 import { ChainId } from "./chain-ids";
 import { AnyJson } from ".";
-import { BigNumber } from "ethers";
 
 export type CreateRoundData = {
   roundMetadataWithProgramContractAddress: Round["roundMetadata"];
@@ -21,7 +20,7 @@ export type CreateRoundData = {
 export type UpdateRoundParams = {
   applicationMetadata?: AnyJson;
   roundMetadata?: AnyJson;
-  matchAmount?: BigNumber;
+  matchAmount?: bigint;
   roundStartTime?: Date;
   roundEndTime?: Date;
   applicationsStartTime?: Date;
@@ -37,8 +36,8 @@ export type MatchingStatsData = {
   projectId: string;
   applicationId: string;
   anchorAddress?: string;
-  matchAmountInToken: BigNumber;
-  originalMatchAmountInToken: BigNumber;
+  matchAmountInToken: bigint;
+  originalMatchAmountInToken: bigint;
   projectPayoutAddress: string;
   status?: string;
   hash?: string;

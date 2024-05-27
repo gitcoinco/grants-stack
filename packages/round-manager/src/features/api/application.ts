@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import { Signer } from "@ethersproject/abstract-signer";
 import { PayoutToken } from "common";
-import { zeroAddress } from "viem";
+import { getAddress, zeroAddress } from "viem";
 
 export const fundRoundContract = async (
   roundId: string,
@@ -55,8 +55,8 @@ export const approveTokenOnContract = async (
   amount: BigNumber
 ): Promise<void> => {
   // checksum conversion
-  roundId = ethers.utils.getAddress(roundId);
-  tokenAddress = ethers.utils.getAddress(tokenAddress);
+  roundId = getAddress(roundId);
+  tokenAddress = getAddress(tokenAddress);
 
   const tokenContract = new ethers.Contract(
     tokenAddress,

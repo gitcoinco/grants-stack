@@ -74,6 +74,11 @@ export const metadataToProject = (
  * @returns The address type
  */
 export const getAddressType = async (address: string): Promise<AddressType> => {
+
+  // const bytecode = await publicClient.getBytecode({
+  //   address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+  // })
+
   const { web3Provider } = global;
 
   const returnValue = { resolved: false, isContract: false, isSafe: false };

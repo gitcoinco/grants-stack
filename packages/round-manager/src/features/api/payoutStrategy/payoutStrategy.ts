@@ -1,32 +1,8 @@
 import { ChainId } from "common";
-import { Signer } from "ethers";
 import { useEffect, useMemo, useState } from "react";
-import { directPayoutStrategyFactoryContract } from "../contracts";
 import { MatchingStatsData } from "../types";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import { Round } from "../types";
-
-/**
- * Deploys a QFVotingStrategy contract by invoking the
- * create on QuadraticFundingVotingStrategyFactory contract
- *
- * @param signerOrProvider
- * @returns
- */
-
-/**
- * @param signerOrProvider
- * @returns the factory address.
- */
-export const getDirectPayoutFactoryAddress = async (
-  signerOrProvider: Signer
-): Promise<{ payoutContractAddress: string }> => {
-  const chainId = await signerOrProvider.getChainId();
-  const factoryAddress = directPayoutStrategyFactoryContract(chainId).address;
-  return {
-    payoutContractAddress: factoryAddress,
-  };
-};
 
 interface GroupedProjects {
   all: MatchingStatsData[];

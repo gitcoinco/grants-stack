@@ -58,7 +58,7 @@ export function useContractAmountFunded(args: {
           address: assertAddress(round?.id),
           token:
             payoutToken?.address !== undefined &&
-            payoutToken.address === "0x0000000000000000000000000000000000000000"
+            payoutToken.address === zeroAddress
               ? undefined
               : assertAddress(payoutToken?.address),
         }

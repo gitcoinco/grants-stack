@@ -1,10 +1,10 @@
 import { ChainId } from "../../chain-ids";
-import { Hex } from "viem";
+import { Hex, zeroAddress } from "viem";
 
 export const MRC_CONTRACTS: Record<ChainId, Hex> = {
   // FIXME: update dev addresses when we deploy the contract to the local chain
-  [ChainId.DEV1]: "0x0000000000000000000000000000000000000000",
-  [ChainId.DEV2]: "0x0000000000000000000000000000000000000000",
+  [ChainId.DEV1]: zeroAddress,
+  [ChainId.DEV2]: zeroAddress,
   [ChainId.MAINNET]: "0x3bA9DF642f5e895DC76d3Aa9e4CE8291108E65b1",
   [ChainId.PGN]: "0x03506eD3f57892C85DB20C36846e9c808aFe9ef4",
   [ChainId.PGN_TESTNET]: "0x4268900E904aD87903De593AA5424406066d9ea2",

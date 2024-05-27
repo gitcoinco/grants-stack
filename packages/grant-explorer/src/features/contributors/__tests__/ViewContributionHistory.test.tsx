@@ -17,7 +17,7 @@ const mockTokens: Record<string, VotingToken> = {
   ETH: {
     name: "Ethereum",
     chainId: 1,
-    address: "0x0000000000000000000000000000000000000000",
+    address: zeroAddress,
     decimal: 18,
     logo: "https://example.com/eth_logo.png",
     default: true,

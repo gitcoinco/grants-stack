@@ -20,6 +20,7 @@ import { errorModalDelayMs } from "../../../constants";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import { ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT } from "common";
 import { AlloOperation, useAllo, AlloV1 } from "common";
+import { zeroAddress } from "viem";
 
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
@@ -56,11 +57,11 @@ jest.mock("../../../constants", () => ({
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: "0x0000000000000000000000000000000000000000",
+    id: zeroAddress,
   }),
 }));
 jest.mock("../../common/useApplicationsByRoundId");
-const roundIdOverride = "0x0000000000000000000000000000000000000000";
+const roundIdOverride = zeroAddress;
 const payoutStrategyId = "0x01";
 const grantApplications = [
   makeGrantApplicationData({

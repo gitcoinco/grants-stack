@@ -1,4 +1,3 @@
-import { BigNumber, ethers } from "ethers";
 import {
   ApplicationMetadata,
   InputType,

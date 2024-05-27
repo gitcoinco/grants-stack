@@ -13,17 +13,18 @@ import {
   DataLayerProvider,
   ProjectApplicationWithRound,
 } from "data-layer";
-import { ethers } from "ethers";
 import { Provider } from "react-redux";
 import { getConfig } from "common/src/config";
 import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
 import { Alert } from "../types/alert";
+import { pad, zeroAddress } from "viem";
 
 export function addressFrom(n: number): string {
-  const bn = ethers.BigNumber.from(n);
-  return ethers.utils.hexZeroPad(bn.toHexString(), 20);
+  return pad(new Uint8Array([n]), {
+    size: 20
+  }).toString();
 }
 
 export const buildAlert = (attrs = {}): Alert => ({
@@ -46,7 +47,7 @@ export const buildRound = (round: any): Round => ({
   applicationsEndTime: now + 3600,
   roundStartTime: now + 3600,
   roundEndTime: now + 7200,
-  token: "0x0000000000000000000000000000000000000000",
+  token: zeroAddress,
   roundMetaPtr: {},
   roundMetadata: {},
   applicationMetaPtr: {},
