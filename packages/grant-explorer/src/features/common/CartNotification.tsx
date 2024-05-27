@@ -78,7 +78,7 @@ export function ProjectView(props: { project: Project }) {
           className="inline-block"
           src={
             props.project.projectMetadata.logoImg
-              ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
+              ? `${process.env.REACT_APP_IPFS_BASE_URL}/ipfs/${props.project.projectMetadata.logoImg}`
               : DefaultLogoImage
           }
           alt={"Project Logo"}

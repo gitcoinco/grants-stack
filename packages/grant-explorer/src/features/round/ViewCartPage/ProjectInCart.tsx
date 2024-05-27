@@ -38,7 +38,7 @@ export function ProjectInCart(
               className="inline-block rounded-full"
               src={
                 props.project.projectMetadata.logoImg
-                  ? `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${props.project.projectMetadata.logoImg}`
+                  ? `${process.env.REACT_APP_IPFS_BASE_URL}/ipfs/${props.project.projectMetadata.logoImg}`
                   : DefaultLogoImage
               }
               alt={"Project Logo"}
@@ -113,11 +113,11 @@ export function ProjectInCart(
                   ) * props.payoutTokenPrice
                 ).toFixed(2)}
               </span>
-              { props.showMatchingEstimate && 
+              {props.showMatchingEstimate && (
                 <span className="text-teal-500 italic text-sm">
                   ~{props.matchingEstimateUSD?.toFixed(2) || 0} USD
                 </span>
-              }
+              )}
             </div>
           )}
           <TrashIcon
@@ -129,9 +129,7 @@ export function ProjectInCart(
           />
         </div>
       </div>
-      {!props.last && 
-        <hr className="border-b-[2px] border-grey-100 mx-4" />
-      }
+      {!props.last && <hr className="border-b-[2px] border-grey-100 mx-4" />}
     </div>
   );
 }

@@ -147,15 +147,15 @@ export type SupportType = {
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = (cid: string) => {
-  return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
-  ).then((resp) => {
-    if (resp.ok) {
-      return resp.json();
-    }
+  return fetch(`${process.env.REACT_APP_IPFS_BASE_URL}/ipfs/${cid}`).then(
+    (resp) => {
+      if (resp.ok) {
+        return resp.json();
+      }
 
-    return Promise.reject(resp);
-  });
+      return Promise.reject(resp);
+    }
+  );
 };
 
 /**
