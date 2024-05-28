@@ -136,9 +136,9 @@ start() {
     --names "common,data-layer,builder,explorer,manager" \
     "cd packages/common && pnpm dev" \
     "cd packages/data-layer && pnpm dev" \
-    "cd packages/builder && env PORT=3000 pnpm rsbuild start" \
-    "cd packages/grant-explorer && env PORT=3001 pnpm rsbuild start" \
-    "cd packages/round-manager && env PORT=3002 pnpm rsbuild start"
+    "cd packages/builder && env PORT=3000 pnpm rsbuild dev" \
+    "cd packages/grant-explorer && env PORT=3001 pnpm rsbuild dev" \
+    "cd packages/round-manager && env PORT=3002 pnpm rsbuild dev"
 }
 
 init() {
