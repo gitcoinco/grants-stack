@@ -188,12 +188,30 @@ export function getConfig(
       passportCommunityId: z
         .string()
         .parse(process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID),
-      passportAPIKey: z.string().parse(process.env.REACT_APP_PASSPORT_API_KEY),
+      passportAPIKey: z
+        .string()
+        .default("")
+        .refine((value) => {
+          if (process.env.NODE_ENV === "production" && value.length === 0) {
+            return false;
+          }
+
+          return true;
+        }, "Passport API key is required in production")
+        .parse(process.env.REACT_APP_PASSPORT_API_KEY),
       passportAvalancheCommunityId: z
         .string()
         .parse(process.env.REACT_APP_PASSPORT_API_COMMUNITY_ID_AVALANCHE),
       passportAvalancheAPIKey: z
         .string()
+        .default("")
+        .refine((value) => {
+          if (process.env.NODE_ENV === "production" && value.length === 0) {
+            return false;
+          }
+
+          return true;
+        }, "Passport Avalanche API key is required in production")
         .parse(process.env.REACT_APP_PASSPORT_AVALANCHE_API_KEY),
     },
   };
