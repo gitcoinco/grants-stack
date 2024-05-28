@@ -135,10 +135,10 @@ start() {
   pnpm concurrently \
     --names "common,data-layer,builder,explorer,manager" \
     "cd packages/common && pnpm dev" \
-    "cd packages/common && pnpm dev" \
-    "cd packages/builder && env PORT=3000 pnpm start" \
-    "cd packages/grant-explorer && env PORT=3001 pnpm start" \
-    "cd packages/round-manager && env PORT=3002 pnpm start"
+    "cd packages/data-layer && pnpm dev" \
+    "cd packages/builder && env PORT=3000 pnpm rsbuild start" \
+    "cd packages/grant-explorer && env PORT=3001 pnpm rsbuild start" \
+    "cd packages/round-manager && env PORT=3002 pnpm rsbuild start"
 }
 
 init() {

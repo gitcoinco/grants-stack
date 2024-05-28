@@ -4,7 +4,10 @@ import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import { RsdoctorRspackPlugin } from "@rsdoctor/rspack-plugin";
 const path = require("path");
 
-const { publicVars } = loadEnv({ prefixes: ["REACT_APP_"] });
+const { publicVars } = loadEnv({
+  cwd: path.join(__dirname, "../../"),
+  prefixes: ["REACT_APP_"],
+});
 
 export default defineConfig({
   plugins: [pluginReact(), pluginSvgr()],
