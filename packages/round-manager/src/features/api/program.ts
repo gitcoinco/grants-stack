@@ -34,7 +34,7 @@ export async function listPrograms(
       throw Error("Unable to fetch programs");
     }
 
-    let programs: Program[] = [];
+    const programs: Program[] = [];
 
     for (const program of programsRes.programs) {
       programs.push({
