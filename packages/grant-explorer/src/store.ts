@@ -1,8 +1,7 @@
-import { ChainId, VotingToken } from "common";
+import { ChainId, TToken, getTokens, getTokensByChainId } from "common";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartProject } from "./features/api/types";
-import { votingTokensMap } from "./features/api/utils";
 import { zeroAddress } from "viem";
 
 interface CartState {
@@ -18,39 +17,15 @@ interface CartState {
     amount: string
   ) => void;
   setCart: (projects: CartProject[]) => void;
-  chainToVotingToken: Record<ChainId, VotingToken>;
-  getVotingTokenForChain: (chainId: ChainId) => VotingToken;
-  setVotingTokenForChain: (chainId: ChainId, votingToken: VotingToken) => void;
+  chainToVotingToken: Record<ChainId, TToken>;
+  getVotingTokenForChain: (chainId: ChainId) => TToken;
+  setVotingTokenForChain: (chainId: ChainId, votingToken: TToken) => void;
 }
 
-/**
- * Consumes an array of voting tokens and returns the default one.
- * If there's no default one, return the first one.
- * If the array is empty,
- * return the native token for the chain (Although this should never happen)
- * */
-function getDefaultVotingToken(votingTokens: VotingToken[], chainId: ChainId) {
-  return (
-    votingTokens.find((token) => token.defaultForVoting && token.canVote) ??
-    votingTokens[0] ?? {
-      chainId,
-      canVote: true,
-      defaultForVoting: true,
-      decimal: 18,
-      name: "Native Token",
-      address: zeroAddress,
-    }
-  );
-}
-
-const defaultVotingTokens = Object.fromEntries(
-  Object.entries(votingTokensMap).map(([key, value]) => {
-    return [
-      Number(key) as ChainId,
-      getDefaultVotingToken(value, Number(key) as ChainId),
-    ] as [ChainId, VotingToken];
-  })
-) as Record<ChainId, VotingToken>;
+const defaultVotingTokens = getTokens().filter(
+  // todo: is this working?
+  (token) => token.canVote && token.address === zeroAddress
+);
 
 function isSameProject(a: CartProject, b: CartProject): boolean {
   return (
@@ -158,14 +133,13 @@ export const useCartStorage = create<CartState>()(
           });
         }
       },
-      chainToVotingToken: defaultVotingTokens,
+      chainToVotingToken: defaultVotingTokens, // todo: fix
       getVotingTokenForChain: (chainId: ChainId) => {
         const tokenFromStore = get().chainToVotingToken[chainId];
         if (!tokenFromStore) {
-          const defaultToken = getDefaultVotingToken(
-            votingTokensMap[chainId],
-            chainId
-          );
+          const defaultToken = getTokensByChainId(chainId).filter(
+            (token) => token.canVote && token.address === zeroAddress
+          )[0];
           console.log(
             "no token for chain",
             chainId,
@@ -180,7 +154,7 @@ export const useCartStorage = create<CartState>()(
           return tokenFromStore;
         }
       },
-      setVotingTokenForChain: (chainId: ChainId, payoutToken: VotingToken) => {
+      setVotingTokenForChain: (chainId: ChainId, payoutToken: TToken) => {
         if (!Object.values(ChainId).includes(chainId)) {
           if (process.env.NODE_ENV !== "test") {
             console.warn(

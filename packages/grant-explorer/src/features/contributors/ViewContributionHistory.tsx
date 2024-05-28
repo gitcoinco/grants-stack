@@ -1,7 +1,7 @@
 import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { getChainIds, votingTokens } from "../api/utils";
+import { getChainIds } from "../api/utils";
 import Navbar from "../common/Navbar";
 import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
@@ -11,7 +11,7 @@ import { useContributionHistory } from "../api/round";
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { isAddress } from "viem";
-import { VotingToken, dateToEthereumTimestamp } from "common";
+import { TToken, dateToEthereumTimestamp } from "common";
 import { Contribution } from "data-layer";
 
 const DonationHistoryBanner = lazy(
@@ -83,6 +83,7 @@ function ViewContributionHistoryFetcher(props: {
 
   // tokens is a map of token address + chainId to token
   const tokens = Object.fromEntries(
+    // todo; fix
     votingTokens.map((token) => [
       token.address.toLowerCase() + "-" + token.chainId,
       token,
@@ -115,7 +116,7 @@ function ViewContributionHistoryFetcher(props: {
 }
 
 export function ViewContributionHistory(props: {
-  tokens: Record<string, VotingToken>;
+  tokens: Record<string, TToken>;
   contributions: { chainIds: number[]; data: Contribution[] };
   address: string;
   addressLogo: string;

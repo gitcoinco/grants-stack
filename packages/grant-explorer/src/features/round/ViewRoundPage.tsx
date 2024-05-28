@@ -11,15 +11,14 @@ import {
 import {
   CalendarIcon,
   ChainId,
-  formatUTCDateAsISOString,
   getRoundStrategyTitle,
-  getUTCTime,
   getLocalTime,
   formatLocalDateAsISOString,
   renderToPlainText,
   truncateDescription,
   useTokenPrice,
-  VotingToken,
+  TToken,
+  getTokensByChainId,
 } from "common";
 import { Button, Input } from "common/src/styles";
 import AlloV1 from "common/src/icons/AlloV1";
@@ -38,7 +37,6 @@ import {
   getDaysLeft,
   isDirectRound,
   isInfiniteDate,
-  votingTokens,
 } from "../api/utils";
 import { PassportWidget } from "../common/PassportWidget";
 
@@ -314,15 +312,13 @@ function AfterRoundStart(props: {
     chainId: Number(props.chainId),
   });
 
-  const nativePayoutToken = votingTokens.find(
-    (t) =>
-      t.chainId === Number(props.chainId) &&
-      t.address === getAddress(props.round.token)
+  const nativePayoutToken = getTokensByChainId(props.chainId).find(
+    (t) => t.address === getAddress(props.round.token)
   );
 
   const tokenData = data ?? {
     ...nativePayoutToken,
-    symbol: nativePayoutToken?.name ?? "ETH",
+    symbol: nativePayoutToken?.code ?? "ETH",
   };
 
   const breadCrumbs = [
@@ -893,7 +889,7 @@ const RoundStatsTabContent = ({
   roundId: string;
   round: Round;
   chainId: ChainId;
-  token?: VotingToken;
+  token?: TToken;
   tokenSymbol?: string;
 }): JSX.Element => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -1018,7 +1014,7 @@ const Stats = ({
   totalCrowdfunded: number;
   totalProjects: number;
   chainId: number;
-  token?: VotingToken;
+  token?: TToken;
   tokenSymbol?: string;
   totalDonations: number;
   totalDonors: number;

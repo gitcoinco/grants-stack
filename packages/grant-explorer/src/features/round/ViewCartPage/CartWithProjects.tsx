@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";
-import { ChainId, useTokenPrice, VotingToken } from "common";
+import { ChainId, useTokenPrice, TToken } from "common";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
 
@@ -26,7 +26,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
 
   const { getVotingTokenForChain, setVotingTokenForChain } = useCartStorage();
   const selectedPayoutToken = getVotingTokenForChain(chainId);
-  const payoutTokenOptions: VotingToken[] = getVotingTokenOptions(
+  const payoutTokenOptions: TToken[] = getVotingTokenOptions(
     Number(chainId)
   ).filter((p) => p.canVote);
 

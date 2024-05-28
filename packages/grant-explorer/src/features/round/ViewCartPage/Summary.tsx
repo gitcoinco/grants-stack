@@ -1,4 +1,4 @@
-import { ChainId, useTokenPrice, VotingToken } from "common";
+import { ChainId, useTokenPrice, TToken } from "common";
 import { CHAINS } from "../../api/utils";
 import { formatUnits, zeroAddress } from "viem";
 import { useAccount, useBalance } from "wagmi";
@@ -6,7 +6,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 
 type SummaryProps = {
   totalDonation: bigint;
-  selectedPayoutToken: VotingToken;
+  selectedPayoutToken: TToken;
   chainId: ChainId;
 };
 
@@ -20,7 +20,7 @@ export function Summary({
   );
   const totalDonationInUSD =
     payoutTokenPrice &&
-    Number(formatUnits(totalDonation, selectedPayoutToken.decimal)) *
+    Number(formatUnits(totalDonation, selectedPayoutToken.decimals)) *
       Number(payoutTokenPrice);
 
   const { address } = useAccount();
@@ -53,10 +53,10 @@ export function Summary({
         <div className="flex flex-col">
           <p className="text-right">
             <span data-testid={"totalDonation"} className="mr-2">
-              {formatUnits(totalDonation, selectedPayoutToken.decimal)}
+              {formatUnits(totalDonation, selectedPayoutToken.decimals)}
             </span>
             <span data-testid={"summaryPayoutToken"}>
-              {selectedPayoutToken.name}
+              {selectedPayoutToken.code}
             </span>
           </p>
           {payoutTokenPrice && (

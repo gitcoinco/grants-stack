@@ -1,13 +1,13 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { PayoutTokenButton } from "./PayoutTokenButton";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
-import { classNames, NATIVE, VotingToken } from "common";
+import { classNames, NATIVE, TToken } from "common";
 
 export function PayoutTokenDropdown(props: {
-  payoutTokenOptions: VotingToken[];
-  selectedPayoutToken?: VotingToken;
-  setSelectedPayoutToken: (payoutToken: VotingToken) => void;
+  payoutTokenOptions: TToken[];
+  selectedPayoutToken?: TToken;
+  setSelectedPayoutToken: (payoutToken: TToken) => void;
 }) {
   return (
     <div className="mt-1 relative col-span-6 sm:col-span-3">
@@ -37,7 +37,7 @@ export function PayoutTokenDropdown(props: {
                       (token) =>
                         !token.default && (
                           <Listbox.Option
-                            key={token.name}
+                            key={token.code}
                             className={({ active }) =>
                               classNames(
                                 active
@@ -52,9 +52,9 @@ export function PayoutTokenDropdown(props: {
                             {({ selected, active }) => (
                               <>
                                 <div className="flex items-center">
-                                  {token.logo ? (
+                                  {token.icon ? (
                                     <img
-                                      src={token.logo}
+                                      src={token.icon}
                                       alt=""
                                       className="h-4 w-4 md:h-6 md:w-6 flex-shrink-0 rounded-full"
                                     />
@@ -67,7 +67,7 @@ export function PayoutTokenDropdown(props: {
                                       "ml-3 block truncate"
                                     )}
                                   >
-                                    {token.name}
+                                    {token.code}
                                   </span>
                                 </div>
 

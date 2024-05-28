@@ -1,12 +1,12 @@
 import React from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { formatUnits } from "viem";
-import { VotingToken } from "common";
+import { TToken } from "common";
 
 type ConfirmationModalBodyProps = {
   projectsCount: number;
   totalDonation: bigint;
-  selectedPayoutToken: VotingToken;
+  selectedPayoutToken: TToken;
 };
 
 export function ConfirmationModalBody({
@@ -40,7 +40,7 @@ function AdditionalGasFeesNote() {
 
 type ProjectsInCartCountProps = {
   totalDonation: bigint;
-  selectedPayoutToken: VotingToken;
+  selectedPayoutToken: TToken;
 };
 export function ProjectsInCartCount({
   totalDonation,
@@ -54,9 +54,9 @@ export function ProjectsInCartCount({
       />
       <p className="font-bold">
         <span className="mr-1">
-          {formatUnits(totalDonation, selectedPayoutToken.decimal)}
+          {formatUnits(totalDonation, selectedPayoutToken.decimals)}
         </span>
-        <span className="mr-1">{selectedPayoutToken.name}</span>
+        <span className="mr-1">{selectedPayoutToken.code}</span>
         <span>Contributed</span>
       </p>
     </div>

@@ -472,7 +472,7 @@ export function roundToPassportURLMap(round: Round) {
 }
 
 export * from "./allo/transaction-builder";
-export type { VotingToken } from "./types";
+// export type { VotingToken } from "./types";
 
 export const txBlockExplorerLinks: Record<ChainId, string> = {
   [ChainId.DEV1]: "",
