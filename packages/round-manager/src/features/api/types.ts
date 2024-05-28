@@ -110,6 +110,7 @@ export interface Program {
   };
 
   tags?: string[];
+  roles?: AddressAndRole[];
 }
 
 export type InputType =
