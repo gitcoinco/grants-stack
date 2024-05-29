@@ -1,6 +1,11 @@
 const path = require("path");
 const CracoEsbuildPlugin = require("craco-esbuild");
 const { VerifyEnvPlugin } = require("verify-env");
+const { config } = require("dotenv");
+
+config({
+  path: path.join(__dirname, "../../.env"),
+});
 
 const esmModules = [
   "@rainbow-me",

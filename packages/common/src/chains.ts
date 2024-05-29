@@ -62,7 +62,7 @@ export const avalancheFuji: Chain = {
   rpcUrls: {
     default: {
       http: [
-        "https://avalanche-fuji.infura.io/v3/1e0a90928efe4bb78bb1eeceb8aacc27",
+        `https://avalanche-fuji.infura.io/v3/${config.blockchain.infuraId}`,
       ],
     },
     public: {
@@ -91,7 +91,7 @@ export const avalanche: Chain = {
   rpcUrls: {
     default: {
       http: [
-        "https://avalanche-mainnet.infura.io/v3/1e0a90928efe4bb78bb1eeceb8aacc27",
+        `https://avalanche-mainnet.infura.io/v3/${config.blockchain.infuraId}`,
       ],
     },
     public: {

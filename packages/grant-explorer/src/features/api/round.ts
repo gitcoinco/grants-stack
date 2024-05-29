@@ -1,11 +1,8 @@
-import {
-  ApplicationStatus,
-} from "./types";
+import { ApplicationStatus } from "./types";
 import { useEffect, useState } from "react";
 import { Address, Hex, getAddress } from "viem";
 import { Contribution, useDataLayer } from "data-layer";
 import { getPublicClient } from "@wagmi/core";
-
 
 export type RoundProject = {
   id: string;
@@ -31,12 +28,7 @@ export const useContributionHistory = (
   const dataLayer = useDataLayer();
 
   useEffect(() => {
-    if (!process.env.REACT_APP_ALLO_API_URL) {
-      throw new Error("REACT_APP_ALLO_API_URL is not set");
-    }
-
     const fetchContributions = async () => {
-
       let address: Address = "0x";
       try {
         address = getAddress(rawAddress.toLowerCase());
@@ -51,10 +43,9 @@ export const useContributionHistory = (
       const contributions = await dataLayer.getDonationsByDonorAddress({
         address,
         chainIds,
-      });    
+      });
 
       try {
-
         const contributionsWithTimestamp: Contribution[] = await Promise.all(
           contributions.map(async (contribution) => {
             const publicClient = getPublicClient({
@@ -79,8 +70,8 @@ export const useContributionHistory = (
           type: "loaded",
           data: {
             chainIds: chainIds,
-            data: contributionsWithTimestamp
-          }
+            data: contributionsWithTimestamp,
+          },
         });
       } catch (e) {
         console.error("Error fetching contribution history for all chains", e);

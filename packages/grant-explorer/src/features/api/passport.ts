@@ -51,9 +51,7 @@ export function usePassport({
         case 400: // unregistered/nonexistent passport address
           return PassportState.INVALID_PASSPORT;
         case 401: // invalid API key
-          swr.error.json().then((json) => {
-            console.error("invalid API key", json);
-          });
+          console.error("invalid key for the Passport api");
           return PassportState.ERROR;
         default:
           console.error("Error fetching passport", swr.error);

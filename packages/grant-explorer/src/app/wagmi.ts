@@ -13,14 +13,24 @@ import {
 import { configureChains, createConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
+import { alchemyProvider } from "wagmi/providers/alchemy";
 import { getEnabledChains } from "./chainConfig";
+import { getConfig } from "common/src/config";
+
+const config = getConfig();
+
+const providers = [publicProvider()];
+if (config.blockchain.infuraId !== undefined) {
+  providers.push(infuraProvider({ apiKey: config.blockchain.infuraId }));
+}
+
+if (config.blockchain.alchemyId !== undefined) {
+  providers.push(alchemyProvider({ apiKey: config.blockchain.alchemyId }));
+}
 
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
   getEnabledChains(),
-  [
-    infuraProvider({ apiKey: process.env.REACT_APP_INFURA_ID as string }),
-    publicProvider(),
-  ]
+  providers
 );
 
 /** We perform environment variable verification at buildtime, so all process.env properties are guaranteed to be strings */
@@ -45,7 +55,7 @@ const connectors = connectorsForWallets([
   },
 ]);
 
-export const config = createConfig({
+export const wagmiConfig = createConfig({
   autoConnect: true,
   connectors: connectors,
   publicClient,

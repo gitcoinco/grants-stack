@@ -94,8 +94,8 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
                         passportColor === "green"
                           ? "bg-green-100"
                           : passportColor === "yellow"
-                          ? "bg-yellow-100"
-                          : "bg-orange-100"
+                            ? "bg-yellow-100"
+                            : "bg-orange-100"
                       } w-40 p-4 justify-start rounded-2xl`}
                     >
                       <p className="mb-2">Passport Score</p>
@@ -108,8 +108,8 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
                         passportColor === "green"
                           ? "bg-green-100"
                           : passportColor === "yellow"
-                          ? "bg-yellow-100"
-                          : "bg-orange-100"
+                            ? "bg-yellow-100"
+                            : "bg-orange-100"
                       } w-40 p-4 justify-start rounded-2xl`}
                     >
                       <p className="mb-2">Donation Impact</p>

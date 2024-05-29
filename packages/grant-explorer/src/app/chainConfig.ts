@@ -8,8 +8,9 @@ import {
   optimism,
   polygon,
   polygonMumbai,
+  arbitrum,
+  arbitrumGoerli,
 } from "wagmi/chains";
-import { arbitrum, arbitrumGoerli } from "viem/chains";
 import {
   pgnTestnet,
   pgn,
