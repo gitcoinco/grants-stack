@@ -1,8 +1,7 @@
-import { ChainId } from "common/src/chain-ids";
 import { __deprecated_graphql_fetch } from "./utils";
 import sleep from "sleep-promise";
 export async function getCurrentSubgraphBlockNumber(
-  chainId: ChainId
+  chainId: number
 ): Promise<number> {
   const res = await __deprecated_graphql_fetch(
     `

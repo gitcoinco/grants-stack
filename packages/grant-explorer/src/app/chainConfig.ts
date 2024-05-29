@@ -1,8 +1,8 @@
-import { ChainId } from "common/src/chain-ids";
 import { getChains, TChain } from "common";
+import { chainIds } from "common/src/chains";
 
 const ensureValidChainId = (chain: TChain) => {
-  if (Object.values(ChainId).includes(chain.id)) {
+  if (Object.values(chainIds).includes(chain.id)) {
     return chain;
   } else {
     throw new Error(`Chain id not recognized: ${chain.id}`);

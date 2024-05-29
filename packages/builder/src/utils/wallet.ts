@@ -10,7 +10,6 @@ import ScrollIcon from "common/src/icons/scroll-logo.svg";
 import LuksoIcon from "common/src/icons/lukso-logo.svg";
 import CeloIcon from "common/src/icons/celo-logo.svg";
 import FantomFTMLogo from "common/src/assets/fantom-ftm-logo.png";
-import { SeiIcon } from "common/src/chains";
 import {
   EthDiamondGlyph,
   FTMTestnet,
@@ -19,6 +18,9 @@ import {
   ARBIcon,
 } from "../assets";
 import { ChainName, chains } from "../contracts/deployments";
+
+export const SeiIcon =
+  "https://ipfs.io/ipfs/QmUvNaLwzNf1bHjqTMW1aBjRgd5FrsTDqjSnyypLwxv8x5";
 
 export function shortAddress(address: string): string {
   try {
