@@ -29,26 +29,20 @@ cd grants-stack
 cp .env.example .env
 pnpm install
 ```
+There are several important environment variables you need to be aware of. Many of them have been given default values that will allow
+the packages to build and run out of the box, but not with all functionality.
 
-Create a WalletConnect application needed for RainbowKit: https://www.rainbowkit.com/docs/installation#configure
-Set the WalletConnect applicationId in the .env file:
+`REACT_APP_PINATA_JWT` is required in Builder and Manager to upload and pin metadata files to Pinata. Until a custom JWT is set, you will not be able to upload and pin files. Create your account on https://pinata.cloud and set your own JWT value in the `.env`
 
-```
-REACT_APP_WALLETCONNECT_PROJECT_ID=[YOUR APPLICATION ID]
-```
+The following can be customized, but should work out of the box:
 
-Set your Alchemy API Key:
+Create a WalletConnect application needed for [RainbowKit](https://www.rainbowkit.com/docs/installation#configure)
+Set the WalletConnect applicationId in the `.env` file: `REACT_APP_WALLETCONNECT_PROJECT_ID=[YOUR APPLICATION ID]`
 
-```
-REACT_APP_ALCHEMY_ID=[YOUR ALCHEMY API KEY]
-```
+Set your Alchemy API Key: `REACT_APP_ALCHEMY_ID=[YOUR ALCHEMY API KEY]`
 
 The default configuration loads data from the production indexer.
-You can point your dapps to a local indexer changing the following variable:
-
-```
-REACT_APP_INDEXER_V2_API_URL=http://localhost:PORT_NUMBER
-```
+You can point your dapps to a local indexer changing the following variable: `REACT_APP_INDEXER_V2_API_URL=http://localhost:PORT_NUMBER`
 
 ### Run All Packages
 
@@ -58,9 +52,7 @@ From the main `grants-stack` directory:
 ./scripts/dev start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view Builder in a browser.
-Open [http://localhost:3001](http://localhost:3001) to view Explorer in a browser.
-Open [http://localhost:3002](http://localhost:3002) to view Manager in a browser.
+Open [http://localhost:3000](http://localhost:3000) to view Builder in a browser, [http://localhost:3001](http://localhost:3001) to view Explorer, [http://localhost:3002](http://localhost:3002) to view Manager.
 
 ### Run a Single Package
 
