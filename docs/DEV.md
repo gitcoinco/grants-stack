@@ -17,25 +17,17 @@ While there is no central backend application, all three dApps rely on various e
 
 2. **[allo-indexer](https://github.com/gitcoinco/allo-indexer)**: This indexer is employed to index on-chain data and generate Quadratic Funding (QF) matches.
 
-3. **Subgraph Instances**: There is one subgraph instance for each blockchain to efficiently query blockchain data.
+3. **IPFS**: IPFS is utilized for reading metadata files, providing decentralized file storage.
 
-4. **IPFS**: IPFS is utilized for reading metadata files, providing decentralized file storage.
-
-5. **[Pinata](https://www.pinata.cloud/)**: Pinata is used to upload and pin files to IPFS, ensuring the availability of data.
+4. **[Pinata](https://www.pinata.cloud/)**: Pinata is used to upload and pin files to IPFS, ensuring the availability of data.
 
 
-### Setup root project dependencies
+### Setup root project dependencies & env
 
 ```sh
 cd grants-stack
-pnpm install
-```
-
-### Setup Builder
-
-```sh
-cd packages/builder
 cp .env.example .env
+pnpm install
 ```
 
 Create a WalletConnect application needed for RainbowKit: https://www.rainbowkit.com/docs/installation#configure
@@ -58,11 +50,24 @@ You can point your dapps to a local indexer changing the following variable:
 REACT_APP_INDEXER_V2_API_URL=http://localhost:PORT_NUMBER
 ```
 
-### Run Builder
+### Run All Packages
 
-Inside `packages/builder` run:
+From the main `grants-stack` directory:
 
+```sh
+./scripts/dev start
 ```
+
+Open [http://localhost:3000](http://localhost:3000) to view Builder in a browser.
+Open [http://localhost:3001](http://localhost:3001) to view Explorer in a browser.
+Open [http://localhost:3002](http://localhost:3002) to view Manager in a browser.
+
+### Run a Single Package
+
+Navigate to a single package (i.e. `packages/builder`) and start pnpm:
+
+```sh
+cd packages/builder
 pnpm start
 ```
 
@@ -118,7 +123,7 @@ Synpress is an E2E testing framework for testing dApps. It works by setting up m
 
 ### Running Synpress
 
-1. Put `TEST_PRIVATE_KEY` in `.env.local` in the respective directory (e.g. `packages/round-manager`)
+1. Put `TEST_PRIVATE_KEY` in `.env.local` in the main `.env`
 2. Start the dev server `pnpm start`
 3. Download playwright with `pnpm exec playwright install`
 4. Run tests with `pnpm synpress:test`
