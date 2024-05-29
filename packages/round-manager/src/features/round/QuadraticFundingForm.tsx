@@ -100,6 +100,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
       address: "0x0",
       default: true,
       decimals: 0,
+      canVote: false,
     },
     ...getPayoutTokens(chain.id),
   ];

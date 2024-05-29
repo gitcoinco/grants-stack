@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import ProgressModal from "../common/ProgressModal";
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import ReactTooltip from "react-tooltip";
@@ -18,10 +18,11 @@ import {
   NATIVE,
   formatUTCDateAsISOString,
   getUTCTime,
-  payoutTokens,
   useAllo,
   TToken,
   getPayoutTokens,
+  ChainId,
+  getTokens,
 } from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
@@ -113,6 +114,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
       code: "",
       address: zeroAddress,
       decimals: 1,
+      canVote: false,
     };
   };
 
@@ -133,25 +135,28 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
     }
   };
 
-  const fetchTokenData = async (
-    tokenAddress: string
-  ): Promise<{ name: string; decimal: number }> => {
-    if (!signer) return { name: "", decimal: 0 };
+  const fetchTokenData = useCallback(
+    async (
+      tokenAddress: string
+    ): Promise<{ name: string; decimal: number }> => {
+      if (!signer) return { name: "", decimal: 0 };
 
-    try {
-      const erc20 = Erc20__factory.connect(tokenAddress, signer);
-      const name = await erc20.symbol();
-      const decimal = await erc20.decimals();
+      try {
+        const erc20 = Erc20__factory.connect(tokenAddress, signer);
+        const name = await erc20.symbol();
+        const decimal = await erc20.decimals();
 
-      return {
-        name,
-        decimal,
-      };
-    } catch (error) {
-      console.error(error);
-      return { name: "", decimal: 0 };
-    }
-  };
+        return {
+          name,
+          decimal,
+        };
+      } catch (error) {
+        console.error(error);
+        return { name: "", decimal: 0 };
+      }
+    },
+    [signer]
+  );
 
   const handleCustomTokenInputChange = async (
     event: ChangeEvent<HTMLInputElement>
@@ -164,6 +169,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
         code: name,
         address: tokenValue,
         decimals: decimal,
+        canVote: false,
       };
       setTokenInfo(customTokenInfo);
     } else {
@@ -261,6 +267,19 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
     }
   };
 
+  const defaultTokens: Record<ChainId, TToken> = Object.entries(
+    getTokens()
+  ).reduce(
+    (acc, [chainId, tokens]) => {
+      const votingToken = tokens.find((token) => token.canVote);
+      if (votingToken) {
+        acc[Number(chainId) as ChainId] = votingToken;
+      }
+      return acc;
+    },
+    {} as Record<ChainId, TToken>
+  );
+
   useEffect(() => {
     const createPayoutTokenMap = async () => {
       const map: Map<
@@ -280,20 +299,22 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
         for (const payout of filteredPayouts) {
           const token = map.get(payout.tokenAddress.toLowerCase());
           if (!token) {
-            const pToken = payoutTokens.find(
-              (p) =>
-                p.address.toLowerCase() === payout.tokenAddress.toLowerCase()
+            const pTokenEntry = Object.entries(defaultTokens).find(
+              ([, token]) =>
+                token.address.toLowerCase() ===
+                payout.tokenAddress.toLowerCase()
             );
 
             let decimal = 0;
             let name = "";
 
-            if (!pToken) {
+            if (!pTokenEntry) {
               // Token not found in the list, fetch from contract
               const tokenData = await fetchTokenData(payout.tokenAddress);
               decimal = tokenData.decimal;
               name = tokenData.name;
             } else {
+              const pToken = pTokenEntry[1]; // Extract the TToken from the found entry
               decimal = pToken.decimals;
               name = pToken.code;
             }
@@ -312,10 +333,11 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
           }
         }
       }
+
       setPayoutTokensMap(map);
     };
     createPayoutTokenMap();
-  }, [payouts, fetchTokenData, application.applicationIndex]);
+  }, [payouts, fetchTokenData, application.applicationIndex, defaultTokens]);
 
   return (
     <>

@@ -7,7 +7,7 @@ import {
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { createClient, configureChains } from "wagmi";
+import { createClient, configureChains, Chain } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -27,12 +27,40 @@ const allChains: TChain[] =
     ? [...testnetChains(), ...mainnetChains()]
     : [...mainnetChains()];
 
+// fixme: this needs finished/fixedÍ
+const allChainsMap: Chain[] = allChains.map((chain) => {
+  // Map the TChain to Chain
+  const mappedChain: Chain = {
+    id: chain.id,
+    name: chain.name,
+    network: chain.name,
+    nativeCurrency: {
+      name: "DUNNO",
+      symbol: "DUNNO",
+      decimals: 18,
+    },
+    rpcUrls: {
+      default: {
+        http: [],
+        webSocket: undefined,
+      },
+      public: {
+        http: [],
+        webSocket: undefined,
+      },
+    },
+  };
+
+  return mappedChain;
+});
+
 /* TODO: remove hardcoded value once we have environment variables validation */
 const projectId =
   process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
   "2685061cae0bcaf2b244446153eda9e1";
 export const { chains, provider, webSocketProvider } = configureChains(
-  allChains,
+  // note: this is a map of all available chains for environment
+  allChainsMap,
   [
     infuraProvider({
       apiKey: process.env.REACT_APP_INFURA_ID as string,
