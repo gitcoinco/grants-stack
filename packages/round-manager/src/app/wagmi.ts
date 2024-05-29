@@ -12,6 +12,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { TChain, getChains } from "common";
+import { zeroAddress } from "viem";
 
 const testnetChains = () => {
   // todo: create viem chains from getChains
@@ -29,23 +30,26 @@ const allChains: TChain[] =
 
 // fixme: this needs finished/fixedÍ
 const allChainsMap: Chain[] = allChains.map((chain) => {
+  const nativeToken = chain.tokens.find(
+    (token) => token.address === zeroAddress
+  );
   // Map the TChain to Chain
   const mappedChain: Chain = {
     id: chain.id,
     name: chain.name,
     network: chain.name,
     nativeCurrency: {
-      name: "DUNNO",
-      symbol: "DUNNO",
-      decimals: 18,
+      name: nativeToken?.code as string,
+      symbol: nativeToken?.code as string,
+      decimals: nativeToken?.decimals as number,
     },
     rpcUrls: {
       default: {
-        http: [],
+        http: [chain.rpc],
         webSocket: undefined,
       },
       public: {
-        http: [],
+        http: [chain.rpc],
         webSocket: undefined,
       },
     },
