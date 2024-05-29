@@ -112,6 +112,11 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "SEI Devnet",
     logo: "/logos/sei.png",
   },
+  [ChainId.SEI_MAINNET]: {
+    id: ChainId.SEI_MAINNET,
+    name: "SEI Devnet",
+    logo: "/logos/sei.png",
+  },
   [ChainId.LUKSO]: {
     id: ChainId.LUKSO,
     name: "Lukso",

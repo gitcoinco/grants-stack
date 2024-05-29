@@ -21,6 +21,7 @@ import {
   sepolia,
   scroll,
   seiDevnet,
+  seiMainnet,
   customCelo as celo,
   customCeloAlfajores as celoAlfajores,
   customLukso as lukso,
@@ -52,6 +53,7 @@ const availableChains: { [key: string]: Chain } = {
   zkSyncEraTestnet,
   sepolia,
   seiDevnet,
+  seiMainnet,
   lukso,
   luksoTestnet,
 };
@@ -77,6 +79,7 @@ const stagingChains = [
   zkSyncEraTestnet,
   sepolia,
   seiDevnet,
+  seiMainnet,
   celo,
   celoAlfajores,
   lukso,
@@ -95,6 +98,7 @@ const productionChains = [
   base,
   scroll,
   seiDevnet,
+  seiMainnet,
   celo,
   lukso,
 ];

@@ -22,6 +22,7 @@ export const chains = {
   8453: "base",
   534352: "scroll",
   713715: "seiDevnet",
+  1329: "seiMainnet",
   42: "lukso",
   4201: "luksoTestnet",
   42220: "celo",
@@ -107,6 +108,9 @@ export const addresses: DeploymentAddressesMap = {
   },
   seiDevnet: {
     projectRegistry: "0x5B47c6aFE27b0F5C8319366C6b8FbC0E02104b98",
+  },
+  seiMainnet: {
+    projectRegistry: "0x",
   },
   luksoTestnet: {
     projectRegistry: "0x", // v1 not supported

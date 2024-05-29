@@ -36,6 +36,7 @@ export const projectRegistryMap: ChainIdToStringMap = {
   [ChainId.LUKSO]: "0x",
   [ChainId.CELO_ALFAJORES]: "0x",
   [ChainId.CELO]: "0x",
+  [ChainId.SEI_MAINNET]: "0x",
 };
 
 export const programFactoryMap: ChainIdToStringMap = {
@@ -68,6 +69,7 @@ export const programFactoryMap: ChainIdToStringMap = {
   [ChainId.LUKSO]: "0x",
   [ChainId.CELO_ALFAJORES]: "0x",
   [ChainId.CELO]: "0x",
+  [ChainId.SEI_MAINNET]: "0x",
 };
 
 export const roundFactoryMap: ChainIdToStringMap = {
@@ -100,6 +102,7 @@ export const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.LUKSO]: "0x",
   [ChainId.CELO_ALFAJORES]: "0x",
   [ChainId.CELO]: "0x",
+  [ChainId.SEI_MAINNET]: "0x",
 };
 
 export const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
@@ -132,6 +135,7 @@ export const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.LUKSO]: "0x",
   [ChainId.CELO_ALFAJORES]: "0x",
   [ChainId.CELO]: "0x",
+  [ChainId.SEI_MAINNET]: "0x",
 };
 
 export const dgVotingStrategyDummyContractMap: ChainIdToStringMap = {
@@ -164,6 +168,7 @@ export const dgVotingStrategyDummyContractMap: ChainIdToStringMap = {
   [ChainId.LUKSO]: "0x",
   [ChainId.CELO_ALFAJORES]: "0x",
   [ChainId.CELO]: "0x",
+  [ChainId.SEI_MAINNET]: "0x",
 };
 
 export const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
@@ -196,6 +201,7 @@ export const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.LUKSO]: "0x",
   [ChainId.CELO_ALFAJORES]: "0x",
   [ChainId.CELO]: "0x",
+  [ChainId.SEI_MAINNET]: "0x",
 };
 
 export const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
@@ -228,4 +234,5 @@ export const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
   [ChainId.LUKSO]: "0x",
   [ChainId.CELO_ALFAJORES]: "0x",
   [ChainId.CELO]: "0x",
+  [ChainId.SEI_MAINNET]: "0x",
 };

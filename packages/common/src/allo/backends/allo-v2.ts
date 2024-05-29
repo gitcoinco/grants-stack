@@ -85,6 +85,14 @@ function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
       };
       break;
 
+    case ChainId.SEI_MAINNET:
+      strategyAddresses = {
+        [RoundCategory.QuadraticFunding]:
+          "0x91b5eeE385D8e0cfd49FD94D4C7aE15e1F17e0A2",
+        [RoundCategory.Direct]: "0xdA62767Da1402398d81C8288b37DE1CC8C8fDcA0",
+      };
+      break;
+
     default:
       strategyAddresses = {
         [RoundCategory.QuadraticFunding]:
