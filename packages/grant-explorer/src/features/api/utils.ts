@@ -134,6 +134,11 @@ export const CHAINS: Record<
     name: "SEI Devnet",
     logo: SeiIcon,
   },
+  [ChainId.SEI_MAINNET]: {
+    id: ChainId.SEI_MAINNET,
+    name: "SEI Devnet",
+    logo: SeiIcon,
+  },
   [ChainId.LUKSO]: {
     id: ChainId.LUKSO,
     name: "Lukso",
