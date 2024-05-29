@@ -1,11 +1,12 @@
 import React from "react";
 import { CartProject } from "../../api/types";
-import { ChainId, TToken } from "common";
-import { CHAINS } from "../../api/utils";
+import { ChainId, TToken, getChains } from "common";
 import { useCartStorage } from "../../../store";
 import { formatUnits } from "viem";
 import { parseChainId } from "common/src/chains";
 import { Checkbox } from "@chakra-ui/react";
+
+const CHAINS = getChains();
 
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
@@ -108,7 +109,7 @@ export function ChainSummary({
         <img
           className="inline mr-2 w-5 h-5"
           alt={CHAINS[chainId].name}
-          src={CHAINS[chainId].logo}
+          src={CHAINS[chainId].icon}
         />
         <span className="font-sans font-medium">
           Checkout {CHAINS[chainId].name} cart

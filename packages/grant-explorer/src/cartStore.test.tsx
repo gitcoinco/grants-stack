@@ -1,8 +1,20 @@
 import { useCartStorage } from "./store";
-import { ChainId, VotingToken } from "common";
+import { ChainId, TToken, getTokens } from "common";
 import { CartProject } from "./features/api/types";
 import { makeApprovedProjectData } from "./test-utils";
-import { votingTokensMap } from "./features/api/utils";
+
+const defaultVotingTokens: Record<ChainId, TToken> = Object.entries(
+  getTokens()
+).reduce(
+  (acc, [chainId, tokens]) => {
+    const votingToken = tokens.find((token) => token.canVote);
+    if (votingToken) {
+      acc[Number(chainId) as ChainId] = votingToken;
+    }
+    return acc;
+  },
+  {} as Record<ChainId, TToken>
+);
 
 describe("useCartStorage Zustand store", () => {
   beforeEach(() => {
@@ -76,7 +88,7 @@ describe("useCartStorage Zustand store", () => {
 
   test("should set payout token for a specific chain", () => {
     const chainId: ChainId = ChainId.MAINNET; // Mock ChainId
-    const payoutToken: VotingToken = votingTokensMap[ChainId.MAINNET][0];
+    const payoutToken: TToken = defaultVotingTokens[ChainId.MAINNET];
 
     useCartStorage.getState().setVotingTokenForChain(chainId, payoutToken);
 
@@ -135,8 +147,8 @@ describe("useCartStorage Zustand store", () => {
 
   test("should override voting token for a specific chain", () => {
     const chainId: ChainId = ChainId.MAINNET; // Mock ChainId
-    const initialVotingToken: VotingToken = votingTokensMap[ChainId.MAINNET][0];
-    const newVotingToken: VotingToken = votingTokensMap[ChainId.MAINNET][1];
+    const initialVotingToken: TToken = defaultVotingTokens[ChainId.MAINNET];
+    const newVotingToken: TToken = defaultVotingTokens[ChainId.MAINNET];
 
     useCartStorage
       .getState()
@@ -200,7 +212,7 @@ describe("useCartStorage Zustand store", () => {
 
   test("should handle setting payout token for non-existing chain gracefully", () => {
     const nonExistingChainId = 123123; // Mock a non-existing ChainId
-    const payoutToken: VotingToken = votingTokensMap[ChainId.MAINNET][0];
+    const payoutToken: TToken = defaultVotingTokens[ChainId.MAINNET];
 
     const initialChainToPayoutToken = {
       ...useCartStorage.getState().chainToVotingToken,

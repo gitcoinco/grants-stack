@@ -1,5 +1,4 @@
 import {
-  CHAINS,
   getVotingTokenOptions,
   GroupedCartProjectsByRoundId,
 } from "../../api/utils";
@@ -7,9 +6,11 @@ import React, { useEffect, useState } from "react";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";
-import { ChainId, useTokenPrice, TToken } from "common";
+import { ChainId, useTokenPrice, TToken, getChains } from "common";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
+
+const CHAINS = getChains();
 
 type Props = {
   cart: GroupedCartProjectsByRoundId;
@@ -57,7 +58,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
         <div className="flex flex-row basis-[28%] gap-2">
           <img
             className="mt-2 inline-block h-9 w-9"
-            src={chain.logo}
+            src={chain.icon}
             alt={"Chain Logo"}
           />
           <h2 className="mt-3 text-2xl font-semibold">{chain.name}</h2>

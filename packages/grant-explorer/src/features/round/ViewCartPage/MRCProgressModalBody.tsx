@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
-import { ChainId } from "common";
-import { CHAINS } from "../../api/utils";
+import { ChainId, getChains } from "common";
 import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useCheckoutStore } from "../../../checkoutStore";
 import { Button } from "common/src/styles";
+
+const CHAINS = getChains();
 
 export type Step = {
   name: string;
@@ -147,7 +148,7 @@ export function MRCProgressModalBody({
           <img
             className="inline mr-1 w-5 h-5"
             alt={CHAINS[chainId].name}
-            src={CHAINS[chainId].logo}
+            src={CHAINS[chainId].icon}
           />
           {chainIdsBeingCheckedOut.length > 1 ? (
             <span className="font-bold text-[16px]">

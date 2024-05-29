@@ -22,9 +22,17 @@ interface CartState {
   setVotingTokenForChain: (chainId: ChainId, votingToken: TToken) => void;
 }
 
-const defaultVotingTokens = getTokens().filter(
-  // todo: is this working?
-  (token) => token.canVote && token.address === zeroAddress
+const defaultVotingTokens: Record<ChainId, TToken> = Object.entries(
+  getTokens()
+).reduce(
+  (acc, [chainId, tokens]) => {
+    const votingToken = tokens.find((token) => token.canVote);
+    if (votingToken) {
+      acc[Number(chainId) as ChainId] = votingToken;
+    }
+    return acc;
+  },
+  {} as Record<ChainId, TToken>
 );
 
 function isSameProject(a: CartProject, b: CartProject): boolean {
@@ -133,7 +141,7 @@ export const useCartStorage = create<CartState>()(
           });
         }
       },
-      chainToVotingToken: defaultVotingTokens, // todo: fix
+      chainToVotingToken: defaultVotingTokens,
       getVotingTokenForChain: (chainId: ChainId) => {
         const tokenFromStore = get().chainToVotingToken[chainId];
         if (!tokenFromStore) {

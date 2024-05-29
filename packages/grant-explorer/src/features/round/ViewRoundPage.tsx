@@ -19,6 +19,8 @@ import {
   useTokenPrice,
   TToken,
   getTokensByChainId,
+  getChains,
+  getTokens,
 } from "common";
 import { Button, Input } from "common/src/styles";
 import AlloV1 from "common/src/icons/AlloV1";
@@ -32,12 +34,7 @@ import { ReactComponent as TwitterBlueIcon } from "../../assets/x-logo.svg";
 
 import { useRoundById } from "../../context/RoundContext";
 import { CartProject, Project, Requirement, Round } from "../api/types";
-import {
-  CHAINS,
-  getDaysLeft,
-  isDirectRound,
-  isInfiniteDate,
-} from "../api/utils";
+import { getDaysLeft, isDirectRound, isInfiniteDate } from "../api/utils";
 import { PassportWidget } from "../common/PassportWidget";
 
 import Footer from "common/src/components/Footer";
@@ -75,6 +72,30 @@ import {
 } from "@heroicons/react/24/outline";
 import { Box, Tab, Tabs } from "@chakra-ui/react";
 import GenericModal from "../common/GenericModal";
+
+const CHAINS = getChains();
+
+const defaultVotingTokens: Record<number, TToken> = Object.entries(
+  getTokens()
+).reduce(
+  (acc, [chainId, tokens]) => {
+    const votingToken = tokens.find((token) => token.canVote);
+    if (votingToken) {
+      acc[Number(chainId)] = votingToken;
+    }
+    return acc;
+  },
+  {} as Record<number, TToken>
+);
+
+const nativePayoutToken: TToken | undefined = Object.entries(defaultVotingTokens).find(
+  ([chainId, token]) => {
+    return (
+      Number(chainId) === Number(chainId) &&
+      token.address === getAddress(token.address)
+    );
+  }
+)?.[1];
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -490,7 +511,7 @@ function AfterRoundStart(props: {
                 <div className="flex items-center">
                   <img
                     className="w-4 h-4 mt-0.5 mr-1"
-                    src={CHAINS[chainId]?.logo}
+                    src={CHAINS[chainId]?.icon}
                     alt="Round Chain Logo"
                   />
                   <span>{CHAINS[chainId]?.name}</span>
@@ -1223,15 +1244,9 @@ function PreRoundPage(props: {
     chainId: Number(chainId),
   });
 
-  const nativePayoutToken = votingTokens.find(
-    (t) =>
-      t.chainId === Number(chainId) &&
-      t.address === getAddress(props.round.token)
-  );
-
   const tokenData = data ?? {
     ...nativePayoutToken,
-    symbol: nativePayoutToken?.name ?? "ETH",
+    symbol: nativePayoutToken?.code ?? "ETH",
   };
 
   return (

@@ -1,8 +1,9 @@
-import { ChainId, useTokenPrice, TToken } from "common";
-import { CHAINS } from "../../api/utils";
+import { ChainId, useTokenPrice, TToken, getChains } from "common";
 import { formatUnits, zeroAddress } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
+
+const CHAINS = getChains();
 
 type SummaryProps = {
   totalDonation: bigint;
@@ -45,7 +46,7 @@ export function Summary({
             <img
               className={"inline max-w-[32px] mr-2"}
               alt={CHAINS[chainId].name}
-              src={CHAINS[chainId].logo}
+              src={CHAINS[chainId].icon}
             />
             {CHAINS[chainId].name}
           </p>

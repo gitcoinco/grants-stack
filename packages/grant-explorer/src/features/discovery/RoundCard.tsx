@@ -1,9 +1,10 @@
 import {
+  getChains,
   renderToPlainText,
   ROUND_PAYOUT_DIRECT,
   truncateDescription,
 } from "common";
-import { CHAINS, getDaysLeft, getRoundStates } from "../api/utils";
+import { getDaysLeft, getRoundStates } from "../api/utils";
 import {
   Badge,
   BasicCard,
@@ -19,6 +20,8 @@ import { RoundStrategyBadge } from "./RoundStrategyBadge";
 import { RoundTimeBadge } from "./RoundTimeBadge";
 import { RoundGetRound } from "data-layer";
 import { parseChainId, parseChainIdIntoResult } from "common/dist/chains";
+
+const CHAINS = getChains();
 
 type RoundType = "all" | "endingSoon" | "active";
 
@@ -172,7 +175,7 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
             <div>
               <img
                 className="w-8"
-                src={CHAINS[parseChainId(chainId)]?.logo}
+                src={CHAINS[parseChainId(chainId)]?.icon}
                 alt=""
               />
             </div>
