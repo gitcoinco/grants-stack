@@ -462,6 +462,32 @@ export const seiDevnet = {
   },
 };
 
+export const seiMainnet = {
+  id: 1329,
+  name: "SEI Mainnet",
+  network: "SEI Mainnet",
+  iconUrl: SeiIcon,
+  nativeCurrency: {
+    name: "SEI",
+    symbol: "SEI",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://evm-rpc.sei-apis.com"],
+    },
+    public: {
+      http: ["https://evm-rpc.sei-apis.com"],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: "SEI Explorer",
+      url: "https://seitrace.com/",
+    },
+  },
+};
+
 export const sepolia: Chain = {
   ...ethereumSepolia,
   rpcUrls: {

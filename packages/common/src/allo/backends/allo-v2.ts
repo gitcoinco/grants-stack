@@ -85,6 +85,14 @@ function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
       };
       break;
 
+    case ChainId.SEI_MAINNET:
+      strategyAddresses = {
+        [RoundCategory.QuadraticFunding]:
+          "0xf5cA96151d1a9998d234963433bfd3f6feC7aAc2",
+        [RoundCategory.Direct]: "0xf24C89aF130Bb1ca22FD458BB9eeFA344aBC1573",
+      };
+      break;
+
     default:
       strategyAddresses = {
         [RoundCategory.QuadraticFunding]:
@@ -462,6 +470,8 @@ export class AlloV2 implements Allo {
         this.chainId
       );
 
+      console.log("args", args);
+
       if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
         const initStrategyData: DonationVotingMerkleDistributionStrategyTypes.InitializeData =
           {
@@ -530,11 +540,15 @@ export class AlloV2 implements Allo {
           chain: this.chainId,
         });
 
+        console.log("===> 1");
+
         initStrategyDataEncoded =
           await strategy.getInitializeData(initStrategyData);
 
         const alloToken =
           args.roundData.token === zeroAddress ? NATIVE : args.roundData.token;
+
+        console.log("===> 2", alloToken);
 
         token = getAddress(alloToken);
       } else if (args.roundData.roundCategory === RoundCategory.Direct) {
@@ -622,6 +636,8 @@ export class AlloV2 implements Allo {
           getAddress(operator)
         ),
       };
+
+      console.log("createPoolArgs", createPoolArgs);
 
       let txData: TransactionData;
 

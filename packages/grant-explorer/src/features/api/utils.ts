@@ -134,6 +134,11 @@ export const CHAINS: Record<
     name: "SEI Devnet",
     logo: SeiIcon,
   },
+  [ChainId.SEI_MAINNET]: {
+    id: ChainId.SEI_MAINNET,
+    name: "SEI Devnet",
+    logo: SeiIcon,
+  },
   [ChainId.LUKSO]: {
     id: ChainId.LUKSO,
     name: "Lukso",
@@ -820,6 +825,29 @@ const SEI_TOKENS: VotingToken[] = [
   },
 ];
 
+const SEI_MAINNET_TOKENS: VotingToken[] = [
+  {
+    name: "SEI",
+    chainId: ChainId.SEI_MAINNET,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["SEI"],
+    redstoneTokenId: RedstoneTokenIds["SEI"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "SEI",
+    chainId: ChainId.SEI_MAINNET,
+    address: NATIVE as `0x${string}`,
+    decimal: 18,
+    logo: TokenNamesAndLogos["SEI"],
+    redstoneTokenId: RedstoneTokenIds["SEI"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
 const LUKSO_TOKENS: VotingToken[] = [
   {
     name: "LYX",
@@ -941,6 +969,7 @@ export const votingTokens = [
   ...SCROLL_TOKENS,
   ...SEPOLIA_TOKENS,
   ...SEI_TOKENS,
+  ...SEI_MAINNET_TOKENS,
   ...LUKSO_TOKENS,
   ...LUKSO_TESTNET_TOKENS,
   ...CELO_TOKENS,
@@ -971,6 +1000,7 @@ export const votingTokensMap: VotingTokensMap = {
   [ChainId.SEPOLIA]: SEPOLIA_TOKENS,
   [ChainId.SCROLL]: SCROLL_TOKENS,
   [ChainId.SEI_DEVNET]: SEI_TOKENS,
+  [ChainId.SEI_MAINNET]: SEI_MAINNET_TOKENS,
   [ChainId.LUKSO]: LUKSO_TOKENS,
   [ChainId.LUKSO_TESTNET]: LUKSO_TESTNET_TOKENS,
   [ChainId.CELO]: CELO_TOKENS,
@@ -1083,6 +1113,7 @@ export function getChainIds(): number[] {
       Number(ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID),
       Number(ChainId.BASE),
       Number(ChainId.SCROLL),
+      Number(ChainId.SEI_MAINNET),
     ];
   } else {
     return Object.values(ChainId)

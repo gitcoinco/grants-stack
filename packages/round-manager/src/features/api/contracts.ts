@@ -38,6 +38,7 @@ const projectRegistryMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0x2420EABfA2C0e6f77E435B0B7615c848bF4963AF",
   [ChainId.SCROLL]: "0xDF9BF58Aa1A1B73F0e214d79C652a7dd37a6074e",
   [ChainId.SEI_DEVNET]: "", // v1 not supported
+  [ChainId.SEI_MAINNET]: "", // v1 not supported
   [ChainId.LUKSO]: "", // v1 not supported
   [ChainId.LUKSO_TESTNET]: "", // v1 not supported
   [ChainId.CELO]: "", // v1 not supported
@@ -86,6 +87,7 @@ const programFactoryMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0x79Ba35cb31620db1b5b101A9A13A1b0A82B5BC9e",
   [ChainId.SCROLL]: "0x545B282A50EaeA01A619914d44105437036CbB36",
   [ChainId.SEI_DEVNET]: "", // v1 not supported
+  [ChainId.SEI_MAINNET]: "", // v1 not supported
   [ChainId.LUKSO]: "", // v1 not supported
   [ChainId.LUKSO_TESTNET]: "", // v1 not supported
   [ChainId.CELO]: "", // v1 not supported
@@ -128,6 +130,7 @@ const roundFactoryMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0xF1d4F5f21746bCD75fD71eB18992443f4F0edb6f",
   [ChainId.SCROLL]: "0x29aAF7D4E83A778DAee08Fe04B0712c4C2989AD1",
   [ChainId.SEI_DEVNET]: "", // v1 not supported
+  [ChainId.SEI_MAINNET]: "", // v1 not supported
   [ChainId.LUKSO]: "", // v1 not supported
   [ChainId.LUKSO_TESTNET]: "", // v1 not supported
   [ChainId.CELO]: "", // v1 not supported
@@ -177,6 +180,7 @@ const qfVotingStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0xf5D111B57de221774866AC32c4435841F5c141D5",
   [ChainId.SCROLL]: "0x5b55728e41154562ee80027C1247B13382692e5C",
   [ChainId.SEI_DEVNET]: "", // v1 not supported
+  [ChainId.SEI_MAINNET]: "", // v1 not supported
   [ChainId.LUKSO]: "", // v1 not supported
   [ChainId.LUKSO_TESTNET]: "", // v1 not supported
   [ChainId.CELO]: "", // v1 not supported
@@ -312,6 +316,7 @@ const merklePayoutStrategyFactoryMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0xB5CF3fFD3BDfC6A124aa9dD96fE14118Ed8083e5",
   [ChainId.SCROLL]: "0x7ac74Be34b1A27E48a2525259719F877a57B2Aa4",
   [ChainId.SEI_DEVNET]: "", // v1 not supported
+  [ChainId.SEI_MAINNET]: "", // v1 not supported
   [ChainId.LUKSO]: "", // v1 not supported
   [ChainId.LUKSO_TESTNET]: "", // v1 not supported
   [ChainId.CELO]: "", // v1 not supported
@@ -355,6 +360,7 @@ const alloSettingsContractMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "",
   [ChainId.SCROLL]: "",
   [ChainId.SEI_DEVNET]: "", // v1 not supported
+  [ChainId.SEI_MAINNET]: "", // v1 not supported
   [ChainId.LUKSO]: "", // v1 not supported
   [ChainId.LUKSO_TESTNET]: "", // v1 not supported
   [ChainId.CELO]: "", // v1 not supported
@@ -400,6 +406,7 @@ const directPayoutStrategyFactoryContractMap: ChainIdToStringMap = {
   [ChainId.SEPOLIA]: "0xC2B0d8dAdB88100d8509534BB8B5778d1901037d",
   [ChainId.SCROLL]: "0xc7722909fEBf7880E15e67d563E2736D9Bb9c1Ab",
   [ChainId.SEI_DEVNET]: "", // v1 not supported
+  [ChainId.SEI_MAINNET]: "", // v1 not supported
   [ChainId.LUKSO]: "", // v1 not supported
   [ChainId.LUKSO_TESTNET]: "", // v1 not supported
   [ChainId.CELO]: "", // v1 not supported

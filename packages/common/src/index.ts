@@ -496,6 +496,7 @@ export const txBlockExplorerLinks: Record<ChainId, string> = {
   [ChainId.LUKSO]: "https://explorer.execution.mainnet.lukso.network/tx/",
   [ChainId.CELO_ALFAJORES]: "https://alfajores.celoscan.io/tx/",
   [ChainId.CELO]: "https://celoscan.io/tx/",
+  [ChainId.SEI_MAINNET]: "https://seitrace.com/tx/",
 };
 
 
@@ -537,7 +538,10 @@ export function isGG20Round(roundId: string, chainId: number) {
 }
 
 export function isLitUnavailable(chainId: number) {
-  return [ChainId.LUKSO_TESTNET, ChainId.LUKSO, ChainId.SEI_DEVNET].includes(
-    chainId
-  );
+  return [
+    ChainId.LUKSO_TESTNET,
+    ChainId.LUKSO,
+    ChainId.SEI_DEVNET,
+    ChainId.SEI_MAINNET,
+  ].includes(chainId);
 }

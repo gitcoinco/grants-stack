@@ -472,6 +472,17 @@ const SEI_TOKENS: PayoutToken[] = [
   },
 ];
 
+const SEI_MAINNET_TOKENS: PayoutToken[] = [
+  {
+    name: "SEI",
+    chainId: ChainId.SEI_MAINNET,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["SEI"],
+    redstoneTokenId: RedstoneTokenIds["SEI"],
+  },
+];
+
 const LUKSO_TOKENS: PayoutToken[] = [
   {
     name: "LYX",
@@ -543,6 +554,7 @@ export const payoutTokens = [
   ...SEPOLIA_TOKENS,
   ...SCROLL_TOKENS,
   ...SEI_TOKENS,
+  ...SEI_MAINNET_TOKENS,
   ...LUKSO_TOKENS,
   ...LUKSO_TESTNET_TOKENS,
   ...CELO_TOKENS,
