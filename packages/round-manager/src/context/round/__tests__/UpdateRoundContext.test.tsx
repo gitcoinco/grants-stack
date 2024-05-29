@@ -34,7 +34,6 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 
 jest.mock("../../../features/api/round");
 jest.mock("../../../features/api/ipfs");
-jest.mock("../../../features/api/subgraph");
 
 const mockRoundData: Round = makeRoundData();
 const mockTransactionSender = createMockTransactionSender();

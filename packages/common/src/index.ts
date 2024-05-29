@@ -7,10 +7,13 @@ import z from "zod";
 import { ChainId } from "./chain-ids";
 import { Round } from "data-layer";
 import { getAlloVersion, getConfig } from "./config";
+import moment from 'moment-timezone';
 
 export * from "./icons";
 export * from "./markdown";
 export * from "./allo/common";
+export * from "./allo/application";
+export * from "./payoutTokens";
 
 export { PassportVerifierWithExpiration } from "./credentialVerifier";
 export { ChainId };
@@ -226,6 +229,46 @@ export const getUTCDateTime = (date: Date): string => {
   return `${getUTCDate(date)} ${getUTCTime(date)}`;
 };
 
+export const formatLocalDateAsISOString = (date: Date): string => {
+  // @ts-expect-error remove when DG support is merged
+  if (isNaN(date)) {
+    return "";
+  }
+  const localString = getLocalDate(date);
+  return localString;
+};
+
+export function getTimezoneName() {
+  const today = new Date();
+  const userTimeZone = moment.tz.guess();
+  const formattedDate = moment(today).tz(userTimeZone).format('z')
+
+  return formattedDate;
+}
+
+export const getLocalTime = (date: Date): string => {
+  const localTime = [
+    padSingleDigitNumberWithZero(date.getHours()),
+    padSingleDigitNumberWithZero(date.getMinutes()),
+  ];
+
+  return localTime.join(":") + " " + getTimezoneName();
+};
+
+export const getLocalDate = (date: Date): string => {
+  const localDate = [
+    padSingleDigitNumberWithZero(date.getFullYear()),
+    padSingleDigitNumberWithZero(date.getMonth() + 1),
+    padSingleDigitNumberWithZero(date.getDate()),
+  ];
+
+  return localDate.join("/");
+};
+
+export const getLocalDateTime = (date: Date): string => {
+  return `${getLocalDate(date)} ${getLocalTime(date)}`;
+};
+
 export const useTokenPrice = (tokenId: string | undefined) => {
   const [tokenPrice, setTokenPrice] = useState<number>();
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -303,6 +346,7 @@ export type RoundPayoutTypeNew =
   | "allov2.SQFSuperFluidStrategy"
   | "allov2.MicroGrantsGovStrategy"
   | "allov2.DirectGrantsSimpleStrategy"
+  | "allov2.DirectGrantsLiteStrategy"
   | ""; // This is to handle the cases where the strategyName is not set in a round, mostly spam rounds
 
 export type RoundStrategyType = "QuadraticFunding" | "DirectGrants";
@@ -322,6 +366,7 @@ export function getRoundStrategyType(name: string): RoundStrategyType {
     case "allov1.Direct":
     case "DIRECT":
     case "allov2.DirectGrantsSimpleStrategy":
+    case "allov2.DirectGrantsLiteStrategy":
       return "DirectGrants";
 
     case "allov1.QF":
@@ -342,8 +387,6 @@ export { AlloV1 } from "./allo/backends/allo-v1";
 export { AlloV2 } from "./allo/backends/allo-v2";
 export {
   createWaitForIndexerSyncTo,
-  getCurrentSubgraphBlockNumber,
-  waitForSubgraphSyncTo,
 } from "./allo/indexer";
 export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
@@ -393,8 +436,6 @@ export interface Web3Instance {
   provider: Web3Provider;
   signer?: Signer;
 }
-
-export { graphQlEndpoints, graphql_fetch } from "./graphql_fetch";
 
 export function roundToPassportIdAndKeyMap(round: Round): {
   communityId: string;
@@ -450,7 +491,14 @@ export const txBlockExplorerLinks: Record<ChainId, string> = {
   [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
   [ChainId.SCROLL]: "https://scrollscan.com/tx/",
   [ChainId.SEI_DEVNET]: "https://seistream.app/tx/",
+  [ChainId.LUKSO_TESTNET]:
+    "https://explorer.execution.testnet.lukso.network/tx/",
+  [ChainId.LUKSO]: "https://explorer.execution.mainnet.lukso.network/tx/",
+  [ChainId.CELO_ALFAJORES]: "https://alfajores.celoscan.io/tx/",
+  [ChainId.CELO]: "https://celoscan.io/tx/",
+  [ChainId.SEI_MAINNET]: "https://seitrace.com/tx/",
 };
+
 
 /**
  * Fetch the correct transaction block explorer link for the provided web3 network
@@ -487,4 +535,13 @@ const gg20Rounds = [
 
 export function isGG20Round(roundId: string, chainId: number) {
   return gg20Rounds.some((r) => r.roundId === roundId && r.chainId === chainId);
+}
+
+export function isLitUnavailable(chainId: number) {
+  return [
+    ChainId.LUKSO_TESTNET,
+    ChainId.LUKSO,
+    ChainId.SEI_DEVNET,
+    ChainId.SEI_MAINNET,
+  ].includes(chainId);
 }

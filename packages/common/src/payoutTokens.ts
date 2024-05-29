@@ -11,6 +11,7 @@ export type PayoutToken = {
   redstoneTokenId?: string;
   decimal: number;
 };
+
 export const TokenNamesAndLogos = {
   FTM: "/logos/fantom-logo.svg",
   BUSD: "/logos/busd-logo.svg",
@@ -31,6 +32,9 @@ export const TokenNamesAndLogos = {
   mkUSD: "/logos/mkusd-logo.svg", // Prisma mkUSD
   USDGLO: "/logos/usdglo-logo.svg",
   SEI: "/logos/sei.png",
+  CELO: "/logos/celo-logo.svg",
+  LYX: "/logos/lukso-logo.svg",
+  CUSD: "/logos/cusd-logo.png",
 } as const;
 const MAINNET_TOKENS: PayoutToken[] = [
   {
@@ -468,6 +472,69 @@ const SEI_TOKENS: PayoutToken[] = [
   },
 ];
 
+const SEI_MAINNET_TOKENS: PayoutToken[] = [
+  {
+    name: "SEI",
+    chainId: ChainId.SEI_MAINNET,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["SEI"],
+    redstoneTokenId: RedstoneTokenIds["SEI"],
+  },
+];
+
+const LUKSO_TOKENS: PayoutToken[] = [
+  {
+    name: "LYX",
+    chainId: ChainId.LUKSO,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["LYX"],
+    redstoneTokenId: RedstoneTokenIds["LYX"],
+  },
+];
+
+const LUKSO_TESTNET_TOKENS: PayoutToken[] = [
+  {
+    name: "LYX",
+    chainId: ChainId.LUKSO_TESTNET,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["LYX"],
+    redstoneTokenId: RedstoneTokenIds["LYX"],
+  },
+];
+
+const CELO_TOKENS: PayoutToken[] = [
+  {
+    name: "CELO",
+    chainId: ChainId.CELO,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["CELO"],
+    redstoneTokenId: RedstoneTokenIds["CELO"],
+  },
+  {
+    name: "CUSD",
+    chainId: ChainId.CELO,
+    address: "0x765de816845861e75a25fca122bb6898b8b1282a",
+    decimal: 18,
+    logo: TokenNamesAndLogos["CUSD"],
+    redstoneTokenId: RedstoneTokenIds["CUSD"],
+  },
+];
+
+const CELO_ALFAJORES_TOKENS: PayoutToken[] = [
+  {
+    name: "CELO",
+    chainId: ChainId.CELO_ALFAJORES,
+    address: ethers.constants.AddressZero,
+    decimal: 18,
+    logo: TokenNamesAndLogos["CELO"],
+    redstoneTokenId: RedstoneTokenIds["CELO"],
+  },
+];
+
 export const payoutTokens = [
   ...MAINNET_TOKENS,
   ...OPTIMISM_MAINNET_TOKENS,
@@ -487,6 +554,11 @@ export const payoutTokens = [
   ...SEPOLIA_TOKENS,
   ...SCROLL_TOKENS,
   ...SEI_TOKENS,
+  ...SEI_MAINNET_TOKENS,
+  ...LUKSO_TOKENS,
+  ...LUKSO_TESTNET_TOKENS,
+  ...CELO_TOKENS,
+  ...CELO_ALFAJORES_TOKENS,
 ];
 
 export const getPayoutTokenOptions = (chainId: ChainId): PayoutToken[] => {

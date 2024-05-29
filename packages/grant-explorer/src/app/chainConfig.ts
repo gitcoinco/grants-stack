@@ -8,17 +8,23 @@ import {
   optimism,
   polygon,
   polygonMumbai,
+  arbitrum,
+  arbitrumGoerli,
 } from "wagmi/chains";
-import { arbitrum, arbitrumGoerli } from "viem/chains";
 import {
   pgnTestnet,
   pgn,
   base,
   scroll,
   zkSyncEraMainnet,
-  zkSyncEraTestnet,
+  // zkSyncEraTestnet,
   sepolia,
-  seiDevnet,
+  // seiDevnet,
+  seiMainnet,
+  customLukso as lukso,
+  customLuksoTestnet as luksoTestnet,
+  customCelo as celo,
+  customCeloAlfajores as celoAlfajores,
 } from "common/src/chains";
 import { ChainId } from "common/src/chain-ids";
 
@@ -36,9 +42,11 @@ const TESTNET_CHAINS = [
   arbitrumGoerli,
   avalancheFuji,
   polygonMumbai,
-  zkSyncEraTestnet,
+  // zkSyncEraTestnet,
   sepolia,
-  seiDevnet,
+  // seiDevnet,
+  luksoTestnet,
+  celoAlfajores,
 ].map(ensureValidChainId);
 
 const MAINNET_CHAINS = [
@@ -51,8 +59,10 @@ const MAINNET_CHAINS = [
   zkSyncEraMainnet,
   base,
   scroll,
+  seiMainnet,
   { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
-  seiDevnet,
+  lukso,
+  celo,
 ].map(ensureValidChainId);
 
 export const getEnabledChains = (): Chain[] => {

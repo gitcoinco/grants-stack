@@ -14,7 +14,6 @@ import { RoundCategory } from "data-layer";
 import { errorModalDelayMs } from "../../../constants";
 import { useCreateRoundStore } from "../../../stores/createRoundStore";
 import { saveToIPFS } from "../../api/ipfs";
-import { waitForSubgraphSyncTo } from "../../api/subgraph";
 import {
   ApplicationMetadata,
   ProgressStatus,
@@ -24,12 +23,11 @@ import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import {
   RoundApplicationForm,
-  initialQuestionsQF,
+  getInitialQuestionsQF,
 } from "../RoundApplicationForm";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../api/round");
-jest.mock("../../api/subgraph");
 jest.mock("../../common/Auth");
 jest.mock("../../api/payoutStrategy/payoutStrategy");
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -86,7 +84,6 @@ describe("<RoundApplicationForm />", () => {
       address: "0x0",
     });
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
-    (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue(0);
   });
 
   describe("when saving metadata fails", () => {
@@ -282,7 +279,7 @@ describe("Application Form Builder", () => {
 
   describe("Edit question", () => {
     it("displays edit icons for each editable question", () => {
-      const editableQuestions = initialQuestionsQF.filter(
+      const editableQuestions = getInitialQuestionsQF(1).filter(
         (q) => q.fixed !== true
       );
 
@@ -304,7 +301,7 @@ describe("Application Form Builder", () => {
     });
 
     it("enters editable state showing current title for that question when edit is clicked on that question", () => {
-      const editableQuestions = initialQuestionsQF.filter(
+      const editableQuestions = getInitialQuestionsQF(1).filter(
         (q) => q.fixed !== true
       );
       const questionIndex = randomInt(0, editableQuestions.length);
@@ -329,7 +326,7 @@ describe("Application Form Builder", () => {
     });
 
     it("when in edit mode, saves input as question when save is clicked on that question and reverts to default ui", async () => {
-      const editableQuestions = initialQuestionsQF.filter(
+      const editableQuestions = getInitialQuestionsQF(1).filter(
         (q) => q.fixed !== true
       );
       const questionIndex = randomInt(0, editableQuestions.length);
@@ -368,7 +365,7 @@ describe("Application Form Builder", () => {
 
   describe("Encrypted toggle", () => {
     it("displays toggle for encryption option for each editable question", () => {
-      const editableQuestions = initialQuestionsQF.filter(
+      const editableQuestions = getInitialQuestionsQF(1).filter(
         (q) => q.fixed !== true
       );
 
@@ -390,7 +387,7 @@ describe("Application Form Builder", () => {
     });
 
     it("toggles each encryption option when clicked", async () => {
-      const editableQuestions = initialQuestionsQF.filter(
+      const editableQuestions = getInitialQuestionsQF(1).filter(
         (q) => q.fixed !== true
       );
 
@@ -425,7 +422,7 @@ describe("Application Form Builder", () => {
 
   describe("Required toggle", () => {
     it("displays *Required for required option for each editable question", () => {
-      const editableQuestions = initialQuestionsQF.filter(
+      const editableQuestions = getInitialQuestionsQF(1).filter(
         (q) => q.fixed !== true
       );
       renderWithContext(
@@ -447,7 +444,7 @@ describe("Application Form Builder", () => {
     });
 
     it("toggle each required option when clicked", () => {
-      const editableQuestions = initialQuestionsQF.filter(
+      const editableQuestions = getInitialQuestionsQF(1).filter(
         (q) => q.fixed !== true
       );
       renderWithContext(
@@ -506,7 +503,7 @@ describe("Application Form Builder", () => {
 
   describe("Remove question", () => {
     it("displays remove icon for each editable question", () => {
-      const editableQuestions = initialQuestionsQF.filter(
+      const editableQuestions = getInitialQuestionsQF(1).filter(
         (q) => q.fixed !== true
       );
       renderWithContext(
@@ -527,7 +524,7 @@ describe("Application Form Builder", () => {
     });
 
     it("removes question when remove icon is clicked", () => {
-      const editableQuestions = initialQuestionsQF.filter(
+      const editableQuestions = getInitialQuestionsQF(1).filter(
         (q) => q.fixed !== true
       );
 
@@ -580,7 +577,7 @@ describe("Application Form Builder", () => {
     });
 
     it("adds a new question on clicking add a new question button", async () => {
-      const editableQuestions = initialQuestionsQF;
+      const editableQuestions = getInitialQuestionsQF(1);
       const newTitle = "New Question";
 
       renderWithContext(

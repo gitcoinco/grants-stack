@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import {
   ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
-  formatUTCDateAsISOString,
+  formatLocalDateAsISOString,
 } from "common";
 import {
   makeProgramData,
@@ -332,19 +332,17 @@ describe("<ViewProgram />", () => {
         "application-end-time-period"
       );
 
-      const utcApplicationStartTime = formatUTCDateAsISOString(
+      const ApplicationStartTime = formatLocalDateAsISOString(
         stubRound!.applicationsStartTime
       );
-      const utcApplicationEndTime = formatUTCDateAsISOString(
+      const ApplicationEndTime = formatLocalDateAsISOString(
         stubRound!.applicationsEndTime
       );
 
       expect(applicationStartTimePeriod.textContent).toEqual(
-        utcApplicationStartTime
+        ApplicationStartTime
       );
-      expect(applicationEndTimePeriod.textContent).toEqual(
-        utcApplicationEndTime
-      );
+      expect(applicationEndTimePeriod.textContent).toEqual(ApplicationEndTime);
     });
 
     it("displays round start and end dates", async () => {
@@ -369,15 +367,13 @@ describe("<ViewProgram />", () => {
         "round-end-time-period"
       );
 
-      const utcRoundStartTime = formatUTCDateAsISOString(
+      const RoundStartTime = formatLocalDateAsISOString(
         stubRound!.roundStartTime
       );
-      const utcRoundEndTime = formatUTCDateAsISOString(stubRound!.roundEndTime);
+      const RoundEndTime = formatLocalDateAsISOString(stubRound!.roundEndTime);
 
-      expect(roundStartTimePeriodElement.textContent).toEqual(
-        utcRoundStartTime
-      );
-      expect(roundEndTimePeriodElement.textContent).toEqual(utcRoundEndTime);
+      expect(roundStartTimePeriodElement.textContent).toEqual(RoundStartTime);
+      expect(roundEndTimePeriodElement.textContent).toEqual(RoundEndTime);
     });
 
     it("displays create round link", async () => {

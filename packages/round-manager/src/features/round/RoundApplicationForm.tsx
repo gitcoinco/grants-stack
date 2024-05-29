@@ -6,7 +6,7 @@ import {
   LockOpenIcon,
 } from "@heroicons/react/outline";
 import { PencilIcon, PlusSmIcon, XIcon } from "@heroicons/react/solid";
-import { useAllo } from "common";
+import { isLitUnavailable, useAllo } from "common";
 import { Button } from "common/src/styles";
 import { RoundCategory } from "data-layer";
 import _ from "lodash";
@@ -44,7 +44,7 @@ import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
 
-export const initialQuestionsQF: SchemaQuestion[] = [
+export const getInitialQuestionsQF = (chainId: number): SchemaQuestion[] => [
   {
     id: 0,
     title: "Payout Wallet Address",
@@ -59,7 +59,7 @@ export const initialQuestionsQF: SchemaQuestion[] = [
     id: 1,
     title: "Email Address",
     required: true,
-    encrypted: true,
+    encrypted: !isLitUnavailable(chainId),
     hidden: true,
     type: "email",
   },
@@ -81,12 +81,12 @@ export const initialQuestionsQF: SchemaQuestion[] = [
   },
 ];
 
-export const initialQuestionsDirect: SchemaQuestion[] = [
+export const getInitialQuestionsDirect = (chainId: number) => [
   {
     id: 1,
     title: "Email Address",
     required: true,
-    encrypted: true,
+    encrypted: !isLitUnavailable(chainId),
     hidden: true,
     type: "email",
     fixed: true,
@@ -102,25 +102,6 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
   },
   {
     id: 3,
-    title: "Amount requested",
-    required: true,
-    encrypted: false,
-    hidden: true,
-    type: "number",
-    fixed: false,
-  },
-  {
-    id: 4,
-    title: "Payout token",
-    required: true,
-    encrypted: false,
-    hidden: true,
-    type: "dropdown",
-    choices: ["DAI"], // ETH is not supported.
-    fixed: false,
-  },
-  {
-    id: 5,
     title: "Payout wallet address",
     required: true,
     encrypted: false,
@@ -130,7 +111,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     metadataExcluded: true,
   },
   {
-    id: 6,
+    id: 4,
     title: "Milestones",
     required: true,
     encrypted: false,
@@ -138,7 +119,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     type: "paragraph",
   },
   {
-    id: 7,
+    id: 5,
     title: "Funding Sources",
     required: true,
     encrypted: false,
@@ -146,7 +127,7 @@ export const initialQuestionsDirect: SchemaQuestion[] = [
     type: "short-answer",
   },
   {
-    id: 8,
+    id: 6,
     title: "Team Size",
     required: true,
     encrypted: false,
@@ -185,7 +166,7 @@ export function RoundApplicationForm(props: {
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [openAddQuestionModal, setOpenAddQuestionModal] = useState(false);
   const [toEdit, setToEdit] = useState<EditQuestion | undefined>();
-  const { signer: walletSigner } = useWallet();
+  const { signer: walletSigner, chain } = useWallet();
 
   const { currentStep, setCurrentStep, stepsCount, formData } =
     useContext(FormContext);
@@ -206,8 +187,8 @@ export function RoundApplicationForm(props: {
   const defaultQuestions: ApplicationMetadata["questions"] = questionsArg
     ? questionsArg
     : roundCategory === RoundCategory.QuadraticFunding
-    ? initialQuestionsQF
-    : initialQuestionsDirect;
+    ? getInitialQuestionsQF(chain.id)
+    : getInitialQuestionsDirect(chain.id);
 
   const { control, handleSubmit } = useForm<Round>({
     defaultValues: {
@@ -350,7 +331,7 @@ export function RoundApplicationForm(props: {
     },
     {
       name: "Indexing",
-      description: "The subgraph is indexing the data.",
+      description: "The data is being indexed.",
       status: indexingStatus,
     },
     {

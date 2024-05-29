@@ -24,6 +24,8 @@ import {
   Contribution,
   RoundForExplorer,
   ExpandedApplicationRef,
+  Payout,
+  RoundApplicationPayout,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -49,6 +51,7 @@ import {
   getRoundsQuery,
   getDonationsByDonorAddress,
   getApplicationsForExplorer,
+  getPayoutsByChainIdRoundIdProjectId,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -61,7 +64,6 @@ import { mergeCanonicalAndLinkedProjects } from "./utils";
  *
  * @param fetch - The fetch implementation to use for making HTTP requests.
  * @param search - The configuration for the search API.
- * @param subgraph - The configuration for the subgraph API.
  * @param indexer - The configuration for the indexer API.
  * @param ipfs - The configuration for the IPFS gateway.
  * @param passport - The configuration for the Passport verifier.
@@ -72,7 +74,6 @@ import { mergeCanonicalAndLinkedProjects } from "./utils";
 export class DataLayer {
   private searchResultsPageSize: number;
   private searchApiClient: SearchApi;
-  private subgraphEndpointsByChainId: Record<number, string>;
   private ipfsGateway: string;
   private collectionsSource: collections.CollectionsSource;
   private gsIndexerEndpoint: string;
@@ -80,7 +81,6 @@ export class DataLayer {
   constructor({
     fetch,
     search,
-    subgraph,
     indexer,
     ipfs,
     collections,
@@ -89,9 +89,6 @@ export class DataLayer {
     search: {
       pagination?: { pageSize: number };
       baseUrl: string;
-    };
-    subgraph?: {
-      endpointsByChainId: Record<number, string>;
     };
     indexer: {
       baseUrl: string;
@@ -111,7 +108,6 @@ export class DataLayer {
       }),
     );
     this.searchResultsPageSize = search.pagination?.pageSize ?? 10;
-    this.subgraphEndpointsByChainId = subgraph?.endpointsByChainId ?? {};
     this.ipfsGateway = ipfs?.gateway ?? "https://ipfs.io";
     this.collectionsSource =
       collections?.googleSheetsUrl === undefined
@@ -687,6 +683,20 @@ export class DataLayer {
         donation.application !== null && donation.application?.project !== null
       );
     });
+  }
+
+  async getPayoutsByChainIdRoundIdProjectId(args: {
+    chainId: number;
+    roundId: string;
+    projectId: string;
+  }): Promise<RoundApplicationPayout> {
+    const response: { round: RoundApplicationPayout } = await request(
+      this.gsIndexerEndpoint,
+      getPayoutsByChainIdRoundIdProjectId,
+      args,
+    );
+
+    return response.round;
   }
 
   /**

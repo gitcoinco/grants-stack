@@ -1,5 +1,5 @@
 {
-  "include": ["src/**/*"],
+  "include": ["src/*"],
   "compilerOptions": {
     "target": "es2020",
     "lib": ["dom", "dom.iterable", "esnext"],

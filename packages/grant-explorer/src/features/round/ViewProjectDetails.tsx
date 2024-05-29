@@ -512,11 +512,10 @@ function ApplicationFormAnswers(props: {
   );
 }
 
-const ipfsGateway = process.env.REACT_APP_PINATA_GATEWAY;
+const ipfsGateway = process.env.REACT_APP_IPFS_BASE_URL;
+
 function ProjectLogo({ logoImg }: { logoImg?: string }) {
-  const src = logoImg
-    ? `https://${ipfsGateway}/ipfs/${logoImg}`
-    : DefaultLogoImage;
+  const src = logoImg ? `${ipfsGateway}/ipfs/${logoImg}` : DefaultLogoImage;
 
   return (
     <img
@@ -595,8 +594,8 @@ export function ProjectStats() {
           isBeforeRoundEndDate === undefined
             ? ""
             : isBeforeRoundEndDate
-            ? "to go"
-            : "Round ended"
+              ? "to go"
+              : "Round ended"
         }
       </Stat>
     </div>

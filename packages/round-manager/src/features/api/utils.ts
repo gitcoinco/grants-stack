@@ -1,10 +1,8 @@
-import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { BigNumber, ethers } from "ethers";
 import {
   ApplicationMetadata,
   InputType,
   IPFSObject,
-  MatchingStatsData,
   Program,
   RevisedMatch,
 } from "./types";
@@ -114,6 +112,31 @@ export const CHAINS: Record<ChainId, Program["chain"]> = {
     name: "SEI Devnet",
     logo: "/logos/sei.png",
   },
+  [ChainId.SEI_MAINNET]: {
+    id: ChainId.SEI_MAINNET,
+    name: "SEI Devnet",
+    logo: "/logos/sei.png",
+  },
+  [ChainId.LUKSO]: {
+    id: ChainId.LUKSO,
+    name: "Lukso",
+    logo: "/logos/lukso-logo.svg",
+  },
+  [ChainId.LUKSO_TESTNET]: {
+    id: ChainId.LUKSO_TESTNET,
+    name: "Lukso Testnet",
+    logo: "/logos/lukso-logo.svg",
+  },
+  [ChainId.CELO]: {
+    id: ChainId.CELO,
+    name: "Celo",
+    logo: "/logos/celo-logo.svg",
+  },
+  [ChainId.CELO_ALFAJORES]: {
+    id: ChainId.CELO_ALFAJORES,
+    name: "Celo Alfajores",
+    logo: "/logos/celo-logo.svg",
+  },
 };
 
 export type SupportType = {
@@ -129,15 +152,15 @@ export type SupportType = {
  * @param cid - the unique content identifier that points to the data
  */
 export const fetchFromIPFS = (cid: string) => {
-  return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
-  ).then((resp) => {
-    if (resp.ok) {
-      return resp.json();
-    }
+  return fetch(`${process.env.REACT_APP_IPFS_BASE_URL}/ipfs/${cid}`).then(
+    (resp) => {
+      if (resp.ok) {
+        return resp.json();
+      }
 
-    return Promise.reject(resp);
-  });
+      return Promise.reject(resp);
+    }
+  );
 };
 
 /**
@@ -295,42 +318,6 @@ export const getTxExplorerForContract = (
     case ChainId.ARBITRUM:
       return `https://arbiscan.io/address/${contractAddress}`;
   }
-};
-/**
- * Generate merkle tree
- *
- * To get merkle Proof: tree.getProof(distributions[0]);
- * @param matchingResults MatchingStatsData[]
- * @returns
- */
-export const generateMerkleTree = (
-  matchingResults: MatchingStatsData[]
-): {
-  distribution: [number, string, BigNumber, string][];
-  tree: StandardMerkleTree<[number, string, BigNumber, string]>;
-  matchingResults: MatchingStatsData[];
-} => {
-  const distribution: [number, string, BigNumber, string][] = [];
-
-  matchingResults.forEach((matchingResult, index) => {
-    matchingResults[index].index = index;
-
-    distribution.push([
-      index,
-      matchingResult.projectPayoutAddress,
-      matchingResult.matchAmountInToken, // TODO: FIX
-      matchingResult.projectId,
-    ]);
-  });
-
-  const tree = StandardMerkleTree.of(distribution, [
-    "uint256",
-    "address",
-    "uint256",
-    "bytes32",
-  ]);
-
-  return { distribution, tree, matchingResults };
 };
 
 export const formatCurrency = (

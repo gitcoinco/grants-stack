@@ -3,9 +3,6 @@ import { Tab, Tabs } from "../common/styles";
 import { toQueryString } from "./RoundsFilter";
 import { RoundStatus } from "./hooks/useFilterRounds";
 import { useMediaQuery } from "@chakra-ui/react";
-import {
-  useAlloVersion,
-} from "common/src/components/AlloVersionSwitcher";
 
 type TabType = {
   to: string;
@@ -40,19 +37,14 @@ export default function LandingTabs() {
       children: isDesktop ? "Explore rounds" : "Rounds",
       tabName: "home-rounds-tab",
     },
-    {
-      to: "/projects",
-      activeRegExp: /^\/projects/,
-      children: isDesktop ? "Explore projects" : "Projects",
-      tabName: "home-projects-tab",
-    },
+    // Note: removing when a GG round is not running.
+    // {
+    //   to: "/projects",
+    //   activeRegExp: /^\/projects/,
+    //   children: isDesktop ? "Explore projects" : "Projects",
+    //   tabName: "home-projects-tab",
+    // },
   ];
-
-  const { version: currentVersion } = useAlloVersion();
-  if (currentVersion === "allo-v1") {
-    // Remove the projects tab if the current version is allo-v1
-    tabs.pop();
-  }
 
   return (
     <Tabs className="font-mono">

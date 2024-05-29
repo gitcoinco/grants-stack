@@ -11,6 +11,7 @@ import {
   DocumentTextIcon,
   InboxIcon,
   UserGroupIcon,
+  UserAddIcon,
 } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
 import { Link, useParams } from "react-router-dom";
@@ -52,11 +53,14 @@ import { getRoundStrategyType } from "common";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import AlloV1 from "common/src/icons/AlloV1";
 import AlloV2 from "common/src/icons/AlloV2";
+import ViewManageTeam from "./ViewManageTeam";
 
 export const isDirectRound = (round: Round | undefined) => {
   return (
     round?.payoutStrategy?.strategyName &&
-    getRoundStrategyType(round.payoutStrategy.strategyName) === "DirectGrants"
+    getRoundStrategyType(round.payoutStrategy.strategyName).includes(
+      "DirectGrants"
+    )
   );
 };
 
@@ -129,10 +133,8 @@ export default function ViewRoundPage() {
                 {round?.tags?.includes("allo-v2") && <AlloV2 color="black" />}
               </div>
               <div className="flex flex-row flex-wrap relative gap-2 md:gap-8 xl:gap-36 pr-44">
-                {!isDirectRound(round) && (
-                  <ApplicationOpenDateRange round={round} />
-                )}
-                <RoundOpenDateRange round={round} />
+                <ApplicationOpenDateRange round={round} />
+                {!isDirectRound(round) && <RoundOpenDateRange round={round} />}
                 <div className="absolute right-0">
                   <ViewGrantsExplorerButton
                     iconStyle="h-4 w-4"
@@ -217,6 +219,29 @@ export default function ViewRoundPage() {
                               data-testid="round-settings"
                             >
                               Round Settings
+                            </span>
+                          </div>
+                        )}
+                      </Tab>
+                      <Tab
+                        className={({ selected }) =>
+                          verticalTabStyles(selected)
+                        }
+                      >
+                        {({ selected }) => (
+                          <div
+                            className={
+                              selected
+                                ? "text-black-500 flex flex-row"
+                                : "flex flex-row"
+                            }
+                          >
+                            <UserAddIcon className="h-6 w-6 mr-2" />
+                            <span
+                              className="mt-0.5"
+                              data-testid="grant-applications"
+                            >
+                              Manage Team
                             </span>
                           </div>
                         )}
@@ -339,6 +364,12 @@ export default function ViewRoundPage() {
                     )}
                     <Tab.Panel>
                       <ViewRoundSettings id={round?.id} />
+                    </Tab.Panel>
+                    <Tab.Panel>
+                      <ViewManageTeam
+                        round={round}
+                        userAddress={address.toString()}
+                      />
                     </Tab.Panel>
                     {!isDirectRound(round) && (
                       <>
@@ -598,9 +629,9 @@ export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
       <span className="text-grey-400 mr-2">Applications:</span>
       <div className="flex flex-row gap-2">
         <p className="flex flex-col">
-          <span>{res.application.iso.start}</span>
+          <span>{res.application.local_iso.start}</span>
           <span className="text-grey-400 text-xs">
-            ({res.application.utc.start})
+            ({res.application.local.start})
           </span>
         </p>
         <p className="flex flex-col">
@@ -608,11 +639,11 @@ export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
         </p>
         <p className="flex flex-col">
           <span className="[&>*]:flex [&>*]:flex-col">
-            {res.application.iso.end}
+            {res.application.local_iso.end}
           </span>
-          {res.application.utc.end && (
+          {res.application.local.end && (
             <span className="text-grey-400 text-xs">
-              {res.application.utc.end}
+              {res.application.local.end}
             </span>
           )}
         </p>
@@ -623,23 +654,24 @@ export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
 
 export function RoundOpenDateRange({ round }: { round: RoundDates }) {
   const res = parseRoundDates(round);
-
   return (
     <div className="flex gap-2 text-sm">
       <ClockIcon className="h-5 w-5 text-grey-400" />
       <span className="text-grey-400 mr-2">Round:</span>
       <div className="flex flex-row gap-2">
         <p className="flex flex-col">
-          <span>{res.round.iso.start}</span>
-          <span className="text-grey-400 text-xs">{res.round.utc.start}</span>
+          <span>{res.round.local_iso.start}</span>
+          <span className="text-grey-400 text-xs">{res.round.local.start}</span>
         </p>
         <p className="flex flex-col">
           <span className="mx-1">-</span>
         </p>
         <p className="flex flex-col">
-          <span className="[&>*]:flex [&>*]:flex-col">{res.round.iso.end}</span>
-          {res.round.utc.end && (
-            <span className="text-grey-400 text-xs">{res.round.utc.end}</span>
+          <span className="[&>*]:flex [&>*]:flex-col">
+            {res.round.local_iso.end}
+          </span>
+          {res.round.local.end && (
+            <span className="text-grey-400 text-xs">{res.round.local.end}</span>
           )}
         </p>
       </div>
@@ -661,7 +693,7 @@ export function RoundBadgeStatus({ round }: { round: Round }) {
         round.applicationsStartTime,
         round.applicationsEndTime || now
       )) ||
-    (roundStrategyType === "DirectGrants" && now.isBefore(roundEnds))
+    (roundStrategyType === "DirectGrants" && now.isBetween(roundEnds, now))
   ) {
     return (
       <div

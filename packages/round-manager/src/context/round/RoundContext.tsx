@@ -4,7 +4,6 @@ import { useWallet } from "../../features/common/Auth";
 import { getRoundById, listRounds } from "../../features/api/round";
 import { datadogLogs } from "@datadog/browser-logs";
 import { DataLayer, useDataLayer } from "data-layer";
-import { switchAlloVersionAndReloadPage } from "common/src/config";
 import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
 
 export interface RoundState {

@@ -32,7 +32,7 @@ export async function roundApplicationsToCSV(
   litContract: string,
   approvedOnly?: boolean
 ) {
-  const remoteUrl = `${process.env.REACT_APP_ALLO_API_URL}/data/${chainId}/rounds/${roundId}/applications.json`;
+  const remoteUrl = `${process.env.REACT_APP_INDEXER_V2_API_URL}/data/${chainId}/rounds/${roundId}/applications.json`;
 
   // Fetch the CSV data
   const response = await fetch(remoteUrl);

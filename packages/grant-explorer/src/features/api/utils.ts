@@ -2,10 +2,10 @@
 import { CartProject, IPFSObject, Round } from "./types";
 import {
   ChainId,
-  graphQlEndpoints,
   NATIVE,
   ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_DIRECT_OLD,
+  txBlockExplorerLinks,
   VotingToken,
 } from "common";
 import { RedstoneTokenIds } from "common/src/chain-ids";
@@ -134,6 +134,31 @@ export const CHAINS: Record<
     name: "SEI Devnet",
     logo: SeiIcon,
   },
+  [ChainId.SEI_MAINNET]: {
+    id: ChainId.SEI_MAINNET,
+    name: "SEI Devnet",
+    logo: SeiIcon,
+  },
+  [ChainId.LUKSO]: {
+    id: ChainId.LUKSO,
+    name: "Lukso",
+    logo: "./logos/lukso-logo.svg",
+  },
+  [ChainId.LUKSO_TESTNET]: {
+    id: ChainId.LUKSO_TESTNET,
+    name: "Lukso Testnet",
+    logo: "./logos/lukso-logo.svg",
+  },
+  [ChainId.CELO]: {
+    id: ChainId.CELO,
+    name: "Celo",
+    logo: "./logos/celo-logo.svg",
+  },
+  [ChainId.CELO_ALFAJORES]: {
+    id: ChainId.CELO_ALFAJORES,
+    name: "Celo Alfajores",
+    logo: "./logos/celo-logo.svg",
+  },
 };
 
 export const TokenNamesAndLogos = {
@@ -154,6 +179,8 @@ export const TokenNamesAndLogos = {
   MUTE: "./logos/mute-logo.svg",
   DATA: "./logos/data-logo.svg",
   SEI: SeiIcon,
+  LYX: "./logos/lukso-logo.svg",
+  CELO: "./logos/celo-logo.svg",
 } as const;
 
 export const MAINNET_TOKENS: VotingToken[] = [
@@ -224,7 +251,7 @@ export const SEPOLIA_TOKENS: VotingToken[] = [
     name: "USDC",
     chainId: ChainId.SEPOLIA,
     address: "0x78e0D07C4A08adFfe610113310163b40E7e47e81",
-    decimal: 6,
+    decimal: 18,
     logo: TokenNamesAndLogos["USDC"],
     redstoneTokenId: RedstoneTokenIds["USDC"],
     defaultForVoting: false,
@@ -361,16 +388,6 @@ const ZKSYNC_ERA_TESTNET_TOKENS: VotingToken[] = [
     logo: TokenNamesAndLogos["ETH"],
     redstoneTokenId: RedstoneTokenIds["ETH"],
     defaultForVoting: true,
-    canVote: true,
-  },
-  {
-    name: "TEST",
-    chainId: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
-    address: "0x8fd03Cd97Da068CC242Ab7551Dc4100DD405E8c7",
-    decimal: 18,
-    logo: TokenNamesAndLogos["DAI"],
-    redstoneTokenId: RedstoneTokenIds["DAI"],
-    defaultForVoting: false,
     canVote: true,
   },
 ];
@@ -796,6 +813,141 @@ const SEI_TOKENS: VotingToken[] = [
     defaultForVoting: true,
     canVote: true,
   },
+  {
+    name: "SEI",
+    chainId: ChainId.SEI_DEVNET,
+    address: NATIVE as `0x${string}`,
+    decimal: 18,
+    logo: TokenNamesAndLogos["SEI"],
+    redstoneTokenId: RedstoneTokenIds["SEI"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
+const SEI_MAINNET_TOKENS: VotingToken[] = [
+  {
+    name: "SEI",
+    chainId: ChainId.SEI_MAINNET,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["SEI"],
+    redstoneTokenId: RedstoneTokenIds["SEI"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "SEI",
+    chainId: ChainId.SEI_MAINNET,
+    address: NATIVE as `0x${string}`,
+    decimal: 18,
+    logo: TokenNamesAndLogos["SEI"],
+    redstoneTokenId: RedstoneTokenIds["SEI"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
+const LUKSO_TOKENS: VotingToken[] = [
+  {
+    name: "LYX",
+    chainId: ChainId.LUKSO,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["LYX"],
+    redstoneTokenId: RedstoneTokenIds["LYX"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "LYX",
+    chainId: ChainId.LUKSO,
+    address: NATIVE as `0x${string}`,
+    decimal: 18,
+    logo: TokenNamesAndLogos["LYX"],
+    redstoneTokenId: RedstoneTokenIds["LYX"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
+const LUKSO_TESTNET_TOKENS: VotingToken[] = [
+  {
+    name: "LYX",
+    chainId: ChainId.LUKSO_TESTNET,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["LYX"],
+    redstoneTokenId: RedstoneTokenIds["LYX"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "LYX",
+    chainId: ChainId.LUKSO_TESTNET,
+    address: NATIVE as `0x${string}`,
+    decimal: 18,
+    logo: TokenNamesAndLogos["LYX"],
+    redstoneTokenId: RedstoneTokenIds["LYX"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+];
+
+const CELO_TOKENS: VotingToken[] = [
+  {
+    name: "CELO",
+    chainId: ChainId.CELO,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["CELO"],
+    redstoneTokenId: RedstoneTokenIds["CELO"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "CELO",
+    chainId: ChainId.CELO,
+    address: NATIVE as `0x${string}`,
+    decimal: 18,
+    logo: TokenNamesAndLogos["CELO"],
+    redstoneTokenId: RedstoneTokenIds["CELO"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "CUSD",
+    chainId: ChainId.CELO,
+    address: "0x765de816845861e75a25fca122bb6898b8b1282a",
+    decimal: 18,
+    logo: TokenNamesAndLogos["CELO"],
+    redstoneTokenId: RedstoneTokenIds["CELO"],
+    defaultForVoting: false,
+    canVote: true,
+  },
+];
+
+const CELO_ALFAJORES_TOKENS: VotingToken[] = [
+  {
+    name: "CELO",
+    chainId: ChainId.CELO,
+    address: zeroAddress,
+    decimal: 18,
+    logo: TokenNamesAndLogos["CELO"],
+    redstoneTokenId: RedstoneTokenIds["CELO"],
+    defaultForVoting: true,
+    canVote: true,
+  },
+  {
+    name: "CELO",
+    chainId: ChainId.CELO,
+    address: NATIVE as `0x${string}`,
+    decimal: 18,
+    logo: TokenNamesAndLogos["CELO"],
+    redstoneTokenId: RedstoneTokenIds["CELO"],
+    defaultForVoting: true,
+    canVote: true,
+  },
 ];
 
 export const votingTokens = [
@@ -817,6 +969,11 @@ export const votingTokens = [
   ...SCROLL_TOKENS,
   ...SEPOLIA_TOKENS,
   ...SEI_TOKENS,
+  ...SEI_MAINNET_TOKENS,
+  ...LUKSO_TOKENS,
+  ...LUKSO_TESTNET_TOKENS,
+  ...CELO_TOKENS,
+  ...CELO_ALFAJORES_TOKENS,
 ];
 
 type VotingTokensMap = Record<ChainId, VotingToken[]>;
@@ -843,44 +1000,15 @@ export const votingTokensMap: VotingTokensMap = {
   [ChainId.SEPOLIA]: SEPOLIA_TOKENS,
   [ChainId.SCROLL]: SCROLL_TOKENS,
   [ChainId.SEI_DEVNET]: SEI_TOKENS,
+  [ChainId.SEI_MAINNET]: SEI_MAINNET_TOKENS,
+  [ChainId.LUKSO]: LUKSO_TOKENS,
+  [ChainId.LUKSO_TESTNET]: LUKSO_TESTNET_TOKENS,
+  [ChainId.CELO]: CELO_TOKENS,
+  [ChainId.CELO_ALFAJORES]: CELO_ALFAJORES_TOKENS,
 };
 
 export const getVotingTokenOptions = (chainId: ChainId): VotingToken[] =>
   votingTokensMap[chainId];
-
-/**
- * Fetch subgraph network for provided web3 network
- * The backticks are here to work around a failure of a test that tetsts graphql_fetch,
- * and fails if the endpoint is undefined, so we convert the undefined to a string here in order not to fail the test.
- *
- * @param chainId - The chain ID of the blockchain
- * @returns the subgraph endpoint
- */
-const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
-
-export const txExplorerLinks: Record<ChainId, string> = {
-  [ChainId.DEV1]: "",
-  [ChainId.DEV2]: "",
-  [ChainId.MAINNET]: "https://etherscan.io/tx/",
-  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "https://optimistic.etherscan.io/tx/",
-  [ChainId.FANTOM_MAINNET_CHAIN_ID]: "https://ftmscan.com/tx/",
-  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "ttps://testnet.ftmscan.com/tx/",
-  [ChainId.PGN_TESTNET]: "https://explorer.sepolia.publicgoods.network/tx/",
-  [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
-  [ChainId.ARBITRUM_GOERLI]: "https://goerli.arbiscan.io/tx/",
-  [ChainId.ARBITRUM]: "https://arbiscan.io/tx/",
-  [ChainId.POLYGON]: "https://polygonscan.com/tx/",
-  [ChainId.POLYGON_MUMBAI]: "https://mumbai.polygonscan.com/tx/",
-  [ChainId.FUJI]: "https://snowtrace.io/tx/",
-  [ChainId.AVALANCHE]: "https://testnet.snowtrace.io/txt/",
-  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
-    "https://goerli.explorer.zksync.io/tx/",
-  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
-  [ChainId.BASE]: "https://basescan.org/tx/",
-  [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
-  [ChainId.SCROLL]: "https://scrollscan.com/tx/",
-  [ChainId.SEI_DEVNET]: "https://seistream.app/tx/",
-};
 
 /**
  * Fetch the correct transaction explorer for the provided web3 network
@@ -890,61 +1018,7 @@ export const txExplorerLinks: Record<ChainId, string> = {
  * @returns the transaction explorer URL for the provided transaction hash and network
  */
 export const getTxExplorerTxLink = (chainId: ChainId, txHash: string) => {
-  return txExplorerLinks[chainId] + txHash;
-};
-
-/**
- * Fetch data from a GraphQL endpoint
- *
- * @param query - The query to be executed
- * @param chainId - The chain ID of the blockchain indexed by the subgraph
- * @param variables - The variables to be used in the query
- * @param fromProjectRegistry - Override to fetch from grant hub project registry subgraph
- * @returns The result of the query
- */
-export const __deprecated_graphql_fetch = async (
-  query: string,
-  chainId: ChainId,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  variables: object = {},
-  fromProjectRegistry = false
-) => {
-  let endpoint = getGraphQLEndpoint(chainId);
-
-  if (fromProjectRegistry) {
-    endpoint = endpoint.replace("grants-round", "grants-hub");
-  }
-
-  return fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query, variables }),
-  }).then((resp) => {
-    if (resp.ok) {
-      return resp.json();
-    }
-
-    return Promise.reject(resp);
-  });
-};
-
-/**
- * Fetch data from IPFS
- *
- * @param cid - the unique content identifier that points to the data
- */
-export const __deprecated_fetchFromIPFS = (cid: string) => {
-  return fetch(
-    `https://${process.env.REACT_APP_PINATA_GATEWAY}/ipfs/${cid}`
-  ).then((resp) => {
-    if (resp.ok) {
-      return resp.json();
-    }
-
-    return Promise.reject(resp);
-  });
+  return txBlockExplorerLinks[chainId] + txHash;
 };
 
 /**
@@ -1039,6 +1113,7 @@ export function getChainIds(): number[] {
       Number(ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID),
       Number(ChainId.BASE),
       Number(ChainId.SCROLL),
+      Number(ChainId.SEI_MAINNET),
     ];
   } else {
     return Object.values(ChainId)
@@ -1050,10 +1125,14 @@ export function getChainIds(): number[] {
 export const isDirectRound = (round: Round) =>
   // @ts-expect-error support old rounds
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT_OLD ||
-  round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT;
+  round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT ||
+  round.payoutStrategy.strategyName === "allov2.DirectGrantsLiteStrategy";
 
-export const isInfiniteDate = (roundTime: Date) =>
-  roundTime.toString() === "Invalid Date";
+export const isInfiniteDate = (roundTime: Date) => {
+  return (
+    roundTime.toString() === "Invalid Date" || roundTime.getFullYear() === 1970
+  );
+};
 
 type GroupedCartProjects = {
   [chainId: number]: {

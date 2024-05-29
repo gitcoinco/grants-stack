@@ -1,6 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
 import { InformationCircleIcon } from "@heroicons/react/solid";
-import { getConfig } from "common/src/config";
 import { BigNumber, ethers } from "ethers";
 import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
@@ -15,10 +14,18 @@ import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal from "../common/ProgressModal";
 import { Spinner } from "../common/Spinner";
-import { classNames, useAllo, useTokenPrice } from "common";
+import {
+  PayoutToken,
+  classNames,
+  payoutTokens,
+  useAllo,
+  useTokenPrice,
+} from "common";
 import { assertAddress } from "common/src/address";
-import { PayoutToken, payoutTokens } from "../api/payoutTokens";
-import { formatUnits } from "viem";
+import { formatUnits, zeroAddress } from "viem";
+import { Erc20__factory } from "../../types/generated/typechain";
+import { useWallet } from "../common/Auth";
+import { getAlloAddress } from "common/src/allo/backends/allo-v2";
 
 export function useContractAmountFunded(args: {
   round: Round | undefined;
@@ -134,6 +141,7 @@ export default function FundContract(props: {
 }) {
   const { address } = useAccount();
   const navigate = useNavigate();
+  const { signer } = useWallet();
 
   const [amountToFund, setAmountToFund] = useState("");
   const [insufficientBalance, setInsufficientBalance] = useState(false);
@@ -219,7 +227,6 @@ export default function FundContract(props: {
     matchingFundPayoutToken?.decimal ?? 18
   );
   // todo: replace 0x0000000000000000000000000000000000000000 with native token for respective chain
-  const alloVersion = getConfig().allo.version;
 
   const tokenDetailUser =
     matchingFundPayoutToken?.address == ethers.constants.AddressZero
@@ -651,6 +658,37 @@ export default function FundContract(props: {
         setOpenProgressModal(true);
       }, errorModalDelayMs);
 
+      let tokenAllowance = BigNumber.from(0);
+
+      let requireTokenApproval = false;
+
+      const amount = ethers.utils.parseUnits(
+        amountToFund.toString(),
+        matchingFundPayoutToken.decimal
+      );
+
+      const alloVersion = props.round?.tags?.includes("allo-v2") ? "v2" : "v1";
+      const roundAddress =
+        alloVersion === "v1" ? props.round?.id : getAlloAddress(chainId);
+
+      if (
+        matchingFundPayoutToken?.address !== undefined &&
+        matchingFundPayoutToken?.address !== zeroAddress &&
+        signer
+      ) {
+        const erc20 = Erc20__factory.connect(
+          matchingFundPayoutToken?.address,
+          signer
+        );
+        tokenAllowance = await erc20.allowance(
+          address as string,
+          roundAddress as string
+        );
+        if (tokenAllowance.lt(amount)) {
+          requireTokenApproval = true;
+        }
+      }
+
       await fundContract({
         allo,
         roundId: props.roundId,
@@ -658,6 +696,7 @@ export default function FundContract(props: {
           parseFloat(amountToFund).toFixed(matchingFundPayoutToken.decimal)
         ),
         payoutToken: matchingFundPayoutToken,
+        requireTokenApproval,
       });
     } catch (error) {
       if (error === Logger.errors.TRANSACTION_REPLACED) {

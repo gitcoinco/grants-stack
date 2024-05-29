@@ -136,6 +136,7 @@ export interface Allo {
       index: number;
       status: ApplicationStatus;
     }[];
+    strategy?: RoundCategory;
   }) => AlloOperation<
     Result<void>,
     {
@@ -149,6 +150,7 @@ export interface Allo {
     tokenAddress: Address;
     roundId: string;
     amount: bigint;
+    requireTokenApproval?: boolean;
   }) => AlloOperation<
     Result<null>,
     {
@@ -202,9 +204,39 @@ export interface Allo {
   >;
 
   batchDistributeFunds: (args: {
-    payoutStrategy: Address;
+    payoutStrategyOrPoolId: string;
     allProjects: MatchingStatsData[];
     projectIdsToBePaid: string[];
+  }) => AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  >;
+
+  payoutDirectGrants: (args: {
+    roundId: Hex | number;
+    token: Hex;
+    amount: bigint;
+    recipientAddress: Hex;
+    recipientId: Hex;
+    vault?: Hex;
+    applicationIndex?: number;
+  }) => AlloOperation<
+    Result<{ blockNumber: bigint }>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<void>;
+    }
+  >;
+
+  managePoolManager: (args: {
+    poolId: string;
+    manager: Address;
+    addOrRemove: "add" | "remove";
   }) => AlloOperation<
     Result<null>,
     {

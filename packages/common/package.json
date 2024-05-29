@@ -16,7 +16,7 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@allo-team/allo-v2-sdk": "^1.0.61",
+    "@allo-team/allo-v2-sdk": "^1.0.76",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@gitcoinco/passport-sdk-types": "^0.2.0",
@@ -32,6 +32,7 @@
     "ethers": "^5.6.5",
     "framer-motion": "^10.12.7",
     "markdown-it": "^13.0.1",
+    "moment-timezone": "^0.5.45",
     "react": "^18.2.0",
     "react-hook-form": "^7.42.1",
     "react-router": "^6",

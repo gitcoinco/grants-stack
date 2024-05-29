@@ -18,15 +18,24 @@ import {
 import { ProgressStatus } from "../../api/types";
 import { errorModalDelayMs } from "../../../constants";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
-import { AlloOperation, useAllo } from "common";
+import { AlloOperation, useAllo, AlloV1 } from "common";
 
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
   useAllo: jest.fn(),
 }));
 
+jest.mock("common/src/allo/backends/allo-v1");
+
+const mockBulkUpdateApplicationStatus = jest.fn().mockResolvedValue({
+  type: "success",
+});
+
+jest
+  .spyOn(AlloV1.prototype, "bulkUpdateApplicationStatus")
+  .mockImplementation(mockBulkUpdateApplicationStatus);
+
 jest.mock("../../api/application");
-jest.mock("../../api/subgraph");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
@@ -288,46 +297,34 @@ describe("<ApplicationsApproved />", () => {
     });
 
     // TODO -- can't get this to pass -- expect(updateApplicationStatuses).toBeCalled() fails even though updateApplicationStatuses is called
-    // it("update round contract", async () => {
-    //   (updateApplicationStatuses as jest.Mock).mockResolvedValue({
-    //     transactionBlockNumber: 99,
-    //   });
-    //   (waitForSubgraphSyncTo as jest.Mock).mockResolvedValue({});
-    //
-    //   renderWithContext(
-    //     <ApplicationsApproved />,
-    //     {
-    //       applications: grantApplications,
-    //       isLoading: false,
-    //     },
-    //     {
-    //       IPFSCurrentStatus: ProgressStatus.IS_SUCCESS,
-    //       contractUpdatingStatus: ProgressStatus.IS_SUCCESS,
-    //     }
-    //   );
-    //   fireEvent.click(
-    //     screen.getByRole("button", {
-    //       name: /Select/i,
-    //     })
-    //   );
-    //   fireEvent.click(screen.queryAllByTestId("reject-button")[0]);
-    //   fireEvent.click(
-    //     screen.getByRole("button", {
-    //       name: /Continue/i,
-    //     })!
-    //   );
-    //
-    //   fireEvent.click(screen.getByRole("button", { name: /Confirm/i })!);
-    //
-    //   await screen.findByTestId("progress-modal");
-    //   await screen.findByTestId("Updating-complete-icon");
-    //
-    //   expect(updateApplicationStatuses).toBeCalled();
-    //   const updateApplicationStatusesFirstCall = (updateApplicationStatuses as jest.Mock)
-    //     .mock.calls[0];
-    //   const actualRoundId = updateApplicationStatusesFirstCall[0];
-    //   expect(actualRoundId).toEqual(roundIdOverride);
-    // });
+    it("update round contract", async () => {
+      renderWithContext(<ApplicationsApproved />, {
+        applications: grantApplications,
+      });
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /Select/i,
+        })
+      );
+      fireEvent.click(screen.queryAllByTestId("reject-button")[0]);
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /Continue/i,
+        })!
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /Confirm/i })!);
+
+      await screen.findByTestId("progress-modal");
+
+      expect(mockBulkUpdateApplicationStatus).toBeCalled();
+      const updateApplicationStatusesFirstCall = (
+        mockBulkUpdateApplicationStatus as jest.Mock
+      ).mock.calls[0][0].roundId;
+
+      const actualRound = updateApplicationStatusesFirstCall;
+      expect(actualRound).toEqual(roundIdOverride);
+    });
 
     it("closes confirmation when cancel is selected", async () => {
       setupInBulkSelectionMode();

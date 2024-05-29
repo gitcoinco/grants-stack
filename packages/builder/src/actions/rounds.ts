@@ -83,6 +83,7 @@ export const loadRound =
     switch (v2Round.strategyName) {
       case "allov1.Direct":
       case "allov2.DirectGrantsSimpleStrategy":
+      case "allov2.DirectGrantsLiteStrategy":
         // application times == round times
         roundPayoutStrategy = RoundCategory.Direct;
         applicationsStartTime =

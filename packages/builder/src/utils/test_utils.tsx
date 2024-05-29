@@ -175,9 +175,6 @@ const dataLayerConfig = new DataLayer({
       pageSize: 50,
     },
   },
-  subgraph: {
-    endpointsByChainId: "http://localhost/",
-  },
   indexer: {
     baseUrl: "http://localhost/",
   },

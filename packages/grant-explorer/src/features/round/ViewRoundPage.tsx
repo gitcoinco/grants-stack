@@ -11,9 +11,9 @@ import {
 import {
   CalendarIcon,
   ChainId,
-  formatUTCDateAsISOString,
   getRoundStrategyTitle,
-  getUTCTime,
+  getLocalTime,
+  formatLocalDateAsISOString,
   renderToPlainText,
   truncateDescription,
   useTokenPrice,
@@ -88,17 +88,34 @@ export default function ViewRound() {
   );
 
   const currentTime = new Date();
-  const isBeforeRoundStartDate = round && round.roundStartTime >= currentTime;
-  const isAfterRoundStartDate = round && round.roundStartTime <= currentTime;
+  const isBeforeRoundStartDate =
+    round &&
+    (isDirectRound(round)
+      ? round.applicationsStartTime
+      : round.roundStartTime) >= currentTime;
+  const isAfterRoundStartDate =
+    round &&
+    (isDirectRound(round)
+      ? round.applicationsStartTime
+      : round.roundStartTime) <= currentTime;
   // covers infinte dates for roundEndDate
   const isAfterRoundEndDate =
     round &&
-    (isInfiniteDate(round.roundEndTime)
+    (isInfiniteDate(
+      isDirectRound(round) ? round.applicationsEndTime : round.roundEndTime
+    )
       ? false
-      : round && round.roundEndTime <= currentTime);
+      : round &&
+        (isDirectRound(round)
+          ? round.applicationsEndTime
+          : round.roundEndTime) <= currentTime);
   const isBeforeRoundEndDate =
     round &&
-    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > currentTime);
+    (isInfiniteDate(
+      isDirectRound(round) ? round.applicationsEndTime : round.roundEndTime
+    ) ||
+      (isDirectRound(round) ? round.applicationsEndTime : round.roundEndTime) >
+        currentTime);
 
   const alloVersion = getAlloVersion();
 
@@ -396,6 +413,12 @@ function AfterRoundStart(props: {
     roundId,
     tokenData.symbol,
   ]);
+  const roundStart = isDirectRound(round)
+    ? round.applicationsStartTime
+    : round.roundStartTime;
+  const roundEnd = isDirectRound(round)
+    ? round.applicationsEndTime
+    : round.roundEndTime;
 
   return (
     <>
@@ -483,19 +506,19 @@ function AfterRoundStart(props: {
                   <span>
                     <span className="px-2 rounded bg-grey-50">
                       <span className="mr-1">
-                        {formatUTCDateAsISOString(round.roundStartTime)}
+                        {formatLocalDateAsISOString(roundStart)}
                       </span>
-                      <span>{getUTCTime(round.roundStartTime)}</span>
+                      <span>{getLocalTime(roundStart)}</span>
                     </span>
                     <span className="px-1.5">-</span>
                     <span className="px-2 rounded bg-grey-50">
-                      {!isInfiniteDate(round.roundEndTime) ? (
+                      {!isInfiniteDate(roundEnd) ? (
                         <>
                           <span className="mr-1">
-                            {formatUTCDateAsISOString(round.roundEndTime)}
+                            {formatLocalDateAsISOString(roundEnd)}
                           </span>
 
-                          <span>{getUTCTime(round.roundEndTime)}</span>
+                          <span>{getLocalTime(roundEnd)}</span>
                         </>
                       ) : (
                         <span>No End Date</span>
@@ -1187,10 +1210,9 @@ function PreRoundPage(props: {
     round && round.applicationsStartTime >= currentTime;
   // covers infinite dates for applicationsEndTime
   const isDuringApplicationPeriod =
-    round &&
-    round.applicationsStartTime <= currentTime &&
-    (isInfiniteDate(round.applicationsEndTime) ||
-      round.applicationsEndTime >= currentTime);
+    (round && currentTime >= round.applicationsStartTime) ||
+    currentTime <=
+      (isInfiniteDate(round.applicationsEndTime) || round.applicationsEndTime);
 
   const isAfterApplicationEndDateAndBeforeRoundStartDate =
     round &&
@@ -1229,20 +1251,20 @@ function PreRoundPage(props: {
             Application Period:
             <span className="mx-1">
               <span className="mr-1">
-                {formatUTCDateAsISOString(round.applicationsStartTime)}
+                {formatLocalDateAsISOString(round.applicationsStartTime)}
               </span>
 
-              <span>( {getUTCTime(round.applicationsStartTime)} )</span>
+              <span>( {getLocalTime(round.applicationsStartTime)} )</span>
 
               <span className="mx-1">-</span>
 
               {!isInfiniteDate(round.applicationsEndTime) && (
                 <>
                   <span className="mr-1">
-                    {formatUTCDateAsISOString(round.applicationsEndTime)}
+                    {formatLocalDateAsISOString(round.applicationsEndTime)}
                   </span>
 
-                  <span>{getUTCTime(round.applicationsEndTime)}</span>
+                  <span>{getLocalTime(round.applicationsEndTime)}</span>
                 </>
               )}
               {isInfiniteDate(round.applicationsEndTime) && (
@@ -1259,20 +1281,20 @@ function PreRoundPage(props: {
             Round Period:
             <span>
               <span className="mx-1">
-                {formatUTCDateAsISOString(round.roundStartTime)}
+                {formatLocalDateAsISOString(round.roundStartTime)}
               </span>
 
-              <span>( {getUTCTime(round.roundStartTime)} )</span>
+              <span>( {getLocalTime(round.roundStartTime)} )</span>
 
               <span className="mx-1">-</span>
 
               {!isInfiniteDate(round.roundEndTime) && (
                 <>
                   <span className="mr-1">
-                    {formatUTCDateAsISOString(round.roundEndTime)}
+                    {formatLocalDateAsISOString(round.roundEndTime)}
                   </span>
 
-                  <span>{getUTCTime(round.roundEndTime)}</span>
+                  <span>{getLocalTime(round.roundEndTime)}</span>
                 </>
               )}
               {isInfiniteDate(round.roundEndTime) && (

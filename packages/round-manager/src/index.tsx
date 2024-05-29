@@ -31,6 +31,7 @@ import ViewApplication from "./features/round/ViewApplicationPage";
 import ViewRoundPage from "./features/round/ViewRoundPage";
 import { initSentry } from "./sentry";
 import { UpdateRoundProvider } from "./context/round/UpdateRoundContext";
+import { UpdateRolesProvider } from "./context/round/UpdateRolesContext";
 import AlloWrapper from "./features/api/AlloWrapper";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import { getConfig } from "common/src/config";
@@ -54,9 +55,6 @@ const dataLayerConfig = new DataLayer({
     pagination: {
       pageSize: 50,
     },
-  },
-  subgraph: {
-    endpointsByChainId: getConfig().dataLayer.subgraphEndpoints,
   },
   indexer: {
     baseUrl: `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`,
@@ -101,7 +99,9 @@ root.render(
                             <FundContractProvider>
                               <ReclaimFundsProvider>
                                 <UpdateRoundProvider>
-                                  <ViewRoundPage />
+                                  <UpdateRolesProvider>
+                                    <ViewRoundPage />
+                                  </UpdateRolesProvider>
                                 </UpdateRoundProvider>
                               </ReclaimFundsProvider>
                             </FundContractProvider>

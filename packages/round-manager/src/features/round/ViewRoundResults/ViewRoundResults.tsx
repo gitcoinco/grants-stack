@@ -8,7 +8,7 @@ import {
   UploadIcon,
 } from "@heroicons/react/solid";
 import { useDropzone } from "react-dropzone";
-import { classNames, isGG20Round } from "common";
+import { PayoutToken, classNames, payoutTokens, isGG20Round } from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRoundMatchingFunds } from "../../../hooks";
 import {
@@ -30,7 +30,6 @@ import { useFinalizeRound } from "../../../context/round/FinalizeRoundContext";
 import { errorModalDelayMs } from "../../../constants";
 import { useRoundById } from "../../../context/round/RoundContext";
 import { roundApplicationsToCSV } from "../../api/exports";
-import { PayoutToken, payoutTokens } from "../../api/payoutTokens";
 import { DistributionMatch } from "data-layer";
 import { utils } from "ethers";
 import { useContractAmountFunded } from "../FundContract";
@@ -434,7 +433,7 @@ function ViewRoundResults({
               <div className="flex flex-col mt-4 w-min">
                 <a
                   role={"link"}
-                  href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/vote_coefficients`}
+                  href={`${process.env.REACT_APP_INDEXER_V2_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/vote_coefficients`}
                   className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
                 >
                   <DownloadIcon className="h-5 w-5" />
@@ -451,8 +450,8 @@ function ViewRoundResults({
                   {sybilDefense === "passport-mbds"
                     ? "Matching Distribution"
                     : areMatchingFundsRevised
-                    ? "Revised Matching Distribution"
-                    : "Matching Distribution"}
+                      ? "Revised Matching Distribution"
+                      : "Matching Distribution"}
                 </p>
                 {!readyForPayoutTransactionHash &&
                   (sybilDefense === "passport-mbds" ? (
@@ -654,7 +653,7 @@ function ViewRoundResults({
             <div className="pt-6">
               <a
                 className="flex items-center mb-4"
-                href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/votes`}
+                href={`${process.env.REACT_APP_INDEXER_V2_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/votes`}
               >
                 <span className="w-40">Raw Votes</span>
                 <DownloadIcon className="h-5 w-5" />
@@ -688,14 +687,14 @@ function ViewRoundResults({
               </button>
               <a
                 className="flex items-center mb-4"
-                href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/round`}
+                href={`${process.env.REACT_APP_INDEXER_V2_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/round`}
               >
                 <span className="w-40">Round</span>
                 <DownloadIcon className="h-5 w-5" />
               </a>
               <a
                 className="flex items-center mb-4"
-                href={`${process.env.REACT_APP_ALLO_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/prices`}
+                href={`${process.env.REACT_APP_INDEXER_V2_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/prices`}
               >
                 <span className="w-40">Prices</span>
                 <DownloadIcon className="h-5 w-5" />

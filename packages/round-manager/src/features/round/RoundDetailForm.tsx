@@ -29,6 +29,7 @@ import { Program, Round } from "../api/types";
 import { SupportType } from "../api/utils";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
+import { getTimezoneName } from "common/src/index";
 
 export const RoundValidationSchema = yup.object().shape({
   roundMetadata: yup.object({
@@ -332,9 +333,9 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                               }}
                               isValidDate={disablePastAndBeforeRoundStartDate}
                               initialViewDate={now}
-                              utc={true}
+                              utc={false}
                               dateFormat={"YYYY-MM-DD"}
-                              timeFormat={"HH:mm UTC"}
+                              timeFormat={`HH:mm [${getTimezoneName()}]`}
                             />
                           )}
                         />
@@ -434,9 +435,9 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                 disabled: rollingApplications,
                               }}
                               isValidDate={disableBeforeApplicationStartDate}
-                              utc={true}
+                              utc={false}
                               dateFormat={"YYYY-MM-DD"}
-                              timeFormat={"HH:mm UTC"}
+                              timeFormat={`HH:mm [${getTimezoneName()}]`}
                             />
                           )}
                         />
@@ -510,9 +511,9 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                 "block w-full border-0 p-0 text-gray-900 placeholder-grey-400 focus:ring-0 text-sm",
                             }}
                             isValidDate={disableBeforeApplicationStartDate}
-                            utc={true}
+                            utc={false}
                             dateFormat={"YYYY-MM-DD"}
-                            timeFormat={"HH:mm UTC"}
+                            timeFormat={`HH:mm [${getTimezoneName()}]`}
                           />
                         )}
                       />
@@ -622,25 +623,9 @@ export function RoundDetailForm(props: RoundDetailFormProps) {
                                 }
                               }}
                               isValidDate={disableBeforeRoundStartDate}
-                              utc={true}
-                              // we use renderInput because there is a bug with the library
-                              // if the input is cleared programmatically the value is removed
-                              // but the visual date is not updated
-                              // ref: https://stackoverflow.com/a/64972324/2524608
-                              renderInput={(props) => {
-                                return (
-                                  <input
-                                    {...props}
-                                    value={
-                                      field.value
-                                        ? moment(field.value).format(
-                                            "YYYY-MM-DD HH:mm UTC"
-                                          )
-                                        : ""
-                                    }
-                                  />
-                                );
-                              }}
+                              utc={false}
+                              dateFormat={"YYYY-MM-DD"}
+                              timeFormat={`HH:mm [${getTimezoneName()}]`}
                             />
                           );
                         }}
@@ -1041,7 +1026,7 @@ function ApplicationDatesInformation() {
         type="dark"
         effect="solid"
       >
-        <span className="text-xs">All dates are in UTC.</span>
+        <span className="text-xs">All dates are browser localized.</span>
       </ReactTooltip>
     </>
   );

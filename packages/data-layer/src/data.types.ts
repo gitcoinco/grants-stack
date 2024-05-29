@@ -5,6 +5,7 @@ export type RoundPayoutType =
   | "allov1.Direct"
   | "allov1.QF"
   | "allov2.DirectGrantsSimpleStrategy"
+  | "allov2.DirectGrantsLiteStrategy"
   | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"
   | ""; // This is to handle the cases where the strategyName is not set in a round, mostly spam rounds
 export type RoundVisibilityType = "public" | "private";
@@ -500,6 +501,7 @@ export type TimeFilter = {
   lessThan?: string;
   greaterThanOrEqualTo?: string;
   lessThanOrEqualTo?: string;
+  isNull?: boolean;
 };
 
 export type TimeFilterVariables = {
@@ -507,6 +509,7 @@ export type TimeFilterVariables = {
   applicationsEndTime?: TimeFilter;
   donationsStartTime?: TimeFilter;
   donationsEndTime?: TimeFilter;
+  or?: TimeFilterVariables[];
 };
 
 export type RoundsQueryVariables = {
@@ -756,4 +759,24 @@ export type Contribution = {
     };
   };
   timestamp?: bigint;
+};
+
+export type Payout = {
+  id: string;
+  tokenAddress: string;
+  amount: string;
+  amountInUsd: number;
+  transactionHash: string;
+  timestamp: string;
+  sender: string;
+};
+
+export type RoundApplicationPayout = {
+  id: string;
+  applications: [
+    {
+      id: string;
+      applicationsPayoutsByChainIdAndRoundIdAndApplicationId: Payout[];
+    },
+  ];
 };

@@ -18,7 +18,7 @@ export const useRounds = (
         fetchSpamRounds(),
         dataLayer.getRounds({
           ...variables,
-          first: 100,
+          first: 500,
           chainIds,
         }),
       ]);

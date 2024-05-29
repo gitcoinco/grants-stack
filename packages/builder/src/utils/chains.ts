@@ -21,6 +21,11 @@ import {
   sepolia,
   scroll,
   seiDevnet,
+  seiMainnet,
+  customCelo as celo,
+  customCeloAlfajores as celoAlfajores,
+  customLukso as lukso,
+  customLuksoTestnet as luksoTestnet,
 } from "common/src/chains";
 import { getConfig } from "common/src/config";
 import { polygonMumbai } from "@wagmi/core/chains";
@@ -32,6 +37,8 @@ const availableChains: { [key: string]: Chain } = {
   fantom,
   optimism: customOptimism,
   pgn,
+  celo,
+  celoAlfajores,
   arbitrum,
   avalanche,
   polygon: customPolygon,
@@ -46,6 +53,9 @@ const availableChains: { [key: string]: Chain } = {
   zkSyncEraTestnet,
   sepolia,
   seiDevnet,
+  seiMainnet,
+  lukso,
+  luksoTestnet,
 };
 
 const stagingChains = [
@@ -69,6 +79,11 @@ const stagingChains = [
   zkSyncEraTestnet,
   sepolia,
   seiDevnet,
+  seiMainnet,
+  celo,
+  celoAlfajores,
+  lukso,
+  luksoTestnet,
 ];
 
 const productionChains = [
@@ -83,6 +98,9 @@ const productionChains = [
   base,
   scroll,
   seiDevnet,
+  seiMainnet,
+  celo,
+  lukso,
 ];
 
 export function getEnabledChainsAndProviders() {
@@ -105,17 +123,9 @@ export function getEnabledChainsAndProviders() {
       ? chainsOverride.split(",").map((name) => name.trim())
       : [];
 
-  let usingDevOnlyChains = true;
-
   if (selectedChainsNames.length > 0) {
     // if REACT_APP_CHAINS_OVERRIDE is specified we use those
     selectedChainsNames.forEach((name) => {
-      // if it's not a local dev chain, it means we are using external
-      // chains and we need infura/alchemy ids to be set
-      if (!/^dev[1-9]+$/.test(name)) {
-        usingDevOnlyChains = false;
-      }
-
       const chain = availableChains[name];
       if (chain === undefined) {
         throw new Error(
@@ -128,28 +138,21 @@ export function getEnabledChainsAndProviders() {
   } else if (config.appEnv === "production") {
     // if REACT_APP_CHAINS_OVERRIDE is not specified  ans we are in production
     // we use the default chains for production environments
-    usingDevOnlyChains = false;
     chains.push(...productionChains);
   } else {
     // if REACT_APP_CHAINS_OVERRIDE is not specified we use the
     // default chains for staging
-    usingDevOnlyChains = false;
     chains.push(...stagingChains);
   }
 
-  if (!usingDevOnlyChains) {
-    if (
-      process.env.NODE_ENV !== "test" &&
-      (config.blockchain.infuraId === undefined ||
-        config.blockchain.alchemyId === undefined)
-    ) {
-      throw new Error(
-        "REACT_APP_INFURA_ID and REACT_APP_ALCHEMY_ID must be set to use non-local chains"
-      );
-    }
-
+  if (config.blockchain.infuraId !== undefined) {
     providers.push(
-      infuraProvider({ apiKey: config.blockchain.infuraId!, priority: 0 }),
+      infuraProvider({ apiKey: config.blockchain.infuraId!, priority: 0 })
+    );
+  }
+
+  if (config.blockchain.alchemyId !== undefined) {
+    providers.push(
       alchemyProvider({ apiKey: config.blockchain.alchemyId!, priority: 1 })
     );
   }

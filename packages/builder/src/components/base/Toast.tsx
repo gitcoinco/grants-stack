@@ -46,7 +46,12 @@ export default function Toast({
             }`}
           >
             <div className="flex items-start">{children}</div>
-            <button type="button" onClick={onClose} className="inline-flex">
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex"
+              aria-label="Add"
+            >
               <Cross color={colors["quaternary-text"]} />
             </button>
           </div>

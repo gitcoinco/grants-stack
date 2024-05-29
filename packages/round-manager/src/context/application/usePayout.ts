@@ -1,12 +1,12 @@
-import { Dispatch, SetStateAction, useState } from "react";
 import { ProgressStatus, ProgressStep } from "../../features/api/types";
-import {
-  DirectPayoutStrategy__factory,
-  Erc20__factory,
-} from "../../types/generated/typechain";
-import { BigNumber, ethers } from "ethers";
-import { waitForSubgraphSyncTo } from "../../features/api/subgraph";
-import { PayoutToken } from "../../features/api/payoutTokens";
+import { Erc20__factory } from "../../types/generated/typechain";
+import { ethers } from "ethers";
+import { PayoutToken } from "common";
+import { Allo } from "common";
+import { Hex } from "viem";
+import { datadogRum } from "@datadog/browser-rum";
+import { datadogLogs } from "@datadog/browser-logs";
+import { useState } from "react";
 
 export function usePayout() {
   const [contractApproveSpendStatus, setContractApproveSpendStatus] =
@@ -30,7 +30,7 @@ export function usePayout() {
     },
     {
       name: "Indexing",
-      description: "The subgraph is indexing the data.",
+      description: "The data is being indexed.",
       status: indexingStatus,
     },
     {
@@ -43,25 +43,6 @@ export function usePayout() {
     },
   ];
 
-  async function waitForSubgraphToUpdate(
-    setIndexingStatus: Dispatch<SetStateAction<ProgressStatus>>,
-    signerOrProvider: ethers.Signer,
-    transactionBlockNumber: number
-  ) {
-    try {
-      setIndexingStatus(ProgressStatus.IN_PROGRESS);
-
-      const chainId = await signerOrProvider.getChainId();
-      await waitForSubgraphSyncTo(chainId, transactionBlockNumber);
-
-      setIndexingStatus(ProgressStatus.IS_SUCCESS);
-    } catch (error) {
-      console.error("waitForSubgraphToUpdate", error);
-      setIndexingStatus(ProgressStatus.IS_ERROR);
-      throw error;
-    }
-  }
-
   const resetStatuses = () => {
     setContractApproveSpendStatus(ProgressStatus.NOT_STARTED);
     setContractUpdatingStatus(ProgressStatus.NOT_STARTED);
@@ -72,32 +53,36 @@ export function usePayout() {
     address: string;
     signer: ethers.Signer;
     token: PayoutToken;
-    projectId: string;
+    applicationId: Hex;
     applicationIndex: number;
-    payoutStrategyAddress: string;
-    payoutAmount: BigNumber;
-    payoutVault: string;
-    payoutWallet: string;
-    allowance: BigNumber;
+    roundId: Hex | number;
+    roundAddress: Hex;
+    payoutAmount: bigint;
+    payoutVault: Hex;
+    payoutWallet: Hex;
+    allowance: bigint;
+    allo: Allo;
   };
 
-  const triggerPayout = async ({
+  async function triggerPayout({
     address,
     signer,
     token,
-    projectId,
+    applicationId,
     applicationIndex,
-    payoutStrategyAddress,
+    roundId,
+    roundAddress,
     payoutAmount,
     payoutVault,
     payoutWallet,
     allowance,
-  }: Args) => {
+    allo,
+  }: Args) {
     resetStatuses();
 
     // if not enough allowance, check if the wallet connected is the same as the payout vault
     if (
-      allowance.lt(payoutAmount) &&
+      allowance < payoutAmount &&
       address.toLowerCase() !== payoutVault.toLowerCase()
     ) {
       throw new Error(
@@ -106,14 +91,11 @@ export function usePayout() {
     }
 
     // trigger allowance when needed
-    if (allowance.lt(payoutAmount)) {
+    if (allowance < payoutAmount) {
       const erc20 = Erc20__factory.connect(token.address, signer);
       setContractApproveSpendStatus(ProgressStatus.IN_PROGRESS);
       try {
-        const approveReceipt = await erc20.approve(
-          payoutStrategyAddress,
-          payoutAmount
-        );
+        const approveReceipt = await erc20.approve(roundAddress, payoutAmount);
         await approveReceipt.wait();
         setContractApproveSpendStatus(ProgressStatus.IS_SUCCESS);
       } catch (error) {
@@ -124,35 +106,51 @@ export function usePayout() {
       setContractApproveSpendStatus(ProgressStatus.IS_SUCCESS);
     }
 
-    // Payout
-    const directPayout = DirectPayoutStrategy__factory.connect(
-      payoutStrategyAddress,
-      signer
-    );
-    let txBlockNumber: number;
     try {
       setContractUpdatingStatus(ProgressStatus.IN_PROGRESS);
-      const payoutReceipt = await directPayout.payout({
-        vault: payoutVault,
-        token: token.address,
-        amount: payoutAmount,
-        grantAddress: payoutWallet,
-        projectId: projectId,
-        applicationIndex: applicationIndex,
-        allowanceModule: ethers.constants.AddressZero,
-        allowanceSignature: ethers.constants.HashZero,
-      });
-      const res = await payoutReceipt.wait();
-      txBlockNumber = res.blockNumber;
-      setContractUpdatingStatus(ProgressStatus.IS_SUCCESS);
+
+      await allo
+        .payoutDirectGrants({
+          roundId: roundId,
+          token: token.address,
+          amount: payoutAmount,
+          recipientAddress: payoutWallet,
+          recipientId: applicationId,
+          applicationIndex: applicationIndex,
+          vault: payoutVault,
+        })
+        .on("transaction", (res) => {
+          if (res.type === "success") {
+            setContractUpdatingStatus(ProgressStatus.IS_SUCCESS);
+          } else {
+            console.error("Transaction Error", res.error);
+            datadogRum.addError(res.error);
+            datadogLogs.logger.warn("transaction error");
+          }
+        })
+        .on("transactionStatus", (res) => {
+          if (res.type === "success") {
+            setContractUpdatingStatus(ProgressStatus.IS_SUCCESS);
+            setIndexingStatus(ProgressStatus.IN_PROGRESS);
+          } else {
+            setContractUpdatingStatus(ProgressStatus.IS_ERROR);
+
+            console.error("Transaction Status Error", res.error);
+            datadogRum.addError(res.error);
+            datadogLogs.logger.warn("transaction status error");
+          }
+        })
+        .on("indexingStatus", (res) => {
+          if (res.type === "success") {
+            setIndexingStatus(ProgressStatus.IS_SUCCESS);
+          }
+        })
+        .execute();
     } catch (error) {
       setContractUpdatingStatus(ProgressStatus.IS_ERROR);
       throw error;
     }
-
-    // Wait for subgraph to update
-    waitForSubgraphToUpdate(setIndexingStatus, signer, txBlockNumber);
-  };
+  }
 
   return {
     triggerPayout,

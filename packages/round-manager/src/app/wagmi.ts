@@ -28,24 +28,34 @@ import {
   base,
   scroll,
   zkSyncEraMainnet,
-  zkSyncEraTestnet,
+  // zkSyncEraTestnet,
   sepolia,
-  seiDevnet,
+  // seiDevnet,
+  seiMainnet,
+  customLukso as lukso,
+  customLuksoTestnet as luksoTestnet,
+  customCelo as celo,
+  customCeloAlfajores as celoAlfajores,
 } from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
+import { getConfig } from "common/src/config";
+
+const config = getConfig();
 
 const testnetChains = () => {
   return [
     { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
-    zkSyncEraTestnet,
+    // zkSyncEraTestnet,
     pgnTestnet,
     arbitrumGoerli,
     polygonMumbai,
     avalancheFuji,
     sepolia,
-    seiDevnet,
+    // seiDevnet,
+    luksoTestnet,
+    celoAlfajores,
   ];
 };
 
@@ -60,8 +70,10 @@ const mainnetChains = () => {
     zkSyncEraMainnet,
     base,
     scroll,
+    seiMainnet,
     { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
-    seiDevnet,
+    lukso,
+    celo,
   ];
 };
 
@@ -74,19 +86,23 @@ const allChains: Chain[] =
 const projectId =
   process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
   "2685061cae0bcaf2b244446153eda9e1";
+
+const providers = [publicProvider({ priority: 2 })];
+if (config.blockchain.infuraId !== undefined) {
+  providers.push(
+    infuraProvider({ apiKey: config.blockchain.infuraId!, priority: 0 })
+  );
+}
+
+if (config.blockchain.alchemyId !== undefined) {
+  providers.push(
+    alchemyProvider({ apiKey: config.blockchain.alchemyId!, priority: 1 })
+  );
+}
+
 export const { chains, provider, webSocketProvider } = configureChains(
   allChains,
-  [
-    infuraProvider({
-      apiKey: process.env.REACT_APP_INFURA_ID as string,
-      priority: 0,
-    }),
-    alchemyProvider({
-      apiKey: process.env.REACT_APP_ALCHEMY_ID as string,
-      priority: 1,
-    }),
-    publicProvider({ priority: 2 }),
-  ]
+  providers
 );
 
 // Custom wallet connectors: more can be added by going here:
@@ -97,8 +113,8 @@ const connectors = connectorsForWallets([
     wallets: [
       injectedWallet({ chains }),
       walletConnectWallet({ chains, projectId }),
-      coinbaseWallet({ appName: "Gitcoin Round Manager", chains }),
       metaMaskWallet({ chains, projectId }),
+      coinbaseWallet({ appName: "Gitcoin Round Manager", chains }),
     ],
   },
 ]);

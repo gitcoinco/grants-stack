@@ -37,11 +37,18 @@ describe("listPrograms", () => {
           programs: [
             {
               id: expectedProgram.id,
-              roles: [{ address: expectedProgram.operatorWallets[0] }],
+              roles: [
+                {
+                  address: expectedProgram.operatorWallets[0],
+                  role: "OWNER",
+                  createdAtBlock: "0",
+                },
+              ],
               metadata: {
                 name: expectedProgram.metadata?.name,
               },
               createdByAddress: expectedProgram.operatorWallets[0],
+              tags: ["program"],
             },
           ],
         }),
@@ -70,10 +77,17 @@ describe("getProgramById", () => {
         getProgramById: jest.fn().mockResolvedValue({
           program: {
             id: expectedProgram.id,
-            roles: [{ address: expectedProgram.operatorWallets[0] }],
+            roles: [
+              {
+                address: expectedProgram.operatorWallets[0],
+                role: "OWNER",
+                createdAtBlock: "0",
+              },
+            ],
             metadata: {
               name: expectedProgram.metadata?.name,
             },
+            tags: ["program"],
           },
         }),
       }

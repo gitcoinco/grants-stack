@@ -7,6 +7,8 @@ import AVAXIcon from "common/src/icons/AVAX.svg";
 import POLIcon from "common/src/icons/pol-logo.svg";
 import ZkSyncIcon from "common/src/icons/zksync-logo.svg";
 import ScrollIcon from "common/src/icons/scroll-logo.svg";
+import LuksoIcon from "common/src/icons/lukso-logo.svg";
+import CeloIcon from "common/src/icons/celo-logo.svg";
 import FantomFTMLogo from "common/src/assets/fantom-ftm-logo.png";
 import { SeiIcon } from "common/src/chains";
 import {
@@ -53,6 +55,11 @@ export const networkPrettyNames: { [key in ChainName]: string } = {
   scroll: "Scroll",
   sepolia: "sepolia",
   seiDevnet: "SEI Devnet",
+  seiMainnet: "SEI Mainnet",
+  lukso: "Lukso",
+  luksoTestnet: "Lukso Testnet",
+  celo: "Celo",
+  celoAlfajores: "Celo Alfajores",
 };
 
 export const networkIcon: { [key in ChainName]: string } = {
@@ -77,6 +84,11 @@ export const networkIcon: { [key in ChainName]: string } = {
   scroll: ScrollIcon,
   sepolia: EthDiamondGlyph,
   seiDevnet: SeiIcon,
+  seiMainnet: SeiIcon,
+  lukso: LuksoIcon,
+  luksoTestnet: LuksoIcon,
+  celo: CeloIcon,
+  celoAlfajores: CeloIcon,
 };
 
 export const payoutIcon: { [key in ChainName]: string } = {
@@ -101,6 +113,11 @@ export const payoutIcon: { [key in ChainName]: string } = {
   scroll: ScrollIcon,
   sepolia: EthDiamondGlyph,
   seiDevnet: SeiIcon,
+  seiMainnet: SeiIcon,
+  lukso: LuksoIcon,
+  luksoTestnet: LuksoIcon,
+  celo: CeloIcon,
+  celoAlfajores: CeloIcon,
 };
 
 export function getNetworkIcon(chainId: ChainId): string {

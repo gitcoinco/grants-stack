@@ -1,10 +1,11 @@
-import { graphql_fetch } from "common";
+import { DataLayer } from "data-layer";
 import useSWR from "swr";
 
 export function usePayouts(args: {
   chainId: number;
   roundId?: string;
-  applicationIndex?: number;
+  projectId: string;
+  dataLayer: DataLayer;
 }) {
   return useSWR<
     {
@@ -12,37 +13,39 @@ export function usePayouts(args: {
       amount: string;
       createdAt: string;
       txnHash: string;
+      tokenAddress: string;
     }[]
   >(
-    args.roundId !== undefined && args.applicationIndex !== undefined
-      ? [args.chainId, args.roundId, args.applicationIndex]
+    args.roundId !== undefined && args.projectId !== undefined
+      ? [args.chainId, args.roundId, args.projectId]
       : null,
     async () => {
-      const res = await graphql_fetch(
-        `
-        query GetApplicationsByRoundId($roundId: String!, $applicationIndex: Int!) {
-          roundApplications(where: {
-            round: $roundId
-            applicationIndex: $applicationIndex
-          }) {
-            round {
-              payoutStrategy {
-                payouts {
-                  amount
-                  createdAt
-                  txnHash
-                  applicationIndex
-                }
-              }
-            }
-          }
-        }
-      `,
-        args.chainId,
-        { roundId: args.roundId, applicationIndex: args.applicationIndex }
-      );
+      if (args.roundId === undefined || args.projectId === undefined) {
+        // If roundId or recipientId is not provided, return empty array
+        return [];
+      }
 
-      return res.data.roundApplications[0].round.payoutStrategy.payouts ?? [];
+      const result = await args.dataLayer.getPayoutsByChainIdRoundIdProjectId({
+        chainId: args.chainId,
+        roundId: args.roundId,
+        projectId: args.projectId,
+      });
+
+      const payouts =
+        result.applications[0]
+          .applicationsPayoutsByChainIdAndRoundIdAndApplicationId;
+
+      const mappedPayouts = payouts.map((payout) => {
+        return {
+          applicationIndex: Number(result.applications[0].id),
+          amount: payout.amount,
+          createdAt: payout.timestamp,
+          txnHash: payout.transactionHash,
+          tokenAddress: payout.tokenAddress,
+        };
+      });
+
+      return mappedPayouts;
     }
   );
 }
