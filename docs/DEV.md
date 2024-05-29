@@ -32,11 +32,11 @@ pnpm install
 There are several important environment variables you need to be aware of. Many of them have been given default values that will allow
 the packages to build and run out of the box, but not with all functionality.
 
-`REACT_APP_PINATA_JWT` is required in Builder and Manager to upload and pin metadata files to Pinata. Until a custom JWT is set, you will not be able to upload and pin files. Create your account on https://pinata.cloud and set your own JWT value in the `.env`
+`REACT_APP_PINATA_JWT` is **required** in Builder and Manager to upload and pin metadata files to Pinata. Until a custom JWT is set, you will not be able to upload and pin files. Create your account on https://pinata.cloud and set your own JWT value in the `.env`
 
 The following can be customized, but should work out of the box:
 
-Create a WalletConnect application needed for [RainbowKit](https://www.rainbowkit.com/docs/installation#configure)
+Create a WalletConnect application needed for [RainbowKit.](https://www.rainbowkit.com/docs/installation#configure)
 Set the WalletConnect applicationId in the `.env` file: `REACT_APP_WALLETCONNECT_PROJECT_ID=[YOUR APPLICATION ID]`
 
 Set your Alchemy API Key: `REACT_APP_ALCHEMY_ID=[YOUR ALCHEMY API KEY]`
