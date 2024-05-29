@@ -5,6 +5,7 @@ import { CartProject, ProgressStatus } from "./features/api/types";
 import { Allo, ChainId } from "common";
 import { useCartStorage } from "./store";
 import {
+  Address,
   Hex,
   InternalRpcError,
   parseAbi,
@@ -369,10 +370,26 @@ async function switchToChain(
           chain: {
             id: nextChainData.id,
             name: nextChainData.name,
-            network: nextChainData.network,
-            nativeCurrency: nextChainData.nativeCurrency,
-            rpcUrls: nextChainData.rpcUrls,
-            blockExplorers: nextChainData.blockExplorers,
+            network: nextChainData.blockExplorer,
+            nativeCurrency: {
+              decimals: nextChainData.tokens.find(
+                (token) => token.address === zeroAddress
+              )?.decimals as number,
+              name: nextChainData.tokens.find(
+                (token) => token.address === zeroAddress
+              )?.code as string,
+              symbol: nextChainData.tokens.find(
+                (token) => token.address === zeroAddress
+              )?.code as string,
+            },
+            rpcUrls: {
+              default: {
+                http: [nextChainData.rpc],
+              },
+              public: {
+                http: [nextChainData.rpc],
+              },
+            },
           },
         });
       } catch (e) {

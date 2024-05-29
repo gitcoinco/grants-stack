@@ -1,5 +1,4 @@
 import "@rainbow-me/rainbowkit/styles.css";
-
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
@@ -15,7 +14,6 @@ import { TChain, getChains } from "common";
 import { zeroAddress } from "viem";
 
 const testnetChains = () => {
-  // todo: create viem chains from getChains
   return getChains().filter((chain) => chain.type === "testnet");
 };
 
@@ -28,8 +26,9 @@ const allChains: TChain[] =
     ? [...testnetChains(), ...mainnetChains()]
     : [...mainnetChains()];
 
-// fixme: this needs finished/fixedÍ
+// Map the TChain to Chain type. This is required until we update the dependencies.
 const allChainsMap: Chain[] = allChains.map((chain) => {
+  // Filter by zero address to get the native token
   const nativeToken = chain.tokens.find(
     (token) => token.address === zeroAddress
   );
@@ -63,7 +62,6 @@ const projectId =
   process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
   "2685061cae0bcaf2b244446153eda9e1";
 export const { chains, provider, webSocketProvider } = configureChains(
-  // note: this is a map of all available chains for environment
   allChainsMap,
   [
     infuraProvider({
