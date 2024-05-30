@@ -1,12 +1,12 @@
 import "@rainbow-me/rainbowkit/styles.css";
-import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
   injectedWallet,
   walletConnectWallet,
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { createClient, configureChains, Chain } from "wagmi";
+import { createClient, configureChains } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -35,11 +35,16 @@ const allChainsMap: Chain[] = allChains.map((chain) => {
   const nativeToken = chain.tokens.find(
     (token) => token.address === zeroAddress
   );
+  const blob = new Blob([chain.icon], { type: "image/svg+xml" });
+  const url = URL.createObjectURL(blob);
+
   // Map the TChain to Chain
   const mappedChain: Chain = {
     id: chain.id,
     name: chain.prettyName,
     network: chain.name,
+    iconUrl: url,
+    iconBackground: "rgba(255, 255, 255, 0)",
     nativeCurrency: {
       name: nativeToken?.code as string,
       symbol: nativeToken?.code as string,
