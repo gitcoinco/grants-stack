@@ -12,6 +12,9 @@ import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { TChain, getChains } from "common";
 import { zeroAddress } from "viem";
+import { getConfig } from "common/src/config";
+
+const config = getConfig();
 
 const testnetChains = () => {
   return getChains().filter((chain) => chain.type === "testnet");

@@ -672,7 +672,7 @@ export default function FundContract(props: {
 
       const amount = ethers.utils.parseUnits(
         amountToFund.toString(),
-        matchingFundPayoutToken.decimal
+        matchingFundPayoutToken.decimals
       );
 
       const alloVersion = props.round?.tags?.includes("allo-v2") ? "v2" : "v1";
