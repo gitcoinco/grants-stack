@@ -52,7 +52,7 @@ const allChainsMap: Chain[] = allChains.map((chain) => {
   // Map the TChain to Chain
   const mappedChain: Chain = {
     id: chain.id,
-    name: chain.name,
+    name: chain.prettyName,
     network: chain.name,
     nativeCurrency: {
       name: nativeToken?.code as string,

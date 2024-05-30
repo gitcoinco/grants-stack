@@ -30,6 +30,7 @@ import { usePayouts } from "./usePayouts";
 import { Hex, isAddress, zeroAddress } from "viem";
 import { useDataLayer } from "data-layer";
 import { getConfig } from "common/src/config";
+import { redstoneTokenIds } from "common/src/chains";
 
 const schema = yup.object().shape({
   amount: yup
@@ -115,6 +116,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
       address: zeroAddress,
       decimals: 1,
       canVote: false,
+      redstoneTokenId: "",
     };
   };
 
@@ -170,6 +172,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
         address: tokenValue,
         decimals: decimal,
         canVote: false,
+        redstoneTokenId: "",
       };
       setTokenInfo(customTokenInfo);
     } else {

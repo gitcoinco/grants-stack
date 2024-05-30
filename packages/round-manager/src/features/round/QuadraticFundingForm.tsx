@@ -101,6 +101,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
       default: true,
       decimals: 0,
       canVote: false,
+      redstoneTokenId: "",
     },
     ...getPayoutTokens(chain.id),
   ];

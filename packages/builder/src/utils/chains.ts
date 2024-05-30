@@ -26,7 +26,7 @@ const allChainsMap: Chain[] = allChains.map((chain) => {
   // Map the TChain to Chain
   const mappedChain: Chain = {
     id: chain.id,
-    name: chain.name,
+    name: chain.prettyName,
     network: chain.name,
     nativeCurrency: {
       name: nativeToken?.code as string,
@@ -51,7 +51,7 @@ const allChainsMap: Chain[] = allChains.map((chain) => {
 const stagingChains = testnetChains().map((chain) => {
   const mappedChain: Chain = {
     id: chain.id,
-    name: chain.name,
+    name: chain.prettyName,
     network: chain.name,
     nativeCurrency: {
       name: chain.tokens[0].code,
@@ -75,7 +75,7 @@ const stagingChains = testnetChains().map((chain) => {
 const productionChains = mainnetChains().map((chain) => {
   const mappedChain: Chain = {
     id: chain.id,
-    name: chain.name,
+    name: chain.prettyName,
     network: chain.name,
     nativeCurrency: {
       name: chain.tokens[0].code,
