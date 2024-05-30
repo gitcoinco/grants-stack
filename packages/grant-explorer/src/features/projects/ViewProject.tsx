@@ -8,18 +8,15 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useEnsName } from "wagmi";
 import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
-import { ReactComponent as EthereumIcon } from "../../assets/icons/ethereum-icon.svg";
 import { ReactComponent as GlobeIcon } from "../../assets/icons/globe-icon.svg";
 import { ProjectBanner } from "../common/ProjectBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import { useDataLayer, v2Project } from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
-import { truncate } from "../common/utils/truncate";
 import { useProject } from "./hooks/useProject";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
@@ -181,9 +178,6 @@ function ProjectLinks({ project }: { project?: v2Project }) {
     metadata: { createdAt, website, projectTwitter, projectGithub, userGithub },
   } = project ?? { metadata: {} };
 
-  const recipient = "0x00";
-  const ens = useEnsName({ address: recipient, enabled: Boolean(recipient) });
-
   const createdOn =
     createdAt &&
     `Created on: ${formatDateWithOrdinal(new Date(createdAt ?? 0))}`;
@@ -195,10 +189,6 @@ function ProjectLinks({ project }: { project?: v2Project }) {
         createdAt ? "" : "bg-grey-100 animate-pulse"
       }`}
     >
-      <ProjectLink icon={EthereumIcon}>
-        {ens.data || truncate(recipient)}
-      </ProjectLink>
-      <ProjectLink icon={CalendarIcon}>{createdOn}</ProjectLink>
       <ProjectLink url={website} icon={GlobeIcon}>
         {website}
       </ProjectLink>
@@ -225,6 +215,7 @@ function ProjectLinks({ project }: { project?: v2Project }) {
           {userGithub}
         </ProjectLink>
       )}
+      <ProjectLink icon={CalendarIcon}>{createdOn}</ProjectLink>
     </div>
   );
 }
