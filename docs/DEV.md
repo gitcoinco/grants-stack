@@ -17,52 +17,49 @@ While there is no central backend application, all three dApps rely on various e
 
 2. **[allo-indexer](https://github.com/gitcoinco/allo-indexer)**: This indexer is employed to index on-chain data and generate Quadratic Funding (QF) matches.
 
-3. **Subgraph Instances**: There is one subgraph instance for each blockchain to efficiently query blockchain data.
+3. **IPFS**: IPFS is utilized for reading metadata files, providing decentralized file storage.
 
-4. **IPFS**: IPFS is utilized for reading metadata files, providing decentralized file storage.
-
-5. **[Pinata](https://www.pinata.cloud/)**: Pinata is used to upload and pin files to IPFS, ensuring the availability of data.
+4. **[Pinata](https://www.pinata.cloud/)**: Pinata is used to upload and pin files to IPFS, ensuring the availability of data.
 
 
-### Setup root project dependencies
+### Setup root project dependencies & env
 
 ```sh
 cd grants-stack
+cp .env.example .env
 pnpm install
 ```
+There are several important environment variables you need to be aware of. Many of them have been given default values that will allow
+the packages to build and run out of the box, but not with all functionality.
 
-### Setup Builder
+`REACT_APP_PINATA_JWT` is **required** in Builder and Manager to upload and pin metadata files to Pinata. Until a custom JWT is set, you will not be able to upload and pin files. Create your account on https://pinata.cloud and set your own JWT value in the `.env`
+
+The following can be customized, but should work out of the box:
+
+Create a WalletConnect application needed for [RainbowKit.](https://www.rainbowkit.com/docs/installation#configure)
+Set the WalletConnect applicationId in the `.env` file: `REACT_APP_WALLETCONNECT_PROJECT_ID=[YOUR APPLICATION ID]`
+
+Set your Alchemy API Key: `REACT_APP_ALCHEMY_ID=[YOUR ALCHEMY API KEY]`
+
+The default configuration loads data from the production indexer.
+You can point your dapps to a local indexer changing the following variable: `REACT_APP_INDEXER_V2_API_URL=http://localhost:PORT_NUMBER`
+
+### Run All Packages
+
+From the main `grants-stack` directory:
+
+```sh
+./scripts/dev start
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view Builder in a browser, [http://localhost:3001](http://localhost:3001) to view Explorer, [http://localhost:3002](http://localhost:3002) to view Manager.
+
+### Run a Single Package
+
+Navigate to a single package (i.e. `packages/builder`) and start pnpm:
 
 ```sh
 cd packages/builder
-cp .env.example .env
-```
-
-Create a WalletConnect application needed for RainbowKit: https://www.rainbowkit.com/docs/installation#configure
-Set the WalletConnect applicationId in the .env file:
-
-```
-REACT_APP_WALLETCONNECT_PROJECT_ID=[YOUR APPLICATION ID]
-```
-
-Set your Alchemy API Key:
-
-```
-REACT_APP_ALCHEMY_ID=[YOUR ALCHEMY API KEY]
-```
-
-The default configuration loads data from the production indexer.
-You can point your dapps to a local indexer changing the following variable:
-
-```
-REACT_APP_INDEXER_V2_API_URL=http://localhost:PORT_NUMBER
-```
-
-### Run Builder
-
-Inside `packages/builder` run:
-
-```
 pnpm start
 ```
 
@@ -118,7 +115,7 @@ Synpress is an E2E testing framework for testing dApps. It works by setting up m
 
 ### Running Synpress
 
-1. Put `TEST_PRIVATE_KEY` in `.env.local` in the respective directory (e.g. `packages/round-manager`)
+1. Put `TEST_PRIVATE_KEY` in `.env.local` in the main `.env`
 2. Start the dev server `pnpm start`
 3. Download playwright with `pnpm exec playwright install`
 4. Run tests with `pnpm synpress:test`
