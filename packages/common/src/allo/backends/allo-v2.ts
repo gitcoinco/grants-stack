@@ -470,8 +470,6 @@ export class AlloV2 implements Allo {
         this.chainId
       );
 
-      console.log("args", args);
-
       if (args.roundData.roundCategory === RoundCategory.QuadraticFunding) {
         const initStrategyData: DonationVotingMerkleDistributionStrategyTypes.InitializeData =
           {
@@ -540,15 +538,11 @@ export class AlloV2 implements Allo {
           chain: this.chainId,
         });
 
-        console.log("===> 1");
-
         initStrategyDataEncoded =
           await strategy.getInitializeData(initStrategyData);
 
         const alloToken =
           args.roundData.token === zeroAddress ? NATIVE : args.roundData.token;
-
-        console.log("===> 2", alloToken);
 
         token = getAddress(alloToken);
       } else if (args.roundData.roundCategory === RoundCategory.Direct) {
@@ -636,8 +630,6 @@ export class AlloV2 implements Allo {
           getAddress(operator)
         ),
       };
-
-      console.log("createPoolArgs", createPoolArgs);
 
       let txData: TransactionData;
 
