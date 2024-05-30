@@ -175,12 +175,23 @@ function ProjectDetailsTabs(props: {
 
 function ProjectLinks({ project }: { project?: v2Project }) {
   const {
-    metadata: { createdAt, website, projectTwitter, projectGithub, userGithub },
+    metadata: {
+      createdAt,
+      updatedAt,
+      website,
+      projectTwitter,
+      projectGithub,
+      userGithub,
+    },
   } = project ?? { metadata: {} };
 
   const createdOn =
     createdAt &&
     `Created on: ${formatDateWithOrdinal(new Date(createdAt ?? 0))}`;
+
+  const updatedOn =
+    updatedAt &&
+    `Last edited: ${formatDateWithOrdinal(new Date(updatedAt ?? 0))}`;
 
   return (
     <div
@@ -192,6 +203,7 @@ function ProjectLinks({ project }: { project?: v2Project }) {
       <ProjectLink url={website} icon={GlobeIcon}>
         {website}
       </ProjectLink>
+      <ProjectLink icon={CalendarIcon}>{createdOn}</ProjectLink>
       {projectTwitter !== undefined && (
         <ProjectLink
           url={`https://twitter.com/${projectTwitter}`}
@@ -201,6 +213,7 @@ function ProjectLinks({ project }: { project?: v2Project }) {
           {projectTwitter}
         </ProjectLink>
       )}
+      <ProjectLink icon={CalendarIcon}>{updatedOn}</ProjectLink>
       {projectGithub !== undefined && (
         <ProjectLink
           url={`https://github.com/${projectGithub}`}
@@ -215,7 +228,6 @@ function ProjectLinks({ project }: { project?: v2Project }) {
           {userGithub}
         </ProjectLink>
       )}
-      <ProjectLink icon={CalendarIcon}>{createdOn}</ProjectLink>
     </div>
   );
 }
