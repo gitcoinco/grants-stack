@@ -152,21 +152,12 @@ export async function listRounds(args: {
 }): Promise<{ rounds: Round[] }> {
   const { chainId, dataLayer, programId } = args;
 
-  let rounds = await dataLayer
+  const rounds = await dataLayer
     .getRoundsForManager({
       chainId: chainId,
       programId,
     })
     .then((rounds) => rounds.map(indexerV2RoundToRound));
-
-  // Filter out rounds where operatorWallets does not include round.createdByAddress
-  // This is to filter out spam rounds created by bots
-  rounds = rounds.filter((round) => {
-    return (
-      round.createdByAddress &&
-      round.operatorWallets?.includes(round.createdByAddress)
-    );
-  });
 
   return { rounds };
 }
