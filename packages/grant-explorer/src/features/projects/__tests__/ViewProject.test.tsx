@@ -1,9 +1,8 @@
-import { faker } from "@faker-js/faker";
 import { screen } from "@testing-library/react";
 import { renderWithContext } from "../../../test-utils";
 import ViewProject from "../ViewProject";
 import { formatDateWithOrdinal } from "common";
-import { useApplication } from "../../projects/hooks/useApplication";
+import { useProject } from "../hooks/useProject";
 import { beforeEach, expect, Mock } from "vitest";
 import { DataLayer, v2Project } from "data-layer";
 
@@ -18,9 +17,7 @@ vi.mock("common", async () => {
   return {
     ...actual,
     useParams: vi.fn().mockImplementation(() => ({
-      chainId: 1,
-      roundId: "0x0",
-      applicationId: "0xdeadbeef-0xdeadbeef",
+      projectId: "0xdeadbeef-0xdeadbeef",
     })),
   };
 });
@@ -44,7 +41,7 @@ vi.mock("../hooks/useProject", async () => {
 
   return {
     ...actual,
-    useProject: vi.fn().mockReturnValue({ data: "" }),
+    useProject: vi.fn().mockReturnValue({ data: "", error: "" }),
   };
 });
 
@@ -63,35 +60,41 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-const expectedProject: v2Project = {
-  id: faker.finance.ethereumAddress(),
-  chainId: 1,
-  metadata: {
-    protocol: 1,
-    pointer: "0xdeadbeefdeadbeef",
+type Project = {
+  project: v2Project;
+};
+
+const expectedProject: Project = {
+  project: {
     id: "0xdeadbeef-0xdeadbeef",
-    createdAt: Date.now(),
-    title: "Project test",
-    description: "Best project in the world",
-    website: "test.com",
-    bannerImg: "banner!",
-    logoImg: "logo!",
-    projectTwitter: "twitter.com/project",
-    projectGithub: "github.com/project",
-    userGithub: "github.com/user",
-    credentials: {},
+    chainId: 1,
+    metadata: {
+      protocol: 1,
+      pointer: "0xdeadbeefdeadbeef",
+      id: "0xdeadbeeef",
+      createdAt: Date.now(),
+      title: "Project test",
+      description: "Best project in the world",
+      website: "test.com",
+      bannerImg: "banner!",
+      logoImg: "logo!",
+      projectTwitter: "twitter.com/project",
+      projectGithub: "github.com/project",
+      userGithub: "github.com/user",
+      credentials: {},
+    },
+    metadataCid: "0xdeadbeef",
+    name: "Project test",
+    nodeId: "0xdeadbeef",
+    projectNumber: null,
+    registryAddress: "",
+    tags: [],
+    createdByAddress: "",
+    createdAtBlock: "",
+    updatedAtBlock: "",
+    roles: [],
+    projectType: "CANONICAL",
   },
-  metadataCid: "0xdeadbeef",
-  name: "Project test",
-  nodeId: "0xdeadbeef",
-  projectNumber: null,
-  registryAddress: "",
-  tags: [],
-  createdByAddress: "",
-  createdAtBlock: "",
-  updatedAtBlock: "",
-  roles: [],
-  projectType: "CANONICAL",
 };
 
 const mockDataLayer = {
@@ -102,21 +105,20 @@ const mockDataLayer = {
 
 describe("<ViewProject/>", () => {
   beforeEach(() => {
-    (useApplication as Mock).mockReturnValue({
+    (useProject as Mock).mockReturnValue({
       data: expectedProject,
+      error: undefined,
     });
   });
 
   it("shows project name", async () => {
     renderWithContext(<ViewProject />, {
-      roundState: {
-        rounds: [],
-        isLoading: false,
-      },
       dataLayer: mockDataLayer,
     });
     expect(
-      await screen.findByText(expectedProject.metadata.title)
+      await screen.findByRole("heading", {
+        name: expectedProject.project.metadata.title,
+      })
     ).toBeInTheDocument();
   });
 
@@ -134,13 +136,15 @@ describe("<ViewProject/>", () => {
 
     it("shows project website", async () => {
       expect(
-        await screen.findByText(expectedProject.metadata.website)
+        await screen.findByText(expectedProject.project.metadata.website)
       ).toBeInTheDocument();
     });
 
     it("shows project twitter", async () => {
       expect(
-        screen.getByText(expectedProject.metadata.projectTwitter as string)
+        screen.getByText(
+          expectedProject.project.metadata.projectTwitter as string
+        )
       ).toBeInTheDocument();
     });
 
@@ -148,7 +152,7 @@ describe("<ViewProject/>", () => {
       expect(
         screen.getByText(
           formatDateWithOrdinal(
-            new Date(expectedProject.metadata.createdAt as number)
+            new Date(expectedProject.project.metadata.createdAt as number)
           ),
           { exact: false }
         )
@@ -157,13 +161,15 @@ describe("<ViewProject/>", () => {
 
     it("shows project user github", async () => {
       expect(
-        screen.getByText(expectedProject.metadata.userGithub as string)
+        screen.getByText(expectedProject.project.metadata.userGithub as string)
       ).toBeInTheDocument();
     });
 
     it("shows project github", async () => {
       expect(
-        screen.getByText(expectedProject.metadata.projectGithub as string)
+        screen.getByText(
+          expectedProject.project.metadata.projectGithub as string
+        )
       ).toBeInTheDocument();
     });
 
@@ -182,7 +188,7 @@ describe("<ViewProject/>", () => {
     });
 
     expect(
-      await screen.findByText(expectedProject.metadata.description)
+      await screen.findByText(expectedProject.project.metadata.description)
     ).toBeInTheDocument();
   });
 
@@ -199,7 +205,7 @@ describe("<ViewProject/>", () => {
       name: /project banner/i,
     }) as HTMLImageElement;
 
-    expect(bannerImg.src).toContain(expectedProject.metadata.bannerImg);
+    expect(bannerImg.src).toContain(expectedProject.project.metadata.bannerImg);
   });
 
   it("shows project logo", async () => {
@@ -215,6 +221,6 @@ describe("<ViewProject/>", () => {
       name: /project logo/i,
     }) as HTMLImageElement;
 
-    expect(logoImg.src).toContain(expectedProject.metadata.logoImg);
+    expect(logoImg.src).toContain(expectedProject.project.metadata.logoImg);
   });
 });
