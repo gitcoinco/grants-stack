@@ -371,8 +371,8 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@gitcoin/gitcoin-chain-data':
-        specifier: ^1.0.3
-        version: 1.0.3(typescript@5.4.5)(zod@3.23.8)
+        specifier: ^1.0.5
+        version: 1.0.6(typescript@5.4.5)(zod@3.23.8)
       '@gitcoinco/passport-sdk-types':
         specifier: ^0.2.0
         version: 0.2.0
@@ -5455,15 +5455,14 @@ packages:
       command-exists: 1.2.9
       ts-interface-checker: 0.1.13
 
-  /@gitcoin/gitcoin-chain-data@1.0.3(typescript@5.4.5)(zod@3.23.8):
-    resolution: {integrity: sha512-VyFfOVG5+avyp72q+W7HL+h4Vspj90YVGRNJ4NqYxirIfw2ctyYOWAXzacx9out43tec5RLsCyG61PM8MN7Tfg==}
+  /@gitcoin/gitcoin-chain-data@1.0.6(typescript@5.4.5)(zod@3.23.8):
+    resolution: {integrity: sha512-xzh5eztVvY4llhD3fkQcxV8207dck7Ch2+iO+gjlZXsoTB0kf222TG9L1vimXS5c7CKLHKGjarNhtS5C3XYlzA==}
     engines: {node: '>=16.15.0', npm: '>=8.5.5'}
     peerDependencies:
       typescript: ^5.0.0
     dependencies:
-      ethers: 6.12.1
       typescript: 5.4.5
-      viem: 2.11.1(typescript@5.4.5)(zod@3.23.8)
+      viem: 2.13.1(typescript@5.4.5)(zod@3.23.8)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
