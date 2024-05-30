@@ -1,5 +1,5 @@
 import { GlobeAltIcon } from "@heroicons/react/24/solid";
-import { ChainId } from "common";
+import { ChainId, getChainById } from "common";
 import {
   RoundApplicationAnswers,
   RoundApplicationQuestion,
@@ -9,7 +9,6 @@ import { GithubLogo, TwitterLogo } from "../../assets";
 import useValidateCredential from "../../hooks/useValidateCredential";
 import colors from "../../styles/colors";
 import { Metadata } from "../../types";
-import { getPayoutIcon } from "../../utils/wallet";
 import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
 import Calendar from "../icons/Calendar";
 import { DetailSummary } from "./DetailSummary";
@@ -50,7 +49,7 @@ export function AboutProject(props: {
         <span className="flex items-center mt-4 gap-1">
           <div className="w-5 h-5 rounded-full overflow-hidden">
             <img
-              src={getPayoutIcon(chainId)}
+              src={getChainById(chainId).icon}
               alt="circle"
               className="w-full h-full object-cover"
             />

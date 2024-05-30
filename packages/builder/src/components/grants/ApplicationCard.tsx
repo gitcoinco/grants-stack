@@ -16,7 +16,7 @@ import {
   formatDateAsNumber,
   isInfinite,
 } from "../../utils/components";
-import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
+import { getChainById } from "common";
 
 export default function ApplicationCard({
   applicationData,
@@ -37,12 +37,9 @@ export default function ApplicationCard({
       ? strategyNameToCategory(round.strategyName)
       : RoundCategory.QuadraticFunding;
 
-    const applicationChainName = networkPrettyName(
-      Number(applicationData.chainId)
-    );
-    const applicationChainIconUri = getNetworkIcon(
-      Number(applicationData.chainId)
-    );
+    const chain = getChainById(Number(applicationData.chainId));
+    const applicationChainName = chain.prettyName;
+    const applicationChainIconUri = chain.icon;
 
     const isDirectRound = payoutStrategy === RoundCategory.Direct;
 

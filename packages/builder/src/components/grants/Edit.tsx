@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useSwitchNetwork } from "wagmi";
+import { getChainById } from "common";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import {
   credentialsSaved,
@@ -13,7 +14,6 @@ import { RootState } from "../../reducers";
 import { Status as GrantsMetadataStatus } from "../../reducers/grantsMetadata";
 import colors from "../../styles/colors";
 import { ProjectFormStatus } from "../../types";
-import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ExitModal from "../base/ExitModal";
 import Preview from "../base/Preview";
@@ -22,7 +22,6 @@ import PurpleNotificationBox from "../base/PurpleNotificationBox";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
 import VerificationForm from "../base/VerificationForm";
 import Cross from "../icons/Cross";
-
 function EditProject() {
   const dataLayer = useDataLayer();
   const params = useParams();
@@ -59,11 +58,10 @@ function EditProject() {
   };
 
   const renderNetworkChangeModal = () => {
-    const roundNetworkName = networkPrettyName(Number(params.chainId));
     return (
       // eslint-disable-next-line
       <SwitchNetworkModal
-        networkName={roundNetworkName}
+        networkName={getChainById(Number(params.chainId)).prettyName}
         onSwitchNetwork={onSwitchNetwork}
         action="edit this project"
       />

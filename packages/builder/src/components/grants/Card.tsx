@@ -3,14 +3,13 @@ import { Badge, Image } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { renderToPlainText } from "common";
+import { getChainById, renderToPlainText } from "common";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
 import { RootState } from "../../reducers";
 import { Status } from "../../reducers/grantsMetadata";
 import { projectPath } from "../../routes";
 import { getProjectImage, ImgTypes } from "../../utils/components";
-import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 import LoadingCard from "./LoadingCard";
 
 function Card({ projectId }: { projectId: string }) {
@@ -18,7 +17,7 @@ function Card({ projectId }: { projectId: string }) {
   const dispatch = useDispatch();
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[projectId];
-    const chainId = grantMetadata?.metadata?.chainId;
+    const chainId = grantMetadata?.metadata?.chainId!;
     const status = grantMetadata?.status || Status.Undefined;
     const loading = grantMetadata
       ? grantMetadata.status === Status.Loading
@@ -27,8 +26,9 @@ function Card({ projectId }: { projectId: string }) {
     const bannerImg = getProjectImage(loading, ImgTypes.bannerImg, project);
     const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
 
-    const projectChainName = networkPrettyName(Number(chainId));
-    const projectChainIconUri = getNetworkIcon(Number(chainId));
+    const chain = getChainById(chainId);
+    const projectChainName = chain.prettyName;
+    const projectChainIconUri = chain.icon;
 
     return {
       id: projectId,
