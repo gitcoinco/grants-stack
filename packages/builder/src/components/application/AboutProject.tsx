@@ -1,5 +1,5 @@
 import { GlobeAltIcon } from "@heroicons/react/24/solid";
-import { ChainId, getChainById } from "common";
+import { ChainId, getChainById, stringToBlobUrl } from "common";
 import {
   RoundApplicationAnswers,
   RoundApplicationQuestion,
@@ -49,7 +49,7 @@ export function AboutProject(props: {
         <span className="flex items-center mt-4 gap-1">
           <div className="w-5 h-5 rounded-full overflow-hidden">
             <img
-              src={getChainById(chainId).icon}
+              src={stringToBlobUrl(getChainById(chainId).icon)}
               alt="circle"
               className="w-full h-full object-cover"
             />

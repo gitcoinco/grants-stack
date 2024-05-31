@@ -307,7 +307,7 @@ export default function Form({
 
       const chain = getChainById(chainId);
       const chainName = chain.prettyName;
-      const icon = chain.icon;
+      const { icon } = chain;
 
       return {
         id,

@@ -3,7 +3,7 @@ import { Badge, Image } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getChainById, renderToPlainText } from "common";
+import { getChainById, renderToPlainText, stringToBlobUrl } from "common";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
 import { RootState } from "../../reducers";
@@ -28,7 +28,7 @@ function Card({ projectId }: { projectId: string }) {
 
     const chain = getChainById(chainId);
     const projectChainName = chain.prettyName;
-    const projectChainIconUri = chain.icon;
+    const projectChainIconUri = stringToBlobUrl(chain.icon);
 
     return {
       id: projectId,

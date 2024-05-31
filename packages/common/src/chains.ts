@@ -1,17 +1,66 @@
+import { zeroAddress } from "viem";
 import { error, Result, success } from "./allo/common";
-import { getChains } from "@gitcoin/gitcoin-chain-data";
+import { getChains, TChain } from "@gitcoin/gitcoin-chain-data";
 
 const chainData = getChains();
+
+export function stringToBlobUrl(data: string): string {
+  const blob = new Blob([data], { type: "image/svg+xml" });
+  const url = URL.createObjectURL(blob);
+  return url;
+}
+
+const parseRainbowChain = (chain: TChain) => {
+  const nativeToken = chain.tokens.find(
+    (token) => token.address === zeroAddress
+  );
+
+  // Map the TChain to @rainbow-me/rainbowkit/Chain
+  const mappedChain = {
+    id: chain.id,
+    name: chain.prettyName,
+    network: chain.name,
+    iconUrl: stringToBlobUrl(chain.icon),
+    iconBackground: "rgba(255, 255, 255, 0)",
+    nativeCurrency: {
+      name: nativeToken?.code as string,
+      symbol: nativeToken?.code as string,
+      decimals: nativeToken?.decimals as number,
+    },
+    rpcUrls: {
+      default: {
+        http: [chain.rpc],
+        webSocket: undefined,
+      },
+      public: {
+        http: [chain.rpc],
+        webSocket: undefined,
+      },
+    },
+  };
+  return mappedChain;
+};
+
+export const allNetworks = chainData.map(parseRainbowChain);
+export const testnetNetworks = chainData
+  .filter((chain) => chain.type === "testnet")
+  .map(parseRainbowChain);
+export const mainnetNetworks = chainData
+  .filter((chain) => chain.type === "mainnet")
+  .map(parseRainbowChain);
 
 export const chainIds = chainData.map((chain) => chain.id);
 export const redstoneTokenIds = chainData
   .flatMap((chain) => chain.tokens.map((token) => token.redstoneTokenId))
   .filter((tokenId) => tokenId !== undefined)
-  .reduce((acc, tokenId) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    acc[tokenId!] = tokenId!;
-    return acc;
-  }, {} as { [key: string]: string });
+  .reduce(
+    (acc, tokenId) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      acc[tokenId!] = tokenId!;
+      return acc;
+    },
+    {} as { [key: string]: string }
+  );
 
 export function parseChainIdIntoResult(input: string | number): Result<number> {
   if (typeof input === "string") {

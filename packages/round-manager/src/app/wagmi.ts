@@ -10,60 +10,13 @@ import { createClient, configureChains } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
-import { TChain, getChains } from "common";
-import { zeroAddress } from "viem";
 import { getConfig } from "common/src/config";
+import { allNetworks, mainnetNetworks } from "common/src/chains";
 
 const config = getConfig();
 
-const testnetChains = () => {
-  return getChains().filter((chain) => chain.type === "testnet");
-};
-
-const mainnetChains = () => {
-  return getChains().filter((chain) => chain.type === "mainnet");
-};
-
-const allChains: TChain[] =
-  process.env.REACT_APP_ENV === "development"
-    ? [...testnetChains(), ...mainnetChains()]
-    : [...mainnetChains()];
-
-// Map the TChain to Chain type. This is required until we update the dependencies.
-const allChainsMap: Chain[] = allChains.map((chain) => {
-  // Filter by zero address to get the native token
-  const nativeToken = chain.tokens.find(
-    (token) => token.address === zeroAddress
-  );
-  const blob = new Blob([chain.icon], { type: "image/svg+xml" });
-  const url = URL.createObjectURL(blob);
-
-  // Map the TChain to Chain
-  const mappedChain: Chain = {
-    id: chain.id,
-    name: chain.prettyName,
-    network: chain.name,
-    iconUrl: url,
-    iconBackground: "rgba(255, 255, 255, 0)",
-    nativeCurrency: {
-      name: nativeToken?.code as string,
-      symbol: nativeToken?.code as string,
-      decimals: nativeToken?.decimals as number,
-    },
-    rpcUrls: {
-      default: {
-        http: [chain.rpc],
-        webSocket: undefined,
-      },
-      public: {
-        http: [chain.rpc],
-        webSocket: undefined,
-      },
-    },
-  };
-
-  return mappedChain;
-});
+const allChains: Chain[] =
+  process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
 
 /* TODO: remove hardcoded value once we have environment variables validation */
 const projectId =
@@ -84,7 +37,7 @@ if (config.blockchain.alchemyId !== undefined) {
 }
 
 export const { chains, provider, webSocketProvider } = configureChains(
-  allChainsMap,
+  allChains,
   providers
 );
 

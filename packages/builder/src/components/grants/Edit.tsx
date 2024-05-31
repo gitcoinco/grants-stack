@@ -22,6 +22,7 @@ import PurpleNotificationBox from "../base/PurpleNotificationBox";
 import SwitchNetworkModal from "../base/SwitchNetworkModal";
 import VerificationForm from "../base/VerificationForm";
 import Cross from "../icons/Cross";
+
 function EditProject() {
   const dataLayer = useDataLayer();
   const params = useParams();
@@ -57,16 +58,13 @@ function EditProject() {
     }
   };
 
-  const renderNetworkChangeModal = () => {
-    return (
-      // eslint-disable-next-line
-      <SwitchNetworkModal
-        networkName={getChainById(Number(params.chainId)).prettyName}
-        onSwitchNetwork={onSwitchNetwork}
-        action="edit this project"
-      />
-    );
-  };
+  const renderNetworkChangeModal = () => (
+    <SwitchNetworkModal
+      networkName={getChainById(Number(params.chainId)).prettyName}
+      onSwitchNetwork={onSwitchNetwork}
+      action="edit this project"
+    />
+  );
 
   useEffect(() => {
     if (

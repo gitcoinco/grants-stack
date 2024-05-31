@@ -21,8 +21,7 @@ import {
   useAllo,
   TToken,
   getPayoutTokens,
-  ChainId,
-  getTokens,
+  getTokenByChainIdAndAddress,
 } from "common";
 import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
@@ -30,7 +29,6 @@ import { usePayouts } from "./usePayouts";
 import { Hex, isAddress, zeroAddress } from "viem";
 import { useDataLayer } from "data-layer";
 import { getConfig } from "common/src/config";
-import { redstoneTokenIds } from "common/src/chains";
 
 const schema = yup.object().shape({
   amount: yup
@@ -270,19 +268,6 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
     }
   };
 
-  const defaultTokens: Record<ChainId, TToken> = Object.entries(
-    getTokens()
-  ).reduce(
-    (acc, [chainId, tokens]) => {
-      const votingToken = tokens.find((token) => token.canVote);
-      if (votingToken) {
-        acc[Number(chainId) as ChainId] = votingToken;
-      }
-      return acc;
-    },
-    {} as Record<ChainId, TToken>
-  );
-
   useEffect(() => {
     const createPayoutTokenMap = async () => {
       const map: Map<
@@ -302,10 +287,9 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
         for (const payout of filteredPayouts) {
           const token = map.get(payout.tokenAddress.toLowerCase());
           if (!token) {
-            const pTokenEntry = Object.entries(defaultTokens).find(
-              ([, token]) =>
-                token.address.toLowerCase() ===
-                payout.tokenAddress.toLowerCase()
+            const pTokenEntry = getTokenByChainIdAndAddress(
+              chain.id,
+              payout.tokenAddress.toLowerCase() as Hex
             );
 
             let decimal = 0;
@@ -317,9 +301,8 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
               decimal = tokenData.decimal;
               name = tokenData.name;
             } else {
-              const pToken = pTokenEntry[1]; // Extract the TToken from the found entry
-              decimal = pToken.decimals;
-              name = pToken.code;
+              decimal = pTokenEntry.decimals;
+              name = pTokenEntry.code;
             }
 
             map.set(payout.tokenAddress.toLowerCase(), {
@@ -340,7 +323,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
       setPayoutTokensMap(map);
     };
     createPayoutTokenMap();
-  }, [payouts, fetchTokenData, application.applicationIndex, defaultTokens]);
+  }, [fetchTokenData, application.applicationIndex, payouts]);
 
   return (
     <>

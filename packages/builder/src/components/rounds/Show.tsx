@@ -282,15 +282,12 @@ function ShowRound() {
     }
   };
 
-  const renderNetworkChangeModal = () => {
-    return (
-      // eslint-disable-next-line
-      <SwitchNetworkModal
-        networkName={getChainById(props.roundChainId).prettyName}
-        onSwitchNetwork={onSwitchNetwork}
-      />
-    );
-  };
+  const renderNetworkChangeModal = () => (
+    <SwitchNetworkModal
+      networkName={getChainById(props.roundChainId).prettyName}
+      onSwitchNetwork={onSwitchNetwork}
+    />
+  );
 
   if (props.status === Status.Error) {
     return (

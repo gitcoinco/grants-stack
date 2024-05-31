@@ -7,7 +7,7 @@ import z from "zod";
 import { ChainId } from "./chain-ids";
 import { Round } from "data-layer";
 import { getAlloVersion, getConfig } from "./config";
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
 
 export * from "./icons";
 export * from "./markdown";
@@ -242,7 +242,7 @@ export const formatLocalDateAsISOString = (date: Date): string => {
 export function getTimezoneName() {
   const today = new Date();
   const userTimeZone = moment.tz.guess();
-  const formattedDate = moment(today).tz(userTimeZone).format('z')
+  const formattedDate = moment(today).tz(userTimeZone).format("z");
 
   return formattedDate;
 }
@@ -386,9 +386,7 @@ export { AlloError, AlloOperation } from "./allo/allo";
 export type { Allo } from "./allo/allo";
 export { AlloV1 } from "./allo/backends/allo-v1";
 export { AlloV2 } from "./allo/backends/allo-v2";
-export {
-  createWaitForIndexerSyncTo,
-} from "./allo/indexer";
+export { createWaitForIndexerSyncTo } from "./allo/indexer";
 export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
 export { AlloContext, AlloProvider, useAllo } from "./allo/react";
@@ -500,7 +498,6 @@ export const txBlockExplorerLinks: Record<ChainId, string> = {
   [ChainId.SEI_MAINNET]: "https://seitrace.com/tx/",
 };
 
-
 /**
  * Fetch the correct transaction block explorer link for the provided web3 network
  *
@@ -546,3 +543,5 @@ export function isLitUnavailable(chainId: number) {
     ChainId.SEI_MAINNET,
   ].includes(chainId);
 }
+
+export * from "./chains";
