@@ -175,7 +175,7 @@ export const useCheckoutStore = create<CheckoutState>()(
             });
             nonce = await erc20Contract.read.nonces([owner]);
             const tokenName = await erc20Contract.read.name();
-            if (getPermitType(token) === "dai") {
+            if (getPermitType(token, chainId) === "dai") {
               sig = await signPermitDai({
                 walletClient: walletClient,
                 spenderAddress: MRC_CONTRACTS[chainId],

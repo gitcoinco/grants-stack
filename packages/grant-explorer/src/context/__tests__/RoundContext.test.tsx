@@ -17,7 +17,7 @@ describe("<ListRoundProvider />", () => {
   describe("useRoundById()", () => {
     it("provides round based on given round id", async () => {
       const expectedRound = makeRoundData({
-        chainId: 5,
+        chainId: 1,
       });
       const expectedRoundId: string = expectedRound.id!;
 
@@ -40,7 +40,7 @@ describe("<ListRoundProvider />", () => {
 
     it("sets isLoading to true when getRoundById call is in progress", async () => {
       const expectedRound = makeRoundData({
-        chainId: 5,
+        chainId: 10,
       });
       const expectedRoundId: string = expectedRound.id!;
 
@@ -65,7 +65,7 @@ describe("<ListRoundProvider />", () => {
 
     it("sets isLoading back to false and when getRoundById call succeeds", async () => {
       const expectedRound = makeRoundData({
-        chainId: 5,
+        chainId: 10,
       });
       const expectedRoundId: string = expectedRound.id!;
 
@@ -92,7 +92,7 @@ describe("<ListRoundProvider />", () => {
 
     it("sets isLoading back to false when getRoundById call fails", async () => {
       const expectedRound = makeRoundData({
-        chainId: 5,
+        chainId: 10,
       });
       const expectedRoundId: string = expectedRound.id!;
 
@@ -121,7 +121,7 @@ describe("<ListRoundProvider />", () => {
 
 const TestingUseRoundByIdComponent = (props: { expectedRoundId: string }) => {
   const { round, isLoading, getRoundByIdError } = useRoundById(
-    5,
+    1,
     props.expectedRoundId
   );
   return (

@@ -77,7 +77,7 @@ describe("useFilterRounds", () => {
     );
 
     await waitFor(() =>
-      expect(result?.current.data?.length).toBe(
+      expect(result?.current.data?.length!).toBe(
         mockedRoundsOverAllChains.length
       )
     );

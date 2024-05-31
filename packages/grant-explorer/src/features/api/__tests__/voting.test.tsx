@@ -18,14 +18,15 @@ const OPTIMISM_MAINNET_TOKENS = getTokensByChainId(10);
 describe("getPermitType", () => {
   it("selects dai permit type correctly for mainnet", () => {
     expect(
-      getPermitType(MAINNET_TOKENS.find((token) => token.code === "DAI")!)
+      getPermitType(MAINNET_TOKENS.find((token) => token.code === "DAI")!, 1)
     ).toBe("dai");
   });
 
   it("selects dai permit type correctly for optimism", () => {
     expect(
       getPermitType(
-        OPTIMISM_MAINNET_TOKENS.find((token) => token.code === "DAI")!
+        OPTIMISM_MAINNET_TOKENS.find((token) => token.code === "DAI")!,
+        10
       )
     ).toBe("eip2612");
   });
@@ -187,7 +188,7 @@ describe("encodeQFVOtes", () => {
       },
     ]);
 
-    expect(votes).toEqual([
+    expect(votes).eq([
       "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb4800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
     ]);
   });
