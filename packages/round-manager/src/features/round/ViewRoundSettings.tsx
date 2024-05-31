@@ -359,7 +359,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
       ? `${getLocalDate(round.roundEndTime)} ${getLocalTime(round.roundEndTime)}`
       : "...";
 
-  const hasRoundEnded = moment().isAfter(moment(round.roundEndTime));
   const canEditOnlyRoundEndDate = moment().isAfter(
     moment(round.roundStartTime)
   );
@@ -518,7 +517,6 @@ export default function ViewRoundSettings(props: { id?: string }) {
                 type="button"
                 $variant="outline"
                 onClick={onEditClick}
-                disabled={hasRoundEnded}
               >
                 <span className="flex flex-row items-center">
                   <FaEdit className="mr-2 mb-1" />
@@ -1516,11 +1514,7 @@ function RoundApplicationPeriod(props: {
                 &nbsp;
               </div>
               <div className="leading-8 font-normal">
-                {props.editMode.canEdit &&
-                !rollingApplicationsEnabled &&
-                !moment(editedRound.applicationsEndTime).isBefore(
-                  new Date()
-                ) ? (
+                {props.editMode.canEdit && !rollingApplicationsEnabled ? (
                   <div className="col-span-6 sm:col-span-3">
                     <div
                       className={`${
@@ -1750,8 +1744,7 @@ function RoundApplicationPeriod(props: {
                 &nbsp;
               </div>
               <div className="leading-8 font-normal">
-                {props.editMode.canEdit &&
-                !moment(editedRound.roundEndTime).isBefore(new Date()) ? (
+                {props.editMode.canEdit ? (
                   <div className="col-span-6 sm:col-span-3">
                     <div
                       className={`${
