@@ -83,7 +83,7 @@ describe("<Show />", () => {
     beforeEach(() => {
       (useParams as jest.Mock).mockReturnValue({
         roundId: roundIdFrom(1),
-        chainId: 5,
+        chainId: 10,
       });
     });
 
@@ -102,7 +102,7 @@ describe("<Show />", () => {
         store.dispatch({
           type: "PROJECTS_LOADED",
           payload: {
-            chainID: 1,
+            chainID: 10,
           },
         });
 
@@ -208,7 +208,7 @@ describe("<Show />", () => {
     beforeEach(() => {
       (useParams as jest.Mock).mockReturnValue({
         roundId: roundIdFrom(2),
-        chainId: 5,
+        chainId: 10,
       });
     });
 
@@ -240,7 +240,7 @@ describe("<Show />", () => {
     beforeEach(() => {
       (useParams as jest.Mock).mockReturnValue({
         roundId: roundIdFrom(3),
-        chainId: 5,
+        chainId: 10,
       });
     });
 

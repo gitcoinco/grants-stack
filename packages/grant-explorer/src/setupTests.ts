@@ -48,3 +48,4 @@ beforeEach(() => {
     })),
   });
 });
+global.URL.createObjectURL = jest.fn(() => "mocked-url");

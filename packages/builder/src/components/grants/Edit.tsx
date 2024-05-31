@@ -60,6 +60,7 @@ function EditProject() {
 
   const renderNetworkChangeModal = () => (
     <SwitchNetworkModal
+      // eslint-disable-next-line
       networkName={getChainById(Number(params.chainId)).prettyName}
       onSwitchNetwork={onSwitchNetwork}
       action="edit this project"

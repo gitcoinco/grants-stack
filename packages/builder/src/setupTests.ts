@@ -9,3 +9,4 @@ import { TextEncoder, TextDecoder } from "util";
 global.TextEncoder = TextEncoder;
 // @ts-expect-error We love Jest
 global.TextDecoder = TextDecoder;
+global.URL.createObjectURL = jest.fn(() => "mocked-url");

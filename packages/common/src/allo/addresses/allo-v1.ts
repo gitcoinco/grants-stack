@@ -1,7 +1,7 @@
 import { Address } from "viem";
 
 /**
- * This file contains all contract definitions for Allo v1.
+ * This file contains all legacy contract definitions for Allo v1.
  */
 type ChainIdToStringMap = Record<number, Address>;
 
