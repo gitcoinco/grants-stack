@@ -1,5 +1,4 @@
 import { expect, afterEach } from "vitest";
-import "@testing-library/jest-dom";
 import { cleanup } from "@testing-library/react";
 import matchers from "@testing-library/jest-dom/matchers";
 import createFetchMock from "vitest-fetch-mock";
@@ -49,4 +48,4 @@ beforeEach(() => {
     })),
   });
 });
-global.URL.createObjectURL = jest.fn(() => "mocked-url");
+global.URL.createObjectURL = vi.fn(() => "mocked-url");

@@ -1,13 +1,4 @@
 import { getChains, TChain } from "common";
-import { chainIds } from "common/src/chains";
-
-const ensureValidChainId = (chain: TChain) => {
-  if (Object.values(chainIds).includes(chain.id)) {
-    return chain;
-  } else {
-    throw new Error(`Chain id not recognized: ${chain.id}`);
-  }
-};
 
 const testnetChains = () => {
   return getChains().filter((chain) => chain.type === "testnet");
@@ -17,8 +8,8 @@ const mainnetChains = () => {
   return getChains().filter((chain) => chain.type === "mainnet");
 };
 
-const TESTNET_CHAINS = testnetChains().map(ensureValidChainId);
-const MAINNET_CHAINS = mainnetChains().map(ensureValidChainId);
+const TESTNET_CHAINS = testnetChains();
+const MAINNET_CHAINS = mainnetChains();
 
 export const getEnabledChains = (): TChain[] => {
   switch (process.env.REACT_APP_ENV) {
