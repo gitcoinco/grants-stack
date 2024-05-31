@@ -5,7 +5,7 @@ import { ReactComponent as GitcoinPassportLogoFull } from "../../assets/passport
 import { ReactComponent as GitcoinPassportLogo } from "../../assets/passport-logo.svg";
 import { Dropdown as DropdownIcon } from "common/src/icons/Dropdown";
 import { Round } from "data-layer";
-import { ChainId, roundToPassportURLMap } from "common";
+import { roundToPassportURLMap } from "common";
 import { PassportShield } from "./PassportShield";
 
 type PassportWidgetProps = {
@@ -121,7 +121,7 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
                   <p className="text-left text-xs font-dm-mono">
                     Your donation impact is calculated based on your Passport
                     score.
-                    {round.chainId !== ChainId.AVALANCHE && (
+                    {round.chainId !== 43114 && ( // Avalanche chain
                       <span>
                         Scores higher than 15 will begin to be eligible for
                         matching, and your donation impact scales as your
@@ -132,7 +132,7 @@ export function PassportWidget({ round, alignment }: PassportWidgetProps) {
                       {" "}
                       You can update your score by heading over to Passport.{" "}
                     </span>
-                    {round.chainId === ChainId.AVALANCHE && (
+                    {round.chainId === 43114 && ( // Avalanche chain
                       <span>
                         To learn more about the Avalanche Custom Scorer, click{" "}
                         <a

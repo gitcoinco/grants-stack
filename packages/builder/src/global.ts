@@ -1,10 +1,9 @@
 import { Provider } from "@wagmi/core";
-import { ChainId } from "common";
 
 export interface Global {
   web3Provider: Provider | undefined;
   signer: any | undefined;
-  chainID: ChainId | undefined;
+  chainID: number | undefined;
   address: string | undefined;
 }
 

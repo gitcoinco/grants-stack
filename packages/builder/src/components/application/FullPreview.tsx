@@ -1,5 +1,5 @@
 import { EyeIcon } from "@heroicons/react/24/solid";
-import { ChainId, renderToHTML } from "common";
+import { renderToHTML } from "common";
 import {
   RoundApplicationAnswers,
   RoundApplicationQuestion,
@@ -20,7 +20,7 @@ export function FullPreview(props: {
   preview: boolean;
   setPreview: Function;
   disableSubmit: boolean;
-  chainId: ChainId;
+  chainId: number;
 }) {
   const {
     project,

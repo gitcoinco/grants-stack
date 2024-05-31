@@ -1,4 +1,3 @@
-import { ChainId } from "common";
 import { allNetworks } from "common/src/chains";
 
 export const chains = allNetworks.reduce((acc, chain) => {
@@ -88,7 +87,7 @@ export const addresses: DeploymentAddressesMap = {
   },
 };
 
-export const addressesByChainID = (chainId: ChainId): DeploymentAddresses => {
+export const addressesByChainID = (chainId: number): DeploymentAddresses => {
   const chainName = chains[chainId];
   return addresses[chainName];
 };

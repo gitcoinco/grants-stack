@@ -1,4 +1,3 @@
-import { ChainId } from "common";
 import { WalletClient } from "wagmi";
 
 import type { Project } from "data-layer";
@@ -54,7 +53,7 @@ export interface IPFSObject {
 
 export type CartProject = Project & {
   roundId: string;
-  chainId: ChainId;
+  chainId: number;
   amount: string;
 };
 

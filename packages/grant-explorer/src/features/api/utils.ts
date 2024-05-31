@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CartProject, IPFSObject, Round } from "./types";
 import {
-  ChainId,
   getTokensByChainId,
   ROUND_PAYOUT_DIRECT,
   ROUND_PAYOUT_DIRECT_OLD,
   TToken,
-  txBlockExplorerLinks,
 } from "common";
 import { useSearchParams } from "react-router-dom";
 import { getAddress } from "viem";
@@ -20,27 +18,6 @@ export function useDebugMode(): boolean {
     process.env.REACT_APP_DEBUG_MODE === "true"
   );
 }
-
-/**
- * Fetch subgraph network for provided web3 network
- * The backticks are here to work around a failure of a test that tetsts graphql_fetch,
- * and fails if the endpoint is undefined, so we convert the undefined to a string here in order not to fail the test.
- *
- * @param chainId - The chain ID of the blockchain
- * @returns the subgraph endpoint
- */
-const getGraphQLEndpoint = (chainId: ChainId) => `${graphQlEndpoints[chainId]}`;
-
-/**
- * Fetch the correct transaction explorer for the provided web3 network
- *
- * @param chainId - The chain ID of the blockchain
- * @param txHash - The transaction hash
- * @returns the transaction explorer URL for the provided transaction hash and network
- */
-export const getTxExplorerTxLink = (chainId: ChainId, txHash: string) => {
-  return txBlockExplorerLinks[chainId] + txHash;
-};
 
 /**
  * Pin data to IPFS
@@ -119,30 +96,6 @@ export const getDaysLeft = (fromNowToTimestampStr: string) => {
   return differenceInDays;
 };
 
-/* TODO: remove this and get the production chains automatically */
-export function getChainIds(): number[] {
-  const isProduction = process.env.REACT_APP_ENV === "production";
-  if (isProduction) {
-    return [
-      Number(ChainId.MAINNET),
-      Number(ChainId.OPTIMISM_MAINNET_CHAIN_ID),
-      Number(ChainId.FANTOM_MAINNET_CHAIN_ID),
-      Number(ChainId.PGN),
-      Number(ChainId.ARBITRUM),
-      Number(ChainId.AVALANCHE),
-      Number(ChainId.POLYGON),
-      Number(ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID),
-      Number(ChainId.BASE),
-      Number(ChainId.SCROLL),
-      Number(ChainId.SEI_MAINNET),
-    ];
-  } else {
-    return Object.values(ChainId)
-      .map((chainId) => Number(chainId))
-      .filter((id) => !isNaN(id));
-  }
-}
-
 export const isDirectRound = (round: Round) =>
   // @ts-expect-error support old rounds
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT_OLD ||
@@ -194,17 +147,14 @@ export const groupProjectsInCart = (
 
 export function getPayoutToken(
   token: string,
-  chainId: ChainId
+  chainId: number
 ): TToken | undefined {
-  if (!ChainId[Number(chainId)]) {
-    throw new Error(`Couldn't find chainId: ${chainId}`);
-  }
   return getVotingTokenOptions(chainId).find(
     (t) => t.address === getAddress(token)
   );
 }
 
-export function getVotingTokenOptions(chainId: ChainId): TToken[] {
+export function getVotingTokenOptions(chainId: number): TToken[] {
   return getTokensByChainId(chainId).filter((token) => token.canVote === true);
 }
 

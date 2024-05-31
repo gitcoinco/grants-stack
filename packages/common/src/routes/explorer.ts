@@ -1,7 +1,5 @@
-import { ChainId } from "../chain-ids";
-
 export function applicationPath(p: {
-  chainId: ChainId;
+  chainId: number;
   roundId: string;
   applicationId: string;
 }): string {

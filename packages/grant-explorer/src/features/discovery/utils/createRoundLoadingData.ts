@@ -1,11 +1,10 @@
-import { ChainId } from "common";
 import { RoundGetRound } from "data-layer";
 import { zeroAddress } from "viem";
 
 export function createRoundLoadingData(length = 4): RoundGetRound[] {
   return Array.from({ length }).map((_, i) => ({
     id: String(i),
-    chainId: ChainId.MAINNET,
+    chainId: 1,
     createdAtBlock: 1,
     applicationMetaPtr: {
       protocol: 1,

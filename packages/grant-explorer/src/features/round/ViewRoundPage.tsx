@@ -10,7 +10,6 @@ import {
 } from "react";
 import {
   CalendarIcon,
-  ChainId,
   getRoundStrategyTitle,
   getLocalTime,
   formatLocalDateAsISOString,
@@ -88,14 +87,14 @@ const defaultVotingTokens: Record<number, TToken> = Object.entries(
   {} as Record<number, TToken>
 );
 
-const nativePayoutToken: TToken | undefined = Object.entries(defaultVotingTokens).find(
-  ([chainId, token]) => {
-    return (
-      Number(chainId) === Number(chainId) &&
-      token.address === getAddress(token.address)
-    );
-  }
-)?.[1];
+const nativePayoutToken: TToken | undefined = Object.entries(
+  defaultVotingTokens
+).find(([chainId, token]) => {
+  return (
+    Number(chainId) === Number(chainId) &&
+    token.address === getAddress(token.address)
+  );
+})?.[1];
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -238,7 +237,7 @@ const alloVersion = getAlloVersion();
 
 function AfterRoundStart(props: {
   round: Round;
-  chainId: ChainId;
+  chainId: number;
   roundId: string;
   isBeforeRoundEndDate?: boolean;
   isAfterRoundEndDate?: boolean;
@@ -648,7 +647,7 @@ const ProjectList = (props: {
   isBeforeRoundEndDate?: boolean;
   roundId: string;
   round: Round;
-  chainId: ChainId;
+  chainId: number;
   isProjectsLoading: boolean;
   setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
@@ -733,7 +732,7 @@ function ProjectCard(props: {
   isBeforeRoundEndDate?: boolean;
   roundId: string;
   round: Round;
-  chainId: ChainId;
+  chainId: number;
   setCurrentProjectAddedToCart: React.Dispatch<React.SetStateAction<Project>>;
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
   crowdfundedUSD: number;
@@ -909,7 +908,7 @@ const RoundStatsTabContent = ({
 }: {
   roundId: string;
   round: Round;
-  chainId: ChainId;
+  chainId: number;
   token?: TToken;
   tokenSymbol?: string;
 }): JSX.Element => {

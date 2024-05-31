@@ -2,12 +2,11 @@ import { formatUnits, getAddress, zeroAddress } from "viem";
 import { Badge } from "../common/styles";
 import { useToken } from "wagmi";
 import { getPayoutToken } from "../api/utils";
-import { ChainId } from "common";
 
 type RoundCardStatProps = {
   matchAmount: string;
   tokenAddress: string;
-  chainId: ChainId;
+  chainId: number;
 };
 
 const formatter = new Intl.NumberFormat();

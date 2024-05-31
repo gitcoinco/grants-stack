@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { ChainId, getChainById } from "common";
+import { getChainById } from "common";
 import { RoundCategory, useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -28,7 +28,7 @@ interface ApplyButtonProps {
   applicationsHaveStarted: boolean;
   applicationsHaveEnded: boolean;
   projects: GrantsMetadataState;
-  chainId: ChainId;
+  chainId: number;
   roundId: string | undefined;
 }
 

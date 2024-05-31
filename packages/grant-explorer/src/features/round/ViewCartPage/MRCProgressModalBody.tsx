@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ChainId, getChains } from "common";
+import { getChains } from "common";
 import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useCheckoutStore } from "../../../checkoutStore";
@@ -26,7 +26,7 @@ export function MRCProgressModalBody({
   const checkoutStore = useCheckoutStore();
   const chainIdsBeingCheckedOut = checkoutStore.chainsToCheckout;
   const chainId = (checkoutStore.currentChainBeingCheckedOut ??
-    chainIdsBeingCheckedOut[0]) as ChainId;
+    chainIdsBeingCheckedOut[0]) as number;
 
   const { voteStatus, permitStatus, chainSwitchStatus } = useCheckoutStore();
 
@@ -93,7 +93,7 @@ export function MRCProgressModalBody({
             console.log(
               chainId,
               "chainswitchstatus",
-              checkoutStore.chainSwitchStatus[chainId as ChainId]
+              checkoutStore.chainSwitchStatus[chainId as number]
             );
 
             return (
@@ -234,21 +234,21 @@ export function MRCProgressModalBody({
       </nav>
       <div>
         <div className="flex justify-start flex-col">
-          {permitStatus[chainId as ChainId] === ProgressStatus.IS_ERROR && (
+          {permitStatus[chainId as number] === ProgressStatus.IS_ERROR && (
             <p className="text-xs text-grey-400 mt-2 ml-2">
               Transaction rejected or signature denied. Please double check your
               permissions and try again.
             </p>
           )}
-          {voteStatus[chainId as ChainId] === ProgressStatus.IS_ERROR && (
+          {voteStatus[chainId as number] === ProgressStatus.IS_ERROR && (
             <p className="text-xs text-grey-400 mt-2 ml-2">
               Transaction failed. Please double check your wallet and try again.
               If the problem persists, please contact support for assistance.
             </p>
           )}
         </div>
-        {(permitStatus[chainId as ChainId] === ProgressStatus.IS_ERROR ||
-          voteStatus[chainId as ChainId] === ProgressStatus.IS_ERROR) && (
+        {(permitStatus[chainId as number] === ProgressStatus.IS_ERROR ||
+          voteStatus[chainId as number] === ProgressStatus.IS_ERROR) && (
           <div className="flex justify-end mt-4 mr-2">
             <Button
               type="button"

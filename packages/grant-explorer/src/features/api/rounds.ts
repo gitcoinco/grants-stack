@@ -1,11 +1,10 @@
 import useSWR, { SWRResponse } from "swr";
-import { ChainId } from "common";
 import { createISOTimestamp } from "../discovery/utils/createRoundsStatusFilter";
 import { RoundGetRound, RoundsQueryVariables, useDataLayer } from "data-layer";
 
 export const useRounds = (
   variables: RoundsQueryVariables,
-  chainIds: ChainId[]
+  chainIds: number[]
 ): SWRResponse<RoundGetRound[]> => {
   const dataLayer = useDataLayer();
 

@@ -1,7 +1,6 @@
 import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { getChainIds } from "../api/utils";
 import Navbar from "../common/Navbar";
 import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
@@ -11,7 +10,7 @@ import { useContributionHistory } from "../api/round";
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { isAddress } from "viem";
-import { ChainId, TToken, dateToEthereumTimestamp, getTokens } from "common";
+import { TToken, dateToEthereumTimestamp, getChains, getTokens } from "common";
 import { Contribution } from "data-layer";
 
 const DonationHistoryBanner = lazy(
@@ -20,7 +19,7 @@ const DonationHistoryBanner = lazy(
 
 export function ViewContributionHistoryPage() {
   const params = useParams();
-  const chainIds = getChainIds();
+  const chainIds = getChains().map((chain) => chain.id);
 
   const { data: ensResolvedAddress } = useEnsAddress({
     /* If params.address is actually an address, don't resolve the ens address for it*/
@@ -43,17 +42,17 @@ export function ViewContributionHistoryPage() {
   );
 }
 
-const defaultVotingTokens: Record<ChainId, TToken> = Object.entries(
+const defaultVotingTokens: Record<number, TToken> = Object.entries(
   getTokens()
 ).reduce(
   (acc, [chainId, tokens]) => {
     const votingToken = tokens.find((token) => token.canVote);
     if (votingToken) {
-      acc[Number(chainId) as ChainId] = votingToken;
+      acc[Number(chainId) as number] = votingToken;
     }
     return acc;
   },
-  {} as Record<ChainId, TToken>
+  {} as Record<number, TToken>
 );
 
 function ViewContributionHistoryFetcher(props: {

@@ -10,8 +10,12 @@ import {
 } from "./context/RoundContext";
 import { CartProject, ProjectMetadata, Round } from "./features/api/types";
 import { parseUnits } from "viem";
-import { ChainId } from "common";
-import { DataLayer, DataLayerProvider, RoundGetRound, RoundMetadata } from "data-layer";
+import {
+  DataLayer,
+  DataLayerProvider,
+  RoundGetRound,
+  RoundMetadata,
+} from "data-layer";
 
 export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const applicationsStartTime = faker.date.soon();
@@ -90,7 +94,7 @@ export const makeApprovedProjectData = (
     status: "APPROVED",
     applicationIndex: faker.datatype.number(),
     roundId: faker.finance.ethereumAddress(),
-    chainId: ChainId.MAINNET,
+    chainId: 1,
     ...overrides,
   };
 };
@@ -120,7 +124,7 @@ export const makeRoundOverviewData = (
 ): RoundGetRound => {
   return {
     id: faker.finance.ethereumAddress(),
-    chainId: ChainId.MAINNET,
+    chainId: 1,
     createdAtBlock: 1,
     roundMetadataCid: generateIpfsCid(),
     applicationsStartTime: makeTimestamp(),

@@ -1,7 +1,7 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { ApplicationStatus, DistributionMatch, Round } from "data-layer";
 import { Address, Hex, PublicClient } from "viem";
-import { AnyJson, ChainId } from "..";
+import { AnyJson } from "..";
 import {
   CreateRoundData,
   RoundCategory,
@@ -113,7 +113,7 @@ export interface Allo {
 
   donate: (
     publicClient: PublicClient,
-    chainId: ChainId,
+    chainId: number,
     token: TToken,
     groupedVotes: Record<string, Hex[]>,
     groupedAmounts: Record<string, bigint> | bigint[],

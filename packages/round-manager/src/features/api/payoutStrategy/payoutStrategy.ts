@@ -1,4 +1,3 @@
-import { ChainId } from "common";
 import { BigNumber, Signer } from "ethers";
 import { useEffect, useMemo, useState } from "react";
 import { directPayoutStrategyFactoryContract } from "../contracts";
@@ -41,7 +40,7 @@ interface GroupedProjects {
  * @returns GroupedProjects
  */
 export const useGroupProjectsByPaymentStatus = (
-  chainId: ChainId,
+  chainId: number,
   round: Round
 ): GroupedProjects => {
   const [groupedProjects, setGroupedProjects] = useState<GroupedProjects>({

@@ -1,6 +1,6 @@
 import React from "react";
 import { CartProject } from "../../api/types";
-import { ChainId, TToken, getChains } from "common";
+import { TToken, getChains } from "common";
 import { useCartStorage } from "../../../store";
 import { formatUnits } from "viem";
 import { parseChainId } from "common/src/chains";
@@ -70,7 +70,7 @@ export function ChainConfirmationModalBody({
 type ChainSummaryProps = {
   totalDonation: bigint;
   selectedPayoutToken: TToken;
-  chainId: ChainId;
+  chainId: number;
   checked: boolean;
   chainsBeingCheckedOut: number;
   onChange: (checked: boolean) => void;

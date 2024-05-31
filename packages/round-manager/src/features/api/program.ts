@@ -1,9 +1,8 @@
-import { CHAINS } from "./utils";
 import { Program, Web3Instance } from "./types";
 import { datadogLogs } from "@datadog/browser-logs";
-import { ChainId } from "common";
 import { DataLayer } from "data-layer";
 import { getAlloVersion } from "common/src/config";
+import { getChainById, stringToBlobUrl } from "common";
 
 /**
  * Fetch a list of programs
@@ -19,7 +18,7 @@ export async function listPrograms(
   try {
     // fetch chain id
     const { chainId } = (await signerOrProvider.getNetwork()) as {
-      chainId: ChainId;
+      chainId: number;
     };
 
     // fetch programs from indexer
@@ -37,6 +36,7 @@ export async function listPrograms(
     const programs: Program[] = [];
 
     for (const program of programsRes.programs) {
+      const chain = getChainById(chainId);
       programs.push({
         id: program.id,
         metadata: program.metadata,
@@ -46,8 +46,8 @@ export async function listPrograms(
         tags: program.tags,
         chain: {
           id: chainId,
-          name: CHAINS[chainId]?.name,
-          logo: CHAINS[chainId]?.logo,
+          name: chain.prettyName,
+          logo: stringToBlobUrl(chain.icon),
         },
         createdByAddress: program.createdByAddress,
         roles: program.roles,
@@ -69,7 +69,7 @@ export async function getProgramById(
 ): Promise<Program | null> {
   // fetch chain id
   const { chainId } = (await signerOrProvider.getNetwork()) as {
-    chainId: ChainId;
+    chainId: number;
   };
 
   // fetch program from indexer
@@ -83,6 +83,8 @@ export async function getProgramById(
     return null;
   }
 
+  const chain = getChainById(chainId);
+
   return {
     id: program.id,
     metadata: program.metadata,
@@ -92,8 +94,8 @@ export async function getProgramById(
     tags: program.tags,
     chain: {
       id: chainId,
-      name: CHAINS[chainId]?.name,
-      logo: CHAINS[chainId]?.logo,
+      name: chain.prettyName,
+      logo: stringToBlobUrl(chain.icon),
     },
     roles: program.roles,
   };

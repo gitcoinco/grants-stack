@@ -13,7 +13,7 @@ import {
   parseUnits,
   zeroAddress,
 } from "viem";
-import { AnyJson, ChainId, TransactionBuilder } from "../..";
+import { AnyJson, TransactionBuilder } from "../..";
 import { parseChainId } from "../../chains";
 // import { payoutTokens } from "../../payoutTokens";
 import {
@@ -50,13 +50,12 @@ import {
   sendTransaction,
 } from "../transaction-sender";
 import { getPermitType, PermitSignature } from "../voting";
-import { MRC_CONTRACTS } from "../addresses/mrc";
 import Erc20ABI from "../abis/erc20";
 import MerklePayoutStrategyImplementationABI from "../abis/allo-v1/MerklePayoutStrategyImplementation";
 import { BigNumber } from "ethers";
 import DirectPayoutStrategyImplementation from "../abis/allo-v1/DirectPayoutStrategyImplementation";
 import { hexZeroPad } from "ethers/lib/utils.js";
-import { getTokensByChainId } from "@gitcoin/gitcoin-chain-data";
+import { getChainById, getTokensByChainId } from "@gitcoin/gitcoin-chain-data";
 import { TToken } from "@gitcoin/gitcoin-chain-data/dist/types";
 
 function createProjectId(args: {
@@ -92,7 +91,7 @@ export class AlloV1 implements Allo {
   private readonly transactionSender: TransactionSender;
   private readonly ipfsUploader: IpfsUploader;
   private readonly waitUntilIndexerSynced: WaitUntilIndexerSynced;
-  private readonly chainId: ChainId;
+  private readonly chainId: number;
 
   constructor(args: {
     chainId: number;
@@ -110,7 +109,7 @@ export class AlloV1 implements Allo {
 
   async donate(
     publicClient: PublicClient,
-    chainId: ChainId,
+    chainId: number,
     token: TToken,
     groupedVotes: Record<string, Hex[]>,
     groupedAmounts: Record<string, bigint> | bigint[],
@@ -122,7 +121,7 @@ export class AlloV1 implements Allo {
     }
   ) {
     let tx: Result<Hex>;
-    const mrcAddress = MRC_CONTRACTS[chainId];
+    const mrcAddress = getChainById(chainId).contracts.multiRoundCheckout;
 
     /* decide which function to use based on whether token is native, permit-compatible or DAI */
     if (token.address === zeroAddress) {

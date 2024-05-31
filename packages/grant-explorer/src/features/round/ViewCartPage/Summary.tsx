@@ -1,4 +1,4 @@
-import { ChainId, useTokenPrice, TToken, getChains } from "common";
+import { useTokenPrice, TToken, getChains } from "common";
 import { formatUnits, zeroAddress } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
@@ -8,7 +8,7 @@ const CHAINS = getChains();
 type SummaryProps = {
   totalDonation: bigint;
   selectedPayoutToken: TToken;
-  chainId: ChainId;
+  chainId: number;
 };
 
 export function Summary({

@@ -2,10 +2,9 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { CartProject, ProgressStatus } from "./features/api/types";
-import { Allo, ChainId } from "common";
+import { Allo } from "common";
 import { useCartStorage } from "./store";
 import {
-  Address,
   Hex,
   InternalRpcError,
   parseAbi,
@@ -28,32 +27,31 @@ import { getPermitType } from "common/dist/allo/voting";
 import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
-import { TToken, getTokensByChainId } from "common";
 
-type ChainMap<T> = Record<ChainId, T>;
+type ChainMap<T> = Record<number, T>;
 
 const isV2 = getConfig().allo.version === "allo-v2";
 interface CheckoutState {
   permitStatus: ChainMap<ProgressStatus>;
   setPermitStatusForChain: (
-    chain: ChainId,
+    chain: number,
     permitStatus: ProgressStatus
   ) => void;
   voteStatus: ChainMap<ProgressStatus>;
-  setVoteStatusForChain: (chain: ChainId, voteStatus: ProgressStatus) => void;
+  setVoteStatusForChain: (chain: number, voteStatus: ProgressStatus) => void;
   chainSwitchStatus: ChainMap<ProgressStatus>;
   setChainSwitchStatusForChain: (
-    chain: ChainId,
+    chain: number,
     voteStatus: ProgressStatus
   ) => void;
-  currentChainBeingCheckedOut?: ChainId;
-  chainsToCheckout: ChainId[];
-  setChainsToCheckout: (chains: ChainId[]) => void;
+  currentChainBeingCheckedOut?: number;
+  chainsToCheckout: number[];
+  setChainsToCheckout: (chains: number[]) => void;
   /** Checkout the given chains
    * this has the side effect of adding the chains to the wallet if they are not yet present
    * We get the data necessary to construct the votes from the cart store */
   checkout: (
-    chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
+    chainsToCheckout: { chainId: number; permitDeadline: number }[],
     walletClient: WalletClient,
     allo: Allo,
     dataLayer: DataLayer
@@ -65,7 +63,7 @@ interface CheckoutState {
 
 const defaultProgressStatusForAllChains = Object.fromEntries(
   Object.values(getEnabledChains()).map((value) => [
-    value.id as ChainId,
+    value.id as number,
     ProgressStatus.NOT_STARTED,
   ])
 ) as ChainMap<ProgressStatus>;
@@ -73,18 +71,18 @@ const defaultProgressStatusForAllChains = Object.fromEntries(
 export const useCheckoutStore = create<CheckoutState>()(
   devtools((set, get) => ({
     permitStatus: defaultProgressStatusForAllChains,
-    setPermitStatusForChain: (chain: ChainId, permitStatus: ProgressStatus) =>
+    setPermitStatusForChain: (chain: number, permitStatus: ProgressStatus) =>
       set((oldState) => ({
         permitStatus: { ...oldState.permitStatus, [chain]: permitStatus },
       })),
     voteStatus: defaultProgressStatusForAllChains,
-    setVoteStatusForChain: (chain: ChainId, voteStatus: ProgressStatus) =>
+    setVoteStatusForChain: (chain: number, voteStatus: ProgressStatus) =>
       set((oldState) => ({
         voteStatus: { ...oldState.voteStatus, [chain]: voteStatus },
       })),
     chainSwitchStatus: defaultProgressStatusForAllChains,
     setChainSwitchStatusForChain: (
-      chain: ChainId,
+      chain: number,
       chainSwitchStatus: ProgressStatus
     ) =>
       set((oldState) => ({
@@ -95,13 +93,13 @@ export const useCheckoutStore = create<CheckoutState>()(
       })),
     currentChainBeingCheckedOut: undefined,
     chainsToCheckout: [],
-    setChainsToCheckout: (chains: ChainId[]) => {
+    setChainsToCheckout: (chains: number[]) => {
       set({
         chainsToCheckout: chains,
       });
     },
     checkout: async (
-      chainsToCheckout: { chainId: ChainId; permitDeadline: number }[],
+      chainsToCheckout: { chainId: number; permitDeadline: number }[],
       walletClient: WalletClient,
       allo: Allo
     ) => {
@@ -126,7 +124,7 @@ export const useCheckoutStore = create<CheckoutState>()(
 
       const totalDonationPerChain = Object.fromEntries(
         Object.entries(projectsByChain).map(([key, value]) => [
-          Number(key) as ChainId,
+          Number(key) as number,
           value
             .map((project) => project.amount)
             .reduce(
@@ -134,7 +132,7 @@ export const useCheckoutStore = create<CheckoutState>()(
                 acc +
                 parseUnits(
                   amount ? amount : "0",
-                  getVotingTokenForChain(Number(key) as ChainId).decimals
+                  getVotingTokenForChain(Number(key) as number).decimals
                 ),
               0n
             ),
@@ -340,7 +338,7 @@ export const useCheckoutStore = create<CheckoutState>()(
 /** This function handles switching to a chain
  * if the chain is not present in the wallet, it will add it, and then switch */
 async function switchToChain(
-  chainId: ChainId,
+  chainId: number,
   walletClient: WalletClient,
   get: () => CheckoutState
 ) {

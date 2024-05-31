@@ -4,13 +4,14 @@ import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   AnyJson,
-  ChainId,
   RoundVisibilityType,
   classNames,
   getLocalDate,
   getLocalTime,
   useAllo,
   getPayoutTokens,
+  getChainById,
+  stringToBlobUrl,
 } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
@@ -38,7 +39,7 @@ import { maxDateForUint256 } from "../../constants";
 import { useRoundById } from "../../context/round/RoundContext";
 import { useUpdateRound } from "../../context/round/UpdateRoundContext";
 import { ProgressStatus, ProgressStep, Round } from "../api/types";
-import { CHAINS, SupportType } from "../api/utils";
+import { SupportType } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import FormValidationErrorList from "../common/FormValidationErrorList";
@@ -755,9 +756,9 @@ function DetailsPage(props: {
             }`}
           >
             <span className="flex items-center">
-              {chain && CHAINS[chain.id as ChainId]?.logo && (
+              {chain && getChainById(chain.id).icon && (
                 <img
-                  src={CHAINS[chain.id as ChainId]?.logo}
+                  src={stringToBlobUrl(getChainById(chain.id).icon)}
                   alt="chain logo"
                   data-testid="chain-logo"
                   className="h-5 w-5 flex-shrink-0 rounded-full"

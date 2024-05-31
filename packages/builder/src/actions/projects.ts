@@ -1,5 +1,4 @@
 import { datadogRum } from "@datadog/browser-rum";
-import { ChainId } from "common";
 import { getConfig } from "common/src/config";
 import {
   ApplicationStatus,
@@ -25,7 +24,7 @@ export const PROJECTS_LOADED = "PROJECTS_LOADED";
 interface ProjectsLoadedAction {
   type: typeof PROJECTS_LOADED;
   payload: {
-    chainIDs: ChainId[];
+    chainIDs: number[];
   };
 }
 
@@ -127,14 +126,12 @@ export type ProjectsActions =
   | ProjectAnchorsLoadedAction;
 
 /** Action Creators */
-export const projectsLoading = (
-  chainIDs: ChainId[]
-): ProjectsLoadingAction => ({
+export const projectsLoading = (chainIDs: number[]): ProjectsLoadingAction => ({
   type: PROJECTS_LOADING,
   payload: chainIDs,
 });
 
-export const projectsLoaded = (chainIDs: ChainId[]): ProjectsLoadedAction => ({
+export const projectsLoaded = (chainIDs: number[]): ProjectsLoadedAction => ({
   type: PROJECTS_LOADED,
   payload: {
     chainIDs,
@@ -176,7 +173,7 @@ export const projectAnchorsLoaded = (projectID: string, anchor: string) => ({
  * @returns All projects for a given chain
  */
 export const loadProjects =
-  (chainIDs: ChainId[], dataLayer: DataLayer, withMetaData?: boolean) =>
+  (chainIDs: number[], dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     try {
       const state = getState();
@@ -237,7 +234,7 @@ export const loadAllChainsProjects =
   (dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch) => {
     const { web3Provider } = global;
-    const chainIds = web3Provider?.chains?.map((chain) => chain.id as ChainId);
+    const chainIds = web3Provider?.chains?.map((chain) => chain.id as number);
     if (chainIds) {
       dispatch(projectsLoading(chainIds));
       dispatch<any>(loadProjects(chainIds, dataLayer, withMetaData));

@@ -1,6 +1,5 @@
-import { ChainId } from "./chain-ids";
 import { getTokensByChainId, TToken } from "@gitcoin/gitcoin-chain-data";
 
-export const getPayoutTokens = (chainId: ChainId): TToken[] => {
+export const getPayoutTokens = (chainId: number): TToken[] => {
   return getTokensByChainId(chainId);
 };

@@ -1,6 +1,5 @@
 import useSWRImmutable from "swr/immutable";
 import { zeroAddress } from "viem";
-import { ChainId } from "common";
 import { getConfig } from "common/src/config";
 
 /* TODO: Rename some of the types to hungarian-style notation once we have shared types between indexer and frontends */
@@ -20,7 +19,7 @@ export type MatchingEstimateResult = {
 
 type UseMatchingEstimatesParams = {
   roundId: string;
-  chainId: ChainId;
+  chainId: number;
   potentialVotes: {
     projectId: string;
     roundId: string;

@@ -148,62 +148,6 @@ export function getConfig(
         .string()
         .url()
         .parse(process.env.REACT_APP_GRANTS_STACK_SEARCH_API_BASE_URL),
-      //   [ChainId.DEV1]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_DEV1_API),
-      //   [ChainId.DEV2]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_DEV2_API),
-      //   [ChainId.PGN]: z.string().parse(process.env.REACT_APP_SUBGRAPH_PGN_API),
-      //   [ChainId.PGN_TESTNET]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_PGN_TESTNET_API),
-      //   [ChainId.MAINNET]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_MAINNET_API),
-      //   [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_OPTIMISM_MAINNET_API),
-      //   [ChainId.FANTOM_MAINNET_CHAIN_ID]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_FANTOM_MAINNET_API),
-      //   [ChainId.FANTOM_TESTNET_CHAIN_ID]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_FANTOM_TESTNET_API),
-      //   [ChainId.ARBITRUM_GOERLI]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_ARBITRUM_GOERLI_API),
-      //   [ChainId.ARBITRUM]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_ARBITRUM_API),
-      //   [ChainId.FUJI]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_FUJI_API),
-      //   [ChainId.AVALANCHE]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_AVALANCHE_API),
-      //   [ChainId.POLYGON]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_POLYGON_API),
-      //   [ChainId.POLYGON_MUMBAI]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_POLYGON_MUMBAI_API),
-      //   [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_ZKSYNC_TESTNET_API),
-      //   [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_ZKSYNC_MAINNET_API),
-      //   [ChainId.BASE]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_BASE_API),
-      //   [ChainId.SEPOLIA]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_SEPOLIA_API),
-      //   [ChainId.SCROLL]: z
-      //     .string()
-      //     .parse(process.env.REACT_APP_SUBGRAPH_SCROLL_API),
-      // },
       gsIndexerEndpoint: z
         .string()
         .url()

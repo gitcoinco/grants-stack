@@ -1,5 +1,5 @@
 import { GlobeAltIcon } from "@heroicons/react/24/solid";
-import { ChainId, getChainById, stringToBlobUrl } from "common";
+import { getChainById, stringToBlobUrl } from "common";
 import {
   RoundApplicationAnswers,
   RoundApplicationQuestion,
@@ -17,7 +17,7 @@ export function AboutProject(props: {
   projectToRender: Metadata;
   questions: RoundApplicationQuestion[];
   answers: RoundApplicationAnswers;
-  chainId: ChainId;
+  chainId: number;
 }) {
   const { projectToRender, answers, questions, chainId } = props;
 

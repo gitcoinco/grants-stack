@@ -17,8 +17,7 @@ import ErrorModal from "../common/ErrorModal";
 import { ProgressStatus, ProgressStep } from "../api/types";
 import { CreateProgramState, useCreateProgram } from "./useCreateProgram";
 import ReactTooltip from "react-tooltip";
-import { CHAINS } from "../api/utils";
-import { AlloError, ChainId } from "common";
+import { AlloError, getChainById, stringToBlobUrl } from "common";
 
 type FormData = {
   name: string;
@@ -252,10 +251,10 @@ export default function CreateProgram() {
                     </label>
 
                     <div className="opacity-50 flex mt-1 py-[6px] shadow-sm px-3 border rounded-md border-grey-100">
-                      {CHAINS[chain.id as ChainId] ? (
+                      {getChainById(chain.id) ? (
                         <>
                           <img
-                            src={CHAINS[chain.id as ChainId]?.logo}
+                            src={stringToBlobUrl(getChainById(chain.id).icon)}
                             alt="program-chain-logo"
                             className="h-4 w-4 ml-1 mr-2 mt-1"
                           />
