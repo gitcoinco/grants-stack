@@ -15,7 +15,11 @@ import { ReactComponent as GlobeIcon } from "../../assets/icons/globe-icon.svg";
 import { ProjectBanner } from "../common/ProjectBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
-import { useDataLayer, v2Project } from "data-layer";
+import {
+  ProjectApplicationWithRound,
+  useDataLayer,
+  v2Project,
+} from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { useProject } from "./hooks/useProject";
 
@@ -85,6 +89,23 @@ export default function ViewProject() {
             {project ? (
               <>
                 <Detail text={description} testID="project-metadata" />
+              </>
+            ) : (
+              <SkeletonText />
+            )}
+          </>
+        ),
+      },
+      {
+        name: "Rounds",
+        content: (
+          <>
+            <h5 className="text-2xl mt-8 mb-4 font-modern-era-medium text-blue-800">
+              Active Rounds
+            </h5>
+            {project ? (
+              <>
+                <Detail text="No data" testID="project-rounds" />
               </>
             ) : (
               <SkeletonText />
@@ -292,5 +313,77 @@ function ProjectLogo({ logoImg }: { logoImg?: string }) {
       src={src}
       alt="Project Logo"
     />
+  );
+}
+
+//----------------- Rounds Tab -----------------
+
+export enum RoundDisplayType {
+  Active = "active",
+  Past = "past",
+}
+
+const displayHeaders = {
+  [RoundDisplayType.Active]: "Active Rounds",
+  [RoundDisplayType.Past]: "Past Rounds",
+};
+
+function secondsSinceEpoch(): number {
+  const date = new Date();
+  return Math.floor(date.getTime() / 1000);
+}
+
+export function Rounds({
+  applications,
+}: {
+  applications: ProjectApplicationWithRound[];
+}) {
+  const params = useParams();
+
+  const renderStatGroup = (
+    displayType: RoundDisplayType,
+    userApplications: ProjectApplicationWithRound[]
+  ) => (
+    <div>
+      <span className="text-gitcoin-grey-500 text-[12px] font-normal">
+        {displayHeaders[displayType]}
+      </span>
+      {userApplications.length > 0 ? (
+        userApplications.map((app) => (
+          <div key={app.roundId}>
+            {/* <RoundListItem
+                applicationData={app}
+                displayType={displayType as RoundDisplayType}
+                projectId={props.fullId}
+              />
+              <Divider className="" borderColor="#F3F3F5" /> */}
+          </div>
+        ))
+      ) : (
+        <div className="text-base text-gitcoin-grey-400 flex flex-col items-center justify-center p-10">
+          <span> No Data </span>
+        </div>
+      )}
+
+      {/* <Divider className="mb-8" borderColor="#E2E0E7" /> */}
+    </div>
+  );
+
+  return (
+    <div className="w-full mb-4">
+      <div className="flex-col">
+        {Object.values(RoundDisplayType).map((displayType) => (
+          <div key={displayType}>
+            {/* {renderStatGroup(
+                displayType as RoundDisplayType,
+                // when props.applications is undefined, we are still loading, when it's not undefined, we check if any of the rounds are still loading
+                props.mappedApplications?.flatMap(({ app, category }) =>
+                  category === displayType ? [app] : []
+                ) ?? []
+              )} */}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
