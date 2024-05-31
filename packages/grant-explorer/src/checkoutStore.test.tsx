@@ -14,7 +14,7 @@ describe("Checkout Store", () => {
 
   it("permitStatus manipulation", async () => {
     const store = useCheckoutStore;
-    const chain: number = 1;
+    const chain = 1;
 
     // Initially, the status should be NOT_STARTED for all chains
     expect(store.getState().permitStatus[chain]).toEqual(
@@ -29,7 +29,7 @@ describe("Checkout Store", () => {
   });
 
   it("voteStatus manipulation", async () => {
-    const chain: number = 1;
+    const chain = 1;
 
     expect(store.getState().voteStatus[chain]).toEqual(
       ProgressStatus.NOT_STARTED
@@ -42,7 +42,7 @@ describe("Checkout Store", () => {
   });
 
   it("chainSwitchStatus manipulation", async () => {
-    const chain: number = 1;
+    const chain = 1;
 
     expect(store.getState().chainSwitchStatus[chain]).toEqual(
       ProgressStatus.NOT_STARTED

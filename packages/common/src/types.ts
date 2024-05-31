@@ -1,5 +1,4 @@
 import { Round } from "data-layer";
-import { Hex } from "viem";
 import { AnyJson } from ".";
 import { BigNumber } from "ethers";
 

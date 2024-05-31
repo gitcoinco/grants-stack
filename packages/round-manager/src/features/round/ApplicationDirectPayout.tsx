@@ -83,7 +83,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
 
   const [tokenInfo, setTokenInfo] = useState(tokensByChainInfo[0]);
   const [selectedToken, setSelectedToken] = useState<Hex | "custom">(
-    tokenInfo.address
+    tokenInfo.address || "custom"
   );
   const [customTokenInput, setCustomTokenInput] = useState("");
   const [payoutTokensMap, setPayoutTokensMap] = useState<

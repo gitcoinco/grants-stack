@@ -16,7 +16,10 @@ describe("listPrograms", () => {
   it("calls the indexer endpoint", async () => {
     // const address = "0x0"
     let expectedProgram = makeProgramData({
-      chain: getChainById(1),
+      chain: {
+        id: 1,
+        name: "Ethereum",
+      },
     });
     expectedProgram = {
       ...expectedProgram,
@@ -61,7 +64,10 @@ describe("listPrograms", () => {
 describe("getProgramById", () => {
   it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
     const expectedProgram = makeProgramData({
-      chain: getChainById(1),
+      chain: {
+        name: "Ethereum",
+        id: 1,
+      },
     });
     const programId = expectedProgram.id;
 

@@ -46,6 +46,7 @@ const mockWallet = {
   },
   chain: {
     name: "abc",
+    id: 1,
   },
 };
 const mockNetwork = {

@@ -1,4 +1,3 @@
-import { Chain } from "wagmi/chains";
 import { useRounds } from "../../api/rounds";
 import { createRoundsStatusFilter } from "../utils/createRoundsStatusFilter";
 import { SWRResponse } from "swr";
