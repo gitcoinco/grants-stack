@@ -2,7 +2,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
 import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
-import { TToken, getChains } from "common";
+import { TToken, getChains, stringToBlobUrl } from "common";
 import { formatUnits } from "viem";
 import { Contribution } from "data-layer";
 import {
@@ -259,7 +259,7 @@ function Table(props: {
 }) {
   const roundInfo = props.contributions[0];
   const chainId = roundInfo.chainId;
-  const chainLogo = CHAINS[roundInfo.chainId]?.icon;
+  const chainLogo = stringToBlobUrl(CHAINS[roundInfo.chainId]?.icon);
   const roundName = roundInfo.round.roundMetadata.name;
 
   const sortedContributions = props.contributions;

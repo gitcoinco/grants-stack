@@ -394,7 +394,7 @@ export function SummaryContainer() {
 
       return {
         roundId: getFormattedRoundId(round.id),
-        chainId: projectFromRound?.chainId ?? round.chainId ?? number.MAINNET,
+        chainId: projectFromRound?.chainId ?? round.chainId ?? 1,
         potentialVotes: projects
           .filter((proj) => proj.roundId === round.id)
           .map((proj) => ({

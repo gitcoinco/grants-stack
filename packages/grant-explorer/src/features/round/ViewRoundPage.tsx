@@ -20,6 +20,7 @@ import {
   getTokensByChainId,
   getChains,
   getTokens,
+  stringToBlobUrl,
 } from "common";
 import { Button, Input } from "common/src/styles";
 import AlloV1 from "common/src/icons/AlloV1";
@@ -510,10 +511,10 @@ function AfterRoundStart(props: {
                 <div className="flex items-center">
                   <img
                     className="w-4 h-4 mt-0.5 mr-1"
-                    src={CHAINS[chainId]?.icon}
+                    src={stringToBlobUrl(CHAINS[chainId]?.icon)}
                     alt="Round Chain Logo"
                   />
-                  <span>{CHAINS[chainId]?.name}</span>
+                  <span>{CHAINS[chainId]?.prettyName}</span>
                 </div>
               </div>
 

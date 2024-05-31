@@ -1,4 +1,4 @@
-import { useTokenPrice, TToken, getChains } from "common";
+import { useTokenPrice, TToken, getChains, stringToBlobUrl } from "common";
 import { formatUnits, zeroAddress } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
@@ -45,10 +45,10 @@ export function Summary({
           <p>
             <img
               className={"inline max-w-[32px] mr-2"}
-              alt={CHAINS[chainId].name}
-              src={CHAINS[chainId].icon}
+              alt={CHAINS[chainId].prettyName}
+              src={stringToBlobUrl(CHAINS[chainId].icon)}
             />
-            {CHAINS[chainId].name}
+            {CHAINS[chainId].prettyName}
           </p>
         </div>
         <div className="flex flex-col">

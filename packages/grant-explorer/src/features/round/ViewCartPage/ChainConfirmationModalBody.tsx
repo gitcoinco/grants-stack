@@ -1,6 +1,6 @@
 import React from "react";
 import { CartProject } from "../../api/types";
-import { TToken, getChains } from "common";
+import { TToken, getChains, stringToBlobUrl } from "common";
 import { useCartStorage } from "../../../store";
 import { formatUnits } from "viem";
 import { parseChainId } from "common/src/chains";
@@ -108,11 +108,11 @@ export function ChainSummary({
         />
         <img
           className="inline mr-2 w-5 h-5"
-          alt={CHAINS[chainId].name}
-          src={CHAINS[chainId].icon}
+          alt={CHAINS[chainId].prettyName}
+          src={stringToBlobUrl(CHAINS[chainId].icon)}
         />
         <span className="font-sans font-medium">
-          Checkout {CHAINS[chainId].name} cart
+          Checkout {CHAINS[chainId].prettyName} cart
         </span>
       </p>
       <p className="ml-7 mt-2">

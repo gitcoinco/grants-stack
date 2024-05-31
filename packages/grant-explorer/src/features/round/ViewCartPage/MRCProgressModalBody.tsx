@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { getChains } from "common";
+import { getChains, stringToBlobUrl } from "common";
 import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useCheckoutStore } from "../../../checkoutStore";
@@ -34,7 +34,7 @@ export function MRCProgressModalBody({
     const stepsWithChainSwitch = [
       {
         name: "Switch Network",
-        description: `Switch network to ${CHAINS[chainId].name}`,
+        description: `Switch network to ${CHAINS[chainId].prettyName}`,
         status: chainSwitchStatus[chainId],
       },
       {
@@ -147,17 +147,17 @@ export function MRCProgressModalBody({
         <p>
           <img
             className="inline mr-1 w-5 h-5"
-            alt={CHAINS[chainId].name}
-            src={CHAINS[chainId].icon}
+            alt={CHAINS[chainId].prettyName}
+            src={stringToBlobUrl(CHAINS[chainId].icon)}
           />
           {chainIdsBeingCheckedOut.length > 1 ? (
             <span className="font-bold text-[16px]">
               Step {chainIdsBeingCheckedOut.indexOf(Number(chainId)) + 1}:
-              Checkout {CHAINS[chainId].name} donations
+              Checkout {CHAINS[chainId].prettyName} donations
             </span>
           ) : (
             <span className="font-bold text-[16px]">
-              Checkout {CHAINS[chainId].name} donations
+              Checkout {CHAINS[chainId].prettyName} donations
             </span>
           )}
         </p>
