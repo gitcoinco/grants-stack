@@ -87,7 +87,7 @@ describe("useCartStorage Zustand store", () => {
   });
 
   test("should set payout token for a specific chain", () => {
-    const chainId: number = 1; // Mock number
+    const chainId: number = 1;
     const payoutToken: TToken = defaultVotingTokens[1];
 
     useCartStorage.getState().setVotingTokenForChain(chainId, payoutToken);
@@ -114,7 +114,7 @@ describe("useCartStorage Zustand store", () => {
   });
 
   test("should update donations for all projects with a specific chain", () => {
-    const chainId: number = 1; // Mock number
+    const chainId: number = 1;
 
     const project1: CartProject = makeApprovedProjectData();
     const project2: CartProject = makeApprovedProjectData();
@@ -146,7 +146,7 @@ describe("useCartStorage Zustand store", () => {
   });
 
   test("should override voting token for a specific chain", () => {
-    const chainId: number = 1; // Mock number
+    const chainId: number = 1; 
     const initialVotingToken: TToken = defaultVotingTokens[1];
     const newVotingToken: TToken = defaultVotingTokens[1];
 

@@ -465,7 +465,6 @@ export function roundToPassportURLMap(round: Round) {
 }
 
 export * from "./allo/transaction-builder";
-// export type { VotingToken } from "./types";
 
 /**
  * Fetch the correct transaction block explorer link for the provided web3 network

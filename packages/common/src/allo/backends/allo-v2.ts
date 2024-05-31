@@ -142,7 +142,7 @@ export class AlloV2 implements Allo {
         value: nativeTokenAmount,
       });
     } else if (permit) {
-      if (getPermitType(token) === "dai") {
+      if (getPermitType(token, this.chainId) === "dai") {
         tx = await sendTransaction(this.transactionSender, {
           address: mrcAddress,
           abi: MRC_ABI,

@@ -15,7 +15,6 @@ import {
 } from "viem";
 import { AnyJson, TransactionBuilder } from "../..";
 import { parseChainId } from "../../chains";
-// import { payoutTokens } from "../../payoutTokens";
 import {
   RoundCategory,
   UpdateAction,
@@ -137,7 +136,7 @@ export class AlloV1 implements Allo {
         value: nativeTokenAmount,
       });
     } else if (permit) {
-      if (getPermitType(token) === "dai") {
+      if (getPermitType(token, this.chainId) === "dai") {
         tx = await sendTransaction(this.transactionSender, {
           address: mrcAddress,
           abi: MRC_ABI,
@@ -503,10 +502,7 @@ export class AlloV1 implements Allo {
         let parsedTokenAmount = 0n;
 
         if (isQF) {
-          // Ensure tokenAmount is normalized to token decimals
           const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
-
-          // Note: uses the new SDK
           const tokens = getTokensByChainId(this.chainId);
           const payoutTokens = tokens;
           const payoutToken = payoutTokens.filter(

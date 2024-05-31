@@ -11,8 +11,8 @@ export type PermitSignature = {
  *
  * Old DAI permit type is only implemented on Ethereum and Polygon PoS. Check /docs/DAI.md for more info.
  * */
-export const getPermitType = (token: TToken): PermitType => {
-  if (/DAI/i.test(token.code)) {
+export const getPermitType = (token: TToken, chainId: number): PermitType => {
+  if (/DAI/i.test(token.code) && [1, 137, 11155111].includes(chainId)) {
     return "dai";
   } else {
     return "eip2612";

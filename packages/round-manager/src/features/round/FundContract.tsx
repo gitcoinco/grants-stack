@@ -51,7 +51,6 @@ export function useContractAmountFunded(args: {
       };
     } {
   const { round, payoutToken } = args;
-  console.log("useContractAmountFunded args:", args);
 
   const isAlloV2 = round?.tags?.includes("allo-v2");
 
@@ -68,15 +67,9 @@ export function useContractAmountFunded(args: {
         }
   );
 
-  console.log("Balance Data:", balanceData);
-  console.log("Balance Error:", balanceError);
-
   const { data: priceData, error: priceError } = useTokenPrice(
     payoutToken?.redstoneTokenId
   );
-
-  console.log("Price Data:", priceData);
-  console.log("Price Error:", priceError);
 
   if (isAlloV2) {
     if (round !== undefined) {

@@ -113,7 +113,6 @@ describe("fund contract tab", () => {
     }));
 
     (getPayoutTokens as jest.Mock).mockImplementation((chainId) => {
-      console.log(`Mock getPayoutTokens called with chainId: ${chainId}`);
       return {
         data: [
           {
@@ -126,27 +125,6 @@ describe("fund contract tab", () => {
         ],
       };
     });
-
-    // (useContractAmountFunded as jest.Mock).mockImplementation(
-    //   ({ round, payoutToken }: { round: Round; payoutToken: TPayoutToken }) => {
-    //     console.log("useContractAmountFunded args:", { round, payoutToken });
-    //     if (!round || !payoutToken) {
-    //       return {
-    //         isLoading: true,
-    //         error: undefined,
-    //         data: undefined,
-    //       };
-    //     }
-    //     return {
-    //       isLoading: false,
-    //       error: undefined,
-    //       data: {
-    //         fundedAmount: BigInt(1e18), // 1 token in 18 decimals
-    //         fundedAmountInUsd: 1000,
-    //       },
-    //     };
-    //   }
-    // );
 
     render(
       wrapWithBulkUpdateGrantApplicationContext(

@@ -120,8 +120,6 @@ export const useCheckoutStore = create<CheckoutState>()(
       const getVotingTokenForChain =
         useCartStorage.getState().getVotingTokenForChain;
 
-      // useCartStorage.getState().getVotingTokenForChain;
-
       const totalDonationPerChain = Object.fromEntries(
         Object.entries(projectsByChain).map(([key, value]) => [
           Number(key) as number,
