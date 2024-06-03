@@ -113,17 +113,16 @@ describe("fund contract tab", () => {
     }));
 
     (getPayoutTokens as jest.Mock).mockImplementation((chainId) => {
-      return {
-        data: [
-          {
-            name: "ETH",
-            chainId: 1,
-            address: "0x0000000000000000000000000000000000000000",
-            redstoneTokenId: "ETH",
-            decimal: 18,
-          },
-        ],
-      };
+      return [
+        {
+          code: "ETH",
+          address: "0x0000000000000000000000000000000000000000",
+          redstoneTokenId: "ETH",
+          decimals: 18,
+          icon: "",
+          canVote: true,
+        },
+      ];
     });
 
     render(

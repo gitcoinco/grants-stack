@@ -5,7 +5,13 @@ import {
   SelectorIcon,
 } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TToken, classNames, getPayoutTokens, stringToBlobUrl } from "common";
+import {
+  NATIVE,
+  TToken,
+  classNames,
+  getPayoutTokens,
+  stringToBlobUrl,
+} from "common";
 import { Input } from "common/src/styles";
 import _ from "lodash";
 import { Fragment, useContext, useState } from "react";
@@ -103,7 +109,9 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
       canVote: false,
       redstoneTokenId: "",
     },
-    ...getPayoutTokens(chain.id),
+    ...getPayoutTokens(chain.id).filter(
+      (token) => token.address.toLowerCase() !== NATIVE.toLowerCase()
+    ),
   ];
 
   const {
@@ -282,7 +290,7 @@ function PayoutTokenButton(props: {
       <span className="flex items-center">
         {token?.icon ? (
           <img
-            src={token?.icon}
+            src={stringToBlobUrl(token.icon)}
             alt=""
             className="h-6 w-6 flex-shrink-0 rounded-full"
           />
@@ -373,7 +381,7 @@ function PayoutTokenDropdown(props: {
                     (token) =>
                       !token.default && (
                         <Listbox.Option
-                          key={token.code}
+                          key={token.address}
                           className={({ active }) =>
                             classNames(
                               active
