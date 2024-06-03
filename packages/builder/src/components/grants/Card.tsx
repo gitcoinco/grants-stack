@@ -1,9 +1,9 @@
 import { useDataLayer } from "data-layer";
 import { Badge, Image } from "@chakra-ui/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getChainById, renderToPlainText, stringToBlobUrl } from "common";
+import { getChainById, renderToPlainText, stringToBlobUrl, TChain } from "common";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
 import { RootState } from "../../reducers";
@@ -15,6 +15,9 @@ import LoadingCard from "./LoadingCard";
 function Card({ projectId }: { projectId: string }) {
   const dataLayer = useDataLayer();
   const dispatch = useDispatch();
+
+  const [chain, setChain] = useState<TChain | undefined>(undefined);
+
   const props = useSelector((state: RootState) => {
     const grantMetadata = state.grantsMetadata[projectId];
     const chainId = grantMetadata?.metadata?.chainId!;
@@ -26,17 +29,11 @@ function Card({ projectId }: { projectId: string }) {
     const bannerImg = getProjectImage(loading, ImgTypes.bannerImg, project);
     const logoImg = getProjectImage(loading, ImgTypes.logoImg, project);
 
-    const chain = getChainById(chainId);
-    const projectChainName = chain.prettyName;
-    const projectChainIconUri = stringToBlobUrl(chain.icon);
-
     return {
       id: projectId,
       chainId,
       loading,
       currentProject: project,
-      projectChainName,
-      projectChainIconUri,
       bannerImg,
       logoImg,
       status,
@@ -46,6 +43,8 @@ function Card({ projectId }: { projectId: string }) {
   useEffect(() => {
     if (projectId !== undefined && props.status === Status.Undefined) {
       dispatch(fetchGrantData(projectId, dataLayer));
+    } else {
+      setChain(getChainById(props.chainId));
     }
   }, [dispatch, projectId, props.currentProject, props.status]);
 
@@ -100,19 +99,21 @@ function Card({ projectId }: { projectId: string }) {
             </div>
           </Link>
 
-          <div className="flex justify-end w-fit mt-auto">
-            <Badge
-              className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
-              borderRadius="full"
-            >
-              <Image
-                src={props.projectChainIconUri}
-                alt="chain icon"
-                className="flex flex-row h-4 mr-1 mt-[1px] rounded-full"
-              />
-              {props.projectChainName}
-            </Badge>
-          </div>
+          { chain &&
+            <div className="flex justify-end w-fit mt-auto">
+              <Badge
+                className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
+                borderRadius="full"
+              >
+                <Image
+                  src={stringToBlobUrl(chain.icon)}
+                  alt="chain icon"
+                  className="flex flex-row h-4 mr-1 mt-[1px] rounded-full"
+                />
+                {chain.prettyName}
+              </Badge>
+            </div>
+          }
         </>
       )}
     </div>
