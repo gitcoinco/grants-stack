@@ -1,4 +1,4 @@
-import { TToken, getChains, getTokens, getTokensByChainId } from "common";
+import { TToken, getChainById, getTokens, getTokensByChainId, getTokenByChainIdAndAddress } from "common";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartProject } from "./features/api/types";
@@ -146,7 +146,7 @@ export const useCartStorage = create<CartState>()(
         const tokenFromStore = get().chainToVotingToken[chainId];
         if (!tokenFromStore) {
           const defaultToken = getTokensByChainId(chainId).filter(
-            (token) => token.canVote && token.address === zeroAddress
+            (token: TToken) => token.canVote && token.address === zeroAddress
           )[0];
           console.log(
             "no token for chain",
@@ -163,7 +163,7 @@ export const useCartStorage = create<CartState>()(
         }
       },
       setVotingTokenForChain: (chainId: number, payoutToken: TToken) => {
-        if (!Object.keys(getChains()).includes(chainId.toString())) {
+        if (!getChainById(chainId)) {
           if (process.env.NODE_ENV !== "test") {
             console.warn(
               "Tried setting payoutToken",

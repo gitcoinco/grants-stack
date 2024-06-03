@@ -89,15 +89,6 @@ export function SummaryContainer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, chainIds, getVotingTokenForChain]);
 
-  // console.log("projectsByChain", projectsByChain)
-  // console.log("A", Object.entries(projectsByChain).map(([key, value]) => [
-  //   console.log(parseChainId(key))]));
-  //   console.log("B", Object.fromEntries(
-  //     Object.entries(projectsByChain).map(([key, value]) => [
-  //       parseChainId(key),
-  //       value
-  //         .map((project) => project.amount)])));
-
   const totalDonationsPerChain = useMemo(() => {
     return Object.fromEntries(
       Object.entries(projectsByChain).map(([key, value]) => [
@@ -115,13 +106,9 @@ export function SummaryContainer() {
           ),
       ])
     );
-
-    
     /* NB: we want to update the totalDonationsPerChain value based on chainToVotingToken */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getVotingTokenForChain, chainToVotingToken, projectsByChain]);
-
-  // console.log("C", totalDonationsPerChain);
 
   const enoughFundsToDonatePerChain = useMemo(() => {
     return Object.fromEntries(
@@ -377,8 +364,7 @@ export function SummaryContainer() {
       return Promise.all(
         Object.keys(totalDonationsPerChain).map((chainId) =>
           getTokenPrice(
-            getVotingTokenForChain(parseChainId(chainId))
-              .redstoneTokenId as string
+            getVotingTokenForChain(parseChainId(chainId)).redstoneTokenId
           ).then((price) => {
             return (
               Number(

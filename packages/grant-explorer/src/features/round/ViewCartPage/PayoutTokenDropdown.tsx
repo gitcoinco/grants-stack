@@ -9,7 +9,6 @@ export function PayoutTokenDropdown(props: {
   selectedPayoutToken?: TToken;
   setSelectedPayoutToken: (payoutToken: TToken) => void;
 }) {
-  console.log(props.payoutTokenOptions, props.selectedPayoutToken)
   return (
     <div className="mt-1 relative col-span-6 sm:col-span-3">
       <Listbox
