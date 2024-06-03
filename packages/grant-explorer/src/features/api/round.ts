@@ -45,41 +45,14 @@ export const useContributionHistory = (
         chainIds,
       });
 
-      try {
-        const contributionsWithTimestamp: Contribution[] = await Promise.all(
-          contributions.map(async (contribution) => {
-            const publicClient = getPublicClient({
-              chainId: contribution.chainId,
-            });
-            const tx = await publicClient.getTransaction({
-              hash: contribution.transactionHash as Hex,
-            });
+      setState({
+        type: "loaded",
+        data: {
+          chainIds: chainIds,
+          data: contributions,
+        },
+      });
 
-            const block = await publicClient.getBlock({
-              blockHash: tx.blockHash,
-            });
-
-            return {
-              ...contribution,
-              timestamp: BigInt(block.timestamp),
-            };
-          })
-        );
-
-        setState({
-          type: "loaded",
-          data: {
-            chainIds: chainIds,
-            data: contributionsWithTimestamp,
-          },
-        });
-      } catch (e) {
-        console.error("Error fetching contribution history for all chains", e);
-        setState({
-          type: "error",
-          error: "Error fetching contribution history for all chains",
-        });
-      }
     };
 
     fetchContributions();

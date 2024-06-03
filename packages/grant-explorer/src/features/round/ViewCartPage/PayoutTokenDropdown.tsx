@@ -2,13 +2,14 @@ import { Listbox, Transition } from "@headlessui/react";
 import { PayoutTokenButton } from "./PayoutTokenButton";
 import { Fragment } from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
-import { classNames, NATIVE, TToken } from "common";
+import { classNames, NATIVE, stringToBlobUrl, TToken } from "common";
 
 export function PayoutTokenDropdown(props: {
   payoutTokenOptions: TToken[];
   selectedPayoutToken?: TToken;
   setSelectedPayoutToken: (payoutToken: TToken) => void;
 }) {
+  console.log(props.payoutTokenOptions, props.selectedPayoutToken)
   return (
     <div className="mt-1 relative col-span-6 sm:col-span-3">
       <Listbox
@@ -32,7 +33,7 @@ export function PayoutTokenDropdown(props: {
               >
                 <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                   {props.payoutTokenOptions
-                    .filter((t) => t.address !== NATIVE)
+                    .filter((t) => t.address.toLowerCase() !== NATIVE.toLowerCase())
                     .map(
                       (token) =>
                         !token.default && (
@@ -54,7 +55,7 @@ export function PayoutTokenDropdown(props: {
                                 <div className="flex items-center">
                                   {token.icon ? (
                                     <img
-                                      src={token.icon}
+                                      src={stringToBlobUrl(token.icon)}
                                       alt=""
                                       className="h-4 w-4 md:h-6 md:w-6 flex-shrink-0 rounded-full"
                                     />

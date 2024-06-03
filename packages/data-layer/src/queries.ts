@@ -632,6 +632,7 @@ export const getDonationsByDonorAddress = gql`
       amountInUsd
       transactionHash
       blockNumber
+      timestamp
       round {
         roundMetadata
         donationsStartTime

@@ -5,7 +5,7 @@ import {
   SelectorIcon,
 } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TToken, classNames, getPayoutTokens } from "common";
+import { TToken, classNames, getPayoutTokens, stringToBlobUrl } from "common";
 import { Input } from "common/src/styles";
 import _ from "lodash";
 import { Fragment, useContext, useState } from "react";
@@ -390,7 +390,7 @@ function PayoutTokenDropdown(props: {
                               <div className="flex items-center">
                                 {token.icon ? (
                                   <img
-                                    src={token.icon}
+                                    src={stringToBlobUrl(token.icon)}
                                     alt=""
                                     className="h-6 w-6 flex-shrink-0 rounded-full"
                                   />

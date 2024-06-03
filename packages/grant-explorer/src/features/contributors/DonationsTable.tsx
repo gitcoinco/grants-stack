@@ -2,8 +2,8 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
 import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
-import { TToken, getChainById, stringToBlobUrl } from "common";
-import { formatUnits } from "viem";
+import { getChainById, getTokenByChainIdAndAddress, stringToBlobUrl } from "common";
+import { Hex, formatUnits } from "viem";
 import { Contribution } from "data-layer";
 import {
   Accordion,
@@ -17,7 +17,6 @@ import moment from "moment";
 
 export function DonationsTable(props: {
   contributions: Contribution[];
-  tokens: Record<string, TToken>;
   activeRound: boolean;
 }) {
   return (
@@ -26,7 +25,6 @@ export function DonationsTable(props: {
       <RoundsTableWithAccordian
         activeRound={props.activeRound}
         contributions={props.contributions}
-        tokens={props.tokens}
       />
       {props.contributions.length === 0 && (
         <div className="text-md mt-2 mb-12">
@@ -41,7 +39,6 @@ export function DonationsTable(props: {
 
 function RoundsTableWithAccordian(props: {
   contributions: Contribution[];
-  tokens: Record<string, TToken>;
   activeRound: boolean;
 }) {
   const nestedContributionsForRound = props.contributions.reduce(
@@ -99,7 +96,6 @@ function RoundsTableWithAccordian(props: {
                       <Table
                         activeRound={props.activeRound}
                         contributions={sortedContributions}
-                        tokens={props.tokens}
                       />
                       <AccordionIcon />
                     </AccordionButton>
@@ -108,7 +104,6 @@ function RoundsTableWithAccordian(props: {
                     <InnerTable
                       activeRound={props.activeRound}
                       contributions={sortedContributions}
-                      tokens={props.tokens}
                     />
                   </AccordionPanel>
                 </AccordionItem>
@@ -161,7 +156,6 @@ function TableHeader() {
 
 function InnerTable(props: {
   contributions: Contribution[];
-  tokens: Record<string, TToken>;
   activeRound: boolean;
 }) {
   return (
@@ -187,11 +181,11 @@ function InnerTable(props: {
                     )
 
                     .map((contribution) => {
-                      const tokenId =
-                        contribution.tokenAddress.toLowerCase() +
-                        "-" +
-                        contribution.chainId;
-                      const token = props.tokens[tokenId];
+
+                      const token = getTokenByChainIdAndAddress(
+                        contribution.chainId,
+                        contribution.tokenAddress as Hex
+                      );
 
                       let formattedAmount = "N/A";
 
@@ -252,12 +246,13 @@ function InnerTable(props: {
 
 function Table(props: {
   contributions: Contribution[];
-  tokens: Record<string, TToken>;
   activeRound: boolean;
 }) {
   const roundInfo = props.contributions[0];
   const chainId = roundInfo.chainId;
-  const chainLogo = stringToBlobUrl(getChainById(roundInfo.chainId).icon);
+  const chain = getChainById(chainId);
+
+  const chainLogo = stringToBlobUrl(chain.icon);
   const roundName = roundInfo.round.roundMetadata.name;
 
   const sortedContributions = props.contributions;
@@ -275,9 +270,11 @@ function Table(props: {
 
   // Get the formatted amount & token name
   sortedContributions.map((contribution) => {
-    const tokenId =
-      contribution.tokenAddress.toLowerCase() + "-" + contribution.chainId;
-    const token = props.tokens[tokenId];
+
+    const token = getTokenByChainIdAndAddress(
+      contribution.chainId,
+      contribution.tokenAddress as Hex
+    );
 
     if (token) {
       formattedAmount = `${formatUnits(

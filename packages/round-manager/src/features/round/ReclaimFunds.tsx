@@ -15,7 +15,7 @@ import { Spinner } from "../common/Spinner";
 import { AdditionalGasFeesNote } from "./BulkApplicationCommon";
 import { getPayoutTokens, useTokenPrice } from "common";
 import { assertAddress } from "common/src/address";
-import { useAllo } from "common";
+import { useAllo, stringToBlobUrl } from "common";
 
 export default function ReclaimFunds(props: {
   round: Round | undefined;
@@ -275,7 +275,7 @@ function ReclaimFundsContent(props: {
           <p className="flex flex-row text-sm">
             {matchingFundPayoutToken?.icon ? (
               <img
-                src={matchingFundPayoutToken.icon}
+                src={stringToBlobUrl(matchingFundPayoutToken.icon)}
                 alt=""
                 className="h-6 w-6 flex-shrink-0 rounded-full"
               />

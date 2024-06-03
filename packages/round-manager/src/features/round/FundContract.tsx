@@ -18,6 +18,7 @@ import {
   TToken,
   classNames,
   getPayoutTokens,
+  stringToBlobUrl,
   useAllo,
   useTokenPrice,
 } from "common";
@@ -369,7 +370,7 @@ export default function FundContract(props: {
           <p className="flex flex-row text-sm">
             {matchingFundPayoutToken?.icon ? (
               <img
-                src={matchingFundPayoutToken.icon}
+                src={stringToBlobUrl(matchingFundPayoutToken.icon)}
                 alt=""
                 className="h-6 w-6 flex-shrink-0 rounded-full"
               />

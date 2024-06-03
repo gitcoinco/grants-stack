@@ -1,6 +1,6 @@
 import { Listbox } from "@headlessui/react";
 import { ChevronUpDownIcon } from "@heroicons/react/24/solid";
-import { TToken } from "common";
+import { TToken, stringToBlobUrl } from "common";
 
 export function PayoutTokenButton(props: { token?: TToken }) {
   const { token } = props;
@@ -12,7 +12,7 @@ export function PayoutTokenButton(props: { token?: TToken }) {
       <span className="flex items-center">
         {token?.icon && (
           <img
-            src={token?.icon}
+            src={stringToBlobUrl(token.icon)}
             alt="Token Logo"
             className="h-4 w-4 md:h-6 md:w-6 flex-shrink-0 rounded-full"
           />
