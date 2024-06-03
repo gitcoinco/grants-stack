@@ -1608,7 +1608,7 @@ function RoundApplicationPeriod(props: {
                           )
                             ? "bg-grey-50 text-gray-400"
                             : ""
-                        } 
+                        }
                         ${rollingApplicationsEnabled ? "invisible" : ""}
                         border-0 pt-0 ml-2 pl-0 -mt-2 text-sm`}
                       defaultValue={`${getLocalDate(
