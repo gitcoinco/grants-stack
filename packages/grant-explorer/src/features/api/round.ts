@@ -1,8 +1,8 @@
 import { ApplicationStatus } from "./types";
 import { useEffect, useState } from "react";
-import { Address, Hex, getAddress } from "viem";
+import { Address, getAddress } from "viem";
 import { Contribution, useDataLayer } from "data-layer";
-import { getPublicClient } from "@wagmi/core";
+import { dateToEthereumTimestamp } from "common";
 
 export type RoundProject = {
   id: string;
@@ -49,10 +49,14 @@ export const useContributionHistory = (
         type: "loaded",
         data: {
           chainIds: chainIds,
-          data: contributions,
+          data: contributions.map((contribution) => ({
+            ...contribution,
+            timestamp: dateToEthereumTimestamp(
+              new Date(contribution.timestamp)
+            ).toString(),
+          })),
         },
       });
-
     };
 
     fetchContributions();
