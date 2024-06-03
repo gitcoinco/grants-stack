@@ -1,11 +1,9 @@
 import React, { useMemo } from "react";
-import { getChains, stringToBlobUrl } from "common";
+import { getChainById, stringToBlobUrl } from "common";
 import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useCheckoutStore } from "../../../checkoutStore";
 import { Button } from "common/src/styles";
-
-const CHAINS = getChains();
 
 export type Step = {
   name: string;
@@ -27,6 +25,8 @@ export function MRCProgressModalBody({
   const chainIdsBeingCheckedOut = checkoutStore.chainsToCheckout;
   const chainId = (checkoutStore.currentChainBeingCheckedOut ??
     chainIdsBeingCheckedOut[0]) as number;
+  
+  const chain = getChainById(chainId);
 
   const { voteStatus, permitStatus, chainSwitchStatus } = useCheckoutStore();
 
@@ -34,7 +34,7 @@ export function MRCProgressModalBody({
     const stepsWithChainSwitch = [
       {
         name: "Switch Network",
-        description: `Switch network to ${CHAINS[chainId].prettyName}`,
+        description: `Switch network to ${chain.prettyName}`,
         status: chainSwitchStatus[chainId],
       },
       {
@@ -69,7 +69,7 @@ export function MRCProgressModalBody({
     return chainSwitchStatus[chainId] !== ProgressStatus.NOT_STARTED
       ? stepsWithChainSwitch
       : stepsWithoutChainSwitch;
-  }, [chainId, chainSwitchStatus, permitStatus, voteStatus]);
+  }, [chainId, chainSwitchStatus, permitStatus, voteStatus, chain.prettyName]);
 
   return (
     <div className="sm:w-fit md:w-[400px]">
@@ -147,17 +147,17 @@ export function MRCProgressModalBody({
         <p>
           <img
             className="inline mr-1 w-5 h-5"
-            alt={CHAINS[chainId].prettyName}
-            src={stringToBlobUrl(CHAINS[chainId].icon)}
+            alt={chain.prettyName}
+            src={stringToBlobUrl(chain.icon)}
           />
           {chainIdsBeingCheckedOut.length > 1 ? (
             <span className="font-bold text-[16px]">
               Step {chainIdsBeingCheckedOut.indexOf(Number(chainId)) + 1}:
-              Checkout {CHAINS[chainId].prettyName} donations
+              Checkout {chain.prettyName} donations
             </span>
           ) : (
             <span className="font-bold text-[16px]">
-              Checkout {CHAINS[chainId].prettyName} donations
+              Checkout {chain.prettyName} donations
             </span>
           )}
         </p>

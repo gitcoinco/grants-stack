@@ -2,7 +2,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
 import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
-import { TToken, getChains, stringToBlobUrl } from "common";
+import { TToken, getChainById, stringToBlobUrl } from "common";
 import { formatUnits } from "viem";
 import { Contribution } from "data-layer";
 import {
@@ -14,8 +14,6 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import moment from "moment";
-
-const CHAINS = getChains();
 
 export function DonationsTable(props: {
   contributions: Contribution[];
@@ -259,7 +257,7 @@ function Table(props: {
 }) {
   const roundInfo = props.contributions[0];
   const chainId = roundInfo.chainId;
-  const chainLogo = stringToBlobUrl(CHAINS[roundInfo.chainId]?.icon);
+  const chainLogo = stringToBlobUrl(getChainById(roundInfo.chainId).icon);
   const roundName = roundInfo.round.roundMetadata.name;
 
   const sortedContributions = props.contributions;

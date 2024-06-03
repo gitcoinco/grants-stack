@@ -18,9 +18,9 @@ import {
   useTokenPrice,
   TToken,
   getTokensByChainId,
-  getChains,
   getTokens,
   stringToBlobUrl,
+  getChainById,
 } from "common";
 import { Button, Input } from "common/src/styles";
 import AlloV1 from "common/src/icons/AlloV1";
@@ -72,8 +72,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { Box, Tab, Tabs } from "@chakra-ui/react";
 import GenericModal from "../common/GenericModal";
-
-const CHAINS = getChains();
 
 const defaultVotingTokens: Record<number, TToken> = Object.entries(
   getTokens()
@@ -439,6 +437,8 @@ function AfterRoundStart(props: {
     ? round.applicationsEndTime
     : round.roundEndTime;
 
+  const chain = getChainById(chainId);
+
   return (
     <>
       <DefaultLayout>
@@ -511,10 +511,10 @@ function AfterRoundStart(props: {
                 <div className="flex items-center">
                   <img
                     className="w-4 h-4 mt-0.5 mr-1"
-                    src={stringToBlobUrl(CHAINS[chainId]?.icon)}
+                    src={stringToBlobUrl(chain.icon)}
                     alt="Round Chain Logo"
                   />
-                  <span>{CHAINS[chainId]?.prettyName}</span>
+                  <span>{chain.prettyName}</span>
                 </div>
               </div>
 

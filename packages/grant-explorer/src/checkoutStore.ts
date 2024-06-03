@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { CartProject, ProgressStatus } from "./features/api/types";
-import { Allo } from "common";
+import { Allo, getChainById } from "common";
 import { useCartStorage } from "./store";
 import {
   Hex,
@@ -24,7 +24,6 @@ import { getEnabledChains } from "./app/chainConfig";
 import { WalletClient } from "wagmi";
 import { getContract, getPublicClient } from "@wagmi/core";
 import { getPermitType } from "common/dist/allo/voting";
-import { MRC_CONTRACTS } from "common/dist/allo/addresses/mrc";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
 
@@ -151,6 +150,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         await switchToChain(chainId, walletClient, get);
 
         const token = await getVotingTokenForChain(chainId);
+        const chain = getChainById(chainId);
 
         let sig;
         let nonce;
@@ -176,7 +176,7 @@ export const useCheckoutStore = create<CheckoutState>()(
             if (getPermitType(token, chainId) === "dai") {
               sig = await signPermitDai({
                 walletClient: walletClient,
-                spenderAddress: MRC_CONTRACTS[chainId],
+                spenderAddress: chain.contracts.multiRoundCheckout,
                 chainId,
                 deadline: BigInt(deadline),
                 contractAddress: token.address,
@@ -189,7 +189,7 @@ export const useCheckoutStore = create<CheckoutState>()(
               sig = await signPermit2612({
                 walletClient: walletClient,
                 value: totalDonationPerChain[chainId],
-                spenderAddress: MRC_CONTRACTS[chainId],
+                spenderAddress: chain.contracts.multiRoundCheckout,
                 nonce,
                 chainId,
                 deadline: BigInt(deadline),

@@ -1,9 +1,7 @@
-import { useTokenPrice, TToken, getChains, stringToBlobUrl } from "common";
+import { useTokenPrice, TToken, stringToBlobUrl, getChainById } from "common";
 import { formatUnits, zeroAddress } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
-
-const CHAINS = getChains();
 
 type SummaryProps = {
   totalDonation: bigint;
@@ -37,6 +35,8 @@ export function Summary({
   /*TODO: make this an explicit cehck of `balance !== undefined && totaldonation > balance.value ` */
   const insufficientFunds = balance ? totalDonation > balance.value : false;
 
+  const chain = getChainById(chainId);
+
   return (
     <div>
       <div className="flex flex-row justify-between mt-2 mb-5">
@@ -45,10 +45,10 @@ export function Summary({
           <p>
             <img
               className={"inline max-w-[32px] mr-2"}
-              alt={CHAINS[chainId].prettyName}
-              src={stringToBlobUrl(CHAINS[chainId].icon)}
+              alt={chain.prettyName}
+              src={stringToBlobUrl(chain.icon)}
             />
-            {CHAINS[chainId].prettyName}
+            {chain.prettyName}
           </p>
         </div>
         <div className="flex flex-col">

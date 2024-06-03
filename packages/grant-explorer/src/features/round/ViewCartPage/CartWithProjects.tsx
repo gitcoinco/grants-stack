@@ -6,11 +6,9 @@ import React, { useEffect, useState } from "react";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";
-import { useTokenPrice, TToken, getChains, stringToBlobUrl } from "common";
+import { useTokenPrice, TToken, stringToBlobUrl, getChainById } from "common";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
-
-const CHAINS = getChains();
 
 type Props = {
   cart: GroupedCartProjectsByRoundId;
@@ -18,7 +16,7 @@ type Props = {
 };
 
 export function CartWithProjects({ cart, chainId }: Props) {
-  const chain = CHAINS[chainId];
+  const chain = getChainById(chainId);
   const cartByRound = Object.values(cart);
 
   const store = useCartStorage();
