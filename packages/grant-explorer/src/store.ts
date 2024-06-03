@@ -1,4 +1,4 @@
-import { TToken, getChainById, getTokens, getTokensByChainId, getTokenByChainIdAndAddress } from "common";
+import { TToken, getChainById, getTokens, getTokensByChainId } from "common";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartProject } from "./features/api/types";

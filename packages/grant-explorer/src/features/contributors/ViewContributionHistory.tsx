@@ -10,7 +10,11 @@ import { useContributionHistory } from "../api/round";
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
 import { Hex, isAddress } from "viem";
-import { TToken, dateToEthereumTimestamp, getChains, getTokenByChainIdAndAddress, getTokens } from "common";
+import {
+  dateToEthereumTimestamp,
+  getChains,
+  getTokenByChainIdAndAddress,
+} from "common";
 import { Contribution } from "data-layer";
 
 const DonationHistoryBanner = lazy(
