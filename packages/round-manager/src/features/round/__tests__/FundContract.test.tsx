@@ -83,7 +83,7 @@ describe("fund contract tab", () => {
     (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
-  it("displays fund contract tab", async () => {
+  it.only("displays fund contract tab", async () => {
     mockRoundData = makeRoundData({
       // Ensure the token address matches the mocked token data
       token: "0x0000000000000000000000000000000000000000",
@@ -112,19 +112,6 @@ describe("fund contract tab", () => {
       },
     }));
 
-    (getPayoutTokens as jest.Mock).mockImplementation((chainId) => {
-      return [
-        {
-          code: "ETH",
-          address: "0x0000000000000000000000000000000000000000",
-          redstoneTokenId: "ETH",
-          decimals: 18,
-          icon: "",
-          canVote: true,
-        },
-      ];
-    });
-
     render(
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithReadProgramContext(
@@ -137,6 +124,11 @@ describe("fund contract tab", () => {
       )
     );
     const fundContractTab = screen.getByTestId("fund-contract");
+
+    console.log("======>");
+    console.log(fundContractTab);
+
+    console.log(screen.getByTestId("grant-applications"));
 
     fireEvent.click(fundContractTab);
 

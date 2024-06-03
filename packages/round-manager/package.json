@@ -10,7 +10,7 @@
   "scripts": {
     "start": "craco start",
     "build": "env REACT_APP_GIT_SHA=$(git rev-parse --short HEAD) craco build",
-    "test": "craco test --watchAll=false --testPathIgnorePatterns=e2e",
+    "test": "craco test --watchAll=false",
     "synpress:test": "playwright test --project=chromium",
     "test:dev": "craco test --watchAll=true",
     "test:coverage": "craco test --watchAll=false --silent --coverage",
