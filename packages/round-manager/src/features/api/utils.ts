@@ -3,7 +3,6 @@ import {
   ApplicationMetadata,
   InputType,
   IPFSObject,
-  Program,
   RevisedMatch,
 } from "./types";
 import { useEffect, useState } from "react";

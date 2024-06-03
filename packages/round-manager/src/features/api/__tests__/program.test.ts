@@ -1,4 +1,3 @@
-import { getChainById } from "common";
 import { makeProgramData } from "../../../test-utils";
 import { getProgramById, listPrograms } from "../program";
 import { Program } from "../types";
