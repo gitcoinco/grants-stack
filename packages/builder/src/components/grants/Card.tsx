@@ -3,7 +3,12 @@ import { Badge, Image } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { getChainById, renderToPlainText, stringToBlobUrl, TChain } from "common";
+import {
+  getChainById,
+  renderToPlainText,
+  stringToBlobUrl,
+  TChain,
+} from "common";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import { DefaultProjectBanner, DefaultProjectLogo } from "../../assets";
 import { RootState } from "../../reducers";
@@ -99,7 +104,7 @@ function Card({ projectId }: { projectId: string }) {
             </div>
           </Link>
 
-          { chain &&
+          {chain && (
             <div className="flex justify-end w-fit mt-auto">
               <Badge
                 className="flex flex-row bg-gitcoin-grey-50 ml-6 mb-4 px-3 py-1 shadow-lg"
@@ -113,7 +118,7 @@ function Card({ projectId }: { projectId: string }) {
                 {chain.prettyName}
               </Badge>
             </div>
-          }
+          )}
         </>
       )}
     </div>
