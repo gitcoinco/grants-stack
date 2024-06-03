@@ -97,6 +97,20 @@ export default function ViewProject() {
         ),
       },
       {
+        name: "Stats",
+        content: (
+          <>
+            {project ? (
+              <>
+                <ProjectStats project={project} />
+              </>
+            ) : (
+              <SkeletonText />
+            )}
+          </>
+        ),
+      },
+      {
         name: "Rounds",
         content: (
           <>
@@ -387,3 +401,48 @@ export function Rounds({
     </div>
   );
 }
+
+export function ProjectStats({ project }: { project: v2Project }) {
+  // const [allTimeStats, setAllTimeStats] = useState({
+  //   allTimeReceived: 0,
+  //   allTimeContributions: 0,
+  //   roundsLength: 0,
+  // });
+
+  // const [details, setDetails] = useState<
+  //   { round: any; stats: any }[]
+  // >([]);
+
+  return (
+    <>
+      <div
+        className="mt-8 max-w-[53rem] m-auto w-full bg-green-50
+        text-black rounded-2xl py-8 px-2 flex justify-center
+        items-center gap-8 flex-wrap mb-16"
+      >
+        <div className="text-xl sm:text-2xl font-medium">
+          Want to check out more stats?
+        </div>
+        <a
+          href={`https://gitcoindonordata.xyz/projects/${slugify(
+            project?.metadata.title ?? ""
+          )}`}
+          rel="noreferrer"
+          target="_blank"
+          className="rounded-lg px-4 py-2.5 font-mono bg-green-200
+           hover:bg-green-300 text-white transition-all flex items-center justify-center gap-2"
+          data-testid="share-results-footer"
+        >
+          <span>Project stats dashboard</span>
+        </a>
+      </div>
+    </>
+  );
+}
+
+export const slugify = (input: string): string =>
+  input
+    .trim() // Remove whitespace
+    .replace(/\s+/g, "-") // Replace space w/ dash
+    .replace(/[^a-zA-Z0-9-]/g, "") // Remove non-alphanumeric chars
+    .toLowerCase();
