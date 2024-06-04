@@ -8,33 +8,9 @@ import { MemoryRouter } from "react-router-dom";
 import { BreadcrumbItem } from "../../common/Breadcrumb";
 import { zeroAddress } from "viem";
 
-import { VotingToken } from "common";
 import { Contribution } from "data-layer";
 
 const mockAddress = faker.finance.ethereumAddress();
-
-const mockTokens: Record<string, VotingToken> = {
-  ETH: {
-    name: "Ethereum",
-    chainId: 1,
-    address: "0x0000000000000000000000000000000000000000",
-    decimal: 18,
-    logo: "https://example.com/eth_logo.png",
-    default: true,
-    redstoneTokenId: "abc123",
-    defaultForVoting: true,
-    canVote: true,
-  },
-  DAI: {
-    name: "Dai",
-    chainId: 1,
-    address: "0x123456789abcdef",
-    decimal: 18,
-    defaultForVoting: true,
-    canVote: true,
-    redstoneTokenId: "DAI",
-  },
-};
 
 const mockContributions: Contribution[] = [
   {
@@ -68,7 +44,7 @@ const mockContributions: Contribution[] = [
         name: "Project 1",
       },
     },
-    timestamp: BigInt(0),
+    timestamp: "0",
   },
   {
     id: "2",
@@ -101,7 +77,7 @@ const mockContributions: Contribution[] = [
         name: "Project 2",
       },
     },
-    timestamp: BigInt(0),
+    timestamp: "0",
   },
 ];
 
@@ -163,7 +139,6 @@ describe("<ViewContributionHistory/>", () => {
     render(
       <MemoryRouter>
         <ViewContributionHistory
-          tokens={mockTokens}
           contributions={{ chainIds: [1], data: mockContributions }}
           address={mockAddress}
           addressLogo="mockedAddressLogo"
@@ -182,16 +157,13 @@ describe("<ViewContributionHistory/>", () => {
     expect(screen.getByText("Share Profile")).toBeInTheDocument();
 
     for (const contribution of mockContributions) {
-        expect(
-          screen.getByText(contribution.round.roundMetadata.name)
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText(contribution.application.project.name)
-        ).toBeInTheDocument();
-        expect(screen.getAllByText("View").length).toBeGreaterThan(
-          0
-        );
-      
+      expect(
+        screen.getByText(contribution.round.roundMetadata.name)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(contribution.application.project.name)
+      ).toBeInTheDocument();
+      expect(screen.getAllByText("View").length).toBeGreaterThan(0);
     }
   });
 });

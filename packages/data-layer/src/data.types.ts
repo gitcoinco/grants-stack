@@ -758,7 +758,7 @@ export type Contribution = {
       name: string;
     };
   };
-  timestamp?: bigint;
+  timestamp: string;
 };
 
 export type Payout = {

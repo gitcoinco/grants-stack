@@ -1,8 +1,6 @@
-import { ChainId } from "common";
 import { makeProgramData } from "../../../test-utils";
 import { getProgramById, listPrograms } from "../program";
 import { Program } from "../types";
-import { CHAINS } from "../utils";
 
 jest.mock("data-layer", () => ({
   ...jest.requireActual("data-layer"),
@@ -17,7 +15,10 @@ describe("listPrograms", () => {
   it("calls the indexer endpoint", async () => {
     // const address = "0x0"
     let expectedProgram = makeProgramData({
-      chain: CHAINS[ChainId.MAINNET],
+      chain: {
+        id: 1,
+        name: "Ethereum",
+      },
     });
     expectedProgram = {
       ...expectedProgram,
@@ -30,7 +31,7 @@ describe("listPrograms", () => {
       {
         getNetwork: async () =>
           // @ts-expect-error Test file
-          Promise.resolve({ chainId: ChainId.MAINNET }),
+          Promise.resolve({ chainId: 1 }),
       },
       {
         getProgramsByUser: jest.fn().mockResolvedValue({
@@ -62,7 +63,10 @@ describe("listPrograms", () => {
 describe("getProgramById", () => {
   it("calls the graphql endpoint and maps the metadata from IPFS", async () => {
     const expectedProgram = makeProgramData({
-      chain: CHAINS[ChainId.MAINNET],
+      chain: {
+        name: "Ethereum",
+        id: 1,
+      },
     });
     const programId = expectedProgram.id;
 
@@ -71,7 +75,7 @@ describe("getProgramById", () => {
       {
         getNetwork: async () =>
           // @ts-expect-error Test file
-          Promise.resolve({ chainId: ChainId.MAINNET }),
+          Promise.resolve({ chainId: 1 }),
       },
       {
         getProgramById: jest.fn().mockResolvedValue({

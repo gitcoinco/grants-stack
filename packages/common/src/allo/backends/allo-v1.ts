@@ -13,15 +13,13 @@ import {
   parseUnits,
   zeroAddress,
 } from "viem";
-import { AnyJson, ChainId, TransactionBuilder } from "../..";
+import { AnyJson, TransactionBuilder } from "../..";
 import { parseChainId } from "../../chains";
-import { payoutTokens } from "../../payoutTokens";
 import {
   RoundCategory,
   UpdateAction,
   UpdateRoundParams,
   MatchingStatsData,
-  VotingToken,
 } from "../../types";
 import ProgramFactoryABI from "../abis/allo-v1/ProgramFactory";
 import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
@@ -51,12 +49,13 @@ import {
   sendTransaction,
 } from "../transaction-sender";
 import { getPermitType, PermitSignature } from "../voting";
-import { MRC_CONTRACTS } from "../addresses/mrc";
 import Erc20ABI from "../abis/erc20";
 import MerklePayoutStrategyImplementationABI from "../abis/allo-v1/MerklePayoutStrategyImplementation";
 import { BigNumber } from "ethers";
 import DirectPayoutStrategyImplementation from "../abis/allo-v1/DirectPayoutStrategyImplementation";
 import { hexZeroPad } from "ethers/lib/utils.js";
+import { getChainById, getTokensByChainId } from "@gitcoin/gitcoin-chain-data";
+import { TToken } from "@gitcoin/gitcoin-chain-data/dist/types";
 
 function createProjectId(args: {
   chainId: number;
@@ -91,7 +90,7 @@ export class AlloV1 implements Allo {
   private readonly transactionSender: TransactionSender;
   private readonly ipfsUploader: IpfsUploader;
   private readonly waitUntilIndexerSynced: WaitUntilIndexerSynced;
-  private readonly chainId: ChainId;
+  private readonly chainId: number;
 
   constructor(args: {
     chainId: number;
@@ -109,8 +108,8 @@ export class AlloV1 implements Allo {
 
   async donate(
     publicClient: PublicClient,
-    chainId: ChainId,
-    token: VotingToken,
+    chainId: number,
+    token: TToken,
     groupedVotes: Record<string, Hex[]>,
     groupedAmounts: Record<string, bigint> | bigint[],
     nativeTokenAmount: bigint,
@@ -121,7 +120,7 @@ export class AlloV1 implements Allo {
     }
   ) {
     let tx: Result<Hex>;
-    const mrcAddress = MRC_CONTRACTS[chainId];
+    const mrcAddress = getChainById(chainId).contracts.multiRoundCheckout;
 
     /* decide which function to use based on whether token is native, permit-compatible or DAI */
     if (token.address === zeroAddress) {
@@ -137,7 +136,7 @@ export class AlloV1 implements Allo {
         value: nativeTokenAmount,
       });
     } else if (permit) {
-      if (getPermitType(token) === "dai") {
+      if (getPermitType(token, this.chainId) === "dai") {
         tx = await sendTransaction(this.transactionSender, {
           address: mrcAddress,
           abi: MRC_ABI,
@@ -503,15 +502,16 @@ export class AlloV1 implements Allo {
         let parsedTokenAmount = 0n;
 
         if (isQF) {
-          // Ensure tokenAmount is normalized to token decimals
           const tokenAmount = args.roundData.matchingFundsAvailable ?? 0;
-          const pyToken = payoutTokens.filter(
+          const tokens = getTokensByChainId(this.chainId);
+          const payoutTokens = tokens;
+          const payoutToken = payoutTokens.filter(
             (t) =>
               t.address.toLowerCase() === args.roundData.token.toLowerCase()
           )[0];
           parsedTokenAmount = parseUnits(
             tokenAmount.toString(),
-            pyToken.decimal
+            payoutToken.decimals
           );
         }
 

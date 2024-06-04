@@ -1,3 +1,4 @@
+import { getChainById, stringToBlobUrl } from "common";
 import { Badge, Box, Button, Image, Spinner } from "@chakra-ui/react";
 import {
   ApplicationStatus,
@@ -16,7 +17,6 @@ import {
   formatDateAsNumber,
   isInfinite,
 } from "../../utils/components";
-import { getNetworkIcon, networkPrettyName } from "../../utils/wallet";
 
 export default function ApplicationCard({
   applicationData,
@@ -37,12 +37,9 @@ export default function ApplicationCard({
       ? strategyNameToCategory(round.strategyName)
       : RoundCategory.QuadraticFunding;
 
-    const applicationChainName = networkPrettyName(
-      Number(applicationData.chainId)
-    );
-    const applicationChainIconUri = getNetworkIcon(
-      Number(applicationData.chainId)
-    );
+    const chain = getChainById(Number(applicationData.chainId));
+    const applicationChainName = chain.prettyName;
+    const applicationChainIconUri = stringToBlobUrl(chain.icon);
 
     const isDirectRound = payoutStrategy === RoundCategory.Direct;
 

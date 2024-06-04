@@ -1,8 +1,7 @@
-import { ChainId, VotingToken } from "common";
+import { TToken, getChainById, getTokens, getTokensByChainId } from "common";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartProject } from "./features/api/types";
-import { votingTokensMap } from "./features/api/utils";
 import { zeroAddress } from "viem";
 
 interface CartState {
@@ -10,47 +9,31 @@ interface CartState {
   add: (project: CartProject) => void;
   clear: () => void;
   remove: (project: CartProject) => void;
-  updateDonationsForChain: (chainId: ChainId, amount: string) => void;
+  updateDonationsForChain: (chainId: number, amount: string) => void;
   updateDonationAmount: (
-    chainId: ChainId,
+    chainId: number,
     roundId: string,
     grantApplicationId: string,
     amount: string
   ) => void;
   setCart: (projects: CartProject[]) => void;
-  chainToVotingToken: Record<ChainId, VotingToken>;
-  getVotingTokenForChain: (chainId: ChainId) => VotingToken;
-  setVotingTokenForChain: (chainId: ChainId, votingToken: VotingToken) => void;
+  chainToVotingToken: Record<number, TToken>;
+  getVotingTokenForChain: (chainId: number) => TToken;
+  setVotingTokenForChain: (chainId: number, votingToken: TToken) => void;
 }
 
-/**
- * Consumes an array of voting tokens and returns the default one.
- * If there's no default one, return the first one.
- * If the array is empty,
- * return the native token for the chain (Although this should never happen)
- * */
-function getDefaultVotingToken(votingTokens: VotingToken[], chainId: ChainId) {
-  return (
-    votingTokens.find((token) => token.defaultForVoting && token.canVote) ??
-    votingTokens[0] ?? {
-      chainId,
-      canVote: true,
-      defaultForVoting: true,
-      decimal: 18,
-      name: "Native Token",
-      address: zeroAddress,
+const defaultVotingTokens: Record<number, TToken> = Object.entries(
+  getTokens()
+).reduce(
+  (acc, [chainId, tokens]) => {
+    const votingToken = tokens.find((token) => token.canVote);
+    if (votingToken) {
+      acc[Number(chainId) as number] = votingToken;
     }
-  );
-}
-
-const defaultVotingTokens = Object.fromEntries(
-  Object.entries(votingTokensMap).map(([key, value]) => {
-    return [
-      Number(key) as ChainId,
-      getDefaultVotingToken(value, Number(key) as ChainId),
-    ] as [ChainId, VotingToken];
-  })
-) as Record<ChainId, VotingToken>;
+    return acc;
+  },
+  {} as Record<number, TToken>
+);
 
 function isSameProject(a: CartProject, b: CartProject): boolean {
   return (
@@ -123,7 +106,7 @@ export const useCartStorage = create<CartState>()(
           projects: [],
         });
       },
-      updateDonationsForChain: (chainId: ChainId, amount: string) => {
+      updateDonationsForChain: (chainId: number, amount: string) => {
         const newState = get().projects.map((project) => ({
           ...project,
           amount: project.chainId === chainId ? amount : project.amount,
@@ -134,7 +117,7 @@ export const useCartStorage = create<CartState>()(
         });
       },
       updateDonationAmount: (
-        chainId: ChainId,
+        chainId: number,
         roundId: string,
         grantApplicationId: string,
         amount: string
@@ -159,13 +142,12 @@ export const useCartStorage = create<CartState>()(
         }
       },
       chainToVotingToken: defaultVotingTokens,
-      getVotingTokenForChain: (chainId: ChainId) => {
+      getVotingTokenForChain: (chainId: number) => {
         const tokenFromStore = get().chainToVotingToken[chainId];
         if (!tokenFromStore) {
-          const defaultToken = getDefaultVotingToken(
-            votingTokensMap[chainId],
-            chainId
-          );
+          const defaultToken = getTokensByChainId(chainId).filter(
+            (token: TToken) => token.canVote && token.address === zeroAddress
+          )[0];
           console.log(
             "no token for chain",
             chainId,
@@ -180,8 +162,8 @@ export const useCartStorage = create<CartState>()(
           return tokenFromStore;
         }
       },
-      setVotingTokenForChain: (chainId: ChainId, payoutToken: VotingToken) => {
-        if (!Object.values(ChainId).includes(chainId)) {
+      setVotingTokenForChain: (chainId: number, payoutToken: TToken) => {
+        if (!getChainById(chainId)) {
           if (process.env.NODE_ENV !== "test") {
             console.warn(
               "Tried setting payoutToken",

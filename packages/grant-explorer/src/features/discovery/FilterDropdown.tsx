@@ -63,8 +63,8 @@ export const FILTER_OPTIONS: RoundFilterUiOption[] = [
   {
     label: "Network",
     value: "network",
-    children: getEnabledChains().map(({ id, name }) => ({
-      label: `Rounds on ${name}`,
+    children: getEnabledChains().map(({ id, prettyName }) => ({
+      label: `Rounds on ${prettyName}`,
       value: String(id),
     })),
   },

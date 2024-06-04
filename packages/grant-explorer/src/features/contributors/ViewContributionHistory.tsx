@@ -1,7 +1,6 @@
 import { useAccount, useEnsAddress, useEnsAvatar, useEnsName } from "wagmi";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { getChainIds, votingTokens } from "../api/utils";
 import Navbar from "../common/Navbar";
 import blockies from "ethereum-blockies";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
@@ -10,8 +9,12 @@ import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { useContributionHistory } from "../api/round";
 import { StatCard } from "../common/StatCard";
 import { DonationsTable } from "./DonationsTable";
-import { isAddress } from "viem";
-import { VotingToken, dateToEthereumTimestamp } from "common";
+import { Hex, isAddress } from "viem";
+import {
+  dateToEthereumTimestamp,
+  getChains,
+  getTokenByChainIdAndAddress,
+} from "common";
 import { Contribution } from "data-layer";
 
 const DonationHistoryBanner = lazy(
@@ -20,7 +23,7 @@ const DonationHistoryBanner = lazy(
 
 export function ViewContributionHistoryPage() {
   const params = useParams();
-  const chainIds = getChainIds();
+  const chainIds = getChains().map((chain) => chain.id);
 
   const { data: ensResolvedAddress } = useEnsAddress({
     /* If params.address is actually an address, don't resolve the ens address for it*/
@@ -81,14 +84,6 @@ function ViewContributionHistoryFetcher(props: {
     );
   }, [props.address, ensAvatar]);
 
-  // tokens is a map of token address + chainId to token
-  const tokens = Object.fromEntries(
-    votingTokens.map((token) => [
-      token.address.toLowerCase() + "-" + token.chainId,
-      token,
-    ])
-  );
-
   if (contributionHistory.type === "loading") {
     return <div>Loading...</div>;
   } else if (contributionHistory.type === "error") {
@@ -103,7 +98,6 @@ function ViewContributionHistoryFetcher(props: {
   } else {
     return (
       <ViewContributionHistory
-        tokens={tokens}
         addressLogo={addressLogo}
         contributions={contributionHistory.data}
         address={props.address}
@@ -115,7 +109,6 @@ function ViewContributionHistoryFetcher(props: {
 }
 
 export function ViewContributionHistory(props: {
-  tokens: Record<string, VotingToken>;
   contributions: { chainIds: number[]; data: Contribution[] };
   address: string;
   addressLogo: string;
@@ -130,9 +123,12 @@ export function ViewContributionHistory(props: {
       const projects: string[] = [];
 
       props.contributions.data.forEach((contribution) => {
-        const tokenId =
-          contribution.tokenAddress.toLowerCase() + "-" + contribution.chainId;
-        const token = props.tokens[tokenId];
+
+        const token = getTokenByChainIdAndAddress(
+          contribution.chainId,
+          contribution.tokenAddress as Hex
+        );
+
         if (token) {
           totalDonations += contribution.amountInUsd;
           totalUniqueContributions += 1;
@@ -144,7 +140,7 @@ export function ViewContributionHistory(props: {
       });
 
       return [totalDonations, totalUniqueContributions, projects.length];
-    }, [props.contributions, props.tokens]);
+    }, [props.contributions]);
 
   const activeRoundDonations = useMemo(() => {
     const now = Date.now();
@@ -261,7 +257,6 @@ export function ViewContributionHistory(props: {
         </div>
         <DonationsTable
           contributions={activeRoundDonations}
-          tokens={props.tokens}
           activeRound={true}
         />
         <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
@@ -269,7 +264,6 @@ export function ViewContributionHistory(props: {
         </div>
         <DonationsTable
           contributions={pastRoundDonations}
-          tokens={props.tokens}
           activeRound={false}
         />
       </main>

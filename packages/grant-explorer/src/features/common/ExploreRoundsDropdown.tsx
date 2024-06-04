@@ -1,9 +1,8 @@
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { CHAINS } from "../api/utils";
 import { Link } from "react-router-dom";
-import { parseChainId } from "common/src/chains";
+import { getChainById, stringToBlobUrl } from "common";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -54,7 +53,7 @@ export default function ExploreRoundsDropdown(props: {
                       )}
                     >
                       <img
-                        src={CHAINS[parseChainId(round.chainId)]?.logo}
+                        src={stringToBlobUrl(getChainById(round.chainId).icon)}
                         alt={"Chain"}
                         className="rounded-full w-6 h-6 mr-2"
                       />

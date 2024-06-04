@@ -14,7 +14,6 @@ import {
   TransactionData,
 } from "@allo-team/allo-v2-sdk";
 import MRC_ABI from "../abis/allo-v1/multiRoundCheckout";
-import { MRC_CONTRACTS } from "../addresses/mrc";
 import { CreatePoolArgs, NATIVE } from "@allo-team/allo-v2-sdk/dist/types";
 import {
   ApplicationStatus,
@@ -23,8 +22,8 @@ import {
   RoundCategory,
 } from "data-layer";
 import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
-import { AnyJson, ChainId } from "../..";
-import { UpdateRoundParams, MatchingStatsData, VotingToken } from "../../types";
+import { AnyJson } from "../..";
+import { UpdateRoundParams, MatchingStatsData } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import {
   Result,
@@ -48,60 +47,12 @@ import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { buildUpdatedRowsOfApplicationStatuses } from "../application";
 import { BigNumber, utils } from "ethers";
 import { Distribution } from "@allo-team/allo-v2-sdk/dist/strategies/DonationVotingMerkleDistributionStrategy/types";
+import { TToken, getChainById } from "@gitcoin/gitcoin-chain-data";
 
-function getStrategyAddress(strategy: RoundCategory, chainId: ChainId): string {
-  let strategyAddresses;
-  switch (chainId) {
-    case ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID:
-    case ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID:
-      strategyAddresses = {
-        [RoundCategory.QuadraticFunding]:
-          "0x61E288cf14f196CF8a6104ec421ae17c7f16a749",
-        [RoundCategory.Direct]: "0x9710eedFD45a2ce5E6b09303a1E51c0cd600Fc88",
-      };
-      break;
-
-    case ChainId.SEI_DEVNET:
-      strategyAddresses = {
-        [RoundCategory.QuadraticFunding]:
-          "0x029dFAf686DfA0efdace5132ba422e9279D50b5b",
-        [RoundCategory.Direct]: "0xdA62767Da1402398d81C8288b37DE1CC8C8fDcA0",
-      };
-      break;
-
-    case ChainId.LUKSO:
-      strategyAddresses = {
-        [RoundCategory.QuadraticFunding]:
-          "0x91b5eeE385D8e0cfd49FD94D4C7aE15e1F17e0A2",
-        [RoundCategory.Direct]: "0xF21E0915a0b7c541483962Cc7fB4705bBd4D5248",
-      };
-      break;
-
-    case ChainId.LUKSO_TESTNET:
-      strategyAddresses = {
-        [RoundCategory.QuadraticFunding]:
-          "0x91b5eeE385D8e0cfd49FD94D4C7aE15e1F17e0A2",
-        [RoundCategory.Direct]: "0xdA62767Da1402398d81C8288b37DE1CC8C8fDcA0",
-      };
-      break;
-
-    case ChainId.SEI_MAINNET:
-      strategyAddresses = {
-        [RoundCategory.QuadraticFunding]:
-          "0xf5cA96151d1a9998d234963433bfd3f6feC7aAc2",
-        [RoundCategory.Direct]: "0xf24C89aF130Bb1ca22FD458BB9eeFA344aBC1573",
-      };
-      break;
-
-    default:
-      strategyAddresses = {
-        [RoundCategory.QuadraticFunding]:
-          "0x787eC93Dd71a90563979417879F5a3298389227f",
-        [RoundCategory.Direct]: "0x79A5EEc2C87Cd2116195E71af7A38647f89C8Ffa",
-      };
-      break;
-  }
-  return strategyAddresses[strategy];
+function getStrategyAddress(strategy: RoundCategory, chainId: number): string {
+  return strategy === RoundCategory.QuadraticFunding
+    ? getChainById(chainId).contracts.quadraticFunding
+    : getChainById(chainId).contracts.directGrants;
 }
 
 function applicationStatusToNumber(status: ApplicationStatus) {
@@ -124,7 +75,7 @@ function applicationStatusToNumber(status: ApplicationStatus) {
   }
 }
 
-export function getAlloAddress(chainId: ChainId) {
+export function getAlloAddress(chainId: number) {
   const allo = new AlloV2Contract({
     chain: chainId,
   });
@@ -160,8 +111,8 @@ export class AlloV2 implements Allo {
 
   async donate(
     publicClient: PublicClient,
-    chainId: ChainId,
-    token: VotingToken,
+    chainId: number,
+    token: TToken,
     groupedVotes: Record<string, Hex[]>,
     groupedAmounts: Record<string, bigint> | bigint[],
     nativeTokenAmount: bigint,
@@ -172,7 +123,7 @@ export class AlloV2 implements Allo {
     }
   ) {
     let tx: Result<Hex>;
-    const mrcAddress = MRC_CONTRACTS[chainId];
+    const mrcAddress = getChainById(chainId).contracts.multiRoundCheckout;
 
     const poolIds = Object.keys(groupedVotes).flatMap((key) => {
       const count = groupedVotes[key].length;
@@ -191,7 +142,7 @@ export class AlloV2 implements Allo {
         value: nativeTokenAmount,
       });
     } else if (permit) {
-      if (getPermitType(token) === "dai") {
+      if (getPermitType(token, this.chainId) === "dai") {
         tx = await sendTransaction(this.transactionSender, {
           address: mrcAddress,
           abi: MRC_ABI,
@@ -492,8 +443,8 @@ export class AlloV2 implements Allo {
 
         if (
           [
-            ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-            ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+            324, // ZKSYNC_ERA_MAINNET_CHAIN_ID,
+            300, // ZKSYNC_ERA_TESTNET_CHAIN_ID
           ].includes(this.chainId)
         ) {
           // Deploy Strategy using Factory
@@ -559,8 +510,8 @@ export class AlloV2 implements Allo {
 
         if (
           [
-            ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-            ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+            324, // ZKSYNC_ERA_MAINNET_CHAIN_ID,
+            300, // ZKSYNC_ERA_TESTNET_CHAIN_ID
           ].includes(this.chainId)
         ) {
           // Deploy Strategy using Factory
@@ -635,8 +586,8 @@ export class AlloV2 implements Allo {
 
       if (
         [
-          ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-          ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
+          324, // ZKSYNC_ERA_MAINNET_CHAIN_ID,
+          300, // ZKSYNC_ERA_TESTNET_CHAIN_ID
         ].includes(this.chainId)
       ) {
         // Deploy Strategy using Factory

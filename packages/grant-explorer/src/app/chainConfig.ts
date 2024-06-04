@@ -1,71 +1,17 @@
-import {
-  avalanche,
-  avalancheFuji,
-  Chain,
-  fantom,
-  fantomTestnet,
-  mainnet,
-  optimism,
-  polygon,
-  polygonMumbai,
-  arbitrum,
-  arbitrumGoerli,
-} from "wagmi/chains";
-import {
-  pgnTestnet,
-  pgn,
-  base,
-  scroll,
-  zkSyncEraMainnet,
-  // zkSyncEraTestnet,
-  sepolia,
-  // seiDevnet,
-  seiMainnet,
-  customLukso as lukso,
-  customLuksoTestnet as luksoTestnet,
-  customCelo as celo,
-  customCeloAlfajores as celoAlfajores,
-} from "common/src/chains";
-import { ChainId } from "common/src/chain-ids";
+import { getChains, TChain } from "common";
 
-const ensureValidChainId = (chain: Chain) => {
-  if (Object.values(ChainId).includes(chain.id)) {
-    return chain;
-  } else {
-    throw new Error(`Chain id not recognized: ${chain.id}`);
-  }
+const testnetChains = () => {
+  return getChains().filter((chain) => chain.type === "testnet");
 };
 
-const TESTNET_CHAINS = [
-  { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
-  pgnTestnet,
-  arbitrumGoerli,
-  avalancheFuji,
-  polygonMumbai,
-  // zkSyncEraTestnet,
-  sepolia,
-  // seiDevnet,
-  luksoTestnet,
-  celoAlfajores,
-].map(ensureValidChainId);
+const mainnetChains = () => {
+  return getChains().filter((chain) => chain.type === "mainnet");
+};
 
-const MAINNET_CHAINS = [
-  mainnet,
-  optimism,
-  pgn,
-  arbitrum,
-  avalanche,
-  polygon,
-  zkSyncEraMainnet,
-  base,
-  scroll,
-  seiMainnet,
-  { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
-  lukso,
-  celo,
-].map(ensureValidChainId);
+const TESTNET_CHAINS = testnetChains();
+const MAINNET_CHAINS = mainnetChains();
 
-export const getEnabledChains = (): Chain[] => {
+export const getEnabledChains = (): TChain[] => {
   switch (process.env.REACT_APP_ENV) {
     case "development":
       return [...TESTNET_CHAINS, ...MAINNET_CHAINS];

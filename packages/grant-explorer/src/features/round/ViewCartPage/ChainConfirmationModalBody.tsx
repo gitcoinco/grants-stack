@@ -1,7 +1,6 @@
 import React from "react";
 import { CartProject } from "../../api/types";
-import { ChainId, VotingToken } from "common";
-import { CHAINS } from "../../api/utils";
+import { TToken, getChainById, stringToBlobUrl } from "common";
 import { useCartStorage } from "../../../store";
 import { formatUnits } from "viem";
 import { parseChainId } from "common/src/chains";
@@ -68,8 +67,8 @@ export function ChainConfirmationModalBody({
 
 type ChainSummaryProps = {
   totalDonation: bigint;
-  selectedPayoutToken: VotingToken;
-  chainId: ChainId;
+  selectedPayoutToken: TToken;
+  chainId: number;
   checked: boolean;
   chainsBeingCheckedOut: number;
   onChange: (checked: boolean) => void;
@@ -85,6 +84,9 @@ export function ChainSummary({
   onChange,
   isLastItem,
 }: ChainSummaryProps) {
+
+  const chain = getChainById(chainId);
+
   return (
     <div
       className={`flex flex-col justify-center mt-2 ${
@@ -107,19 +109,19 @@ export function ChainSummary({
         />
         <img
           className="inline mr-2 w-5 h-5"
-          alt={CHAINS[chainId].name}
-          src={CHAINS[chainId].logo}
+          alt={chain.prettyName}
+          src={stringToBlobUrl(chain.icon)}
         />
         <span className="font-sans font-medium">
-          Checkout {CHAINS[chainId].name} cart
+          Checkout {chain.prettyName} cart
         </span>
       </p>
       <p className="ml-7 mt-2">
         <span data-testid={"totalDonation"} className="mr-2">
-          {formatUnits(totalDonation, selectedPayoutToken.decimal)}
+          {formatUnits(totalDonation, selectedPayoutToken.decimals)}
         </span>
         <span data-testid={"chainSummaryPayoutToken"}>
-          {selectedPayoutToken.name} to be contributed
+          {selectedPayoutToken.code} to be contributed
         </span>
       </p>
     </div>

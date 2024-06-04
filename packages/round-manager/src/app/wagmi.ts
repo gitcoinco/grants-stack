@@ -1,6 +1,5 @@
 import "@rainbow-me/rainbowkit/styles.css";
-
-import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   coinbaseWallet,
   injectedWallet,
@@ -8,79 +7,16 @@ import {
   metaMaskWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { createClient, configureChains } from "wagmi";
-import {
-  fantom,
-  fantomTestnet,
-  mainnet,
-  optimism,
-  Chain,
-  arbitrum,
-  arbitrumGoerli,
-  avalancheFuji,
-  avalanche,
-  polygon,
-  polygonMumbai,
-} from "wagmi/chains";
-
-import {
-  pgn,
-  pgnTestnet,
-  base,
-  scroll,
-  zkSyncEraMainnet,
-  // zkSyncEraTestnet,
-  sepolia,
-  // seiDevnet,
-  seiMainnet,
-  customLukso as lukso,
-  customLuksoTestnet as luksoTestnet,
-  customCelo as celo,
-  customCeloAlfajores as celoAlfajores,
-} from "common/src/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { getConfig } from "common/src/config";
+import { allNetworks, mainnetNetworks } from "common/src/chains";
 
 const config = getConfig();
 
-const testnetChains = () => {
-  return [
-    { ...fantomTestnet, iconUrl: "/logos/fantom-logo.svg" },
-    // zkSyncEraTestnet,
-    pgnTestnet,
-    arbitrumGoerli,
-    polygonMumbai,
-    avalancheFuji,
-    sepolia,
-    // seiDevnet,
-    luksoTestnet,
-    celoAlfajores,
-  ];
-};
-
-const mainnetChains = () => {
-  return [
-    mainnet,
-    optimism,
-    pgn,
-    arbitrum,
-    avalanche,
-    polygon,
-    zkSyncEraMainnet,
-    base,
-    scroll,
-    seiMainnet,
-    { ...fantom, iconUrl: "/logos/fantom-logo.svg" },
-    lukso,
-    celo,
-  ];
-};
-
 const allChains: Chain[] =
-  process.env.REACT_APP_ENV === "development"
-    ? [...testnetChains(), ...mainnetChains()]
-    : [...mainnetChains()];
+  process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
 
 /* TODO: remove hardcoded value once we have environment variables validation */
 const projectId =

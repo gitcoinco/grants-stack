@@ -1,10 +1,9 @@
 import { ethers } from "ethers";
-import { ChainId } from "common";
 import ProjectRegistryABI from "../contracts/abis/ProjectRegistry.json";
 import { getProviderByChainId } from "./utils";
 import { addressesByChainID } from "../contracts/deployments";
 
-export const fetchProjectOwners = (chainID: ChainId, projectID: string) => {
+export const fetchProjectOwners = (chainID: number, projectID: string) => {
   const addresses = addressesByChainID(chainID);
   const appProvider = getProviderByChainId(chainID);
 

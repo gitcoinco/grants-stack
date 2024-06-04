@@ -1,8 +1,8 @@
 import { ApplicationStatus } from "./types";
 import { useEffect, useState } from "react";
-import { Address, Hex, getAddress } from "viem";
+import { Address, getAddress } from "viem";
 import { Contribution, useDataLayer } from "data-layer";
-import { getPublicClient } from "@wagmi/core";
+import { dateToEthereumTimestamp } from "common";
 
 export type RoundProject = {
   id: string;
@@ -45,41 +45,18 @@ export const useContributionHistory = (
         chainIds,
       });
 
-      try {
-        const contributionsWithTimestamp: Contribution[] = await Promise.all(
-          contributions.map(async (contribution) => {
-            const publicClient = getPublicClient({
-              chainId: contribution.chainId,
-            });
-            const tx = await publicClient.getTransaction({
-              hash: contribution.transactionHash as Hex,
-            });
-
-            const block = await publicClient.getBlock({
-              blockHash: tx.blockHash,
-            });
-
-            return {
-              ...contribution,
-              timestamp: BigInt(block.timestamp),
-            };
-          })
-        );
-
-        setState({
-          type: "loaded",
-          data: {
-            chainIds: chainIds,
-            data: contributionsWithTimestamp,
-          },
-        });
-      } catch (e) {
-        console.error("Error fetching contribution history for all chains", e);
-        setState({
-          type: "error",
-          error: "Error fetching contribution history for all chains",
-        });
-      }
+      setState({
+        type: "loaded",
+        data: {
+          chainIds: chainIds,
+          data: contributions.map((contribution) => ({
+            ...contribution,
+            timestamp: dateToEthereumTimestamp(
+              new Date(contribution.timestamp)
+            ).toString(),
+          })),
+        },
+      });
     };
 
     fetchContributions();

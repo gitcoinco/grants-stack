@@ -8,7 +8,6 @@ import Navbar from "../common/Navbar";
 import { useCartStorage } from "../../store";
 import { useCheckoutStore } from "../../checkoutStore";
 import { ProgressStatus } from "../api/types";
-import { ChainId } from "common";
 import { useAccount } from "wagmi";
 import { Hex } from "viem";
 import { useRoundById } from "../../context/RoundContext";
@@ -69,8 +68,7 @@ export default function ThankYou() {
       Object.keys(checkoutStore.voteStatus)
         .filter(
           (key) =>
-            checkoutStore.voteStatus[Number(key) as ChainId] ===
-            ProgressStatus.IS_SUCCESS
+            checkoutStore.voteStatus[Number(key)] === ProgressStatus.IS_SUCCESS
         )
         .map(Number),
     [checkoutStore]
@@ -114,8 +112,8 @@ export default function ThankYou() {
       Number(a.amount) > Number(b.amount)
         ? -1
         : Number(a.amount) < Number(b.amount)
-        ? 1
-        : 0
+          ? 1
+          : 0
     )
     .at(0);
 

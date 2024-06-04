@@ -1,9 +1,8 @@
 import { Listbox } from "@headlessui/react";
 import { ChevronUpDownIcon } from "@heroicons/react/24/solid";
-import React from "react";
-import { VotingToken } from "common";
+import { TToken, stringToBlobUrl } from "common";
 
-export function PayoutTokenButton(props: { token?: VotingToken }) {
+export function PayoutTokenButton(props: { token?: TToken }) {
   const { token } = props;
   return (
     <Listbox.Button
@@ -11,9 +10,9 @@ export function PayoutTokenButton(props: { token?: VotingToken }) {
       data-testid="payout-token-select"
     >
       <span className="flex items-center">
-        {token?.logo && (
+        {token?.icon && (
           <img
-            src={token?.logo}
+            src={stringToBlobUrl(token.icon)}
             alt="Token Logo"
             className="h-4 w-4 md:h-6 md:w-6 flex-shrink-0 rounded-full"
           />
@@ -23,7 +22,7 @@ export function PayoutTokenButton(props: { token?: VotingToken }) {
             token?.default ? "text-gray-500" : ""
           }`}
         >
-          {token?.name}
+          {token?.code}
         </span>
       </span>
       <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">

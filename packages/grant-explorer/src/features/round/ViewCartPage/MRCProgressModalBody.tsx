@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
-import { ChainId } from "common";
-import { CHAINS } from "../../api/utils";
+import { getChainById, stringToBlobUrl } from "common";
 import { ProgressStatus } from "../../api/types";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useCheckoutStore } from "../../../checkoutStore";
@@ -25,7 +24,9 @@ export function MRCProgressModalBody({
   const checkoutStore = useCheckoutStore();
   const chainIdsBeingCheckedOut = checkoutStore.chainsToCheckout;
   const chainId = (checkoutStore.currentChainBeingCheckedOut ??
-    chainIdsBeingCheckedOut[0]) as ChainId;
+    chainIdsBeingCheckedOut[0]) as number;
+  
+  const chain = getChainById(chainId);
 
   const { voteStatus, permitStatus, chainSwitchStatus } = useCheckoutStore();
 
@@ -33,7 +34,7 @@ export function MRCProgressModalBody({
     const stepsWithChainSwitch = [
       {
         name: "Switch Network",
-        description: `Switch network to ${CHAINS[chainId].name}`,
+        description: `Switch network to ${chain.prettyName}`,
         status: chainSwitchStatus[chainId],
       },
       {
@@ -68,7 +69,7 @@ export function MRCProgressModalBody({
     return chainSwitchStatus[chainId] !== ProgressStatus.NOT_STARTED
       ? stepsWithChainSwitch
       : stepsWithoutChainSwitch;
-  }, [chainId, chainSwitchStatus, permitStatus, voteStatus]);
+  }, [chainId, chainSwitchStatus, permitStatus, voteStatus, chain.prettyName]);
 
   return (
     <div className="sm:w-fit md:w-[400px]">
@@ -92,7 +93,7 @@ export function MRCProgressModalBody({
             console.log(
               chainId,
               "chainswitchstatus",
-              checkoutStore.chainSwitchStatus[chainId as ChainId]
+              checkoutStore.chainSwitchStatus[chainId as number]
             );
 
             return (
@@ -146,17 +147,17 @@ export function MRCProgressModalBody({
         <p>
           <img
             className="inline mr-1 w-5 h-5"
-            alt={CHAINS[chainId].name}
-            src={CHAINS[chainId].logo}
+            alt={chain.prettyName}
+            src={stringToBlobUrl(chain.icon)}
           />
           {chainIdsBeingCheckedOut.length > 1 ? (
             <span className="font-bold text-[16px]">
               Step {chainIdsBeingCheckedOut.indexOf(Number(chainId)) + 1}:
-              Checkout {CHAINS[chainId].name} donations
+              Checkout {chain.prettyName} donations
             </span>
           ) : (
             <span className="font-bold text-[16px]">
-              Checkout {CHAINS[chainId].name} donations
+              Checkout {chain.prettyName} donations
             </span>
           )}
         </p>
@@ -233,21 +234,21 @@ export function MRCProgressModalBody({
       </nav>
       <div>
         <div className="flex justify-start flex-col">
-          {permitStatus[chainId as ChainId] === ProgressStatus.IS_ERROR && (
+          {permitStatus[chainId as number] === ProgressStatus.IS_ERROR && (
             <p className="text-xs text-grey-400 mt-2 ml-2">
               Transaction rejected or signature denied. Please double check your
               permissions and try again.
             </p>
           )}
-          {voteStatus[chainId as ChainId] === ProgressStatus.IS_ERROR && (
+          {voteStatus[chainId as number] === ProgressStatus.IS_ERROR && (
             <p className="text-xs text-grey-400 mt-2 ml-2">
               Transaction failed. Please double check your wallet and try again.
               If the problem persists, please contact support for assistance.
             </p>
           )}
         </div>
-        {(permitStatus[chainId as ChainId] === ProgressStatus.IS_ERROR ||
-          voteStatus[chainId as ChainId] === ProgressStatus.IS_ERROR) && (
+        {(permitStatus[chainId as number] === ProgressStatus.IS_ERROR ||
+          voteStatus[chainId as number] === ProgressStatus.IS_ERROR) && (
           <div className="flex justify-end mt-4 mr-2">
             <Button
               type="button"

@@ -1,5 +1,5 @@
 /* eslint-disable no-unexpected-multiline */
-import { ChainId, getTokenPrice, NATIVE, submitPassportLite } from "common";
+import { getTokenPrice, NATIVE, submitPassportLite } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -63,7 +63,7 @@ export function SummaryContainer() {
 
   /** How much of the voting token for a chain does the address have*/
   const [tokenBalancesPerChain, setTokenBalancesPerChain] = useState<
-    Map<ChainId, bigint>
+    Map<number, bigint>
   >(new Map());
   useEffect(() => {
     const runner = async () => {
@@ -100,7 +100,7 @@ export function SummaryContainer() {
               acc +
               parseUnits(
                 amount ? amount : "0",
-                getVotingTokenForChain(parseChainId(key)).decimal
+                getVotingTokenForChain(parseChainId(key)).decimals
               ),
             0n
           ),
@@ -167,7 +167,7 @@ export function SummaryContainer() {
 
   /** The ids of the chains that will be checked out */
   const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
-    ChainId[]
+    number[]
   >(Object.keys(projectsByChain).map(Number));
 
   /** Keep the chains to be checked out in sync with the projects in the cart */
@@ -370,7 +370,7 @@ export function SummaryContainer() {
               Number(
                 formatUnits(
                   totalDonationsPerChain[chainId],
-                  getVotingTokenForChain(parseChainId(chainId)).decimal
+                  getVotingTokenForChain(parseChainId(chainId)).decimals
                 )
               ) * Number(price)
             );
@@ -393,13 +393,13 @@ export function SummaryContainer() {
 
       return {
         roundId: getFormattedRoundId(round.id),
-        chainId: projectFromRound?.chainId ?? round.chainId ?? ChainId.MAINNET,
+        chainId: projectFromRound?.chainId ?? round.chainId ?? 1,
         potentialVotes: projects
           .filter((proj) => proj.roundId === round.id)
           .map((proj) => ({
             amount: parseUnits(
               proj.amount ?? "0",
-              getVotingTokenForChain(parseChainId(proj.chainId)).decimal ?? 18
+              getVotingTokenForChain(parseChainId(proj.chainId)).decimals ?? 18
             ),
             grantAddress: proj.recipient,
             voter: address ?? zeroAddress,

@@ -105,7 +105,7 @@ export const buildProjectMetadata = (metadata: any): Metadata => ({
   },
   createdAt: 123,
   updatedAt: 123,
-  chainId: 5,
+  chainId: 10,
   linkedChains: [1],
   nonce: BigInt(1),
   registryAddress: "0x1",
@@ -127,7 +127,7 @@ export const buildFormMetadata = (metadata: any): FormInputs => ({
 export const buildProjectApplication = (
   application: any
 ): ProjectApplicationWithRound => ({
-  chainId: 5,
+  chainId: 10,
   roundId: addressFrom(1),
   status: "APPROVED",
   id: "1",

@@ -11,14 +11,14 @@ import { useAccount } from "wagmi";
 import { useCartStorage } from "../../../store";
 import { Skeleton } from "@chakra-ui/react";
 import { BoltIcon } from "@heroicons/react/24/outline";
-import { ChainId, VotingToken } from "common";
+import { TToken } from "common";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { PassportWidget } from "../../common/PassportWidget";
 
 export function RoundInCart(
   props: React.ComponentProps<"div"> & {
     roundCart: CartProject[];
-    selectedPayoutToken: VotingToken;
+    selectedPayoutToken: TToken;
     handleRemoveProjectFromCart: (project: CartProject) => void;
     payoutTokenPrice: number;
   }
@@ -54,7 +54,7 @@ export function RoundInCart(
         projectId: proj.projectRegistryId,
         amount: parseUnits(
           proj.amount ?? "0",
-          votingTokenForChain.decimal ?? 18
+          votingTokenForChain.decimals ?? 18
         ),
         grantAddress: proj.recipient,
         voter: address ?? zeroAddress,
@@ -73,7 +73,7 @@ export function RoundInCart(
   const showMatchingEstimate =
     matchingEstimateError === undefined &&
     matchingEstimates !== undefined &&
-    round?.chainId !== ChainId.AVALANCHE;
+    round?.chainId !== 43114; // Avalanche
 
   return (
     <div className="my-4">

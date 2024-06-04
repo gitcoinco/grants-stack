@@ -1,5 +1,4 @@
 import "@rainbow-me/rainbowkit/styles.css";
-
 import {
   connectorsForWallets,
   getDefaultWallets,
@@ -14,8 +13,9 @@ import { configureChains, createConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { infuraProvider } from "wagmi/providers/infura";
 import { alchemyProvider } from "wagmi/providers/alchemy";
-import { getEnabledChains } from "./chainConfig";
 import { getConfig } from "common/src/config";
+import { allNetworks, mainnetNetworks } from "common";
+import { Chain } from "viem";
 
 const config = getConfig();
 
@@ -28,8 +28,11 @@ if (config.blockchain.alchemyId !== undefined) {
   providers.push(alchemyProvider({ apiKey: config.blockchain.alchemyId }));
 }
 
+const allChains: Chain[] =
+  process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
+
 export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  getEnabledChains(),
+  allChains,
   providers
 );
 

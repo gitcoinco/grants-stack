@@ -1,8 +1,7 @@
 import { ProgressStatus, ProgressStep } from "../../features/api/types";
 import { Erc20__factory } from "../../types/generated/typechain";
 import { ethers } from "ethers";
-import { PayoutToken } from "common";
-import { Allo } from "common";
+import { Allo, TToken } from "common";
 import { Hex } from "viem";
 import { datadogRum } from "@datadog/browser-rum";
 import { datadogLogs } from "@datadog/browser-logs";
@@ -52,7 +51,7 @@ export function usePayout() {
   type Args = {
     address: string;
     signer: ethers.Signer;
-    token: PayoutToken;
+    token: TToken;
     applicationId: Hex;
     applicationIndex: number;
     roundId: Hex | number;

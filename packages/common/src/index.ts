@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { useParams as useRouterParams } from "react-router";
 import { useOutletContext } from "react-router-dom";
 import z from "zod";
-import { ChainId } from "./chain-ids";
 import { Round } from "data-layer";
 import { getAlloVersion, getConfig } from "./config";
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
+import { getChainById } from "@gitcoin/gitcoin-chain-data";
 
 export * from "./icons";
 export * from "./markdown";
@@ -16,7 +16,7 @@ export * from "./allo/application";
 export * from "./payoutTokens";
 
 export { PassportVerifierWithExpiration } from "./credentialVerifier";
-export { ChainId };
+export * from "@gitcoin/gitcoin-chain-data";
 
 export function useParams<T extends Record<string, string> = never>() {
   return useRouterParams<T>() as T;
@@ -241,7 +241,7 @@ export const formatLocalDateAsISOString = (date: Date): string => {
 export function getTimezoneName() {
   const today = new Date();
   const userTimeZone = moment.tz.guess();
-  const formattedDate = moment(today).tz(userTimeZone).format('z')
+  const formattedDate = moment(today).tz(userTimeZone).format("z");
 
   return formattedDate;
 }
@@ -385,9 +385,7 @@ export { AlloError, AlloOperation } from "./allo/allo";
 export type { Allo } from "./allo/allo";
 export { AlloV1 } from "./allo/backends/allo-v1";
 export { AlloV2 } from "./allo/backends/allo-v2";
-export {
-  createWaitForIndexerSyncTo,
-} from "./allo/indexer";
+export { createWaitForIndexerSyncTo } from "./allo/indexer";
 export type { WaitUntilIndexerSynced } from "./allo/indexer";
 export { createPinataIpfsUploader } from "./allo/ipfs";
 export { AlloContext, AlloProvider, useAllo } from "./allo/react";
@@ -443,7 +441,7 @@ export function roundToPassportIdAndKeyMap(round: Round): {
 } {
   const chainId = round?.chainId;
   switch (chainId) {
-    case ChainId.AVALANCHE:
+    case 43114: // Arbitrum
       return {
         communityId: getConfig().passport.passportAvalancheCommunityId,
         apiKey: getConfig().passport.passportAvalancheAPIKey,
@@ -459,7 +457,7 @@ export function roundToPassportIdAndKeyMap(round: Round): {
 export function roundToPassportURLMap(round: Round) {
   const chainId = round.chainId;
   switch (chainId) {
-    case ChainId.AVALANCHE:
+    case 43114: // Arbitrum
       return "https://passport.gitcoin.co/#/dashboard/avalanche";
     default:
       return "https://passport.gitcoin.co";
@@ -467,38 +465,6 @@ export function roundToPassportURLMap(round: Round) {
 }
 
 export * from "./allo/transaction-builder";
-export type { VotingToken } from "./types";
-
-export const txBlockExplorerLinks: Record<ChainId, string> = {
-  [ChainId.DEV1]: "",
-  [ChainId.DEV2]: "",
-  [ChainId.MAINNET]: "https://etherscan.io/tx/",
-  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: "https://optimistic.etherscan.io/tx/",
-  [ChainId.FANTOM_MAINNET_CHAIN_ID]: "https://ftmscan.com/tx/",
-  [ChainId.FANTOM_TESTNET_CHAIN_ID]: "ttps://testnet.ftmscan.com/tx/",
-  [ChainId.PGN_TESTNET]: "https://explorer.sepolia.publicgoods.network/tx/",
-  [ChainId.PGN]: "https://explorer.publicgoods.network/tx/",
-  [ChainId.ARBITRUM_GOERLI]: "https://goerli.arbiscan.io/tx/",
-  [ChainId.ARBITRUM]: "https://arbiscan.io/tx/",
-  [ChainId.POLYGON]: "https://polygonscan.com/tx/",
-  [ChainId.POLYGON_MUMBAI]: "https://mumbai.polygonscan.com/tx/",
-  [ChainId.FUJI]: "https://snowtrace.io/tx/",
-  [ChainId.AVALANCHE]: "https://snowtrace.io/tx/",
-  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]:
-    "https://goerli.explorer.zksync.io/tx/",
-  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: "https://explorer.zksync.io/tx/",
-  [ChainId.BASE]: "https://basescan.org/tx/",
-  [ChainId.SEPOLIA]: "https://sepolia.etherscan.io/tx/",
-  [ChainId.SCROLL]: "https://scrollscan.com/tx/",
-  [ChainId.SEI_DEVNET]: "https://seistream.app/tx/",
-  [ChainId.LUKSO_TESTNET]:
-    "https://explorer.execution.testnet.lukso.network/tx/",
-  [ChainId.LUKSO]: "https://explorer.execution.mainnet.lukso.network/tx/",
-  [ChainId.CELO_ALFAJORES]: "https://alfajores.celoscan.io/tx/",
-  [ChainId.CELO]: "https://celoscan.io/tx/",
-  [ChainId.SEI_MAINNET]: "https://seitrace.com/tx/",
-};
-
 
 /**
  * Fetch the correct transaction block explorer link for the provided web3 network
@@ -507,15 +473,15 @@ export const txBlockExplorerLinks: Record<ChainId, string> = {
  * @param txHash - The transaction hash
  * @returns the transaction block explorer URL for the provided transaction hash and network
  */
-export const getTxBlockExplorerLink = (chainId: ChainId, txHash: string) => {
-  return txBlockExplorerLinks[chainId] + txHash;
+export const getTxBlockExplorerLink = (chainId: number, txHash: string) => {
+  return getChainById(chainId) + "tx/" + txHash;
 };
 
 export function isChainIdSupported(chainId: number) {
   if (chainId === 424 && getAlloVersion() === "allo-v2") {
     return false;
   }
-  return Object.values(ChainId).includes(chainId);
+  return getChainById(chainId) !== undefined;
 }
 
 const gg20Rounds = [
@@ -539,9 +505,11 @@ export function isGG20Round(roundId: string, chainId: number) {
 
 export function isLitUnavailable(chainId: number) {
   return [
-    ChainId.LUKSO_TESTNET,
-    ChainId.LUKSO,
-    ChainId.SEI_DEVNET,
-    ChainId.SEI_MAINNET,
+    4201, // LUKSO_TESTNET,
+    42, // LUKSO,
+    713715, // SEI_DEVNET,
+    1329, // SEI_MAINNET,
   ].includes(chainId);
 }
+
+export * from "./chains";

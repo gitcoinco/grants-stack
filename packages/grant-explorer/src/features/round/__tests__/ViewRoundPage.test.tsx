@@ -8,10 +8,10 @@ import {
 } from "../../../test-utils";
 import { faker } from "@faker-js/faker";
 import { Project, Round } from "../../api/types";
-import { votingTokens } from "../../api/utils";
 import { vi } from "vitest";
 import { parseUnits, zeroAddress } from "viem";
 import { DataLayer } from "data-layer";
+import { getTokensByChainId } from "common";
 
 fetchMock.mockIf(/summary/, JSON.stringify({}));
 
@@ -52,7 +52,7 @@ vi.mock("wagmi", async () => {
       chains: [{ id: 10, name: "Optimism" }],
     }),
     useSwitchNetwork: () => ({
-      chainId: 5,
+      chainId: 10,
     }),
     useToken: () => ({
       data: { symbol: "TEST" },
@@ -62,7 +62,7 @@ vi.mock("wagmi", async () => {
 
 vi.mock("react-router-dom", async () => {
   const useParamsFn = () => ({
-    chainId: 5,
+    chainId: 10,
     roundId: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
   });
   const actual =
@@ -91,10 +91,10 @@ describe("<ViewRound /> in case of before the application start date", () => {
     const applicationsEndTime = faker.date.future(1, applicationsStartTime);
     const roundStartTime = faker.date.soon(1, applicationsEndTime);
     const roundEndTime = faker.date.future(1, roundStartTime);
-    const token = votingTokens[0].address;
+    const token = getTokensByChainId(10)[0].address;
     stubRound = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       applicationsStartTime,
       applicationsEndTime,
       roundStartTime,
@@ -126,10 +126,10 @@ describe("<ViewRound /> in case of during the application period", () => {
     const applicationsEndTime = faker.date.soon();
     const roundStartTime = faker.date.future(1, applicationsEndTime);
     const roundEndTime = faker.date.soon(10, roundStartTime);
-    const token = votingTokens[0].address;
+    const token = getTokensByChainId(10)[0].address;
     stubRound = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       applicationsStartTime,
       applicationsEndTime,
       roundStartTime,
@@ -186,10 +186,10 @@ describe("<ViewRound /> in case of post application end date & before round star
     const applicationsStartTime = faker.date.past(1, applicationsEndTime);
     const roundStartTime = faker.date.soon();
     const roundEndTime = faker.date.future(1, roundStartTime);
-    const token = votingTokens[0].address;
+    const token = getTokensByChainId(10)[0].address;
     stubRound = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       applicationsStartTime,
       applicationsEndTime,
       roundStartTime,
@@ -218,13 +218,13 @@ describe("<ViewRound /> in case of after the round start date", () => {
   const applicationsEndTime = faker.date.past(1, roundStartTime);
   const applicationsStartTime = faker.date.past(1, applicationsEndTime);
   const roundEndTime = faker.date.soon();
-  const token = votingTokens[0].address;
+  const token = getTokensByChainId(10)[0].address;
 
   beforeEach(() => {
     vi.clearAllMocks();
     stubRound = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       applicationsStartTime,
       applicationsEndTime,
       roundStartTime,
@@ -270,11 +270,11 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
   it("displays the project details of an approved grant application", async () => {
     const expectedApprovedProject: Project = makeApprovedProjectData();
-    const token = votingTokens[0].address;
+    const token = getTokensByChainId(10)[0].address;
 
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       approvedProjects: [expectedApprovedProject],
       applicationsStartTime,
       applicationsEndTime,
@@ -308,10 +308,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
       }
     );
     const expectedBannerImg = expectedApprovedProject.projectMetadata.bannerImg;
-    const token = votingTokens[0].address;
+    const token = getTokensByChainId(10)[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       approvedProjects: [expectedApprovedProject],
       applicationsStartTime,
       applicationsEndTime,
@@ -340,10 +340,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
-    const token = votingTokens[0].address;
+    const token = getTokensByChainId(10)[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       approvedProjects,
       applicationsStartTime,
       applicationsEndTime,
@@ -375,10 +375,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
       makeApprovedProjectData(),
       makeApprovedProjectData(),
     ];
-    const token = votingTokens[0].address;
+    const token = getTokensByChainId(10)[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       approvedProjects,
       applicationsStartTime,
       applicationsEndTime,
@@ -400,7 +400,7 @@ describe("<ViewRound /> in case of after the round start date", () => {
     expect(projectLinks.length).toEqual(approvedProjects.length);
 
     const expectedProjectLinks = approvedProjects.map(
-      (project) => `/round/${5}/${roundId}/${project.grantApplicationId}`
+      (project) => `/round/${10}/${roundId}/${project.grantApplicationId}`
     );
     projectLinks.forEach((projectLink) => {
       const actualProjectLinkPathName = projectLink.pathname;
@@ -429,10 +429,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
         projectMetadata: { ...projectMetadata, title: "my great gitcoin" },
       }),
     ];
-    const token = votingTokens[0].address;
+    const token = getTokensByChainId(10)[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       approvedProjects,
       applicationsStartTime,
       applicationsEndTime,
@@ -464,10 +464,10 @@ describe("<ViewRound /> in case of after the round start date", () => {
 
   describe("add project to cart", () => {
     const approvedProjects = [makeApprovedProjectData()];
-    const token = votingTokens[0].address;
+    const token = getTokensByChainId(10)[0].address;
     const roundWithProjects = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       approvedProjects,
       applicationsStartTime,
       applicationsEndTime,
@@ -546,7 +546,7 @@ describe("<ViewRound /> in case ApplicationsEnd and RoundEnd dates are not set",
     const roundEndTime = new Date("foo");
     stubRound = makeRoundData({
       id: roundId,
-      chainId: 5,
+      chainId: 10,
       applicationsStartTime,
       applicationsEndTime,
       roundStartTime,

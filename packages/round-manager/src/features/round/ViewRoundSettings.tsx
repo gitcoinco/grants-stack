@@ -4,14 +4,14 @@ import { CheckIcon, InformationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   AnyJson,
-  ChainId,
   RoundVisibilityType,
   classNames,
-  getPayoutTokenOptions,
   getLocalDate,
   getLocalTime,
-  payoutTokens,
   useAllo,
+  getPayoutTokens,
+  getChainById,
+  stringToBlobUrl,
 } from "common";
 import { Button } from "common/src/styles";
 import _ from "lodash";
@@ -39,7 +39,7 @@ import { maxDateForUint256 } from "../../constants";
 import { useRoundById } from "../../context/round/RoundContext";
 import { useUpdateRound } from "../../context/round/UpdateRoundContext";
 import { ProgressStatus, ProgressStep, Round } from "../api/types";
-import { CHAINS, SupportType } from "../api/utils";
+import { SupportType } from "../api/utils";
 import ConfirmationModal from "../common/ConfirmationModal";
 import ErrorModal from "../common/ErrorModal";
 import FormValidationErrorList from "../common/FormValidationErrorList";
@@ -105,9 +105,9 @@ const generateUpdateRoundData = (
       dNewRound?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable
     )
   ) {
-    const decimals = getPayoutTokenOptions(dNewRound.chainId).find(
+    const decimals = getPayoutTokens(dNewRound.chainId).find(
       (token) => token.address.toLowerCase() === dNewRound.token.toLowerCase()
-    )?.decimal;
+    )?.decimals;
 
     if (!decimals) {
       throw new Error("Token decimals not found");
@@ -756,9 +756,9 @@ function DetailsPage(props: {
             }`}
           >
             <span className="flex items-center">
-              {chain && CHAINS[chain.id as ChainId]?.logo && (
+              {chain && getChainById(chain.id).icon && (
                 <img
-                  src={CHAINS[chain.id as ChainId]?.logo}
+                  src={stringToBlobUrl(getChainById(chain.id).icon)}
                   alt="chain logo"
                   data-testid="chain-logo"
                   className="h-5 w-5 flex-shrink-0 rounded-full"
@@ -1867,15 +1867,11 @@ function RoundApplicationPeriod(props: {
   );
 }
 
-function getMatchingFundToken(
-  tokenAddress: string,
-  chainId: number | undefined
-) {
-  return payoutTokens.filter(
+function getMatchingFundToken(tokenAddress: string, chainId: number) {
+  return getPayoutTokens(chainId).filter(
     (t) =>
       t.address.toLowerCase() ==
-        (tokenAddress == NATIVE ? zeroAddress : tokenAddress.toLowerCase()) &&
-      t.chainId == chainId
+      (tokenAddress == NATIVE ? zeroAddress : tokenAddress.toLowerCase())
   )[0];
 }
 
@@ -1889,6 +1885,10 @@ function Funding(props: {
   errors: FieldErrors<Round>;
 }) {
   const { editedRound } = props;
+
+  if (editedRound.chainId === undefined) {
+    return <div>Invalid chain id</div>;
+  }
 
   const matchingFundPayoutToken =
     editedRound && getMatchingFundToken(editedRound.token, editedRound.chainId);
@@ -1919,7 +1919,7 @@ function Funding(props: {
             <input
               type="text"
               className="w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out disabled:bg-gray-50 disabled:text-gray-400"
-              defaultValue={matchingFundPayoutToken.name}
+              defaultValue={matchingFundPayoutToken.code}
               disabled
             />
           </div>
@@ -1934,10 +1934,10 @@ function Funding(props: {
 
           <div className="leading-8 flex font-normal">
             <input
-              size={matchingFundPayoutToken?.name?.length ?? 3}
+              size={matchingFundPayoutToken?.code?.length ?? 3}
               type="text"
               className="text-grey-400 disabled:bg-gray-50 rounded-l-md border border-gray-300 shadow-sm py-2 text-center bg-white text-sm leading-5 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
-              defaultValue={matchingFundPayoutToken.name}
+              defaultValue={matchingFundPayoutToken.code}
               disabled
             />
             <Controller
@@ -2197,7 +2197,7 @@ function Funding(props: {
             (props.editedRound?.roundMetadata?.quadraticFundingConfig
               ?.matchingCapAmount ?? 0)
           ).toFixed(2)}{" "}
-          {matchingFundPayoutToken.name}).
+          {matchingFundPayoutToken.code}).
         </span>
       </div>
       <span className="mt-4 inline-flex font-light text-gray-400 mb-4">

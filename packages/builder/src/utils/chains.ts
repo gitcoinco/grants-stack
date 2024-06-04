@@ -1,107 +1,12 @@
 import { Chain } from "@rainbow-me/rainbowkit";
-import { arbitrum, arbitrumGoerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { infuraProvider } from "wagmi/providers/infura";
 import { publicProvider } from "wagmi/providers/public";
-import {
-  pgn,
-  pgnTestnet,
-  zkSyncEraMainnet,
-  zkSyncEraTestnet,
-  devChain1,
-  devChain2,
-  avalanche,
-  avalancheFuji,
-  fantom,
-  base,
-  fantomTestnet,
-  customOptimism,
-  customPolygon,
-  customMainnet,
-  sepolia,
-  scroll,
-  seiDevnet,
-  seiMainnet,
-  customCelo as celo,
-  customCeloAlfajores as celoAlfajores,
-  customLukso as lukso,
-  customLuksoTestnet as luksoTestnet,
-} from "common/src/chains";
 import { getConfig } from "common/src/config";
-import { polygonMumbai } from "@wagmi/core/chains";
+import { allNetworks, mainnetNetworks } from "common/src/chains";
 
-const availableChains: { [key: string]: Chain } = {
-  dev1: devChain1,
-  dev2: devChain2,
-  mainnet: customMainnet,
-  fantom,
-  optimism: customOptimism,
-  pgn,
-  celo,
-  celoAlfajores,
-  arbitrum,
-  avalanche,
-  polygon: customPolygon,
-  base,
-  scroll,
-  fantomTestnet,
-  pgnTestnet,
-  arbitrumGoerli,
-  polygonMumbai,
-  avalancheFuji,
-  zkSyncEraMainnet,
-  zkSyncEraTestnet,
-  sepolia,
-  seiDevnet,
-  seiMainnet,
-  lukso,
-  luksoTestnet,
-};
-
-const stagingChains = [
-  devChain1,
-  devChain2,
-  customOptimism,
-  fantomTestnet,
-  fantom,
-  customMainnet,
-  pgnTestnet,
-  pgn,
-  arbitrum,
-  base,
-  scroll,
-  arbitrumGoerli,
-  customPolygon,
-  polygonMumbai,
-  avalanche,
-  avalancheFuji,
-  zkSyncEraMainnet,
-  zkSyncEraTestnet,
-  sepolia,
-  seiDevnet,
-  seiMainnet,
-  celo,
-  celoAlfajores,
-  lukso,
-  luksoTestnet,
-];
-
-const productionChains = [
-  customMainnet,
-  fantom,
-  customOptimism,
-  pgn,
-  arbitrum,
-  avalanche,
-  customPolygon,
-  zkSyncEraMainnet,
-  base,
-  scroll,
-  seiDevnet,
-  seiMainnet,
-  celo,
-  lukso,
-];
+const allChains: Chain[] =
+  process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
 
 export function getEnabledChainsAndProviders() {
   const config = getConfig();
@@ -126,11 +31,9 @@ export function getEnabledChainsAndProviders() {
   if (selectedChainsNames.length > 0) {
     // if REACT_APP_CHAINS_OVERRIDE is specified we use those
     selectedChainsNames.forEach((name) => {
-      const chain = availableChains[name];
+      const chain = allChains.find((c) => c.network === name);
       if (chain === undefined) {
-        throw new Error(
-          `availableChains doesn't contain a chain called "${name}"`
-        );
+        throw new Error(`allChains doesn't contain a chain called "${name}"`);
       }
 
       chains.push(chain);
@@ -138,11 +41,11 @@ export function getEnabledChainsAndProviders() {
   } else if (config.appEnv === "production") {
     // if REACT_APP_CHAINS_OVERRIDE is not specified  ans we are in production
     // we use the default chains for production environments
-    chains.push(...productionChains);
+    chains.push(...mainnetNetworks);
   } else {
     // if REACT_APP_CHAINS_OVERRIDE is not specified we use the
     // default chains for staging
-    chains.push(...stagingChains);
+    chains.push(...allNetworks);
   }
 
   if (config.blockchain.infuraId !== undefined) {

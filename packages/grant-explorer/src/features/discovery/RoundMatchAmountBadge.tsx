@@ -2,12 +2,11 @@ import { formatUnits, getAddress, zeroAddress } from "viem";
 import { Badge } from "../common/styles";
 import { useToken } from "wagmi";
 import { getPayoutToken } from "../api/utils";
-import { ChainId } from "common";
 
 type RoundCardStatProps = {
   matchAmount: string;
   tokenAddress: string;
-  chainId: ChainId;
+  chainId: number;
 };
 
 const formatter = new Intl.NumberFormat();
@@ -24,8 +23,8 @@ export function RoundMatchAmountBadge({
   });
   const nativePayoutToken = getPayoutToken(tokenAddress, chainId);
 
-  const symbol = data?.symbol ?? nativePayoutToken?.name ?? "ETH";
-  const decimals = data?.decimals ?? nativePayoutToken?.decimal ?? 18;
+  const symbol = data?.symbol ?? nativePayoutToken?.code ?? "ETH";
+  const decimals = data?.decimals ?? nativePayoutToken?.decimals ?? 18;
 
   const matchAmountNormalized = formatUnits(BigInt(matchAmount), decimals);
 

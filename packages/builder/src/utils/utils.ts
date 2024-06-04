@@ -1,4 +1,3 @@
-import { ChainId } from "common";
 import { BigNumberish, ethers } from "ethers";
 import gnosisABI from "../contracts/abis/gnosis.json";
 import { global } from "../global";
@@ -69,7 +68,7 @@ export const metadataToProject = (
  *
  * @returns The provider
  */
-export const getProviderByChainId = (chainId: ChainId) => {
+export const getProviderByChainId = (chainId: number) => {
   const { web3Provider } = global;
 
   const chainConfig = web3Provider?.chains?.find(

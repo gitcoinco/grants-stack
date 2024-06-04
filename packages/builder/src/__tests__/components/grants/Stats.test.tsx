@@ -6,7 +6,7 @@ import Stats from "../../../components/grants/stats/Stats";
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    chainId: "5",
+    chainId: "10",
     id: "2",
   }),
 }));

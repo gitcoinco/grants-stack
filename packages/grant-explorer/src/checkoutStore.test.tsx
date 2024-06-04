@@ -1,6 +1,5 @@
 import { useCheckoutStore } from "./checkoutStore";
 import { CartProject, ProgressStatus } from "./features/api/types";
-import { ChainId } from "common";
 import { beforeEach } from "vitest";
 import { makeApprovedProjectData } from "./test-utils";
 
@@ -15,7 +14,7 @@ describe("Checkout Store", () => {
 
   it("permitStatus manipulation", async () => {
     const store = useCheckoutStore;
-    const chain: ChainId = ChainId.MAINNET;
+    const chain = 1;
 
     // Initially, the status should be NOT_STARTED for all chains
     expect(store.getState().permitStatus[chain]).toEqual(
@@ -30,7 +29,7 @@ describe("Checkout Store", () => {
   });
 
   it("voteStatus manipulation", async () => {
-    const chain: ChainId = ChainId.MAINNET;
+    const chain = 1;
 
     expect(store.getState().voteStatus[chain]).toEqual(
       ProgressStatus.NOT_STARTED
@@ -43,7 +42,7 @@ describe("Checkout Store", () => {
   });
 
   it("chainSwitchStatus manipulation", async () => {
-    const chain: ChainId = ChainId.MAINNET;
+    const chain = 1;
 
     expect(store.getState().chainSwitchStatus[chain]).toEqual(
       ProgressStatus.NOT_STARTED
@@ -60,8 +59,8 @@ describe("Checkout Store", () => {
   it("chainsToCheckout manipulation", async () => {
     expect(store.getState().chainsToCheckout).toEqual([]);
 
-    store.getState().setChainsToCheckout([ChainId.MAINNET]);
-    expect(store.getState().chainsToCheckout).toEqual([ChainId.MAINNET]);
+    store.getState().setChainsToCheckout([1]);
+    expect(store.getState().chainsToCheckout).toEqual([1]);
   });
 
   it("chainsToCheckout manipulation", async () => {

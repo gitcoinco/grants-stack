@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { ChainId } from "common";
+import { getChainById } from "common";
 import { RoundCategory, useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -18,7 +18,6 @@ import { Status } from "../../reducers/rounds";
 import { grantsPath, newGrantPath, roundApplicationPath } from "../../routes";
 import { Round } from "../../types";
 import { formatTimeUTC, isInfinite } from "../../utils/components";
-import { networkPrettyName } from "../../utils/wallet";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
@@ -29,7 +28,7 @@ interface ApplyButtonProps {
   applicationsHaveStarted: boolean;
   applicationsHaveEnded: boolean;
   projects: GrantsMetadataState;
-  chainId: ChainId;
+  chainId: number;
   roundId: string | undefined;
 }
 
@@ -283,16 +282,12 @@ function ShowRound() {
     }
   };
 
-  const renderNetworkChangeModal = () => {
-    const roundNetworkName = networkPrettyName(props.roundChainId);
-    return (
-      // eslint-disable-next-line
-      <SwitchNetworkModal
-        networkName={roundNetworkName}
-        onSwitchNetwork={onSwitchNetwork}
-      />
-    );
-  };
+  const renderNetworkChangeModal = () => (
+    <SwitchNetworkModal
+      networkName={getChainById(props.roundChainId).prettyName}
+      onSwitchNetwork={onSwitchNetwork}
+    />
+  );
 
   if (props.status === Status.Error) {
     return (

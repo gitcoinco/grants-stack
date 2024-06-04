@@ -6,7 +6,6 @@ import {
   PassportState,
   submitPassport,
   roundToPassportIdAndKeyMap,
-  ChainId,
 } from "common";
 import { Round } from "data-layer";
 import { useEffect, useMemo } from "react";
@@ -33,7 +32,7 @@ export function usePassport({
     async (args) => {
       // for avalance we need to submit the passport to fetch the score.
       const res =
-        round.chainId === ChainId.AVALANCHE
+        round.chainId === 43114 // Avalanche
           ? await submitPassport(...args)
           : await fetchPassport(...args);
 

@@ -3,141 +3,11 @@ import {
   ApplicationMetadata,
   InputType,
   IPFSObject,
-  Program,
   RevisedMatch,
 } from "./types";
-import { ChainId } from "common";
 import { useEffect, useState } from "react";
 import Papa from "papaparse";
-
-// NB: number keys are coerced into strings for JS object keys
-export const CHAINS: Record<ChainId, Program["chain"]> = {
-  [ChainId.DEV1]: {
-    id: ChainId.DEV1,
-    name: "DEV1",
-    logo: "/logos/ethereum-eth-logo.svg",
-  },
-  [ChainId.DEV2]: {
-    id: ChainId.DEV2,
-    name: "DEV2",
-    logo: "/logos/ethereum-eth-logo.svg",
-  },
-  [ChainId.MAINNET]: {
-    id: ChainId.MAINNET,
-    name: "Mainnet", // TODO get canonical network names
-    logo: "/logos/ethereum-eth-logo.svg",
-  },
-  [ChainId.OPTIMISM_MAINNET_CHAIN_ID]: {
-    id: ChainId.OPTIMISM_MAINNET_CHAIN_ID,
-    name: "Optimism",
-    logo: "/logos/optimism-logo.svg",
-  },
-  [ChainId.FANTOM_MAINNET_CHAIN_ID]: {
-    id: ChainId.FANTOM_MAINNET_CHAIN_ID,
-    name: "Fantom",
-    logo: "/logos/fantom-logo.svg",
-  },
-  [ChainId.FANTOM_TESTNET_CHAIN_ID]: {
-    id: ChainId.FANTOM_TESTNET_CHAIN_ID,
-    name: "Fantom Testnet",
-    logo: "/logos/fantom-logo.svg",
-  },
-  [ChainId.PGN_TESTNET]: {
-    id: ChainId.PGN_TESTNET,
-    name: "PGN Testnet",
-    logo: "/logos/pgn-logo.svg",
-  },
-  [ChainId.PGN]: {
-    id: ChainId.PGN_TESTNET,
-    name: "PGN",
-    logo: "/logos/pgn-logo.svg",
-  },
-  [ChainId.ARBITRUM]: {
-    id: ChainId.ARBITRUM,
-    name: "Arbitrum",
-    logo: "/logos/arb-logo.svg",
-  },
-  [ChainId.ARBITRUM_GOERLI]: {
-    id: ChainId.ARBITRUM_GOERLI,
-    name: "Arbitrum Goerli",
-    logo: "/logos/arb-logo.svg",
-  },
-  [ChainId.AVALANCHE]: {
-    id: ChainId.AVALANCHE,
-    name: "Avalanche",
-    logo: "/logos/avax-logo.svg",
-  },
-  [ChainId.FUJI]: {
-    id: ChainId.FUJI,
-    name: "Fuji (Avalanche Testnet)",
-    logo: "/logos/avax-logo.svg",
-  },
-  [ChainId.POLYGON]: {
-    id: ChainId.POLYGON,
-    name: "Polygon PoS",
-    logo: "./logos/pol-logo.svg",
-  },
-  [ChainId.POLYGON_MUMBAI]: {
-    id: ChainId.POLYGON_MUMBAI,
-    name: "Polygon Mumbai",
-    logo: "./logos/pol-logo.svg",
-  },
-  [ChainId.BASE]: {
-    id: ChainId.BASE,
-    name: "Base",
-    logo: "/logos/base-logo.svg",
-  },
-  [ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID]: {
-    id: ChainId.ZKSYNC_ERA_MAINNET_CHAIN_ID,
-    name: "zkSync Era",
-    logo: "/logos/zksync-logo.svg",
-  },
-  [ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID]: {
-    id: ChainId.ZKSYNC_ERA_TESTNET_CHAIN_ID,
-    name: "zkSync Era Testnet",
-    logo: "/logos/zksync-logo.svg",
-  },
-  [ChainId.SEPOLIA]: {
-    id: ChainId.SEPOLIA,
-    name: "Sepolia",
-    logo: "/logos/ethereum-eth-logo.svg",
-  },
-  [ChainId.SCROLL]: {
-    id: ChainId.SCROLL,
-    name: "Scroll",
-    logo: "/logos/scroll-logo.svg",
-  },
-  [ChainId.SEI_DEVNET]: {
-    id: ChainId.SEI_DEVNET,
-    name: "SEI Devnet",
-    logo: "/logos/sei.png",
-  },
-  [ChainId.SEI_MAINNET]: {
-    id: ChainId.SEI_MAINNET,
-    name: "SEI Mainnet",
-    logo: "/logos/sei.png",
-  },
-  [ChainId.LUKSO]: {
-    id: ChainId.LUKSO,
-    name: "Lukso",
-    logo: "/logos/lukso-logo.svg",
-  },
-  [ChainId.LUKSO_TESTNET]: {
-    id: ChainId.LUKSO_TESTNET,
-    name: "Lukso Testnet",
-    logo: "/logos/lukso-logo.svg",
-  },
-  [ChainId.CELO]: {
-    id: ChainId.CELO,
-    name: "Celo",
-    logo: "/logos/celo-logo.svg",
-  },
-  [ChainId.CELO_ALFAJORES]: {
-    id: ChainId.CELO_ALFAJORES,
-    name: "Celo Alfajores",
-    logo: "/logos/celo-logo.svg",
-  },
-};
+import { getChainById } from "common";
 
 export type SupportType = {
   name: string;
@@ -299,25 +169,10 @@ export function typeToText(s: string) {
  * explorer for the given chain ID and contract address
  */
 export const getTxExplorerForContract = (
-  chainId: ChainId,
+  chainId: number,
   contractAddress: string
 ) => {
-  switch (chainId) {
-    case ChainId.OPTIMISM_MAINNET_CHAIN_ID:
-      return `https://optimistic.etherscan.io/address/${contractAddress}`;
-
-    case ChainId.FANTOM_MAINNET_CHAIN_ID:
-      return `https://ftmscan.com/address/${contractAddress}`;
-
-    case ChainId.FANTOM_TESTNET_CHAIN_ID:
-      return `https://testnet.ftmscan.com/address/${contractAddress}`;
-
-    case ChainId.MAINNET:
-      return `https://etherscan.io/address/${contractAddress}`;
-
-    case ChainId.ARBITRUM:
-      return `https://arbiscan.io/address/${contractAddress}`;
-  }
+  return getChainById(chainId).blockExplorer + "address/" + contractAddress;
 };
 
 export const formatCurrency = (

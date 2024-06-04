@@ -1,13 +1,12 @@
-import { ChainId, useTokenPrice, VotingToken } from "common";
-import { CHAINS } from "../../api/utils";
+import { useTokenPrice, TToken, stringToBlobUrl, getChainById } from "common";
 import { formatUnits, zeroAddress } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 
 type SummaryProps = {
   totalDonation: bigint;
-  selectedPayoutToken: VotingToken;
-  chainId: ChainId;
+  selectedPayoutToken: TToken;
+  chainId: number;
 };
 
 export function Summary({
@@ -20,7 +19,7 @@ export function Summary({
   );
   const totalDonationInUSD =
     payoutTokenPrice &&
-    Number(formatUnits(totalDonation, selectedPayoutToken.decimal)) *
+    Number(formatUnits(totalDonation, selectedPayoutToken.decimals)) *
       Number(payoutTokenPrice);
 
   const { address } = useAccount();
@@ -33,8 +32,9 @@ export function Summary({
         : selectedPayoutToken.address,
     chainId,
   });
-  /*TODO: make this an explicit cehck of `balance !== undefined && totaldonation > balance.value ` */
   const insufficientFunds = balance ? totalDonation > balance.value : false;
+
+  const chain = getChainById(chainId);
 
   return (
     <div>
@@ -44,19 +44,19 @@ export function Summary({
           <p>
             <img
               className={"inline max-w-[32px] mr-2"}
-              alt={CHAINS[chainId].name}
-              src={CHAINS[chainId].logo}
+              alt={chain.prettyName}
+              src={stringToBlobUrl(chain.icon)}
             />
-            {CHAINS[chainId].name}
+            {chain.prettyName}
           </p>
         </div>
         <div className="flex flex-col">
           <p className="text-right">
             <span data-testid={"totalDonation"} className="mr-2">
-              {formatUnits(totalDonation, selectedPayoutToken.decimal)}
+              {formatUnits(totalDonation, selectedPayoutToken.decimals)}
             </span>
             <span data-testid={"summaryPayoutToken"}>
-              {selectedPayoutToken.name}
+              {selectedPayoutToken.code}
             </span>
           </p>
           {payoutTokenPrice && (

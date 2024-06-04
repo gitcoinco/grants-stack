@@ -1,5 +1,4 @@
 import {
-  CHAINS,
   getVotingTokenOptions,
   GroupedCartProjectsByRoundId,
 } from "../../api/utils";
@@ -7,17 +6,17 @@ import React, { useEffect, useState } from "react";
 import { PayoutTokenDropdown } from "./PayoutTokenDropdown";
 import { ApplyTooltip } from "./ApplyTooltip";
 import { RoundInCart } from "./RoundInCart";
-import { ChainId, useTokenPrice, VotingToken } from "common";
+import { useTokenPrice, TToken, stringToBlobUrl, getChainById } from "common";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
 
 type Props = {
   cart: GroupedCartProjectsByRoundId;
-  chainId: ChainId;
+  chainId: number;
 };
 
 export function CartWithProjects({ cart, chainId }: Props) {
-  const chain = CHAINS[chainId];
+  const chain = getChainById(chainId);
   const cartByRound = Object.values(cart);
 
   const store = useCartStorage();
@@ -26,7 +25,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
 
   const { getVotingTokenForChain, setVotingTokenForChain } = useCartStorage();
   const selectedPayoutToken = getVotingTokenForChain(chainId);
-  const payoutTokenOptions: VotingToken[] = getVotingTokenOptions(
+  const payoutTokenOptions: TToken[] = getVotingTokenOptions(
     Number(chainId)
   ).filter((p) => p.canVote);
 
@@ -57,7 +56,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
         <div className="flex flex-row basis-[28%] gap-2">
           <img
             className="mt-2 inline-block h-9 w-9"
-            src={chain.logo}
+            src={stringToBlobUrl(chain.icon)}
             alt={"Chain Logo"}
           />
           <h2 className="mt-3 text-2xl font-semibold">{chain.name}</h2>

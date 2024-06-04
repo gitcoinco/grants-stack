@@ -48,3 +48,4 @@ beforeEach(() => {
     })),
   });
 });
+global.URL.createObjectURL = vi.fn(() => "mocked-url");

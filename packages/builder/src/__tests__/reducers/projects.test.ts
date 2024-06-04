@@ -1,5 +1,4 @@
 import "@testing-library/jest-dom";
-import { ChainId } from "common/src/chain-ids";
 import {
   ApplicationStatus,
   ProjectApplicationMetadata,
@@ -601,7 +600,7 @@ describe("projects reducer", () => {
     const state2: ProjectsState = projectsReducer(state1, {
       type: "PROJECTS_LOADED",
       payload: {
-        chainIDs: [ChainId.OPTIMISM_MAINNET_CHAIN_ID, ChainId.MAINNET],
+        chainIDs: [10, 1],
       },
     });
 
