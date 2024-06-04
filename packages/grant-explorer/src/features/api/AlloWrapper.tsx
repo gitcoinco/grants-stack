@@ -9,10 +9,10 @@ import {
 } from "common";
 import { getConfig } from "common/src/config";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useNetwork, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
   const chainID = chain?.id;

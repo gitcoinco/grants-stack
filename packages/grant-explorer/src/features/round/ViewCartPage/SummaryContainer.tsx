@@ -28,11 +28,12 @@ import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
 import { useDataLayer } from "data-layer";
-import { fetchBalance } from "@wagmi/core";
+import { getBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
-import { useAllo } from "../../api/AlloWrapper";
+import { useAllo } from "common";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
+import { config } from "../../../app/wagmi";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
@@ -71,7 +72,7 @@ export function SummaryContainer() {
       await Promise.all(
         chainIds.map(async (chainId) => {
           const votingToken = getVotingTokenForChain(chainId);
-          const { value } = await fetchBalance({
+          const { value } = await getBalance(config, {
             address: address ?? zeroAddress,
             token:
               votingToken.address === zeroAddress ||
@@ -213,7 +214,7 @@ export function SummaryContainer() {
       .map(parseChainId)
       .forEach(async (chainId) => {
         const votingToken = getVotingTokenForChain(chainId);
-        const balance = await fetchBalance({
+        const balance = await getBalance(config, {
           token:
             votingToken.address === zeroAddress ||
             votingToken.address === NATIVE

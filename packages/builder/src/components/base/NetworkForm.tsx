@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { shallowEqual, useSelector } from "react-redux";
-import { useSwitchNetwork } from "wagmi";
+import { useSwitchChain } from "wagmi";
 import { RootState } from "../../reducers";
 import { ChangeHandlers, ProjectFormStatus } from "../../types";
 import { Select } from "../grants/inputs";
@@ -22,7 +22,7 @@ function NetworkForm({
     props.currentChain
   );
   const [showModal, setShowModal] = useState<boolean>(false);
-  const { chains } = useSwitchNetwork();
+  const { chains } = useSwitchChain();
 
   const handleNetworkSelect = async (e: ChangeHandlers) => {
     const { value } = e.target;

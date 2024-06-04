@@ -18,7 +18,6 @@ import {
   useTokenPrice,
   TToken,
   getTokensByChainId,
-  getTokens,
   stringToBlobUrl,
   getChainById,
 } from "common";
@@ -1216,11 +1215,6 @@ function PreRoundPage(props: {
     round.roundStartTime >= currentTime &&
     (isInfiniteDate(round.applicationsEndTime) ||
       round.applicationsEndTime <= currentTime);
-
-  const { data } = useToken({
-    address: getAddress(props.round.token),
-    chainId: Number(chainId),
-  });
 
   const tokenData = getTokensByChainId(Number(chainId)).find(
     (t) => t.address.toLowerCase() === props.round.token.toLowerCase()

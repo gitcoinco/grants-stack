@@ -8,7 +8,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { useParams } from "react-router-dom";
-import { useDisconnect, useNetwork } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import {
   makeDirectGrantRoundData,
   makeRoundData,
@@ -85,7 +85,7 @@ describe("View Round", () => {
       };
     });
 
-    (useNetwork as jest.Mock).mockReturnValue({ chains: [] });
+    (useAccount as jest.Mock).mockReturnValue({ chains: [] });
     (useDisconnect as jest.Mock).mockReturnValue({});
   });
 

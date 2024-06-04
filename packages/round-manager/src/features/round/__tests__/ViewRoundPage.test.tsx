@@ -2,7 +2,7 @@
 
 import { render, screen } from "@testing-library/react";
 import { useParams } from "react-router-dom";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
+import { useDisconnect, useSwitchChain } from "wagmi";
 import {
   makeDirectGrantRoundData,
   makeGrantApplicationData,
@@ -83,7 +83,7 @@ describe("View Round", () => {
       };
     });
 
-    (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
+    (useSwitchChain as jest.Mock).mockReturnValue({ chains: [] });
     (useDisconnect as jest.Mock).mockReturnValue({});
     (useApplicationsByRoundId as jest.Mock).mockReturnValue({
       data: [],

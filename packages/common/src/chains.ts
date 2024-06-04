@@ -1,6 +1,7 @@
 import { zeroAddress } from "viem";
 import { error, Result, success } from "./allo/common";
 import { getChains, TChain } from "@gitcoin/gitcoin-chain-data";
+import { Chain } from "@rainbow-me/rainbowkit";
 
 const chainData = getChains();
 
@@ -16,10 +17,10 @@ const parseRainbowChain = (chain: TChain) => {
   );
 
   // Map the TChain to @rainbow-me/rainbowkit/Chain
-  const mappedChain = {
+  const mappedChain: Chain = {
     id: chain.id,
     name: chain.prettyName,
-    network: chain.name,
+    // network: chain.name,
     iconUrl: stringToBlobUrl(chain.icon),
     iconBackground: "rgba(255, 255, 255, 0)",
     nativeCurrency: {
@@ -37,7 +38,7 @@ const parseRainbowChain = (chain: TChain) => {
         webSocket: undefined,
       },
     },
-  };
+  } as const satisfies Chain;
   return mappedChain;
 };
 

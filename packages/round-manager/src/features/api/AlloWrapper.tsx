@@ -8,18 +8,19 @@ import {
   createWaitForIndexerSyncTo,
   isChainIdSupported,
 } from "common";
-import { useNetwork, useProvider, useSigner } from "wagmi";
 import { getConfig } from "common/src/config";
 import { useMemo } from "react";
 import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
+import { useAccount } from "wagmi";
+import { providers } from "ethers";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
-  const { chain } = useNetwork();
-  const web3Provider = useProvider();
-  const { data: signer } = useSigner();
+  const { chain, address } = useAccount();
   const chainID = chain?.id;
 
   const backend = useMemo(() => {
+    const web3Provider = new providers.Web3Provider(window.ethereum, chain?.id);
+    const signer = web3Provider.getSigner(address);
     const chainIdSupported = chainID ? isChainIdSupported(chainID) : false;
 
     if (!web3Provider || !signer || !chainID || !chainIdSupported) {
@@ -56,7 +57,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     }
 
     return alloBackend;
-  }, [web3Provider, signer, chainID]);
+  }, [address, chainID]);
 
   return (
     <AlloProvider backend={backend}>

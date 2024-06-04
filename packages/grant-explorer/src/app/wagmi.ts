@@ -1,66 +1,22 @@
 import "@rainbow-me/rainbowkit/styles.css";
-import {
-  connectorsForWallets,
-  getDefaultWallets,
-} from "@rainbow-me/rainbowkit";
-import {
-  coinbaseWallet,
-  injectedWallet,
-  walletConnectWallet,
-  metaMaskWallet,
-} from "@rainbow-me/rainbowkit/wallets";
-import { configureChains, createConfig } from "wagmi";
-import { publicProvider } from "wagmi/providers/public";
-import { infuraProvider } from "wagmi/providers/infura";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { getConfig } from "common/src/config";
-import { allNetworks, mainnetNetworks } from "common";
-import { Chain } from "viem";
-
-const config = getConfig();
-
-const providers = [publicProvider()];
-if (config.blockchain.infuraId !== undefined) {
-  providers.push(infuraProvider({ apiKey: config.blockchain.infuraId }));
-}
-
-if (config.blockchain.alchemyId !== undefined) {
-  providers.push(alchemyProvider({ apiKey: config.blockchain.alchemyId }));
-}
+import { QueryClient } from "@tanstack/react-query";
+import { Chain, getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { allNetworks, mainnetNetworks } from "common/src/chains";
 
 const allChains: Chain[] =
   process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
 
-export const { chains, publicClient, webSocketPublicClient } = configureChains(
-  allChains,
-  providers
-);
+  /* TODO: remove hardcoded value once we have environment variables validation */
+  const projectId =
+    process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
+    "2685061cae0bcaf2b244446153eda9e1";
 
-/** We perform environment variable verification at buildtime, so all process.env properties are guaranteed to be strings */
-const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID as string;
+  export const config = getDefaultConfig({
+    appName: "Gitcoin Explorer",
+    projectId,
+    chains: [...allChains] as [Chain, ...Chain[]],
+  });
 
-const { wallets } = getDefaultWallets({
-  appName: "Grant Explorer",
-  projectId,
-  chains,
-});
+  const queryClient = new QueryClient();
 
-const connectors = connectorsForWallets([
-  {
-    ...wallets,
-    groupName: "Recommended",
-    wallets: [
-      injectedWallet({ chains }),
-      walletConnectWallet({ chains, projectId }),
-      coinbaseWallet({ appName: "Gitcoin Explorer", chains }),
-      metaMaskWallet({ chains, projectId }),
-    ],
-  },
-]);
-
-export const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors: connectors,
-  publicClient,
-  webSocketPublicClient,
-});
+  export default queryClient;
