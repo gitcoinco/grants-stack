@@ -32,7 +32,6 @@
     "eslint-config-gitcoin": "workspace:*",
     "ethers": "^5.6.5",
     "framer-motion": "^10.12.7",
-    "gitcoin-chain-data": "link:@types/grants-labs/gitcoin-chain-data",
     "markdown-it": "^13.0.1",
     "moment-timezone": "^0.5.45",
     "react": "^18.2.0",
