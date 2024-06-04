@@ -18,6 +18,7 @@ import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import { useDataLayer, v2Project } from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { useProject } from "./hooks/useProject";
+import NotFoundPage from "../common/NotFoundPage";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -46,7 +47,7 @@ export default function ViewProject() {
 
   const dataLayer = useDataLayer();
 
-  const { data, error } = useProject(
+  const { data, error, isLoading } = useProject(
     {
       projectId: projectId,
     },
@@ -102,51 +103,55 @@ export default function ViewProject() {
 
   return (
     <>
-      <DefaultLayout>
-        <div className="flex flex-row justify-between my-8">
-          <div className="flex items-center pt-2" data-testid="bread-crumbs">
-            <Breadcrumb items={breadCrumbs} />
+      {data !== undefined || isLoading ? (
+        <DefaultLayout>
+          <div className="flex flex-row justify-between my-8">
+            <div className="flex items-center pt-2" data-testid="bread-crumbs">
+              <Breadcrumb items={breadCrumbs} />
+            </div>
           </div>
-        </div>
-        <div className="mb-4">
-          <ProjectBanner
-            bannerImgCid={bannerImg ?? null}
-            classNameOverride="h-32 w-full object-cover lg:h-80 rounded md:rounded-3xl"
-            resizeHeight={320}
-          />
-          <div className="pl-4 sm:pl-6 lg:pl-8">
-            <div className="sm:flex sm:items-end sm:space-x-5">
-              <div className="flex">
-                <ProjectLogo {...project?.metadata} />
+          <div className="mb-4">
+            <ProjectBanner
+              bannerImgCid={bannerImg ?? null}
+              classNameOverride="h-32 w-full object-cover lg:h-80 rounded md:rounded-3xl"
+              resizeHeight={320}
+            />
+            <div className="pl-4 sm:pl-6 lg:pl-8">
+              <div className="sm:flex sm:items-end sm:space-x-5">
+                <div className="flex">
+                  <ProjectLogo {...project?.metadata} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="md:flex gap-4 flex-row-reverse">
-          <div className="flex-1">
-            {error === undefined ? (
-              <>
-                <Skeleton isLoaded={Boolean(title)}>
-                  <h1 className="text-4xl font-modern-era-medium tracking-tight text-grey-500">
-                    {title}
-                  </h1>
-                </Skeleton>
-                <ProjectLinks project={project} />
-                <ProjectDetailsTabs
-                  selected={selectedTab}
-                  onChange={handleTabChange}
-                  tabs={projectDetailsTabs.map((tab) => tab.name)}
-                />
-                <div className="[&_a]:underline">
-                  {projectDetailsTabs[selectedTab].content}
-                </div>
-              </>
-            ) : (
-              <p>Couldn't load project data.</p>
-            )}
+          <div className="md:flex gap-4 flex-row-reverse">
+            <div className="flex-1">
+              {error === undefined ? (
+                <>
+                  <Skeleton isLoaded={Boolean(title)}>
+                    <h1 className="text-4xl font-modern-era-medium tracking-tight text-grey-500">
+                      {title}
+                    </h1>
+                  </Skeleton>
+                  <ProjectLinks project={project} />
+                  <ProjectDetailsTabs
+                    selected={selectedTab}
+                    onChange={handleTabChange}
+                    tabs={projectDetailsTabs.map((tab) => tab.name)}
+                  />
+                  <div className="[&_a]:underline">
+                    {projectDetailsTabs[selectedTab].content}
+                  </div>
+                </>
+              ) : (
+                <p>Couldn't load project data.</p>
+              )}
+            </div>
           </div>
-        </div>
-      </DefaultLayout>
+        </DefaultLayout>
+      ) : (
+        <NotFoundPage />
+      )}
     </>
   );
 }
