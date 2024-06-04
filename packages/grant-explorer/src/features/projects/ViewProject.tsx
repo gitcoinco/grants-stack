@@ -128,7 +128,9 @@ export default function ViewProject() {
             <div className="flex-1">
               {error === undefined ? (
                 <>
-                  <Skeleton isLoaded={Boolean(title)}>
+                  <Skeleton
+                    isLoaded={data !== undefined && error === undefined}
+                  >
                     <h1 className="text-4xl font-modern-era-medium tracking-tight text-grey-500">
                       {title}
                     </h1>
