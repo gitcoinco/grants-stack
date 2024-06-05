@@ -13,11 +13,13 @@ jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
 
 jest.mock("viem", () => ({
   getAddress: jest.fn(),
+  defineChain: jest.fn(),
 }));
 
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
   useAllo: jest.fn(),
+  
 }));
 
 const mockSigner = {
