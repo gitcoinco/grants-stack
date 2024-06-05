@@ -17508,7 +17508,15 @@ snapshots:
       command-exists: 1.2.9
       ts-interface-checker: 0.1.13
 
+<<<<<<< HEAD
   '@gitcoin/gitcoin-chain-data@1.0.15(typescript@5.4.5)(zod@3.23.8)':
+=======
+  /@gitcoin/gitcoin-chain-data@1.0.15(typescript@5.4.5)(zod@3.23.8):
+    resolution: {integrity: sha512-3g5swDcrj8AjLjYCI0oBev5cM+6qkjDUlPYwp/50UHXZSz/1qS/1guVKi+yTNXhKuYPX453ZvlxFO9QcnGQraw==}
+    engines: {node: '>=16.15.0', npm: '>=8.5.5'}
+    peerDependencies:
+      typescript: ^5.0.0
+>>>>>>> f655d9bc (chain data version bump)
     dependencies:
       typescript: 5.4.5
       viem: 2.13.1(typescript@5.4.5)(zod@3.23.8)
@@ -32405,7 +32413,17 @@ snapshots:
       - utf-8-validate
       - zod
 
+<<<<<<< HEAD
   viem@2.13.1(typescript@5.4.5)(zod@3.23.8):
+=======
+  /viem@2.13.1(typescript@5.4.5)(zod@3.23.8):
+    resolution: {integrity: sha512-QaSCtPXb9uVaba+vOsyCFX21BDWNbjBOuXIWWlQXLmECtr/mbJ64XUHyFz6KLvUwAsQ+vxUQVwgmXc3jVMxwYw==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+>>>>>>> f655d9bc (chain data version bump)
     dependencies:
       '@adraffy/ens-normalize': 1.10.0
       '@noble/curves': 1.2.0
@@ -32420,8 +32438,17 @@ snapshots:
       - bufferutil
       - utf-8-validate
       - zod
+<<<<<<< HEAD
 
   vite-node@0.34.6(@types/node@18.19.33):
+=======
+    dev: false
+
+  /vite-node@0.34.6(@types/node@18.19.33):
+    resolution: {integrity: sha512-nlBMJ9x6n7/Amaz6F3zJ97EBwR2FkzhBRxF5e+jE6LA3yi6Wtc2lyTij1OnDMIr34v5g/tVQtsVAzhT0jc5ygA==}
+    engines: {node: '>=v14.18.0'}
+    hasBin: true
+>>>>>>> f655d9bc (chain data version bump)
     dependencies:
       cac: 6.7.14
       debug: 4.3.4(supports-color@8.1.1)
