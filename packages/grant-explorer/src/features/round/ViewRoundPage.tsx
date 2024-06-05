@@ -73,28 +73,6 @@ import {
 import { Box, Tab, Tabs } from "@chakra-ui/react";
 import GenericModal from "../common/GenericModal";
 
-const defaultVotingTokens: Record<number, TToken> = Object.entries(
-  getTokens()
-).reduce(
-  (acc, [chainId, tokens]) => {
-    const votingToken = tokens.find((token) => token.canVote);
-    if (votingToken) {
-      acc[Number(chainId)] = votingToken;
-    }
-    return acc;
-  },
-  {} as Record<number, TToken>
-);
-
-const nativePayoutToken: TToken | undefined = Object.entries(
-  defaultVotingTokens
-).find(([chainId, token]) => {
-  return (
-    Number(chainId) === Number(chainId) &&
-    token.address === getAddress(token.address)
-  );
-})?.[1];
-
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
@@ -1244,10 +1222,9 @@ function PreRoundPage(props: {
     chainId: Number(chainId),
   });
 
-  const tokenData = data ?? {
-    ...nativePayoutToken,
-    symbol: nativePayoutToken?.code ?? "ETH",
-  };
+  const tokenData = getTokensByChainId(Number(chainId)).find(
+    (t) => t.address.toLowerCase() === props.round.token.toLowerCase()
+  );
 
   return (
     <div className="mt-20 flex justify-center">
@@ -1329,7 +1306,7 @@ function PreRoundPage(props: {
                   &nbsp;
                   {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
                   &nbsp;
-                  {tokenData?.symbol ?? "..."}
+                  {tokenData?.code ?? "..."}
                 </span>
               </p>
               <p
