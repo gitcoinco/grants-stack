@@ -84,7 +84,9 @@ export default function ViewRoundPage() {
   const hasAccess =
     debugModeEnabled ||
     (round
-      ? round?.operatorWallets?.includes(address.toLowerCase() ?? "")
+      ? round?.roles?.some(
+          (role) => role.address.toLowerCase() === address.toLowerCase()
+        )
       : true);
 
   const roundNotFound = fetchRoundStatus === ProgressStatus.IS_ERROR;
