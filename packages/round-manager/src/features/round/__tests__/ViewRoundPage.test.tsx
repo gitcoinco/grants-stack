@@ -116,7 +116,7 @@ describe("View Round", () => {
       wrapWithBulkUpdateGrantApplicationContext(
         wrapWithReadProgramContext(
           wrapWithRoundContext(<ViewRoundPage />, {
-            data: [{ ...mockRoundData, operatorWallets: [] }],
+            data: [{ ...mockRoundData, operatorWallets: [], roles: [] }],
             fetchRoundStatus: ProgressStatus.IS_SUCCESS,
           }),
           { programs: [] }
