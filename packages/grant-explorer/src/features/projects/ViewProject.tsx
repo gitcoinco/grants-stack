@@ -249,18 +249,21 @@ function ProjectLink({
   url?: string;
   isVerified?: boolean;
 }>) {
-  const Component = url ? "a" : "div";
   return children ? (
     <div className="flex items-center gap-2">
       <div>{createElement(icon, { className: "w-4 h-4 text-grey-400" })}</div>
       <div className="flex gap-2">
-        <Component
-          href={url}
-          target="_blank"
-          className={url && "text-blue-300 hover:underline"}
-        >
-          {children}
-        </Component>
+        {url ? (
+          <a
+            href={url}
+            target="_blank"
+            className="text-blue-300 hover:underline"
+          >
+            {children}
+          </a>
+        ) : (
+          <div className="text-blue-300 hover:underline">{children}</div>
+        )}
         {isVerified && <VerifiedBadge />}
       </div>
     </div>
