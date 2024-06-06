@@ -172,7 +172,7 @@ function FinalizedRoundContent(props: {
                 token={props.matchingFundPayoutToken!}
                 price={props.price}
                 round={props.round}
-                allProjects={{ ...props.paidProjects, ...props.unpaidProjects }}
+                allProjects={[...props.paidProjects, ...props.unpaidProjects]}
               />
             </Tab.Panel>
             <Tab.Panel>
