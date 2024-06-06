@@ -1,5 +1,10 @@
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import { formatDateWithOrdinal, renderToHTML, useParams } from "common";
+import {
+  formatDateWithOrdinal,
+  renderToHTML,
+  useParams,
+  useValidateCredential,
+} from "common";
 import React, {
   ComponentPropsWithRef,
   createElement,
@@ -189,8 +194,19 @@ function ProjectLinks({ project }: { project?: v2Project }) {
       projectTwitter,
       projectGithub,
       userGithub,
+      credentials,
     },
   } = project ?? { metadata: {} };
+
+  const { isValid: validTwitterCredential } = useValidateCredential(
+    credentials?.twitter,
+    projectTwitter
+  );
+
+  const { isValid: validGithubCredential } = useValidateCredential(
+    credentials?.github,
+    projectGithub
+  );
 
   const createdOn =
     createdAt &&
@@ -215,7 +231,7 @@ function ProjectLinks({ project }: { project?: v2Project }) {
         <ProjectLink
           url={`https://twitter.com/${projectTwitter}`}
           icon={TwitterIcon}
-          isVerified={false}
+          isVerified={validTwitterCredential}
         >
           {projectTwitter}
         </ProjectLink>
@@ -225,7 +241,7 @@ function ProjectLinks({ project }: { project?: v2Project }) {
         <ProjectLink
           url={`https://github.com/${projectGithub}`}
           icon={GithubIcon}
-          isVerified={false}
+          isVerified={validGithubCredential}
         >
           {projectGithub}
         </ProjectLink>
