@@ -3,6 +3,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { datadogRum } from "@datadog/browser-rum";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useValidateCredential } from "common";
 import { global } from "../../global";
 import { RootState } from "../../reducers";
 import { CredentialProvider } from "../../types";
@@ -14,7 +15,6 @@ import {
   VerificationError,
   VerifiableCredential,
 } from "./identity/credentials";
-import useValidateCredential from "../../hooks/useValidateCredential";
 import { credentialsSaved } from "../../actions/projectForm";
 import VerifiedBadge from "../badges/VerifiedBadge";
 

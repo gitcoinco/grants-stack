@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { debounce } from "ts-debounce";
-import { PassportVerifierWithExpiration } from "common";
+import { PassportVerifierWithExpiration } from "./credentialVerifier";
 
 const IAM_SERVER =
   process.env.REACT_APP_PASSPORT_IAM_SERVER ||
@@ -27,7 +29,7 @@ export async function validateCredential(
   return validCredentialProvider && validCredential && validIssuer;
 }
 
-export default function useValidateCredential(
+export function useValidateCredential(
   vc: VerifiableCredential | undefined,
   handle: string | undefined
 ): { isValid: boolean; isLoading: boolean; error: any | null } {
