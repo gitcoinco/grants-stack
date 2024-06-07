@@ -72,6 +72,7 @@ function ApplicationsCountdownBanner(props: {
 const ApplyButton = (props: {
   status: ApplicationPeriodStatus;
   applicationURL: string;
+  testid?: string;
 }) => {
   const { status, applicationURL } = props;
 
@@ -80,7 +81,11 @@ const ApplyButton = (props: {
       type="button"
       onClick={() => window.open(applicationURL, "_blank")}
       className="bg-orange-100 text-grey-500 mt-2 basis-full items-center justify-center shadow-sm text-sm rounded md:h-12"
-      data-testid="apply-button"
+      data-testid={
+        status === "during-application"
+          ? "apply-button"
+          : "view-requirements-button"
+      }
     >
       {status === "during-application" ? "Apply now!" : "Check requirements"}
     </Button>
