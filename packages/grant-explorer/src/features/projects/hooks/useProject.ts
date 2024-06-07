@@ -14,3 +14,14 @@ export function useProject(params: Params, dataLayer: DataLayer) {
     return (await dataLayer.getProjectById(validatedParams)) ?? undefined;
   });
 }
+
+export function useApplications(params: Params, dataLayer: DataLayer) {
+  return useSWR(["applications", params], async () => {
+    const validatedParams = {
+      projectId: params.projectId,
+    };
+    return (
+      (await dataLayer.getApplicationsByProjectId(validatedParams)) ?? undefined
+    );
+  });
+}
