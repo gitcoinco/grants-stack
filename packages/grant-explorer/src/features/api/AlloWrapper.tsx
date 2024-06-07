@@ -1,88 +1,69 @@
 import {
   Allo,
+  AlloProvider,
   AlloV1,
   AlloV2,
+  createEthersTransactionSender,
   createPinataIpfsUploader,
-  createViemTransactionSender,
   createWaitForIndexerSyncTo,
   isChainIdSupported,
 } from "common";
 import { getConfig } from "common/src/config";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useMemo } from "react";
+import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
+import { useAccount } from "wagmi";
+import { providers } from "ethers";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
-  const { chain } = useAccount();
-  const { data: walletClient } = useWalletClient();
-  const publicClient = usePublicClient();
+  const { chain, address } = useAccount();
   const chainID = chain?.id;
 
-  const [backend, setBackend] = useState<Allo | null>(null);
-
-  useEffect(() => {
+  const backend = useMemo(() => {
+    const web3Provider = new providers.Web3Provider(window.ethereum, chain?.id);
+    const signer = web3Provider.getSigner(address);
     const chainIdSupported = chainID ? isChainIdSupported(chainID) : false;
 
-    if (!publicClient || !walletClient || !chainID || !chainIdSupported) {
-      setBackend(null);
-    } else {
-      const config = getConfig();
-      let alloBackend: Allo;
-
-      if (config.allo.version === "allo-v2") {
-        alloBackend = new AlloV2({
-          chainId: chainID,
-          transactionSender: createViemTransactionSender(
-            walletClient,
-            publicClient
-          ),
-          ipfsUploader: createPinataIpfsUploader({
-            token: getConfig().pinata.jwt,
-            endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
-          }),
-          waitUntilIndexerSynced: createWaitForIndexerSyncTo(
-            `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
-          ),
-        });
-
-        setBackend(alloBackend);
-      } else {
-        alloBackend = new AlloV1({
-          chainId: chainID,
-          transactionSender: createViemTransactionSender(
-            walletClient,
-            publicClient
-          ),
-          ipfsUploader: createPinataIpfsUploader({
-            token: getConfig().pinata.jwt,
-            endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
-          }),
-          waitUntilIndexerSynced: createWaitForIndexerSyncTo(
-            `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
-          ),
-        });
-
-        setBackend(alloBackend);
-      }
+    if (!web3Provider || !signer || !chainID || !chainIdSupported) {
+      return null;
     }
-  }, [publicClient, walletClient, chainID]);
 
-  return <AlloProvider backend={backend}>{children}</AlloProvider>;
+    const config = getConfig();
+    let alloBackend: Allo;
+
+    if (config.allo.version === "allo-v2") {
+      alloBackend = new AlloV2({
+        chainId: chainID,
+        transactionSender: createEthersTransactionSender(signer, web3Provider),
+        ipfsUploader: createPinataIpfsUploader({
+          token: getConfig().pinata.jwt,
+          endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
+        }),
+        waitUntilIndexerSynced: createWaitForIndexerSyncTo(
+          `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
+        ),
+      });
+    } else {
+      alloBackend = new AlloV1({
+        chainId: chainID,
+        transactionSender: createEthersTransactionSender(signer, web3Provider),
+        ipfsUploader: createPinataIpfsUploader({
+          token: getConfig().pinata.jwt,
+          endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
+        }),
+        waitUntilIndexerSynced: createWaitForIndexerSyncTo(
+          `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
+        ),
+      });
+    }
+
+    return alloBackend;
+  }, [address, chainID]);
+
+  return (
+    <AlloProvider backend={backend}>
+      <AlloVersionProvider>{children}</AlloVersionProvider>
+    </AlloProvider>
+  );
 }
 
 export default AlloWrapper;
-
-export const AlloContext = createContext<Allo | null>(null);
-
-interface AlloProps extends React.PropsWithChildren {
-  backend: Allo | null;
-}
-
-export const AlloProvider: React.FC<AlloProps> = ({ backend, children }) => {
-  return (
-    <AlloContext.Provider value={backend}>{children}</AlloContext.Provider>
-  );
-};
-
-export const useAllo = () => {
-  return useContext(AlloContext);
-};

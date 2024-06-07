@@ -1,4 +1,5 @@
 /* eslint-disable no-unexpected-multiline */
+import { useAllo } from "common";
 import { getTokenPrice, NATIVE, submitPassportLite } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
@@ -30,7 +31,6 @@ import { parseChainId } from "common/src/chains";
 import { useDataLayer } from "data-layer";
 import { getBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
-import { useAllo } from "common";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { config } from "../../../app/wagmi";
@@ -63,6 +63,7 @@ export function SummaryContainer() {
   );
 
   /** How much of the voting token for a chain does the address have*/
+  // todo: introduce a multicall here
   const [tokenBalancesPerChain, setTokenBalancesPerChain] = useState<
     Map<number, bigint>
   >(new Map());
