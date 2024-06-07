@@ -20,10 +20,21 @@ import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GlobeIcon } from "../../assets/icons/globe-icon.svg";
 import { ProjectBanner } from "../common/ProjectBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
-import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
-import { useDataLayer, v2Project } from "data-layer";
+import {
+  Box,
+  Skeleton,
+  SkeletonText,
+  Tab,
+  Tabs,
+  Spinner,
+} from "@chakra-ui/react";
+import {
+  ProjectApplicationWithRoundAndProgram,
+  useDataLayer,
+  v2Project,
+} from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
-import { useProject } from "./hooks/useProject";
+import { useProject, useProjectApplications } from "./hooks/useProject";
 import NotFoundPage from "../common/NotFoundPage";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
@@ -53,14 +64,33 @@ export default function ViewProject() {
 
   const dataLayer = useDataLayer();
 
-  const { data, error, isLoading } = useProject(
+  const {
+    data: projectData,
+    error: projectError,
+    isLoading: isProjectDataLoading,
+  } = useProject(
     {
       projectId: projectId,
     },
     dataLayer
   );
 
-  const project = data?.project;
+  const {
+    data: projectApplications,
+    error: projectApplicationsError,
+    isLoading: isProjectApplicationsLoading,
+  } = useProjectApplications(
+    {
+      projectId: projectId,
+    },
+    dataLayer
+  );
+
+  console.log("projectApplications", projectApplications);
+  console.log("projectApplicationsError", projectApplicationsError);
+  console.log("isProjectApplicationsLoading", isProjectApplicationsLoading);
+
+  const project = projectData?.project;
 
   const breadCrumbs = [
     {
@@ -103,14 +133,18 @@ export default function ViewProject() {
         name: "Past rounds",
         content: (
           <>
-            <h3 className="text-xl mt-8 mb-4 font-modern-era-medium text-blue-800">
-              Rounds
-            </h3>
+            {projectApplications ? (
+              <>
+                <Round projectApplication={projectApplications[0]} />
+              </>
+            ) : (
+              <SkeletonText />
+            )}
           </>
         ),
       },
     ],
-    [project, description]
+    [project, description, projectApplications]
   );
 
   const handleTabChange = (tabIndex: number) => {
@@ -119,7 +153,7 @@ export default function ViewProject() {
 
   return (
     <>
-      {data !== undefined || isLoading ? (
+      {projectData !== undefined || isProjectDataLoading ? (
         <DefaultLayout>
           <div className="flex flex-row justify-between my-8">
             <div className="flex items-center pt-2" data-testid="bread-crumbs">
@@ -143,10 +177,12 @@ export default function ViewProject() {
           <div className="md:flex gap-4 flex-row-reverse">
             <Sidebar />
             <div className="flex-1">
-              {error === undefined ? (
+              {projectError === undefined ? (
                 <>
                   <Skeleton
-                    isLoaded={data !== undefined && error === undefined}
+                    isLoaded={
+                      projectData !== undefined && projectError === undefined
+                    }
                   >
                     <h1 className="text-4xl font-modern-era-medium tracking-tight text-grey-500">
                       {title}
@@ -386,5 +422,30 @@ export function Stat({
       </Skeleton>
       <span className="text-sm md:text-base">{children}</span>
     </div>
+  );
+}
+
+export function Round({
+  projectApplication,
+}: {
+  projectApplication: ProjectApplicationWithRoundAndProgram;
+}) {
+  return (
+    <Box>
+      <Box className="w-full my-8 lg:flex md:flex basis-0 justify-between items-center text-[14px] text-gitcoin-grey-400">
+        <Box className="flex-1 my-2">
+          <span>{projectApplication.round.project.name}</span>
+        </Box>
+        <Box className="flex-1 my-2">
+          <span>{projectApplication.round.roundMetadata.name}</span>
+        </Box>
+        <Box className="flex-1 my-2">
+          <span>Jan 9, 2024 - Jan 31, 2024</span>
+        </Box>
+        <Box className="flex-1 my-2">
+          <span>Quadratic funding</span>
+        </Box>
+      </Box>
+    </Box>
   );
 }
