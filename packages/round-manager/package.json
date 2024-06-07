@@ -72,6 +72,7 @@
     "moment": "^2.29.3",
     "os-browserify": "^0.3.0",
     "papaparse": "^5.4.1",
+    "posthog-js": "^1.138.1",
     "process": "^0.11.10",
     "react": "^18.1.0",
     "react-datetime": "^3.1.1",

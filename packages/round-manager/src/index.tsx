@@ -7,7 +7,7 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import { WagmiConfig } from "wagmi";
 import { initDatadog } from "./datadog";
 import { initTagmanager } from "./tagmanager";
-
+import { PostHogProvider } from "posthog-js/react";
 import { chains, client as WagmiClient } from "./app/wagmi";
 import reportWebVitals from "./reportWebVitals";
 
@@ -35,6 +35,7 @@ import { UpdateRolesProvider } from "./context/round/UpdateRolesContext";
 import AlloWrapper from "./features/api/AlloWrapper";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import { getConfig } from "common/src/config";
+import { initPosthog } from "./posthog";
 
 // Initialize sentry
 initSentry();
@@ -44,6 +45,9 @@ initDatadog();
 
 // Initialize tagmanager
 initTagmanager();
+
+// Initialize PostHog
+const posthog = initPosthog();
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -63,89 +67,91 @@ const dataLayerConfig = new DataLayer({
 
 root.render(
   <React.StrictMode>
-    <WagmiConfig client={WagmiClient}>
-      <RainbowKitProvider coolMode chains={chains}>
-        <AlloWrapper>
-          <DataLayerProvider client={dataLayerConfig}>
-            <HashRouter>
-              <Routes>
-                {/* Protected Routes */}
-                <Route element={<Auth />}>
-                  {/* Default Route */}
-                  <Route
-                    path="/"
-                    element={
-                      <ReadProgramProvider>
-                        <Program />
-                      </ReadProgramProvider>
-                    }
-                  />
-
-                  {/* Round Routes */}
-                  <Route
-                    path="/round/create"
-                    element={
-                      <ReadProgramProvider>
-                        <CreateRound />
-                      </ReadProgramProvider>
-                    }
-                  />
-                  <Route
-                    path="/round/:id"
-                    element={
-                      <RoundProvider>
-                        <BulkUpdateGrantApplicationProvider>
-                          <FinalizeRoundProvider>
-                            <FundContractProvider>
-                              <ReclaimFundsProvider>
-                                <UpdateRoundProvider>
-                                  <UpdateRolesProvider>
-                                    <ViewRoundPage />
-                                  </UpdateRolesProvider>
-                                </UpdateRoundProvider>
-                              </ReclaimFundsProvider>
-                            </FundContractProvider>
-                          </FinalizeRoundProvider>
-                        </BulkUpdateGrantApplicationProvider>
-                      </RoundProvider>
-                    }
-                  />
-                  <Route
-                    path="/round/:roundId/application/:id"
-                    element={
-                      <RoundProvider>
-                        <BulkUpdateGrantApplicationProvider>
-                          <ViewApplication />
-                        </BulkUpdateGrantApplicationProvider>
-                      </RoundProvider>
-                    }
-                  />
-
-                  {/* Program Routes */}
-                  <Route path="/program/create" element={<CreateProgram />} />
-                  <Route
-                    path="/program/:id"
-                    element={
-                      <RoundProvider>
+    <PostHogProvider client={posthog}>
+      <WagmiConfig client={WagmiClient}>
+        <RainbowKitProvider coolMode chains={chains}>
+          <AlloWrapper>
+            <DataLayerProvider client={dataLayerConfig}>
+              <HashRouter>
+                <Routes>
+                  {/* Protected Routes */}
+                  <Route element={<Auth />}>
+                    {/* Default Route */}
+                    <Route
+                      path="/"
+                      element={
                         <ReadProgramProvider>
-                          <ViewProgram />
+                          <Program />
                         </ReadProgramProvider>
-                      </RoundProvider>
-                    }
-                  />
+                      }
+                    />
 
-                  {/* Access Denied */}
-                  <Route path="/access-denied" element={<AccessDenied />} />
+                    {/* Round Routes */}
+                    <Route
+                      path="/round/create"
+                      element={
+                        <ReadProgramProvider>
+                          <CreateRound />
+                        </ReadProgramProvider>
+                      }
+                    />
+                    <Route
+                      path="/round/:id"
+                      element={
+                        <RoundProvider>
+                          <BulkUpdateGrantApplicationProvider>
+                            <FinalizeRoundProvider>
+                              <FundContractProvider>
+                                <ReclaimFundsProvider>
+                                  <UpdateRoundProvider>
+                                    <UpdateRolesProvider>
+                                      <ViewRoundPage />
+                                    </UpdateRolesProvider>
+                                  </UpdateRoundProvider>
+                                </ReclaimFundsProvider>
+                              </FundContractProvider>
+                            </FinalizeRoundProvider>
+                          </BulkUpdateGrantApplicationProvider>
+                        </RoundProvider>
+                      }
+                    />
+                    <Route
+                      path="/round/:roundId/application/:id"
+                      element={
+                        <RoundProvider>
+                          <BulkUpdateGrantApplicationProvider>
+                            <ViewApplication />
+                          </BulkUpdateGrantApplicationProvider>
+                        </RoundProvider>
+                      }
+                    />
 
-                  {/* 404 */}
-                  <Route path="*" element={<NotFound />} />
-                </Route>
-              </Routes>
-            </HashRouter>
-          </DataLayerProvider>
-        </AlloWrapper>
-      </RainbowKitProvider>
-    </WagmiConfig>
+                    {/* Program Routes */}
+                    <Route path="/program/create" element={<CreateProgram />} />
+                    <Route
+                      path="/program/:id"
+                      element={
+                        <RoundProvider>
+                          <ReadProgramProvider>
+                            <ViewProgram />
+                          </ReadProgramProvider>
+                        </RoundProvider>
+                      }
+                    />
+
+                    {/* Access Denied */}
+                    <Route path="/access-denied" element={<AccessDenied />} />
+
+                    {/* 404 */}
+                    <Route path="*" element={<NotFound />} />
+                  </Route>
+                </Routes>
+              </HashRouter>
+            </DataLayerProvider>
+          </AlloWrapper>
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </PostHogProvider>
   </React.StrictMode>
 );
 
