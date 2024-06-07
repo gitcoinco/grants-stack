@@ -141,8 +141,11 @@ const generateUpdateRoundData = (
   return updateRoundData;
 };
 
-export default function ViewRoundSettings(props: { id?: string }) {
-  const { round } = useRoundById(props.id?.toLowerCase());
+export default function ViewRoundSettings(props: {
+  chainId: number;
+  id: string;
+}) {
+  const { round } = useRoundById(props.chainId, props.id.toLowerCase());
   const allo = useAllo();
   const [editMode, setEditMode] = useState<EditMode>({
     canEdit: false,
@@ -1280,7 +1283,7 @@ function RoundApplicationPeriod(props: {
   } = props;
 
   const [applicationStartDate, setApplicationStartDate] = useState(moment());
-  const [applicationEndDate, setApplicationEndDate] = useState(moment());
+  const [, setApplicationEndDate] = useState(moment());
   const [roundStartDate, setRoundStartDate] = useState(applicationStartDate);
 
   const yesterday = moment().subtract(1, "day");
@@ -1294,9 +1297,9 @@ function RoundApplicationPeriod(props: {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const disableBeforeApplicationEndDate = (current: moment.Moment) => {
-    return current.isAfter(applicationEndDate);
-  };
+  // const disableBeforeApplicationEndDate = (current: moment.Moment) => {
+  //   return current.isAfter(applicationEndDate);
+  // };
 
   const disableBeforeRoundStartDate = (current: moment.Moment) => {
     return current.isAfter(roundStartDate);

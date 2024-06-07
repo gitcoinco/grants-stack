@@ -7,7 +7,6 @@ import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { useWallet } from "../../features/common/Auth";
 import { getProgramById, listPrograms } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
-import { Web3Provider } from "@ethersproject/providers";
 import { DataLayer, useDataLayer } from "data-layer";
 import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
 
@@ -80,7 +79,7 @@ const fetchProgramsById = async (
   address: string,
   programId: string,
   dataLayer: DataLayer,
-  walletProvider: Web3Provider
+  chainId: number
 ) => {
   datadogLogs.logger.info(`fetchProgramsById: programId - ${programId}`);
 
@@ -89,7 +88,7 @@ const fetchProgramsById = async (
     payload: ProgressStatus.IN_PROGRESS,
   });
   try {
-    const program = await getProgramById(programId, walletProvider, dataLayer);
+    const program = await getProgramById(programId, chainId, dataLayer);
     dispatch({ type: ActionType.SET_PROGRAMS, payload: [program] });
     dispatch({
       type: ActionType.SET_FETCH_PROGRAM_STATUS,
@@ -169,6 +168,7 @@ export const usePrograms = (): ReadProgramState & { dispatch: Dispatch } => {
 };
 
 export const useProgramById = (
+  chainId: number,
   id?: string
 ): {
   program: Program | undefined;
@@ -177,35 +177,36 @@ export const useProgramById = (
 } => {
   const context = useContext(ReadProgramContext);
   const { switchToVersion, version } = useAlloVersion();
+
   const dataLayer = useDataLayer();
   if (context === undefined) {
     throw new Error("useProgramById must be used within a ProgramProvider");
   }
 
-  const { address, provider: walletProvider } = useWallet();
+  const { address } = useWallet();
 
   useEffect(() => {
     if (id) {
       const existingProgram = context.state.programs.find(
         (program) => program.id === id
       );
-
       if (!existingProgram) {
         fetchProgramsById(
           context.dispatch,
           address.toLowerCase(),
           id,
           dataLayer,
-          walletProvider
+          chainId
         );
       }
     }
-  }, [id, walletProvider]); // eslint-disable-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, context.dispatch, context.state.programs, dataLayer, id]);
 
   const program = context.state.programs.find((program) => program.id === id);
-
   useEffect(() => {
     if (program?.tags?.includes("allo-v2") && version === "allo-v1") {
+      console.log("=====> 8");
       switchToVersion("allo-v2");
     }
   }, [program, switchToVersion, version]);

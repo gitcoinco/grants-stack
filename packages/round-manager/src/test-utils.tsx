@@ -77,6 +77,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const protocolFeePercentage = 10000;
   return {
     id: faker.finance.ethereumAddress(),
+    strategyName: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy",
     chainId: 1,
     roundMetadata: {
       name: faker.company.name(),
@@ -144,6 +145,7 @@ export const makeDirectGrantRoundData = (
   const protocolFeePercentage = 10000;
   return {
     id: faker.finance.ethereumAddress(),
+    strategyName: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy",
     chainId: 1,
     roundMetadata: {
       name: faker.company.name(),

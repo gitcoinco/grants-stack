@@ -3,7 +3,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { Chain, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { allNetworks, mainnetNetworks } from "common/src/chains";
 
-const allChains: Chain[] =
+export const allChains: Chain[] =
   process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
 
 /* TODO: remove hardcoded value once we have environment variables validation */

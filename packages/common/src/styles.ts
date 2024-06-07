@@ -25,7 +25,7 @@ export const Button = tw.button`
     } else if (p.$variant === "external-link") {
       return "bg-white text-gitcoin-violet-500";
     } else {
-      return "bg-violet-400 text-white";
+      return "bg-blue-100 text-gray-500";
     }
   }}
   ${(p: ButtonProps) => (p.$hidden ? "hidden" : "")}

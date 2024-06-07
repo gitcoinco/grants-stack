@@ -8,7 +8,13 @@ import {
   UploadIcon,
 } from "@heroicons/react/solid";
 import { useDropzone } from "react-dropzone";
-import { classNames, isGG20Round, getPayoutTokens, TToken } from "common";
+import {
+  classNames,
+  isGG20Round,
+  getPayoutTokens,
+  TToken,
+  useWallet,
+} from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRoundMatchingFunds } from "../../../hooks";
 import {
@@ -156,17 +162,26 @@ function useRevisedMatchingFunds(
 }
 
 export default function ViewRoundResultsWrapper() {
-  const { id } = useParams();
+  const { chainId, id } = useParams() as { chainId?: string; id: string };
+  const { chain } = useWallet();
 
-  if (id === undefined) {
+  const roundChainId = chainId ? Number(chainId) : chain.id;
+
+  if (!id || !roundChainId) {
     return <div>Invalid round ID</div>;
   }
 
-  return <ViewRoundResultsWithId id={id} />;
+  return <ViewRoundResultsWithId chainId={roundChainId} id={id} />;
 }
 
-function ViewRoundResultsWithId({ id }: { id: string }) {
-  const round = useRoundById(id.toLowerCase());
+function ViewRoundResultsWithId({
+  chainId,
+  id,
+}: {
+  chainId: number;
+  id: string;
+}) {
+  const round = useRoundById(chainId, id.toLowerCase());
   const applications = useApplicationsByRoundId(id.toLowerCase());
 
   if (

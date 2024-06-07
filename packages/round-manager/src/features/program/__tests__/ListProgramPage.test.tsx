@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { makeProgramData, renderWithProgramContext } from "../../../test-utils";
 import { ProgressStatus } from "../../api/types";
-import ListProgramPage from "../ListProgramPage";
+import ListProgramPage from "../ProgramListPage";
 
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({

@@ -48,11 +48,10 @@ import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import {
   RoundName,
-  ViewGrantsExplorerButton,
-  ApplicationOpenDateRange,
   RoundOpenDateRange,
   RoundBadgeStatus,
   isDirectRound,
+  ApplicationOpenDateRange,
 } from "./ViewRoundPage";
 
 import {
@@ -69,6 +68,7 @@ import { getPayoutRoundDescription } from "../common/Utils";
 import moment from "moment";
 import ApplicationDirectPayout from "./ApplicationDirectPayout";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
+import { ViewGrantsExplorerButton } from "../common/ViewGrantsExplorerButton";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
@@ -107,8 +107,13 @@ export default function ViewApplicationPage() {
     twitter: VerifiedCredentialState.PENDING,
   });
 
-  const { roundId, id } = useParams() as { roundId: string; id: string };
+  const { chainId, roundId, id } = useParams() as {
+    chainId?: string;
+    roundId: string;
+    id: string;
+  };
   const { chain, address } = useWallet();
+  const roundChainId = chainId ? Number(chainId) : chain.id;
 
   const { data: applications, isLoading } = useApplicationsByRoundId(roundId!);
   const filteredApplication = applications?.filter((a) => a.id == id) || [];
@@ -191,7 +196,7 @@ export default function ViewApplicationPage() {
     }
   }, [application, application?.project?.owners, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { round } = useRoundById(roundId);
+  const { round } = useRoundById(roundChainId, roundId);
   const allo = useAllo();
 
   const handleReview = async () => {

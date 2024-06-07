@@ -3,6 +3,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { DataLayer } from "data-layer";
 import { getAlloVersion } from "common/src/config";
 import { getChainById, stringToBlobUrl } from "common";
+import { allChains } from "../../app/wagmi";
 
 /**
  * Fetch a list of programs
@@ -17,15 +18,13 @@ export async function listPrograms(
 ): Promise<Program[]> {
   try {
     // fetch chain id
-    const { chainId } = (await signerOrProvider.getNetwork()) as {
-      chainId: number;
-    };
+    const chainIds = allChains.map((chain) => chain.id);
 
     // fetch programs from indexer
 
     const programsRes = await dataLayer.getProgramsByUser({
       address,
-      chainId,
+      chainIds,
       tags: getAlloVersion() === "allo-v1" ? ["allo-v1"] : [],
     });
 
@@ -36,7 +35,7 @@ export async function listPrograms(
     const programs: Program[] = [];
 
     for (const program of programsRes.programs) {
-      const chain = getChainById(chainId);
+      const chain = getChainById(program.chainId);
       programs.push({
         id: program.id,
         metadata: program.metadata,
@@ -45,7 +44,7 @@ export async function listPrograms(
         ),
         tags: program.tags,
         chain: {
-          id: chainId,
+          id: program.chainId,
           name: chain.prettyName,
           logo: stringToBlobUrl(chain.icon),
         },
@@ -64,14 +63,9 @@ export async function listPrograms(
 // TODO(shavinac) change params to expect chainId instead of signerOrProvider
 export async function getProgramById(
   programId: string,
-  signerOrProvider: Web3Instance["provider"],
+  chainId: number,
   dataLayer: DataLayer
 ): Promise<Program | null> {
-  // fetch chain id
-  const { chainId } = (await signerOrProvider.getNetwork()) as {
-    chainId: number;
-  };
-
   // fetch program from indexer
   const { program: program } = await dataLayer.getProgramById({
     programId,

@@ -1,4 +1,4 @@
-/**
+ /**
  * Supported EVM networks
  */
 import { Signer } from "@ethersproject/abstract-signer";
@@ -147,6 +147,7 @@ export interface ApplicationMetadata {
 }
 
 export interface Round {
+  strategyName: string;
   /**
    * The on-chain unique round ID
    */

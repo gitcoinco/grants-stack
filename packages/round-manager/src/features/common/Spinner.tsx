@@ -1,6 +1,4 @@
-type SpinnerProps = {
-  text: string;
-};
+import { SpinnerProps } from "./types";
 
 export function Spinner(props: SpinnerProps) {
   return (

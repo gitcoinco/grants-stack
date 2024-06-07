@@ -2,8 +2,8 @@ import { Outlet, useOutletContext } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { Web3Instance } from "../api/types";
 import { Spinner } from "./Spinner";
-import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
-import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg";
+// import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
+// import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg";
 import Footer from "common/src/components/Footer";
 import Navbar from "./Navbar";
 import { providers } from "ethers";
@@ -25,31 +25,23 @@ export default function Auth() {
     provider,
   };
 
+  // todo: add background image
   return !isConnected ? (
     <div>
-      <Navbar programCta={false} alloVersionSwitcherVisible={false} />
+      <Navbar programCta={false} />
       <main className="pt-4">
         {isConnecting ? (
-          <Spinner text="Connecting Wallet" />
+          <Spinner text="Logging you in..." />
         ) : (
-          <div className="grid grid-rows-3 grid-flow-col bg-white">
-            <div className="row-span-2"></div>
-            <div className="row-span-5">
-              <div className="my-[15rem]">
-                <LandingLogo className="block w-auto mb-6 ml-2"></LandingLogo>
-                <h1 className="mb-6">Manager</h1>
-                <p className="text-2xl mt-2 mb-6 text-grey-400">
-                  As a round operator you can manage high-impact
-                  <br />
-                  grant programs and distribute funds across different
-                  <br />
-                  rounds and voting mechanisms.
-                </p>
-                <ConnectButton />
-              </div>
-            </div>
-            <div className="row-span-5">
-              <LandingBanner className="align-middle float-right"></LandingBanner>
+          <div className="flex flex-col bg-white">
+            <div className="my-[15rem] sm:ml-4 md:ml-8 lg:ml-20">
+              <span className="mb-6 text-6xl">Fund the future.</span>
+              <p className="text-2xl mt-2 mb-6 text-grey-400">
+                Customize your own grant rounds to support
+                <br />
+                innovative projects and streamline fund allocation.
+              </p>
+              <ConnectButton label="Log In" />
             </div>
           </div>
         )}

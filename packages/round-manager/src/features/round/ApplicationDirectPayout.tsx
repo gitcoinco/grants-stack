@@ -7,7 +7,6 @@ import { useWallet } from "../common/Auth";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-
 import { ExternalLinkIcon } from "@heroicons/react/outline";
 import { Erc20__factory } from "../../types/generated/typechain";
 import { usePayout } from "../../context/application/usePayout";
@@ -322,7 +321,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
       setPayoutTokensMap(map);
     };
     createPayoutTokenMap();
-  }, [fetchTokenData, application.applicationIndex, payouts]);
+  }, [fetchTokenData, application.applicationIndex, payouts, chain.id]);
 
   return (
     <>

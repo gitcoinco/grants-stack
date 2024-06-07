@@ -57,7 +57,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
     }
 
     return alloBackend;
-  }, [address, chainID]);
+  }, [address, chain?.id, chainID]);
 
   return (
     <AlloProvider backend={backend}>
