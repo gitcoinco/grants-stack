@@ -103,15 +103,14 @@ describe("<ViewRound /> in case of before the application start date", () => {
     });
   });
 
-  it("Should show grayed out Applications Open buttom", async () => {
+  it("Should show View Requirements Button", async () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [stubRound], isLoading: false },
       dataLayer: mockDataLayer,
     });
 
-    const AppSubmissionButton = screen.getByTestId("applications-open-button");
+    const AppSubmissionButton = screen.getByTestId("view-requirements-button");
     expect(AppSubmissionButton).toBeInTheDocument();
-    expect(AppSubmissionButton).toBeDisabled();
   });
 });
 
@@ -154,7 +153,7 @@ describe("<ViewRound /> in case of during the application period", () => {
     });
 
     // expect that components / text / dates / etc. specific to  application view page
-    expect(screen.getByText(stubRound.roundMetadata!.name)).toBeInTheDocument();
+    expect(screen.getAllByText(stubRound.roundMetadata!.name)).toHaveLength(2);
     expect(screen.getByTestId("application-period")).toBeInTheDocument();
     expect(screen.getByTestId("round-period")).toBeInTheDocument();
     expect(screen.getByTestId("matching-funds")).toBeInTheDocument();
@@ -169,9 +168,7 @@ describe("<ViewRound /> in case of during the application period", () => {
       roundState: { rounds: [stubRound], isLoading: false },
       dataLayer: mockDataLayer,
     });
-    const AppSubmissionButton = await screen.findAllByText(
-      "Apply to Grant Round"
-    );
+    const AppSubmissionButton = await screen.findAllByText("Apply now!");
     expect(AppSubmissionButton[0]).toBeInTheDocument();
   });
 });
@@ -198,17 +195,15 @@ describe("<ViewRound /> in case of post application end date & before round star
     });
   });
 
-  it("Should show Applications Closed button", async () => {
+  it("Should show Donations countdown badge", async () => {
     renderWithContext(<ViewRound />, {
       roundState: { rounds: [stubRound], isLoading: false },
       dataLayer: mockDataLayer,
     });
-
-    const AppSubmissionButton = screen.getByTestId(
-      "applications-closed-button"
+    const DonationsBadge = await screen.getByTestId(
+      "donations-countdown-badge"
     );
-    expect(AppSubmissionButton).toBeInTheDocument();
-    expect(AppSubmissionButton).toBeDisabled();
+    expect(DonationsBadge).toBeInTheDocument();
   });
 });
 
