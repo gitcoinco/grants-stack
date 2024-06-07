@@ -374,6 +374,7 @@ function RoundPage(props: {
     roundId,
     tokenData.symbol,
   ]);
+
   const roundStart = isDirectRound(round)
     ? round.applicationsStartTime
     : round.roundStartTime;
@@ -466,7 +467,39 @@ function RoundPage(props: {
                 </div>
               </div>
 
-              <div className="flex text-grey-500 mb-4">
+              <div className="flex flex-col gap-2 text-grey-500 mb-4">
+                {isBeforeApplicationEndDate && (
+                  <p className="mr-4 flex items-center">
+                    <span className="mr-2">Apply</span>
+                    <CalendarIcon className="w-4 h-4 !text-grey-400 inline-block mr-2" />
+                    <span>
+                      <span className="px-2 rounded bg-grey-50">
+                        <span className="mr-1">
+                          {formatLocalDateAsISOString(
+                            round.applicationsStartTime
+                          )}
+                        </span>
+                        <span>{getLocalTime(round.applicationsStartTime)}</span>
+                      </span>
+                      <span className="px-1.5">-</span>
+                      <span className="px-2 rounded bg-grey-50">
+                        {!isInfiniteDate(roundEnd) ? (
+                          <>
+                            <span className="mr-1">
+                              {formatLocalDateAsISOString(
+                                round.applicationsEndTime
+                              )}
+                            </span>
+
+                            <span>{getLocalTime(roundEnd)}</span>
+                          </>
+                        ) : (
+                          <span>No End Date</span>
+                        )}
+                      </span>
+                    </span>
+                  </p>
+                )}
                 <p className="mr-4 flex items-center">
                   <span className="mr-2">Donate</span>
                   <CalendarIcon className="w-4 h-4 !text-grey-400 inline-block mr-2" />
