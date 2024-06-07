@@ -77,24 +77,52 @@ export const pinToIPFS = (obj: IPFSObject) => {
   }
 };
 
-export const getDaysLeft = (fromNowToTimestampStr: string) => {
+export interface TimeLeft {
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+}
+
+export const getTimeLeft = (fromNowToTimestampStr: string): TimeLeft => {
   const targetTimestamp = Number(fromNowToTimestampStr);
 
   // Some timestamps are returned as overflowed (1.15e+77)
   // We parse these into undefined to show as "No end date" rather than make the date diff calculation
   if (targetTimestamp > Number.MAX_SAFE_INTEGER) {
-    return undefined;
+    return {};
   }
 
   // TODO replace with differenceInCalendarDays from 'date-fns'
   const currentTimestampInSeconds = Math.floor(Date.now() / 1000); // current timestamp in seconds
   const secondsPerDay = 60 * 60 * 24; // number of seconds per day
+  const secondsPerHour = 60 * 60; // number of seconds per day
+  const secondsPerMinute = 60;
 
   const differenceInSeconds = targetTimestamp - currentTimestampInSeconds;
-  const differenceInDays = Math.floor(differenceInSeconds / secondsPerDay);
 
-  return differenceInDays;
+  const days = Math.floor(differenceInSeconds / secondsPerDay);
+  const hours = Math.floor(differenceInSeconds / secondsPerHour) % 24; // % 24 to substract total days
+  const minutes = Math.floor(differenceInSeconds / secondsPerMinute) % 60; // % 60 to substract total hours
+  const seconds = Math.floor(differenceInSeconds) % 60; // % 60 to substract total minutes
+
+  return { days, hours, minutes, seconds };
 };
+
+export const parseTimeLeftString = (timeLeft: TimeLeft): string => {
+  const { days = 0, hours = 0, minutes = 0 } = timeLeft;
+
+  const daysString = days > 0 ? `${days} ${days === 1 ? "day" : "days"}, ` : "";
+  const hoursString =
+    hours > 0 ? `${hours} ${hours === 1 ? "hour" : "hours"}, ` : "";
+  const minutesString =
+    minutes > 0 ? `${minutes} ${minutes === 1 ? "minute" : "minutes"}` : "";
+
+  return `${daysString}${hoursString}${minutesString}`;
+};
+
+export const getDaysLeft = (fromNowToTimestampStr: string) =>
+  getTimeLeft(fromNowToTimestampStr).days;
 
 export const isDirectRound = (round: Round) =>
   // @ts-expect-error support old rounds
