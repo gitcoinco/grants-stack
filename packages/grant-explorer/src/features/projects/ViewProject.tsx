@@ -6,6 +6,7 @@ import {
   useValidateCredential,
 } from "common";
 import React, {
+  ComponentProps,
   ComponentPropsWithRef,
   createElement,
   FunctionComponent,
@@ -82,7 +83,7 @@ export default function ViewProject() {
   const projectDetailsTabs = useMemo(
     () => [
       {
-        name: "Project details",
+        name: "Overview",
         content: (
           <>
             <h3 className="text-3xl mt-8 mb-4 font-modern-era-medium text-blue-800">
@@ -95,6 +96,16 @@ export default function ViewProject() {
             ) : (
               <SkeletonText />
             )}
+          </>
+        ),
+      },
+      {
+        name: "Past rounds",
+        content: (
+          <>
+            <h3 className="text-xl mt-8 mb-4 font-modern-era-medium text-blue-800">
+              Rounds
+            </h3>
           </>
         ),
       },
@@ -130,6 +141,7 @@ export default function ViewProject() {
             </div>
           </div>
           <div className="md:flex gap-4 flex-row-reverse">
+            <Sidebar />
             <div className="flex-1">
               {error === undefined ? (
                 <>
@@ -318,5 +330,61 @@ function ProjectLogo({ logoImg }: { logoImg?: string }) {
       src={src}
       alt="Project Logo"
     />
+  );
+}
+
+function Sidebar() {
+  return (
+    <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
+      <ProjectStats />
+    </div>
+  );
+}
+
+export function ProjectStats() {
+  const totalFundingReceived = 120;
+  const totalMatchingAmountReceived = 300;
+  const totalContributions = 14;
+  const totalUniqueDonors = 10;
+  const totalRoundsParticipated = 1;
+
+  return (
+    <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
+      <h4 className="text-2xl">All-time stats</h4>
+      <Stat isLoading={false} value={`$${totalFundingReceived}`}>
+        funding received
+      </Stat>
+      <Stat isLoading={false} value={`$${totalMatchingAmountReceived}`}>
+        matching funds received
+      </Stat>
+      <Stat isLoading={false} value={totalContributions}>
+        contributions
+      </Stat>
+      <Stat isLoading={false} value={totalUniqueDonors}>
+        unique contributors
+      </Stat>
+      <Stat isLoading={false} value={totalRoundsParticipated}>
+        rounds participated
+      </Stat>
+    </div>
+  );
+}
+
+export function Stat({
+  value,
+  children,
+  isLoading,
+  className,
+}: {
+  value?: string | number | null;
+  isLoading?: boolean;
+} & ComponentProps<"div">) {
+  return (
+    <div className={`flex flex-col ${className}`}>
+      <Skeleton isLoaded={!isLoading} height={"36px"}>
+        <h4 className="text-3xl">{value}</h4>
+      </Skeleton>
+      <span className="text-sm md:text-base">{children}</span>
+    </div>
   );
 }
