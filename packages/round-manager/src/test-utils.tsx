@@ -114,6 +114,13 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     roundFeePercentage,
     ownedBy: faker.finance.ethereumAddress(),
     operatorWallets: [mockedOperatorWallet],
+    roles: [
+      {
+        address: mockedOperatorWallet,
+        role: "OWNER",
+        createdAtBlock: "0",
+      },
+    ],
     finalized: false,
     tags: ["allo-v1"],
     matchAmount: 0n,
@@ -174,6 +181,13 @@ export const makeDirectGrantRoundData = (
     roundFeePercentage,
     ownedBy: faker.finance.ethereumAddress(),
     operatorWallets: [mockedOperatorWallet],
+    roles: [
+      {
+        address: mockedOperatorWallet,
+        role: "OWNER",
+        createdAtBlock: "0",
+      },
+    ],
     finalized: false,
     matchAmount: 0n,
     matchAmountInUsd: 0,
