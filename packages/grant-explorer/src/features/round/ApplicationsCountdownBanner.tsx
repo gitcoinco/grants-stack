@@ -82,7 +82,7 @@ const ApplyButton = (props: {
       className="bg-orange-100 text-grey-500 mt-2 basis-full items-center justify-center shadow-sm text-sm rounded md:h-12"
       data-testid="apply-button"
     >
-      {status === "during-application" ? "Apply now!" : "View Round"}
+      {status === "during-application" ? "Apply now!" : "Check requirements"}
     </Button>
   );
 };
