@@ -522,11 +522,13 @@ function RoundPage(props: {
         <hr className="mt-4 mb-8" />
 
         <div className="flex flex-col items-center gap-8">
-          <ApplicationsCountdownBanner
-            startDate={round.applicationsStartTime}
-            endDate={round.applicationsEndTime}
-            applicationURL={applicationURL}
-          />
+          {isBeforeApplicationEndDate && (
+            <ApplicationsCountdownBanner
+              startDate={round.applicationsStartTime}
+              endDate={round.applicationsEndTime}
+              applicationURL={applicationURL}
+            />
+          )}
 
           <div className="mb-2 flex flex-col lg:flex-row w-full justify-between gap-2">
             <RoundTabs
