@@ -77,7 +77,7 @@ export function SummaryContainer() {
             address: address ?? zeroAddress,
             token:
               votingToken.address === zeroAddress ||
-              votingToken.address === NATIVE
+              votingToken.address.toLowerCase() === NATIVE.toLowerCase()
                 ? undefined
                 : votingToken.address,
             chainId,
