@@ -514,10 +514,6 @@ function RoundPage(props: {
           <p className="mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
           </p>
-
-          {isDirectRound(round) && isBeforeApplicationEndDate && (
-            <ApplyButton applicationURL={applicationURL} />
-          )}
         </section>
         <hr className="mt-4 mb-8" />
 
