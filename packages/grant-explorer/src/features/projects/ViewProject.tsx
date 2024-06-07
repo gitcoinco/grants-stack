@@ -20,14 +20,7 @@ import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GlobeIcon } from "../../assets/icons/globe-icon.svg";
 import { ProjectBanner } from "../common/ProjectBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
-import {
-  Box,
-  Skeleton,
-  SkeletonText,
-  Tab,
-  Tabs,
-  Spinner,
-} from "@chakra-ui/react";
+import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import {
   ProjectApplicationWithRoundAndProgram,
   useDataLayer,
@@ -86,10 +79,6 @@ export default function ViewProject() {
     dataLayer
   );
 
-  console.log("projectApplications", projectApplications);
-  console.log("projectApplicationsError", projectApplicationsError);
-  console.log("isProjectApplicationsLoading", isProjectApplicationsLoading);
-
   const project = projectData?.project;
 
   const breadCrumbs = [
@@ -133,18 +122,34 @@ export default function ViewProject() {
         name: "Past rounds",
         content: (
           <>
-            {projectApplications ? (
+            {isProjectApplicationsLoading && <SkeletonText />}
+            {projectApplicationsError && (
+              <p className="ml-4 mt-8">Couldn't load project data.</p>
+            )}
+            {projectApplications && projectApplications?.length > 0 && (
               <>
-                <Round projectApplication={projectApplications[0]} />
+                {projectApplications.map((projectApplication) => (
+                  <RoundListItem
+                    key={projectApplication.id}
+                    projectApplication={projectApplication}
+                  />
+                ))}
               </>
-            ) : (
-              <SkeletonText />
+            )}
+            {projectApplications && projectApplications?.length === 0 && (
+              <p className="ml-4 mt-8">No past rounds found.</p>
             )}
           </>
         ),
       },
     ],
-    [project, description, projectApplications]
+    [
+      project,
+      description,
+      projectApplications,
+      isProjectApplicationsLoading,
+      projectApplicationsError,
+    ]
   );
 
   const handleTabChange = (tabIndex: number) => {
@@ -425,7 +430,7 @@ export function Stat({
   );
 }
 
-export function Round({
+export function RoundListItem({
   projectApplication,
 }: {
   projectApplication: ProjectApplicationWithRoundAndProgram;
@@ -434,16 +439,22 @@ export function Round({
     <Box>
       <Box className="w-full my-8 lg:flex md:flex basis-0 justify-between items-center text-[14px] text-gitcoin-grey-400">
         <Box className="flex-1 my-2">
-          <span>{projectApplication.round.project.name}</span>
+          <span className="font-medium">
+            {projectApplication.round.project.name}
+          </span>
         </Box>
         <Box className="flex-1 my-2">
-          <span>{projectApplication.round.roundMetadata.name}</span>
+          <span className="font-medium">
+            {projectApplication.round.roundMetadata.name}
+          </span>
         </Box>
         <Box className="flex-1 my-2">
           <span>Jan 9, 2024 - Jan 31, 2024</span>
         </Box>
-        <Box className="flex-1 my-2">
-          <span>Quadratic funding</span>
+        <Box className="my-2">
+          <span className="bg-teal-100 flex gap-2 rounded-full p-2 text-md items-center font-modern-era-medium text-teal-500">
+            Quadratic funding
+          </span>
         </Box>
       </Box>
     </Box>
