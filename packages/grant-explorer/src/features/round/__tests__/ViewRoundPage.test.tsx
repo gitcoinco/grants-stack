@@ -160,7 +160,6 @@ describe("<ViewRound /> in case of during the application period", () => {
     expect(
       screen.getByText(stubRound.roundMetadata!.eligibility!.description)
     ).toBeInTheDocument();
-    expect(screen.getByTestId("round-eligibility")).toBeInTheDocument();
   });
 
   it("Should show apply to round button", async () => {

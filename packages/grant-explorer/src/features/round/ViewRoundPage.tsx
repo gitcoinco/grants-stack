@@ -373,6 +373,7 @@ function RoundPage(props: {
     nativePayoutToken,
     roundId,
     tokenData.symbol,
+    showProjectCardFooter,
   ]);
 
   const roundStart = isDirectRound(round)
@@ -469,7 +470,10 @@ function RoundPage(props: {
 
               <div className="flex flex-col gap-2 text-grey-500 mb-4">
                 {isBeforeApplicationEndDate && (
-                  <p className="mr-4 flex items-center">
+                  <p
+                    data-testId={"application-period"}
+                    className="mr-4 flex items-center"
+                  >
                     <span className="mr-2">Apply</span>
                     <CalendarIcon className="w-4 h-4 !text-grey-400 inline-block mr-2" />
                     <span>
@@ -500,7 +504,10 @@ function RoundPage(props: {
                     </span>
                   </p>
                 )}
-                <p className="mr-4 flex items-center">
+                <p
+                  data-testId={"round-period"}
+                  className="mr-4 flex items-center"
+                >
                   <span className="mr-2">Donate</span>
                   <CalendarIcon className="w-4 h-4 !text-grey-400 inline-block mr-2" />
                   <span>
@@ -530,7 +537,10 @@ function RoundPage(props: {
             </div>
 
             {!isDirectRound(round) && (
-              <div className="bg-grey-50 p-8 rounded-2xl">
+              <div
+                data-testId={"matching-funds"}
+                className="bg-grey-50 p-8 rounded-2xl"
+              >
                 <p className="text-3xl mb-2 font-mono tracking-tighter">
                   {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
                   &nbsp;
@@ -729,7 +739,7 @@ function ProjectCard(props: {
   crowdfundedUSD: number;
   uniqueContributorsCount: number;
 }) {
-  const { project, roundRoutePath, round } = props;
+  const { project, roundRoutePath } = props;
   const projectRecipient =
     project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
 
