@@ -203,6 +203,9 @@ function RoundPage(props: {
     (alloVersion === "allo-v2" && roundId.startsWith("0x")) ||
     props.isAfterRoundEndDate;
 
+  const showProjectCardFooter =
+    !isDirectRound(round) && props.isAfterRoundStartDate;
+
   useEffect(() => {
     if (showCartNotification) {
       setTimeout(() => {
@@ -333,6 +336,7 @@ function RoundPage(props: {
           <ProjectList
             projects={projects}
             roundRoutePath={`/round/${chainId}/${roundId}`}
+            showProjectCardFooter={showProjectCardFooter}
             isBeforeRoundEndDate={!disableAddToCartButton}
             roundId={roundId}
             isProjectsLoading={isProjectsLoading}
@@ -596,6 +600,7 @@ function RoundTabs(props: {
 const ProjectList = (props: {
   projects?: Project[];
   roundRoutePath: string;
+  showProjectCardFooter?: boolean;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
   round: Round;
@@ -648,6 +653,7 @@ const ProjectList = (props: {
                   key={project.projectRegistryId}
                   project={project}
                   roundRoutePath={roundRoutePath}
+                  showProjectCardFooter={props.showProjectCardFooter}
                   isBeforeRoundEndDate={props.isBeforeRoundEndDate}
                   roundId={props.roundId}
                   round={props.round}
@@ -681,6 +687,7 @@ const ProjectList = (props: {
 function ProjectCard(props: {
   project: Project;
   roundRoutePath: string;
+  showProjectCardFooter?: boolean;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
   round: Round;
@@ -744,16 +751,16 @@ function ProjectCard(props: {
           </div>
           <CardDescription
             data-testid="project-description"
-            className="h-[130px] overflow-hidden mb-1 !text-sm"
+            className={`h-[${props.showProjectCardFooter ? "130px" : "82px"}] overflow-hidden mb-1 !text-sm`}
           >
             {truncateDescription(
               renderToPlainText(project.projectMetadata.description),
-              90
+              props.showProjectCardFooter ? 90 : 180
             )}
           </CardDescription>
         </CardContent>
       </Link>
-      {!isDirectRound(round) && (
+      {props.showProjectCardFooter && (
         <CardFooter className="bg-white">
           <CardContent className="px-2 text-xs ">
             <div className="border-t pt-1 flex items-center justify-between ">
