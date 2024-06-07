@@ -24,7 +24,7 @@ import AccessDenied from "./features/common/AccessDenied";
 import Auth from "./features/common/Auth";
 import NotFound from "./features/common/NotFoundPage";
 import CreateProgram from "./features/program/CreateProgramPage";
-import Program from "./features/program/ListProgramPage";
+import LandingPage from "./features/common/LandingPage";
 import ViewProgram from "./features/program/ViewProgramPage";
 import CreateRound from "./features/round/CreateRoundPage";
 import ViewApplication from "./features/round/ViewApplicationPage";
@@ -66,6 +66,40 @@ const dataLayerConfig = new DataLayer({
   },
 });
 
+const viewRoundPage = (
+  <RoundProvider>
+    <BulkUpdateGrantApplicationProvider>
+      <FinalizeRoundProvider>
+        <FundContractProvider>
+          <ReclaimFundsProvider>
+            <UpdateRoundProvider>
+              <UpdateRolesProvider>
+                <ViewRoundPage />
+              </UpdateRolesProvider>
+            </UpdateRoundProvider>
+          </ReclaimFundsProvider>
+        </FundContractProvider>
+      </FinalizeRoundProvider>
+    </BulkUpdateGrantApplicationProvider>
+  </RoundProvider>
+);
+
+const viewApplication = (
+  <RoundProvider>
+    <BulkUpdateGrantApplicationProvider>
+      <ViewApplication />
+    </BulkUpdateGrantApplicationProvider>
+  </RoundProvider>
+);
+
+const viewProgram = (
+  <RoundProvider>
+    <ReadProgramProvider>
+      <ViewProgram />
+    </ReadProgramProvider>
+  </RoundProvider>
+);
+
 root.render(
   <React.StrictMode>
     <PostHogProvider client={posthog}>
@@ -83,66 +117,43 @@ root.render(
                         path="/"
                         element={
                           <ReadProgramProvider>
-                            <Program />
-                          </ReadProgramProvider>
+                            <RoundProvider>
+                            <LandingPage />
+                            </RoundProvider>
+                        </ReadProgramProvider>
                         }
                       />
 
-                      {/* Round Routes */}
-                      <Route
-                        path="/round/create"
-                        element={
-                          <ReadProgramProvider>
-                            <CreateRound />
-                          </ReadProgramProvider>
-                        }
-                      />
-                      <Route
-                        path="/round/:id"
-                        element={
-                          <RoundProvider>
-                            <BulkUpdateGrantApplicationProvider>
-                              <FinalizeRoundProvider>
-                                <FundContractProvider>
-                                  <ReclaimFundsProvider>
-                                    <UpdateRoundProvider>
-                                      <UpdateRolesProvider>
-                                        <ViewRoundPage />
-                                      </UpdateRolesProvider>
-                                    </UpdateRoundProvider>
-                                  </ReclaimFundsProvider>
-                                </FundContractProvider>
-                              </FinalizeRoundProvider>
-                            </BulkUpdateGrantApplicationProvider>
-                          </RoundProvider>
-                        }
-                      />
-                      <Route
-                        path="/round/:roundId/application/:id"
-                        element={
-                          <RoundProvider>
-                            <BulkUpdateGrantApplicationProvider>
-                              <ViewApplication />
-                            </BulkUpdateGrantApplicationProvider>
-                          </RoundProvider>
-                        }
-                      />
+                    {/* Round Routes */}
+                    <Route
+                      path="/round/create"
+                      element={
+                        <ReadProgramProvider>
+                          <CreateRound />
+                        </ReadProgramProvider>
+                      }
+                    />
+                    <Route path="/round/:id" element={viewRoundPage} />
+                    <Route
+                      path="/chain/:chainId/round/:id"
+                      element={viewRoundPage}
+                    />
+                    <Route
+                      path="/chain/:chainId/round/:roundId/application/:id"
+                      element={viewApplication}
+                    />
+                    <Route
+                      path="/round/:roundId/application/:id"
+                      element={viewApplication}
+                    />
 
-                      {/* Program Routes */}
-                      <Route
-                        path="/program/create"
-                        element={<CreateProgram />}
-                      />
-                      <Route
-                        path="/program/:id"
-                        element={
-                          <RoundProvider>
-                            <ReadProgramProvider>
-                              <ViewProgram />
-                            </ReadProgramProvider>
-                          </RoundProvider>
-                        }
-                      />
+                    {/* Program Routes */}
+                    <Route path="/program/create" element={<CreateProgram />} />
+                    <Route
+                      path="/chain/:chainId/program/:id"
+                      element={viewProgram}
+                    />
+                    <Route path="/program/:id" element={viewProgram} />
 
                       {/* Access Denied */}
                       <Route path="/access-denied" element={<AccessDenied />} />

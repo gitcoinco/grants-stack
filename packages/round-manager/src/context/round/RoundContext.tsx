@@ -1,10 +1,13 @@
 import { ProgressStatus, Round } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
-import { getRoundById, listRounds } from "../../features/api/round";
+import {
+  getRoundById,
+  listRounds,
+  listRoundsByAddress,
+} from "../../features/api/round";
 import { datadogLogs } from "@datadog/browser-logs";
 import { DataLayer, useDataLayer } from "data-layer";
 import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
-import { useAccount } from "wagmi";
 import { getEthersProvider } from "../../app/wagmi";
 
 export interface RoundState {
@@ -104,6 +107,43 @@ const fetchRoundById = async (
   }
 };
 
+const fetchRoundsByAddress = async (
+  dispatch: Dispatch,
+  dataLayer: DataLayer,
+  chainIds: number[],
+  address: string
+) => {
+  datadogLogs.logger.info(`fetchRoundsByAddress: address - ${address}`);
+
+  dispatch({
+    type: ActionType.SET_FETCH_ROUNDS_STATUS,
+    payload: ProgressStatus.IN_PROGRESS,
+  });
+
+  try {
+    const { rounds } = await listRoundsByAddress({
+      chainIds,
+      dataLayer,
+      address,
+    });
+
+    dispatch({ type: ActionType.SET_ROUNDS, payload: rounds });
+    dispatch({
+      type: ActionType.SET_FETCH_ROUNDS_STATUS,
+      payload: ProgressStatus.IS_SUCCESS,
+    });
+  } catch (error) {
+    datadogLogs.logger.error(`error: fetchRoundsByAddress ${error}`);
+    console.error("fetchRoundsByAddress", error);
+
+    dispatch({ type: ActionType.SET_LIST_ROUNDS_ERROR, payload: error });
+    dispatch({
+      type: ActionType.SET_FETCH_ROUNDS_STATUS,
+      payload: ProgressStatus.IS_ERROR,
+    });
+  }
+};
+
 const roundReducer = (state: RoundState, action: Action) => {
   switch (action.type) {
     case ActionType.SET_ROUNDS:
@@ -141,10 +181,9 @@ export const RoundProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useRounds = (programId?: string) => {
+export const useRounds = (chainId: number, programId?: string) => {
   const context = useContext(RoundContext);
   const dataLayer = useDataLayer();
-  const { chainId } = useAccount();
 
   if (context === undefined || !chainId) {
     throw new Error("useRounds must be used within a RoundProvider");
@@ -157,20 +196,17 @@ export const useRounds = (programId?: string) => {
 
   useEffect(() => {
     if (programId) {
-      provider.getNetwork().then((network) => {
-        fetchRounds(context.dispatch, dataLayer, network.chainId, programId);
-      });
+      fetchRounds(context.dispatch, dataLayer, chainId, programId);
     }
   }, [dataLayer, chainId, programId, context.dispatch]);
 
   return { ...context.state, dispatch: context.dispatch };
 };
 
-export const useRoundById = (roundId?: string) => {
+export const useRoundById = (chainId: number, roundId?: string) => {
   const context = useContext(RoundContext);
   const { switchToVersion } = useAlloVersion();
   const dataLayer = useDataLayer();
-  const { chainId } = useAccount();
 
   if (context === undefined || !chainId) {
     throw new Error("useRounds must be used within a RoundProvider");
@@ -184,19 +220,16 @@ export const useRoundById = (roundId?: string) => {
   useEffect(() => {
     if (roundId) {
       const existingRound = context.state.data.find(
-        (round) =>
-          round.id === roundId && round.chainId === provider.network.chainId
+        (round: Round) => round.id === roundId && round.chainId === chainId
       );
 
       if (!existingRound?.token) {
-        provider.getNetwork().then((network) => {
-          fetchRoundById(context.dispatch, dataLayer, roundId, network.chainId);
-        });
+        fetchRoundById(context.dispatch, dataLayer, roundId, chainId);
       }
     }
-  }, [provider, roundId, context.dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [chainId, roundId, context.dispatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const round = context.state.data.find((round) => round.id === roundId);
+  const round = context.state.data.find((round: Round) => round.id === roundId);
 
   useEffect(() => {
     if (round?.tags?.includes("allo-v1")) {
@@ -211,4 +244,28 @@ export const useRoundById = (roundId?: string) => {
     fetchRoundStatus: context.state.fetchRoundStatus,
     error: context.state.error,
   };
+};
+
+export const useRoundsByAddress = (chainIds: number[], address?: string) => {
+  const context = useContext(RoundContext);
+  const { switchToVersion } = useAlloVersion();
+  const dataLayer = useDataLayer();
+
+  if (context === undefined) {
+    throw new Error("useRoundsByAddress must be used within a RoundProvider");
+  }
+
+  useEffect(() => {
+    if (address) {
+      fetchRoundsByAddress(
+        context.dispatch,
+        dataLayer,
+        chainIds,
+        address.toLowerCase()
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [switchToVersion]);
+
+  return { ...context.state, dispatch: context.dispatch };
 };

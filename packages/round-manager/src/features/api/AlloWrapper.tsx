@@ -32,7 +32,10 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
 
   useEffect(() => {
     const init = async () => {
-      const s = await getEthersSigner(connector!, chainID!);
+      // todo: test this shit
+      const s = connector
+        ? await getEthersSigner(connector, chainID!)
+        : undefined;
       const p = getEthersProvider(chainID!);
 
       setSigner(s);

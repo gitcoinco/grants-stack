@@ -3,7 +3,8 @@ import tw from "tailwind-styled-components";
 export const CardsContainer = tw.div`
   flex
   flex-row
-  flex-wrap
+  flex-grow
+  justify-between
   w-full
 `;
 
@@ -59,6 +60,5 @@ export const CardFooterContent = tw.div`
   flex
   flex-row
   items-center
-  h-full
   w-full
   `;

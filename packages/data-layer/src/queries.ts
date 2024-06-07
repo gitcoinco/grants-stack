@@ -9,12 +9,12 @@ import { gql } from "graphql-request";
  * @returns The programs
  */
 export const getProgramsByUserAndTag = gql`
-  query ($userAddress: String!, $chainId: Int!, $tags: [String!]!) {
+  query ($userAddress: String!, $chainIds: [Int!]!, $tags: [String!]!) {
     projects(
       first: 100
       filter: {
         tags: { contains: $tags }
-        chainId: { equalTo: $chainId }
+        chainId: { in: $chainIds }
         roles: { some: { address: { equalTo: $userAddress } } }
       }
     ) {
@@ -676,6 +676,26 @@ export const getRoundsForManager = gql`
       filter: {
         chainId: { equalTo: $chainId }
         projectId: { equalTo: $programId }
+      }
+    ) {
+      ${getRoundForManagerFields}
+    }
+  }
+`;
+
+export const getRoundsForManagerByAddress = gql`
+  query getRoundsForManager($chainIds: [Int!]!, $address: String!) {
+    rounds(
+      first: 1000
+      filter: {
+        chainId: {in: $chainIds}, 
+        roles: {
+          some: {
+            address: {
+              equalTo: $address
+            }
+          }
+        }
       }
     ) {
       ${getRoundForManagerFields}

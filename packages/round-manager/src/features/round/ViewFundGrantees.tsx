@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Tab } from "@headlessui/react";
 import { ExclamationCircleIcon as NonFinalizedRoundIcon } from "@heroicons/react/outline";
@@ -61,7 +62,6 @@ export default function ViewFundGrantees(props: {
     <div className="flex flex-center flex-col mx-auto mt-3">
       <p className="text-xl">Fund Grantees</p>
       {props.isRoundFinalized ? (
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         <FinalizedRoundContent
           round={props.round!}
           allProjects={projects.all}
@@ -200,8 +200,6 @@ export function PayProjectsTable(props: {
   round: Round;
   allProjects: MatchingStatsData[];
 }) {
-  // TODO: Add button check
-  // TOOD: Connect wallet and payout contracts to pay grantees
   const allo = useAllo();
   const alloVersion = getConfig().allo.version;
   const roundId = props.round.id;
@@ -215,19 +213,15 @@ export function PayProjectsTable(props: {
   const [showConfirmationModal, setShowConfirmationModal] =
     useState<boolean>(false);
   const [showInfoModal, setShowInfoModal] = useState<boolean>(false);
-
   const [
     openReadyForDistributionProgressModal,
     setOpenReadyForDistributionProgressModal,
   ] = useState(false);
-
   const [finalizingDistributionStatus, setFinalizingDistributionStatus] =
     useState<ProgressStatus>(ProgressStatus.IN_PROGRESS);
-
   const [indexingStatus, setIndexingStatus] = useState<ProgressStatus>(
     ProgressStatus.NOT_STARTED
   );
-
   const tokenDetail =
     props.token.address == ethers.constants.AddressZero
       ? { address: assertAddress(props.round?.payoutStrategy.id) }
@@ -235,10 +229,8 @@ export function PayProjectsTable(props: {
           address: assertAddress(props.round?.payoutStrategy.id),
           token: assertAddress(props.token.address),
         };
-
   const tokenBalance = useBalance(tokenDetail);
   const navigate = useNavigate();
-
   const distributionSteps: ProgressStep[] = [
     {
       name: "Distributing Funds",

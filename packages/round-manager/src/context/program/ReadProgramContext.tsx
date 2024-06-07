@@ -169,6 +169,7 @@ export const usePrograms = (): ReadProgramState & { dispatch: Dispatch } => {
 };
 
 export const useProgramById = (
+  chainId: number,
   id?: string
 ): {
   program: Program | undefined;
@@ -177,12 +178,13 @@ export const useProgramById = (
 } => {
   const context = useContext(ReadProgramContext);
   const { switchToVersion, version } = useAlloVersion();
+
   const dataLayer = useDataLayer();
   if (context === undefined) {
     throw new Error("useProgramById must be used within a ProgramProvider");
   }
 
-  const { address, chainId } = useAccount();
+  const { address } = useAccount();
 
   useEffect(() => {
     if (id) {
@@ -203,7 +205,6 @@ export const useProgramById = (
   }, [id, chainId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const program = context.state.programs.find((program) => program.id === id);
-
   useEffect(() => {
     if (program?.tags?.includes("allo-v2") && version === "allo-v1") {
       switchToVersion("allo-v2");

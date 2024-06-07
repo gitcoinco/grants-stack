@@ -1,4 +1,4 @@
-import React, { act } from "react";
+// import React, { act } from "react";
 import {
   fireEvent,
   render,
@@ -15,7 +15,7 @@ import {
   ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
 } from "common";
 
-import { Connector, useAccount, useDisconnect } from "wagmi";
+// import { Connector } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import { Erc20__factory } from "../../../types/generated/typechain";
 import moment from "moment";
@@ -23,7 +23,7 @@ import { parseUnits } from "ethers/lib/utils.js";
 import { usePayout } from "../../../context/application/usePayout";
 import { usePayouts } from "../usePayouts";
 import { DataLayer, DataLayerContext } from "data-layer";
-import { getEthersSigner } from "../../../app/wagmi";
+// import { getEthersSigner } from "../../../app/wagmi";
 
 jest.mock("../../../types/generated/typechain");
 jest.mock("../../common/Auth");
@@ -35,6 +35,32 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 }));
 
 const mockAddress = ethers.constants.AddressZero;
+const mockWallet = {
+  provider: {
+    network: {
+      chainId: 1,
+    },
+  },
+  address: mockAddress,
+  signer: {
+    getChainId: () => {
+      /* do nothing */
+    },
+  },
+  chain: {
+    name: "abc",
+    id: 1,
+  },
+};
+// const mockNetwork = {
+//   chain: {
+//     blockExplorers: {
+//       default: {
+//         url: "https://mock-blockexplorer.com",
+//       },
+//     },
+//   },
+// };
 
 const correctAnswerBlocks = [
   {
