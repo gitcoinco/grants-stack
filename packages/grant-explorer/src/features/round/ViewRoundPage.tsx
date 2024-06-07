@@ -757,11 +757,11 @@ function ProjectCard(props: {
           </div>
           <CardDescription
             data-testid="project-description"
-            className={`h-[${props.showProjectCardFooter ? "130px" : "82px"}] overflow-hidden mb-1 !text-sm`}
+            className={`h-[${props.showProjectCardFooter ? "130px" : "100px"}] overflow-hidden mb-1 !text-sm`}
           >
             {truncateDescription(
               renderToPlainText(project.projectMetadata.description),
-              props.showProjectCardFooter ? 90 : 180
+              90
             )}
           </CardDescription>
         </CardContent>
