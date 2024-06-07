@@ -72,7 +72,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { Box, Tab, Tabs } from "@chakra-ui/react";
 import GenericModal from "../common/GenericModal";
-import { CountdownBanner } from "./CountdownBanner";
+import RoundStartCountdownBadge from "./RoundStartCountdownBadge";
+import ApplicationsCountdownBanner from "./ApplicationsCountdownBanner";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -423,7 +424,9 @@ function RoundPage(props: {
                 >
                   {round.roundMetadata?.name}
                 </h1>
-                {!props.isAfterRoundEndDate ? (
+                {props.isBeforeRoundStartDate ? (
+                  <RoundStartCountdownBadge targetDate={roundStart} />
+                ) : !props.isAfterRoundEndDate ? (
                   <Badge
                     color="blue"
                     rounded="full"
@@ -496,13 +499,6 @@ function RoundPage(props: {
               </div>
             </div>
 
-            {props.isBeforeRoundStartDate && (
-              <CountdownBanner
-                title={"DONATIONS OPEN IN:"}
-                targetDate={roundStart}
-              />
-            )}
-
             {!isDirectRound(round) && (
               <div className="bg-grey-50 p-8 rounded-2xl">
                 <p className="text-3xl mb-2 font-mono tracking-tighter">
@@ -525,29 +521,37 @@ function RoundPage(props: {
         </section>
         <hr className="mt-4 mb-8" />
 
-        <div className="mb-10 flex flex-col lg:flex-row w-full justify-between gap-2">
-          <RoundTabs
-            tabs={projectDetailsTabs}
-            selected={selectedTab}
-            onChange={handleTabChange}
+        <div className="flex flex-col items-center gap-8">
+          <ApplicationsCountdownBanner
+            startDate={round.applicationsStartTime}
+            endDate={round.applicationsEndTime}
+            applicationURL={applicationURL}
           />
-          {selectedTab === 0 && (
-            <div className="relative">
-              <Search className="absolute h-4 w-4 mt-3 ml-3 " />
-              <Input
-                className="w-full lg:w-64 h-8 rounded-full pl-10 font-mono"
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setSearchQuery(e.target.value)
-                }
-              />
-            </div>
-          )}
-        </div>
 
-        <div>{projectDetailsTabs[selectedTab].content}</div>
+          <div className="mb-2 flex flex-col lg:flex-row w-full justify-between gap-2">
+            <RoundTabs
+              tabs={projectDetailsTabs}
+              selected={selectedTab}
+              onChange={handleTabChange}
+            />
+            {selectedTab === 0 && (
+              <div className="relative">
+                <Search className="absolute h-4 w-4 mt-3 ml-3 " />
+                <Input
+                  className="w-full lg:w-64 h-8 rounded-full pl-10 font-mono"
+                  type="text"
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSearchQuery(e.target.value)
+                  }
+                />
+              </div>
+            )}
+          </div>
+
+          <div>{projectDetailsTabs[selectedTab].content}</div>
+        </div>
       </DefaultLayout>
     </>
   );
