@@ -15,7 +15,7 @@ export function useProject(params: Params, dataLayer: DataLayer) {
   });
 }
 
-export function useApplications(params: Params, dataLayer: DataLayer) {
+export function useProjectApplications(params: Params, dataLayer: DataLayer) {
   return useSWR(["applications", params], async () => {
     const validatedParams = {
       projectId: params.projectId,
