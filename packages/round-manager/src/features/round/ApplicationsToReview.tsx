@@ -35,16 +35,16 @@ import ProgressModal from "../common/ProgressModal";
 import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { getRoundStrategyType, renderToPlainText, useAllo } from "common";
-import { useWallet } from "../common/Auth";
 import { CheckIcon } from "@heroicons/react/solid";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import { exportAndDownloadCSV } from "./ApplicationsToApproveReject";
+import { useAccount } from "wagmi";
 
 // Move applications received in direct grants to In Review
 
 export default function ApplicationsToReview() {
   const { id } = useParams();
-  const { chain } = useWallet();
+  const { chainId } = useAccount();
 
   if (id === undefined) {
     throw new Error("id is undefined");
@@ -218,13 +218,13 @@ export default function ApplicationsToReview() {
   return (
     <div>
       <div className="flex items-center mb-4">
-        {id && applications && applications.length > 0 && (
+        {id && applications && applications.length > 0 && chainId && (
           <Button
             type="button"
             $variant="outline"
             className="text-xs px-3 py-1 inline-block"
             disabled={isCsvExportLoading}
-            onClick={() => handleExportCsvClick(utils.getAddress(id), chain.id)}
+            onClick={() => handleExportCsvClick(utils.getAddress(id), chainId)}
           >
             {isCsvExportLoading ? (
               <>

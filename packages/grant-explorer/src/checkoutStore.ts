@@ -2,15 +2,23 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { CartProject, ProgressStatus } from "./features/api/types";
-import { Allo, getChainById } from "common";
+import {
+  AlloV2,
+  createEthersTransactionSender,
+  createPinataIpfsUploader,
+  createWaitForIndexerSyncTo,
+  getChainById,
+} from "common";
 import { useCartStorage } from "./store";
 import {
+  getContract,
   Hex,
   InternalRpcError,
   parseAbi,
   parseUnits,
   SwitchChainError,
   UserRejectedRequestError,
+  WalletClient,
   zeroAddress,
 } from "viem";
 import {
@@ -21,11 +29,11 @@ import {
 } from "./features/api/voting";
 import { groupBy, uniq } from "lodash-es";
 import { getEnabledChains } from "./app/chainConfig";
-import { WalletClient } from "wagmi";
-import { getContract, getPublicClient } from "@wagmi/core";
 import { getPermitType } from "common/dist/allo/voting";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
+import { getEthersProvider, getEthersSigner } from "./app/wagmi";
+import { Connector } from "wagmi";
 
 type ChainMap<T> = Record<number, T>;
 
@@ -52,7 +60,7 @@ interface CheckoutState {
   checkout: (
     chainsToCheckout: { chainId: number; permitDeadline: number }[],
     walletClient: WalletClient,
-    allo: Allo,
+    connector: Connector,
     dataLayer: DataLayer
   ) => Promise<void>;
   getCheckedOutProjects: () => CartProject[];
@@ -100,7 +108,7 @@ export const useCheckoutStore = create<CheckoutState>()(
     checkout: async (
       chainsToCheckout: { chainId: number; permitDeadline: number }[],
       walletClient: WalletClient,
-      allo: Allo
+      connector: Connector
     ) => {
       const chainIdsToCheckOut = chainsToCheckout.map((chain) => chain.chainId);
       get().setChainsToCheckout(
@@ -160,16 +168,16 @@ export const useCheckoutStore = create<CheckoutState>()(
           try {
             get().setPermitStatusForChain(chainId, ProgressStatus.IN_PROGRESS);
 
-            const owner = walletClient.account.address;
+            const owner = walletClient!.account!.address!;
+
             /* Get nonce and name from erc20 contract */
             const erc20Contract = getContract({
-              address: token.address as Hex,
+              address: token.address,
               abi: parseAbi([
                 "function nonces(address) public view returns (uint256)",
                 "function name() public view returns (string)",
               ]),
-              walletClient,
-              chainId,
+              client: walletClient,
             });
             nonce = await erc20Contract.read.nonces([owner]);
             const tokenName = await erc20Contract.read.name();
@@ -258,10 +266,22 @@ export const useCheckoutStore = create<CheckoutState>()(
             });
           }
 
-          const receipt = await allo.donate(
-            getPublicClient({
-              chainId,
+          const alloInstance = new AlloV2({
+            chainId,
+            transactionSender: createEthersTransactionSender(
+              await getEthersSigner(connector, chainId),
+              getEthersProvider(chainId)!
+            ),
+            ipfsUploader: createPinataIpfsUploader({
+              token: getConfig().pinata.jwt,
+              endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
             }),
+            waitUntilIndexerSynced: createWaitForIndexerSyncTo(
+              `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
+            ),
+          });
+
+          const receipt = await alloInstance.donate(
             chainId,
             token,
             groupedEncodedVotes,
@@ -366,7 +386,12 @@ async function switchToChain(
           chain: {
             id: nextChainData.id,
             name: nextChainData.name,
-            network: nextChainData.blockExplorer,
+            blockExplorers: {
+              default: {
+                name: `${nextChainData.prettyName} Explorer`,
+                url: nextChainData.blockExplorer,
+              },
+            },
             nativeCurrency: {
               decimals: nextChainData.tokens.find(
                 (token) => token.address === zeroAddress

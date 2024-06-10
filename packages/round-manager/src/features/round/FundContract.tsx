@@ -5,7 +5,7 @@ import { Logger } from "ethers/lib.esm/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ReactTooltip from "react-tooltip";
-import { useAccount, useBalance, useNetwork } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { useFundContract } from "../../context/round/FundContractContext";
 import { ProgressStatus, Round } from "../api/types";
@@ -107,7 +107,7 @@ export function useContractAmountFunded(args: {
       isLoading: false,
       error: undefined,
       data: {
-        fundedAmount: balanceData.value.toBigInt(),
+        fundedAmount: BigInt(balanceData.value.toString()),
         fundedAmountInUsd: priceData
           ? Number(balanceData.formatted) * Number(priceData)
           : undefined,
@@ -142,7 +142,7 @@ export default function FundContract(props: {
   round: Round | undefined;
   roundId: string | undefined;
 }) {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const navigate = useNavigate();
   const { signer } = useWallet();
 
@@ -156,7 +156,6 @@ export default function FundContract(props: {
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
 
-  const { chain } = useNetwork() || {};
   const chainId = chain?.id ?? 5;
 
   const allo = useAllo();

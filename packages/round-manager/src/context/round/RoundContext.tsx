@@ -1,10 +1,11 @@
 import { ProgressStatus, Round } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
-import { useWallet } from "../../features/common/Auth";
 import { getRoundById, listRounds } from "../../features/api/round";
 import { datadogLogs } from "@datadog/browser-logs";
 import { DataLayer, useDataLayer } from "data-layer";
 import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
+import { useAccount, useWalletClient } from "wagmi";
+import { getEthersProvider } from "../../app/wagmi";
 
 export interface RoundState {
   data: Round[];
@@ -143,11 +144,16 @@ export const RoundProvider = ({ children }: { children: React.ReactNode }) => {
 export const useRounds = (programId?: string) => {
   const context = useContext(RoundContext);
   const dataLayer = useDataLayer();
+  const { chainId } = useAccount();
 
-  if (context === undefined) {
+  if (context === undefined || !chainId) {
     throw new Error("useRounds must be used within a RoundProvider");
   }
-  const { provider } = useWallet();
+  const provider = getEthersProvider(chainId);
+
+  if (!provider) {
+    throw new Error("Provider not found");
+  }
 
   useEffect(() => {
     if (programId) {
@@ -164,11 +170,16 @@ export const useRoundById = (roundId?: string) => {
   const context = useContext(RoundContext);
   const { switchToVersion } = useAlloVersion();
   const dataLayer = useDataLayer();
+  const { chainId } = useAccount();
 
-  if (context === undefined) {
+  if (context === undefined || !chainId) {
     throw new Error("useRounds must be used within a RoundProvider");
   }
-  const { provider } = useWallet();
+  const provider = getEthersProvider(chainId);
+
+  if (!provider) {
+    throw new Error("Provider not found");
+  }
 
   useEffect(() => {
     if (roundId) {

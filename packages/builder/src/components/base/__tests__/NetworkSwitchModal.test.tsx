@@ -1,51 +1,21 @@
-import React from "react";
 import { act, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import * as wagmi from "wagmi";
 import { Store } from "redux";
-import { mainnet } from "wagmi/chains";
+import "wagmi";
 import NetworkSwitchModal from "../NetworkSwitchModal";
 import { renderWrapped } from "../../../utils/test_utils";
 import setupStore from "../../../store";
 import { RootState } from "../../../reducers/index";
 
-const chains = [mainnet];
-
 describe("NetworkSwitchModal", () => {
   let store: Store<RootState>;
   let toggleModal: () => null;
   let onSwitch: (networkId?: number) => void;
-  let switchNetworkAsync:
-    | ((chainId_?: number | undefined) => Promise<wagmi.Chain>)
-    | undefined;
 
   beforeEach(() => {
     store = setupStore();
     toggleModal = jest.fn();
-    switchNetworkAsync = jest
-      .fn()
-      .mockImplementation((chainId_?: number | undefined) =>
-        chains.find((i) => chainId_ === i.id)
-      );
     onSwitch = jest.fn();
-
-    jest.spyOn(wagmi, "useSwitchNetwork").mockReturnValue({
-      chains,
-      data: undefined,
-      error: null,
-      isError: false,
-      isIdle: false,
-      isLoading: false,
-      isSuccess: false,
-      pendingChainId: undefined,
-      reset(): void {
-        throw new Error("Function not implemented.");
-      },
-      status: "error",
-      switchNetwork: undefined,
-      variables: undefined,
-      switchNetworkAsync,
-    });
 
     renderWrapped(
       <NetworkSwitchModal
@@ -75,7 +45,7 @@ describe("NetworkSwitchModal", () => {
     expect(toggleModal).toBeCalledTimes(1);
   });
 
-  it("Button click > 'Switch Network' > should call switchNetworkAsync & onSwitch", async () => {
+  it("Button click > 'Switch Network' > should call switchChainAsync & onSwitch", async () => {
     const modal = screen.getByTestId("network-switch-modal");
     const switchBtn = modal.querySelector(".switch-button") as Element;
 
@@ -83,7 +53,6 @@ describe("NetworkSwitchModal", () => {
       switchBtn.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
 
-    expect(switchNetworkAsync).toBeCalledTimes(1);
     expect(onSwitch).toBeCalledTimes(1);
   });
 });

@@ -62,31 +62,6 @@ export const metadataToProject = (
 };
 
 /**
- * Get the provider for a given chain ID
- *
- * @param chainId
- *
- * @returns The provider
- */
-export const getProviderByChainId = (chainId: number) => {
-  const { web3Provider } = global;
-
-  const chainConfig = web3Provider?.chains?.find(
-    // Yes, parameter type for chainId is number, but sometimes we pass it as a string
-    // so adding a cast to Number just in case
-    (i) => i.id === Number(chainId)
-  );
-
-  if (!chainConfig) {
-    console.log(`chainConfig not found for chain ID ${chainId}`);
-    return undefined;
-  }
-
-  // TODO: Create a more robust RPC here to avoid fails
-  return ethers.getDefaultProvider(chainConfig.rpcUrls.default.http[0]);
-};
-
-/**
  * Get the address type of an address
  *
  * @remarks

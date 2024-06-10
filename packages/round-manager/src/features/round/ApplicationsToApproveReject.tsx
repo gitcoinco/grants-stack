@@ -38,7 +38,7 @@ import { errorModalDelayMs } from "../../constants";
 import ErrorModal from "../common/ErrorModal";
 import { getRoundStrategyType, renderToPlainText, useAllo } from "common";
 import { roundApplicationsToCSV } from "../api/exports";
-import { useWallet } from "../common/Auth";
+import { useAccount } from "wagmi";
 
 export async function exportAndDownloadCSV(
   roundId: string,
@@ -80,7 +80,7 @@ export default function ApplicationsToApproveReject({
   isDirectRound = false,
 }: Props) {
   const { id } = useParams();
-  const { chain } = useWallet();
+  const { chainId } = useAccount();
   const allo = useAllo();
 
   if (id === undefined) {
@@ -252,13 +252,13 @@ export default function ApplicationsToApproveReject({
   return (
     <div>
       <div className="flex items-center mb-4">
-        {id && applications && applications.length > 0 && (
+        {id && applications && applications.length > 0 && chainId && (
           <Button
             type="button"
             $variant="outline"
             className="text-xs px-3 py-1 inline-block"
             disabled={isCsvExportLoading}
-            onClick={() => handleExportCsvClick(id, chain.id)}
+            onClick={() => handleExportCsvClick(id, chainId)}
           >
             {isCsvExportLoading ? (
               <>

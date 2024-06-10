@@ -12,7 +12,7 @@ import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import { useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { errorModalDelayMs, modalDelayMs } from "../../constants";
 import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/payoutStrategy";
 import {
@@ -22,7 +22,6 @@ import {
   Round,
 } from "../api/types";
 import { formatCurrency } from "../api/utils";
-import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
@@ -46,9 +45,9 @@ export default function ViewFundGrantees(props: {
 
   const tokenRedstoneId = matchingFundPayoutToken?.redstoneTokenId;
   const { data, error, loading } = useTokenPrice(tokenRedstoneId);
-  const { chain } = useWallet();
+  const { chainId } = useAccount();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const projects = useGroupProjectsByPaymentStatus(chain?.id, props.round!);
+  const projects = useGroupProjectsByPaymentStatus(chainId!, props.round!);
 
   useEffect(() => {
     if (data && !error && !loading) {
@@ -70,7 +69,7 @@ export default function ViewFundGrantees(props: {
           unpaidProjects={unpaidProjects}
           matchingFundPayoutToken={matchingFundPayoutToken!}
           price={price}
-          chain={{ id: chain!.id }}
+          chain={{ id: chainId! }}
         />
       ) : (
         <NonFinalizedRoundContent />
@@ -203,7 +202,6 @@ export function PayProjectsTable(props: {
 }) {
   // TODO: Add button check
   // TOOD: Connect wallet and payout contracts to pay grantees
-  const { signer } = useWallet();
   const allo = useAllo();
   const alloVersion = getConfig().allo.version;
   const roundId = props.round.id;

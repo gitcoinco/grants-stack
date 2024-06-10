@@ -2,7 +2,7 @@ import { useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { useSwitchNetwork } from "wagmi";
+import { useSwitchChain } from "wagmi";
 import { getChainById } from "common";
 import { fetchGrantData } from "../../actions/grantsMetadata";
 import {
@@ -27,7 +27,7 @@ function EditProject() {
   const dataLayer = useDataLayer();
   const params = useParams();
   const dispatch = useDispatch();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
 
   const [modalOpen, toggleModal] = useState(false);
   const [formStatus, setFormStatus] = useState<ProjectFormStatus>(
@@ -53,8 +53,8 @@ function EditProject() {
   const isOnProjectChain = Number(props.chainId) === Number(params.chainId);
 
   const onSwitchNetwork = () => {
-    if (switchNetwork) {
-      switchNetwork(Number(params.chainId));
+    if (switchChain) {
+      switchChain({ chainId: Number(params.chainId) });
     }
   };
 

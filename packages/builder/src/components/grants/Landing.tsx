@@ -1,10 +1,9 @@
-import { useSelector, useDispatch } from "react-redux";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount, useProvider, useSigner, useNetwork } from "wagmi";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { Link } from "react-router-dom";
 import { RootState } from "../../reducers";
-import { initializeWeb3 } from "../../actions/web3";
 import {
   LandingBackground,
   BuilderLogo,
@@ -12,6 +11,7 @@ import {
   GitcoinLogoText,
 } from "../../assets";
 import { grantsPath } from "../../routes";
+import { initializeWeb3 } from "../../actions/web3";
 
 function LandingHeader() {
   return (
@@ -45,27 +45,16 @@ function Landing() {
     web3Error: state.web3.error,
     web3Initializing: state.web3.initializing,
   }));
-  const { address, isConnected } = useAccount();
-  const { chain } = useNetwork();
-  const provider = useProvider();
-  const { data: signer } = useSigner();
 
+  const { chain, address, isConnected } = useAccount();
+  const { data: signer } = useWalletClient();
+  const provider = usePublicClient();
   // dispatch initializeWeb3 when address changes
   useEffect(() => {
-    // FIXME: getAddress is checked to be sure the signer object is not the one deserialized from the queries cache.
-    // it can be removed when wagmi-dev/wagmi/pull/904 has been merged
-    if (signer && "getAddress" in signer && provider && chain && address) {
+    if (signer && provider && chain && address) {
       dispatch(initializeWeb3(signer, provider, chain, address));
     }
-  }, [signer, provider, chain, address]);
-
-  if (
-    props.web3Initializing &&
-    (signer || chain || address) &&
-    !props.web3Error
-  ) {
-    return null;
-  }
+  }, [address, chain, signer, provider]);
 
   return (
     <div className="flex flex-col absolute h-full w-full">

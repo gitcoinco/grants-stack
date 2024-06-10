@@ -1,28 +1,28 @@
 import { Outlet, useOutletContext } from "react-router-dom";
-import { useAccount, useNetwork, useProvider, useSigner } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { Web3Instance } from "../api/types";
 import { Spinner } from "./Spinner";
 import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
 import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg";
 import Footer from "common/src/components/Footer";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Navbar from "./Navbar";
+import { providers } from "ethers";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 /**
  * Component for protecting child routes that require web3 wallet instance.
  * It prompts a user to connect wallet if no web3 instance is found.
  */
 export default function Auth() {
-  const { address, isConnected, isConnecting } = useAccount();
-  const { chain } = useNetwork();
-  const { data: signer } = useSigner();
-  const provider = useProvider();
+  const { chain, address, isConnected, isConnecting } = useAccount();
+  const { data: signer } = useWalletClient();
+  const provider = usePublicClient();
 
   const data = {
     address,
-    chain: { id: chain?.id, name: chain?.name, network: chain?.network },
-    provider,
+    chain: { id: chain?.id, name: chain?.name, network: chain },
     signer,
+    provider,
   };
 
   return !isConnected ? (
