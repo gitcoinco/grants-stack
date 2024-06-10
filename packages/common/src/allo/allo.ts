@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { ApplicationStatus, DistributionMatch, Round } from "data-layer";
-import { Address, Hex, PublicClient } from "viem";
+import { Address, Hex } from "viem";
 import { AnyJson } from "..";
 import {
   CreateRoundData,
@@ -112,7 +112,6 @@ export interface Allo {
   >;
 
   donate: (
-    publicClient: PublicClient,
     chainId: number,
     token: TToken,
     groupedVotes: Record<string, Hex[]>,

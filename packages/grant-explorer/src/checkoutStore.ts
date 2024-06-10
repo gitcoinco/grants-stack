@@ -5,12 +5,14 @@ import { CartProject, ProgressStatus } from "./features/api/types";
 import { Allo, getChainById } from "common";
 import { useCartStorage } from "./store";
 import {
+  getContract,
   Hex,
   InternalRpcError,
   parseAbi,
   parseUnits,
   SwitchChainError,
   UserRejectedRequestError,
+  WalletClient,
   zeroAddress,
 } from "viem";
 import {
@@ -21,8 +23,6 @@ import {
 } from "./features/api/voting";
 import { groupBy, uniq } from "lodash-es";
 import { getEnabledChains } from "./app/chainConfig";
-import { WalletClient } from "wagmi";
-import { getContract, getPublicClient } from "@wagmi/core";
 import { getPermitType } from "common/dist/allo/voting";
 import { getConfig } from "common/src/config";
 import { DataLayer } from "data-layer";
@@ -160,16 +160,16 @@ export const useCheckoutStore = create<CheckoutState>()(
           try {
             get().setPermitStatusForChain(chainId, ProgressStatus.IN_PROGRESS);
 
-            const owner = walletClient.account.address;
+            const owner = walletClient!.account!.address!;
+
             /* Get nonce and name from erc20 contract */
             const erc20Contract = getContract({
-              address: token.address as Hex,
+              address: token.address,
               abi: parseAbi([
                 "function nonces(address) public view returns (uint256)",
                 "function name() public view returns (string)",
               ]),
-              walletClient,
-              chainId,
+              client: walletClient,
             });
             nonce = await erc20Contract.read.nonces([owner]);
             const tokenName = await erc20Contract.read.name();
@@ -259,9 +259,6 @@ export const useCheckoutStore = create<CheckoutState>()(
           }
 
           const receipt = await allo.donate(
-            getPublicClient({
-              chainId,
-            }),
             chainId,
             token,
             groupedEncodedVotes,
@@ -366,7 +363,12 @@ async function switchToChain(
           chain: {
             id: nextChainData.id,
             name: nextChainData.name,
-            network: nextChainData.blockExplorer,
+            blockExplorers: {
+              default: {
+                name: `${nextChainData.prettyName} Explorer`,
+                url: nextChainData.blockExplorer,
+              },
+            },
             nativeCurrency: {
               decimals: nextChainData.tokens.find(
                 (token) => token.address === zeroAddress

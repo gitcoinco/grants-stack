@@ -301,7 +301,7 @@ describe("<Form />", () => {
         expect(
           screen.getByText(
             // eslint-disable-next-line max-len
-            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the undefined network. Please update your payout wallet address before proceeding."
+            "It looks like the payout wallet address you have provided may not be a valid multi-sig on the Ethereum network. Please update your payout wallet address before proceeding."
           )
         ).toBeInTheDocument()
       );

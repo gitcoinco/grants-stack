@@ -8,7 +8,7 @@ import {
 } from "viem";
 import { faker } from "@faker-js/faker";
 import { getTokensByChainId } from "common";
-import { WalletClient } from "wagmi";
+import { WalletClient } from "viem";
 import { expect } from "vitest";
 import { getPermitType } from "common/dist/allo/voting";
 
