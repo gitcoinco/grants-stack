@@ -14,7 +14,6 @@ import {
   getLocalTime,
   formatLocalDateAsISOString,
   renderToPlainText,
-  truncateDescription,
   useTokenPrice,
   TToken,
   getTokensByChainId,
@@ -757,7 +756,10 @@ function ProjectCard(props: {
   cartProject.chainId = Number(props.chainId);
 
   return (
-    <BasicCard className="relative w-full" data-testid="project-card">
+    <BasicCard
+      className={`relative w-full ${props.showProjectCardFooter ? "h-[370px]" : "h-[310px]"}`}
+      data-testid="project-card"
+    >
       <Link
         to={`${roundRoutePath}/${project.grantApplicationId}`}
         data-testid="project-detail-link"
@@ -793,12 +795,9 @@ function ProjectCard(props: {
           </div>
           <CardDescription
             data-testid="project-description"
-            className={`h-[${props.showProjectCardFooter ? "130px" : "100px"}] overflow-hidden mb-1 !text-sm`}
+            className={`mb-1 !text-sm`}
           >
-            {truncateDescription(
-              renderToPlainText(project.projectMetadata.description),
-              90
-            )}
+            {renderToPlainText(project.projectMetadata.description)}
           </CardDescription>
         </CardContent>
       </Link>
