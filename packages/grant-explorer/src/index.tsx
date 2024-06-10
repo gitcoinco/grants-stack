@@ -64,7 +64,7 @@ root.render(
     <PostHogProvider client={posthog}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider coolMode>
+          <RainbowKitProvider>
             <ChakraProvider>
               <AlloWrapper>
                 <RoundProvider>
