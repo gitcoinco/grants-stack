@@ -16,12 +16,38 @@ export function useProject(params: Params, dataLayer: DataLayer) {
 }
 
 export function useProjectApplications(params: Params, dataLayer: DataLayer) {
-  return useSWR(["applications", params], async () => {
-    const validatedParams = {
-      projectId: params.projectId,
-    };
-    return (
-      (await dataLayer.getApplicationsByProjectId(validatedParams)) ?? undefined
-    );
-  });
+  // Fetch legacy project ID first
+  const { data: legacyProjectId } = useSWR(
+    ["v1ProjectId", params],
+    async () => {
+      const validatedParams = {
+        projectId: params.projectId,
+      };
+      return (await dataLayer.getLegacyProjectId(validatedParams)) ?? undefined;
+    }
+  );
+
+  // Fetch project applications based on both v2 and legacy project IDs
+  const projectIds = legacyProjectId
+    ? [params.projectId, legacyProjectId]
+    : [params.projectId];
+
+  const { data: applications, error } = useSWR(
+    ["applications", { projectIds }],
+    async () => {
+      const validatedParams = {
+        projectIds: projectIds,
+      };
+      return (
+        (await dataLayer.getApprovedApplicationsByProjectIds(
+          validatedParams
+        )) ?? undefined
+      );
+    }
+  );
+  return {
+    applications,
+    isLoading: !applications && !error,
+    error,
+  };
 }

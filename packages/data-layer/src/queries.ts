@@ -198,9 +198,12 @@ export const getApplicationsByProjectIds = gql`
   }
 `;
 
-export const getApplicationsByProjectId = gql`
-  query getApplicationsByProjectId($projectId: String!) {
-    applications(first: 1000, filter: { projectId: { equalTo: $projectId } }) {
+export const getApprovedApplicationsByProjectIds = gql`
+  query getApprovedApplicationsByProjectIds($projectIds: [String!]!) {
+    applications(
+      first: 1000
+      filter: { projectId: { in: $projectIds }, status: { equalTo: APPROVED } }
+    ) {
       id
       projectId
       chainId

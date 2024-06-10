@@ -69,7 +69,7 @@ export default function ViewProject() {
   );
 
   const {
-    data: projectApplications,
+    applications: projectApplications,
     error: projectApplicationsError,
     isLoading: isProjectApplicationsLoading,
   } = useProjectApplications(
@@ -180,7 +180,7 @@ export default function ViewProject() {
             </div>
           </div>
           <div className="md:flex gap-4 flex-row-reverse">
-            <Sidebar />
+            <Sidebar projectApplications={projectApplications} />
             <div className="flex-1">
               {projectError === undefined ? (
                 <>
@@ -374,29 +374,49 @@ function ProjectLogo({ logoImg }: { logoImg?: string }) {
   );
 }
 
-function Sidebar() {
+function Sidebar(props: {
+  projectApplications?: ProjectApplicationWithRoundAndProgram[];
+}) {
   return (
     <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
-      <ProjectStats />
+      <ProjectStats projectApplications={props.projectApplications} />
     </div>
   );
 }
 
-export function ProjectStats() {
-  const totalFundingReceived = 120;
-  const totalMatchingAmountReceived = 300;
-  const totalContributions = 14;
-  const totalUniqueDonors = 10;
-  const totalRoundsParticipated = 1;
+export function ProjectStats(props: {
+  projectApplications?: ProjectApplicationWithRoundAndProgram[];
+}) {
+  const totalFundingReceived =
+    props.projectApplications
+      ?.reduce(
+        (acc, projectApplication) =>
+          acc + projectApplication.totalAmountDonatedInUsd,
+        0
+      )
+      .toFixed() ?? "0";
+  const totalContributions =
+    props.projectApplications
+      ?.reduce(
+        (acc, projectApplication) =>
+          acc + projectApplication.totalDonationsCount,
+        0
+      )
+      .toFixed() ?? "0";
+  const totalUniqueDonors =
+    props.projectApplications
+      ?.reduce(
+        (acc, projectApplication) => acc + projectApplication.uniqueDonorsCount,
+        0
+      )
+      .toFixed() ?? "0";
+  const totalRoundsParticipated = props.projectApplications?.length ?? 0;
 
   return (
     <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
       <h4 className="text-2xl">All-time stats</h4>
       <Stat isLoading={false} value={`$${totalFundingReceived}`}>
         funding received
-      </Stat>
-      <Stat isLoading={false} value={`$${totalMatchingAmountReceived}`}>
-        matching funds received
       </Stat>
       <Stat isLoading={false} value={totalContributions}>
         contributions

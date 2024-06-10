@@ -52,7 +52,7 @@ import {
   getDonationsByDonorAddress,
   getApplicationsForExplorer,
   getPayoutsByChainIdRoundIdProjectId,
-  getApplicationsByProjectId,
+  getApprovedApplicationsByProjectIds,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -341,22 +341,22 @@ export class DataLayer {
   }
 
   /**
-   * getApplicationsByProjectId() returns a list of applications of a project.
-   * @param projectId
+   * getApprovedApplicationsByProjectIds() returns a list of approved applications of given projects.
+   * @param projectIds
    */
-  async getApplicationsByProjectId({
-    projectId,
+  async getApprovedApplicationsByProjectIds({
+    projectIds,
   }: {
-    projectId: string;
+    projectIds: string[];
   }): Promise<ProjectApplicationWithRoundAndProgram[]> {
     const requestVariables = {
-      projectId: projectId,
+      projectIds: projectIds,
     };
 
     const response: { applications: ProjectApplicationWithRoundAndProgram[] } =
       await request(
         this.gsIndexerEndpoint,
-        getApplicationsByProjectId,
+        getApprovedApplicationsByProjectIds,
         requestVariables,
       );
 
