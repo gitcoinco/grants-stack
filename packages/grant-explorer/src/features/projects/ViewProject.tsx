@@ -455,25 +455,52 @@ export function RoundListItem({
 }: {
   projectApplication: ProjectApplicationWithRoundAndProgram;
 }) {
+  const applicationsStartTime = new Date(
+    projectApplication.round.applicationsStartTime
+  ).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  const donationsEndTime = new Date(
+    projectApplication.round.donationsEndTime
+  ).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  const roundType =
+    projectApplication.round.strategyName === "allov1.Direct"
+      ? "Direct Grants"
+      : "Quadratic Funding";
+
   return (
     <Box>
-      <Box className="w-full my-8 lg:flex md:flex basis-0 justify-between items-center text-[14px] text-gitcoin-grey-400">
-        <Box className="flex-1 my-2">
+      <Box
+        className="w-full my-8 lg:flex md:flex basis-0 justify-between items-center text-[14px] text-gitcoin-grey-400 px-2"
+        borderBottom="1px solid"
+        borderBottomColor="gray.400"
+      >
+        <Box className="flex-auto my-2 w-36 truncate mr-4">
           <span className="font-medium">
             {projectApplication.round.project.name}
           </span>
         </Box>
-        <Box className="flex-1 my-2">
+        <Box className="flex-auto my-2 w-36 truncate mr-4">
           <span className="font-medium">
             {projectApplication.round.roundMetadata.name}
           </span>
         </Box>
-        <Box className="flex-1 my-2">
-          <span>Jan 9, 2024 - Jan 31, 2024</span>
+        <Box className="flex-1 my-2 mr-4">
+          <span>
+            {applicationsStartTime} - {donationsEndTime}
+          </span>
         </Box>
-        <Box className="my-2">
-          <span className="bg-teal-100 flex gap-2 rounded-full p-2 text-md items-center font-modern-era-medium text-teal-500">
-            Quadratic funding
+        <Box className="flex-1 my-2">
+          <span className="flex bg-green-100 items-center text-md rounded-full p-2 font-modern-era-medium text-black-500">
+            {roundType}
           </span>
         </Box>
       </Box>
