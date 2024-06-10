@@ -7,7 +7,9 @@ import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg";
 import Footer from "common/src/components/Footer";
 import Navbar from "./Navbar";
 import { providers } from "ethers";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Chain, ConnectButton } from "@rainbow-me/rainbowkit";
+import { useEffect, useState } from "react";
+import { Hex } from "viem";
 
 /**
  * Component for protecting child routes that require web3 wallet instance.
@@ -15,17 +17,34 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
  */
 export default function Auth() {
   const { chain, address, isConnected, isConnecting } = useAccount();
-  const provider = new providers.Web3Provider(window.ethereum, chain?.id);
-  const signer = provider.getSigner(address);
+  const [provider, setProvider] = useState<providers.Web3Provider | null>(null);
+  const [signer, setSigner] = useState<providers.JsonRpcSigner | null>(null);
+  const [data, setData] = useState<{
+    address: Hex;
+    chain: { id: number; name: string; network: Chain };
+    signer: providers.JsonRpcSigner;
+    provider: providers.Web3Provider;
+  } | null>(null);
 
-  const data = {
-    address,
-    chain: { id: chain?.id, name: chain?.name, network: chain },
-    signer,
-    provider,
-  };
+  useEffect(() => {
+    if (!window.ethereum) return;
+    console.log("Initializing web3 provider");
+    const prov = new providers.Web3Provider(window.ethereum, chain?.id);
+    const sign = prov.getSigner(address);
 
-  return !isConnected ? (
+    if (address && chain && prov && sign) {
+      setProvider(prov);
+      setSigner(sign);
+      setData({
+        address: address,
+        chain: { id: chain?.id, name: chain?.name, network: chain },
+        signer: sign,
+        provider: prov,
+      });
+    }
+  }, [chain, address]);
+
+  return !isConnected || !data ? (
     <div>
       <Navbar programCta={false} alloVersionSwitcherVisible={false} />
       <main className="pt-4">
