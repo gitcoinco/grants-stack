@@ -58,7 +58,6 @@ const parseRainbowChain = (chain: TChain) => {
   const mappedChain = {
     id: chain.id,
     name: chain.prettyName,
-    network: chain.name,
     iconUrl: stringToBlobUrl(chain.icon),
     iconBackground: "rgba(255, 255, 255, 0)",
     nativeCurrency: {
