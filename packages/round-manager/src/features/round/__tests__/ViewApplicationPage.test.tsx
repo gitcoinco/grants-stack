@@ -16,7 +16,7 @@ import {
 } from "common";
 import moment from "moment";
 import { MemoryRouter } from "react-router-dom";
-import { useDisconnect, useSwitchNetwork } from "wagmi";
+import { useAccount, useDisconnect, useSwitchChain } from "wagmi";
 import { errorModalDelayMs } from "../../../constants";
 import {
   BulkUpdateGrantApplicationContext,
@@ -71,6 +71,16 @@ const mockWallet = {
   },
 };
 
+const mockNetwork = {
+  chain: {
+    blockExplorers: {
+      default: {
+        url: "https://mock-blockexplorer.com",
+      },
+    },
+  },
+};
+
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
@@ -99,7 +109,8 @@ describe("ViewApplicationPage", () => {
 
   beforeEach(() => {
     (useWallet as jest.Mock).mockImplementation(() => mockWallet);
-    (useSwitchNetwork as any).mockReturnValue({ chains: [] });
+    (useAccount as jest.Mock).mockReturnValue(mockNetwork);
+    (useSwitchChain as any).mockReturnValue({ chains: [] });
     (useDisconnect as any).mockReturnValue({});
 
     mockBulkUpdateApplicationStatus = jest.fn().mockImplementation(() => {
@@ -521,7 +532,7 @@ describe("ViewApplicationPage", () => {
 describe("ViewApplicationPage verification badges", () => {
   beforeEach(() => {
     (useWallet as jest.Mock).mockImplementation(() => mockWallet);
-    (useSwitchNetwork as any).mockReturnValue({ chains: [] });
+    (useSwitchChain as any).mockReturnValue({ chains: [] });
     (useDisconnect as any).mockReturnValue({});
   });
 

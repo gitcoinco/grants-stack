@@ -22,15 +22,6 @@ jest.mock("common", () => ({
   
 }));
 
-const mockSigner = {
-  getChainId: () => {
-    /* do nothing.*/
-  },
-};
-jest.mock("wagmi", () => ({
-  useSigner: () => ({ data: mockSigner }),
-}));
-
 const alloBackend = new AlloV1({
   chainId: 1,
   ipfsUploader: async () =>
@@ -41,6 +32,7 @@ const alloBackend = new AlloV1({
   waitUntilIndexerSynced: jest.fn(),
   transactionSender: createMockTransactionSender(),
 });
+
 
 const testParams: ReclaimFundsParams = {
   allo: alloBackend,
