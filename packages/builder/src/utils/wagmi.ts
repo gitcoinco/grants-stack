@@ -1,50 +1,19 @@
-import {
-  connectorsForWallets,
-  getDefaultWallets,
-} from "@rainbow-me/rainbowkit";
-import {
-  coinbaseWallet,
-  injectedWallet,
-  metaMaskWallet,
-  walletConnectWallet,
-} from "@rainbow-me/rainbowkit/wallets";
-import { configureChains, createClient } from "wagmi";
+import { QueryClient } from "@tanstack/react-query";
+import { Chain, getDefaultConfig } from "@rainbow-me/rainbowkit";
+
 import { getEnabledChainsAndProviders } from "./chains";
 
-const { chains: enabledChains, providers: enabledProviders } =
-  getEnabledChainsAndProviders();
-
-export const { chains, provider } = configureChains(
-  enabledChains,
-  enabledProviders
-);
+const { chains: enabledChains } = getEnabledChainsAndProviders();
 
 /** We perform environment variable verification at buildtime, so all process.env properties are guaranteed to be strings */
 const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID as string;
 
-const { wallets } = getDefaultWallets({
+export const config = getDefaultConfig({
   appName: "Gitcoin Builder",
   projectId,
-  chains,
+  chains: [...enabledChains] as [Chain, ...Chain[]],
 });
 
-const connectors = connectorsForWallets([
-  {
-    ...wallets,
-    groupName: "Recommended",
-    wallets: [
-      injectedWallet({ chains }),
-      walletConnectWallet({ chains, projectId }),
-      coinbaseWallet({ appName: "Gitcoin Builder", chains }),
-      metaMaskWallet({ chains, projectId }),
-    ],
-  },
-]);
+const queryClient = new QueryClient();
 
-const wagmiClient = createClient({
-  autoConnect: true,
-  connectors,
-  provider,
-});
-
-export default wagmiClient;
+export default queryClient;

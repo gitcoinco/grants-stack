@@ -267,7 +267,7 @@ export async function sendRawTransaction(
 
 export async function sendTransaction<
   TAbi extends Abi,
-  TFunctionName extends string,
+  TFunctionName extends `0x${string}`,
 >(
   sender: TransactionSender,
   args:
@@ -291,7 +291,11 @@ export async function sendTransaction<
     }
 
     if ("functionName" in args) {
-      data = encodeFunctionData(args);
+      data = encodeFunctionData({
+        abi: args.abi as Abi,
+        functionName: args.functionName as string,
+        args: args.args as unknown[],
+      });
     }
 
     const tx = await sender.send({

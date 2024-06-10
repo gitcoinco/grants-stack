@@ -21,7 +21,7 @@ import {
   RoundApplicationAnswers,
   RoundCategory,
 } from "data-layer";
-import { Abi, Address, Hex, PublicClient, getAddress, zeroAddress } from "viem";
+import { Abi, Address, Hex, getAddress, zeroAddress } from "viem";
 import { AnyJson } from "../..";
 import { UpdateRoundParams, MatchingStatsData } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
@@ -110,7 +110,6 @@ export class AlloV2 implements Allo {
   }
 
   async donate(
-    publicClient: PublicClient,
     chainId: number,
     token: TToken,
     groupedVotes: Record<string, Hex[]>,
@@ -186,11 +185,7 @@ export class AlloV2 implements Allo {
     }
 
     if (tx.type === "success") {
-      const receipt = await this.transactionSender.wait(
-        tx.value,
-        60_000,
-        publicClient
-      );
+      const receipt = await this.transactionSender.wait(tx.value, 60_000);
       return receipt;
     } else {
       throw tx.error;

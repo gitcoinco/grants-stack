@@ -1,7 +1,7 @@
-import { allNetworks } from "common/src/chains";
+import { getChains } from "common";
 
-export const chains = allNetworks.reduce((acc, chain) => {
-  acc[chain.id] = chain.network;
+export const chains = getChains().reduce((acc, chain) => {
+  acc[chain.id] = chain.name;
   return acc;
 }, {} as { [key: number]: string });
 

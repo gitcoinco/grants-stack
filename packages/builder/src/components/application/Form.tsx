@@ -19,7 +19,7 @@ import { getChainById } from "common";
 import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { useNetwork } from "wagmi";
+import { useChains } from "wagmi";
 import { ValidationError } from "yup";
 import { resetApplicationError } from "../../actions/roundApplication";
 import useValidateCredential from "../../hooks/useValidateCredential";
@@ -83,7 +83,7 @@ export default function Form({
 }) {
   const dispatch = useDispatch();
   const dataLayer = useDataLayer();
-  const { chains } = useNetwork();
+  const chains = useChains();
   const { version } = getConfig().allo;
 
   const [projectApplications, setProjectApplications] = useState<

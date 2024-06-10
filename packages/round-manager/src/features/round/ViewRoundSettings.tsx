@@ -33,7 +33,6 @@ import {
 } from "react-hook-form";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import ReactTooltip from "react-tooltip";
-import { useNetwork } from "wagmi";
 import * as yup from "yup";
 import { maxDateForUint256 } from "../../constants";
 import { useRoundById } from "../../context/round/RoundContext";
@@ -60,6 +59,7 @@ import { NATIVE } from "common/dist/allo/common";
 import { getTimezoneName } from "common/src/index";
 import { isInfiniteDate } from "common/src/allo/common";
 import { SybilDefense } from "data-layer";
+import { useAccount } from "wagmi";
 
 type EditMode = {
   canEdit: boolean;
@@ -666,7 +666,7 @@ function DetailsPage(props: {
   errors: FieldErrors<Round>;
   onAddRequirement: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }) {
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
 
   const numOfRequirements =
     props.editedRound?.roundMetadata.eligibility?.requirements?.length || 0;

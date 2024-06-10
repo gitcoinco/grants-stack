@@ -1,4 +1,5 @@
 /* eslint-disable no-unexpected-multiline */
+import { useAllo } from "common";
 import { getTokenPrice, NATIVE, submitPassportLite } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
@@ -28,11 +29,11 @@ import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
 import { useDataLayer } from "data-layer";
-import { fetchBalance } from "@wagmi/core";
+import { getBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
-import { useAllo } from "../../api/AlloWrapper";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
+import { config } from "../../../app/wagmi";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
@@ -62,6 +63,7 @@ export function SummaryContainer() {
   );
 
   /** How much of the voting token for a chain does the address have*/
+  // todo: introduce a multicall here
   const [tokenBalancesPerChain, setTokenBalancesPerChain] = useState<
     Map<number, bigint>
   >(new Map());
@@ -71,11 +73,11 @@ export function SummaryContainer() {
       await Promise.all(
         chainIds.map(async (chainId) => {
           const votingToken = getVotingTokenForChain(chainId);
-          const { value } = await fetchBalance({
+          const { value } = await getBalance(config, {
             address: address ?? zeroAddress,
             token:
               votingToken.address === zeroAddress ||
-              votingToken.address === NATIVE
+              votingToken.address.toLowerCase() === NATIVE.toLowerCase()
                 ? undefined
                 : votingToken.address,
             chainId,
@@ -213,7 +215,7 @@ export function SummaryContainer() {
       .map(parseChainId)
       .forEach(async (chainId) => {
         const votingToken = getVotingTokenForChain(chainId);
-        const balance = await fetchBalance({
+        const balance = await getBalance(config, {
           token:
             votingToken.address === zeroAddress ||
             votingToken.address === NATIVE
