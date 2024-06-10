@@ -50,6 +50,7 @@ function Landing() {
   const { chain, address, isConnected } = useAccount();
   // dispatch initializeWeb3 when address changes
   useEffect(() => {
+    if (!window.ethereum) return;
     const provider = new providers.Web3Provider(window.ethereum, chain?.id);
     const signer = provider.getSigner(address);
 
