@@ -19,6 +19,7 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
   const chainID = chain?.id;
 
   const backend = useMemo(() => {
+    if (!window.ethereum) return null;
     const web3Provider = new providers.Web3Provider(window.ethereum, chain?.id);
     const signer = web3Provider.getSigner(address);
     const chainIdSupported = chainID ? isChainIdSupported(chainID) : false;
