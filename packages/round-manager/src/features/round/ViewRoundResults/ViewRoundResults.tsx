@@ -22,7 +22,6 @@ import { useMatchCSVParser } from "../../api/utils";
 import { LoadingRing, Spinner } from "../../common/Spinner";
 import { stringify } from "csv-stringify/sync";
 import { Input } from "csv-stringify/lib";
-import { useNetwork, useSigner } from "wagmi";
 import InfoModal from "../../common/InfoModal";
 import ProgressModal from "../../common/ProgressModal";
 import ErrorModal from "../../common/ErrorModal";
@@ -34,6 +33,7 @@ import { DistributionMatch } from "data-layer";
 import { utils } from "ethers";
 import { useContractAmountFunded } from "../FundContract";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
+import { useAccount } from "wagmi";
 
 // CHECK: should this be in common? Josef: yes indeed
 function horizontalTabStyles(selected: boolean) {
@@ -221,8 +221,7 @@ function ViewRoundResults({
   round: Round;
   matchToken: TToken;
 }) {
-  const { chain } = useNetwork();
-  const { data: signer } = useSigner();
+  const { chain, address } = useAccount();
   const debugModeEnabled = useDebugMode();
   const navigate = useNavigate();
 
@@ -296,7 +295,7 @@ function ViewRoundResults({
 
   const onFinalizeResults = async () => {
     const finalMatches = isCustomResults ? customMatches : matches;
-    if (!finalMatches || !signer) {
+    if (!finalMatches || !address) {
       return;
     }
 
@@ -1288,12 +1287,12 @@ function FinalizeResultsButton(props: {
 function ViewTransactionButton(props: {
   readyForPayoutTransactionHash: string | null;
 }) {
-  const network = useNetwork();
+  const { chain } = useAccount();
   return (
     <>
       <hr className="my-4 mt-8" />
       <a
-        href={`${network.chain?.blockExplorers?.default.url}/tx/${props.readyForPayoutTransactionHash}`}
+        href={`${chain?.blockExplorers?.default.url}/tx/${props.readyForPayoutTransactionHash}`}
         target="_blank"
         className="self-end w-fit bg-white hover:bg-gray-50 border border-gray-100 text-gray-500 py-2
                    mt-2 px-3 rounded flex items-center gap-2 ml-auto"

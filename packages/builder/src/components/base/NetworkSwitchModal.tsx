@@ -1,6 +1,6 @@
 // import colors from "../../styles/colors";
 import { useMemo } from "react";
-import { useSwitchNetwork } from "wagmi";
+import { useSwitchChain } from "wagmi";
 import { BaseModal } from "./BaseModal";
 import Button, { ButtonVariants } from "./Button";
 
@@ -17,7 +17,7 @@ export default function NetworkSwitchModal({
   toggleModal,
   onSwitch,
 }: NetworkSwitchModalProps) {
-  const { chains, switchNetworkAsync } = useSwitchNetwork();
+  const { chains, switchChainAsync } = useSwitchChain();
 
   const networkName = useMemo(
     () => chains.find((i) => i.id === networkId)?.name as string,
@@ -25,8 +25,8 @@ export default function NetworkSwitchModal({
   );
 
   const handleNetworkSwitch = async () => {
-    if (switchNetworkAsync) {
-      await switchNetworkAsync(networkId);
+    if (switchChainAsync && networkId) {
+      await switchChainAsync({ chainId: Number(networkId) });
       if (onSwitch) {
         onSwitch(networkId);
       }

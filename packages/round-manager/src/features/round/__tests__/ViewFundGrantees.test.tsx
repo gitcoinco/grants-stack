@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { ethers } from "ethers";
 import { act } from "react-dom/test-utils";
 import { useParams } from "react-router-dom";
-import { useBalance, useDisconnect, useSwitchNetwork } from "wagmi";
+import { useBalance, useDisconnect, useSwitchChain } from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
@@ -132,7 +132,7 @@ describe("View Fund Grantees", () => {
       };
     });
 
-    (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
+    (useSwitchChain as jest.Mock).mockReturnValue({ chains: [] });
     (useDisconnect as jest.Mock).mockReturnValue({});
     (useParams as jest.Mock).mockReturnValueOnce({
       id: undefined,

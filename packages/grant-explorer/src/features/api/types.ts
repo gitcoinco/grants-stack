@@ -1,4 +1,4 @@
-import { WalletClient } from "wagmi";
+import { WalletClient } from "viem";
 
 import type { Project } from "data-layer";
 

@@ -26,8 +26,8 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("wagmi", () => ({
   ...jest.requireActual("wagmi"),
-  useSwitchNetwork: () => ({
-    switchNetwork: jest.fn(),
+  useSwitchChain: () => ({
+    switchChain: jest.fn(),
   }),
   useNetwork: () => ({
     chain: jest.fn(),

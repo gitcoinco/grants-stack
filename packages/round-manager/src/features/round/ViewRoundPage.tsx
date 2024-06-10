@@ -91,9 +91,6 @@ export default function ViewRoundPage() {
 
   const roundNotFound = fetchRoundStatus === ProgressStatus.IS_ERROR;
 
-  console.log("====> round", round);
-  console.log("====> fetchRoundStatus", fetchRoundStatus);
-
   return (
     <>
       {roundNotFound && <NotFoundPage />}

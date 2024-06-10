@@ -1,5 +1,4 @@
 import { Abi, ExtractAbiEventNames } from "abitype";
-import ethers from "ethers";
 import {
   Address,
   decodeEventLog,
@@ -17,6 +16,11 @@ import {
 
 import { AlloError } from "./allo";
 import { error, Result, success } from "./common";
+import {
+  FallbackProvider,
+  JsonRpcProvider,
+  JsonRpcSigner,
+} from "@ethersproject/providers";
 
 export interface TransactionData {
   to: Hex;
@@ -87,8 +91,8 @@ export function decodeEventFromReceipt<
 }
 
 export function createEthersTransactionSender(
-  signer: ethers.Signer,
-  provider: ethers.providers.Provider
+  signer: JsonRpcSigner,
+  provider: JsonRpcProvider | FallbackProvider
 ): TransactionSender {
   return {
     async send(tx: TransactionData): Promise<Hex> {
@@ -267,7 +271,7 @@ export async function sendRawTransaction(
 
 export async function sendTransaction<
   TAbi extends Abi,
-  TFunctionName extends string,
+  TFunctionName extends `0x${string}`,
 >(
   sender: TransactionSender,
   args:
@@ -291,7 +295,11 @@ export async function sendTransaction<
     }
 
     if ("functionName" in args) {
-      data = encodeFunctionData(args);
+      data = encodeFunctionData({
+        abi: args.abi as Abi,
+        functionName: args.functionName as string,
+        args: args.args as unknown[],
+      });
     }
 
     const tx = await sender.send({

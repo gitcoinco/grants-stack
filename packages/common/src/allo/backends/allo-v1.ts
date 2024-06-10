@@ -2,7 +2,6 @@ import { ApplicationStatus, DistributionMatch } from "data-layer";
 import {
   Address,
   Hex,
-  PublicClient,
   encodeAbiParameters,
   encodePacked,
   getAddress,
@@ -107,7 +106,6 @@ export class AlloV1 implements Allo {
   }
 
   async donate(
-    publicClient: PublicClient,
     chainId: number,
     token: TToken,
     groupedVotes: Record<string, Hex[]>,
@@ -180,7 +178,7 @@ export class AlloV1 implements Allo {
     }
 
     if (tx.type === "success") {
-      return this.transactionSender.wait(tx.value, 60_000, publicClient);
+      return this.transactionSender.wait(tx.value, 60_000);
     } else {
       throw tx.error;
     }

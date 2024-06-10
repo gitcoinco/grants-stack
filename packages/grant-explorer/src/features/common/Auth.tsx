@@ -1,7 +1,6 @@
 import { Outlet, useOutletContext } from "react-router-dom";
 import {
   useAccount,
-  useNetwork,
   usePublicClient,
   useWalletClient,
 } from "wagmi";
@@ -15,14 +14,13 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
  * It prompts a user to connect wallet if no web3 instance is found.
  */
 export default function Auth() {
-  const { address, isConnected, isConnecting } = useAccount();
-  const { chain } = useNetwork();
+  const { chain, address, isConnected, isConnecting } = useAccount();
   const { data: signer } = useWalletClient();
   const provider = usePublicClient();
 
   const data = {
     address,
-    chain: { id: chain?.id, name: chain?.name, network: chain?.network },
+    chain: { id: chain?.id, name: chain?.name, network: chain },
     provider,
     signer,
   };

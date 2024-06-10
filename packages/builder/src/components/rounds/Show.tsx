@@ -4,7 +4,7 @@ import { RoundCategory, useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useSwitchNetwork } from "wagmi";
+import { useSwitchChain } from "wagmi";
 import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
 import { AlloVersion } from "data-layer/dist/data-layer.types";
 import { loadAllChainsProjects } from "../../actions/projects";
@@ -124,7 +124,7 @@ function ShowRound() {
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
 
   const { roundId, chainId } = params;
 
@@ -277,8 +277,8 @@ function ShowRound() {
   }, [props.projectsStatus, dispatch]);
 
   const onSwitchNetwork = () => {
-    if (switchNetwork) {
-      switchNetwork(props.roundChainId);
+    if (switchChain) {
+      switchChain({ chainId: props.roundChainId });
     }
   };
 

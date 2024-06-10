@@ -1,3 +1,4 @@
+import { getChains } from "common";
 import { datadogRum } from "@datadog/browser-rum";
 import { getConfig } from "common/src/config";
 import {
@@ -6,7 +7,6 @@ import {
   ProjectApplicationWithRound,
 } from "data-layer";
 import { Dispatch } from "redux";
-import { global } from "../global";
 import { RootState } from "../reducers";
 import { ProjectStats } from "../reducers/projects";
 import { transformAndDispatchProject } from "./grantsMetadata";
@@ -233,8 +233,7 @@ export const loadProjects =
 export const loadAllChainsProjects =
   (dataLayer: DataLayer, withMetaData?: boolean) =>
   async (dispatch: Dispatch) => {
-    const { web3Provider } = global;
-    const chainIds = web3Provider?.chains?.map((chain) => chain.id as number);
+    const chainIds = getChains().map((chain) => chain.id as number);
     if (chainIds) {
       dispatch(projectsLoading(chainIds));
       dispatch<any>(loadProjects(chainIds, dataLayer, withMetaData));
@@ -262,12 +261,7 @@ export const fetchProjectApplications =
     });
 
     try {
-      const { web3Provider } = global;
-      if (!web3Provider?.chains) {
-        return;
-      }
-
-      const chainIds = web3Provider.chains.map((chain) => chain.id);
+      const chainIds = getChains().map((chain) => chain.id);
 
       const legacyProjectId = await dataLayer.getLegacyProjectId({
         projectId,

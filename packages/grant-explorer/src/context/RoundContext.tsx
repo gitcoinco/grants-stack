@@ -82,7 +82,6 @@ const roundReducer = (state: RoundState, action: Action) => {
 
 export const RoundProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(roundReducer, initialRoundState);
-
   const providerProps = { state, dispatch };
 
   return (

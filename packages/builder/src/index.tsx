@@ -1,16 +1,17 @@
 import "./browserPatches";
 
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
-import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getConfig } from "common/src/config";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router";
-import { WagmiConfig } from "wagmi";
+import { WagmiProvider } from "wagmi";
 import AlloWrapper from "./utils/AlloWrapper";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
@@ -28,7 +29,7 @@ import { slugs } from "./routes";
 import setupStore from "./store";
 import "./styles/index.css";
 import initDatadog from "./utils/datadog";
-import wagmiClient, { chains } from "./utils/wagmi";
+import queryClient, { config } from "./utils/wagmi";
 import initTagmanager from "./tagmanager";
 
 const dataLayerConfig = new DataLayer({
@@ -47,9 +48,6 @@ const store = setupStore();
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
-
-const gtcLightTheme = lightTheme();
-gtcLightTheme.shadows.connectButton = "0 0 0 0px";
 
 // Initialize datadog
 initDatadog();
@@ -105,42 +103,44 @@ if (pathname && pathname !== window.location.pathname) {
 
 root.render(
   <ErrorBoundary>
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains} theme={gtcLightTheme} coolMode>
-        <ChakraProvider resetCSS={false}>
-          <Provider store={store}>
-            <AlloWrapper>
-              <DataLayerProvider client={dataLayerConfig}>
-                <ReduxRouter history={history} store={store}>
-                  <Layout>
-                    <Routes>
-                      <Route
-                        path={slugs.root}
-                        element={<Navigate to={slugs.grants} />}
-                      />
-                      <Route path={slugs.grants} element={<ProjectsList />} />
-                      <Route path={slugs.project} element={<Project />} />
-                      <Route path={slugs.newGrant} element={<NewProject />} />
-                      <Route path={slugs.edit} element={<EditProject />} />
-                      <Route path={slugs.round} element={<RoundShow />} />
-                      <Route
-                        path={slugs.roundApplication}
-                        element={<RoundApply />}
-                      />
-                      <Route
-                        path={slugs.roundApplicationView}
-                        element={<ViewApplication />}
-                      />
-                      <Route path="*" element={<PageNotFound />} />
-                    </Routes>
-                  </Layout>
-                </ReduxRouter>
-              </DataLayerProvider>
-            </AlloWrapper>
-          </Provider>
-        </ChakraProvider>
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider coolMode>
+          <ChakraProvider resetCSS={false}>
+            <Provider store={store}>
+              <AlloWrapper>
+                <DataLayerProvider client={dataLayerConfig}>
+                  <ReduxRouter history={history} store={store}>
+                    <Layout>
+                      <Routes>
+                        <Route
+                          path={slugs.root}
+                          element={<Navigate to={slugs.grants} />}
+                        />
+                        <Route path={slugs.grants} element={<ProjectsList />} />
+                        <Route path={slugs.project} element={<Project />} />
+                        <Route path={slugs.newGrant} element={<NewProject />} />
+                        <Route path={slugs.edit} element={<EditProject />} />
+                        <Route path={slugs.round} element={<RoundShow />} />
+                        <Route
+                          path={slugs.roundApplication}
+                          element={<RoundApply />}
+                        />
+                        <Route
+                          path={slugs.roundApplicationView}
+                          element={<ViewApplication />}
+                        />
+                        <Route path="*" element={<PageNotFound />} />
+                      </Routes>
+                    </Layout>
+                  </ReduxRouter>
+                </DataLayerProvider>
+              </AlloWrapper>
+            </Provider>
+          </ChakraProvider>
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   </ErrorBoundary>
 );
 

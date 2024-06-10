@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useTokenPrice } from "common";
 import { useParams } from "react-router-dom";
-import { useBalance, useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
+import { useBalance, useDisconnect, useSwitchChain } from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
@@ -90,7 +90,7 @@ describe("ReclaimFunds", () => {
         };
       });
 
-      (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
+      (useSwitchChain as jest.Mock).mockReturnValue({ chains: [] });
       (useDisconnect as jest.Mock).mockReturnValue({});
 
       const currentTime = new Date();
@@ -110,11 +110,6 @@ describe("ReclaimFunds", () => {
         data: { formatted: "0", value: "0" },
         error: null,
         loading: false,
-      }));
-      (useSigner as jest.Mock).mockImplementation(() => ({
-        signer: {
-          getBalance: () => Promise.resolve("0"),
-        },
       }));
       render(
         wrapWithBulkUpdateGrantApplicationContext(

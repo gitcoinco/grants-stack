@@ -1,4 +1,4 @@
-import { Address } from "wagmi";
+import { Address } from "viem";
 
 export function assertAddress(value: unknown): Address {
   if (typeof value === "string" && value.slice(0, 2) === "0x") {

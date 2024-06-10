@@ -1,3 +1,5 @@
+import { WagmiProvider } from "wagmi";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
@@ -16,6 +18,7 @@ import {
 import { ethers } from "ethers";
 import { Provider } from "react-redux";
 import { getConfig } from "common/src/config";
+import queryClient, { config } from "./wagmi";
 import history from "../history";
 import setupStore from "../store";
 import { FormInputs, Metadata, Round } from "../types";
@@ -185,17 +188,21 @@ export const renderWrapped = (
   store = setupStore()
 ): any => {
   const wrapped = (
-    <ChakraProvider>
-      <Provider store={store}>
-        <AlloProvider backend={alloBackend}>
-          <DataLayerProvider client={dataLayerConfig}>
-            <ReduxRouter store={store} history={history}>
-              {ui}
-            </ReduxRouter>
-          </DataLayerProvider>
-        </AlloProvider>
-      </Provider>
-    </ChakraProvider>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <ChakraProvider>
+          <Provider store={store}>
+            <AlloProvider backend={alloBackend}>
+              <DataLayerProvider client={dataLayerConfig}>
+                <ReduxRouter store={store} history={history}>
+                  {ui}
+                </ReduxRouter>
+              </DataLayerProvider>
+            </AlloProvider>
+          </Provider>
+        </ChakraProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 
   return { store, ...render(wrapped) };

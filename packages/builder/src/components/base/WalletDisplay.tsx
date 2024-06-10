@@ -18,17 +18,19 @@ import { shortAddress, isValidAddress } from "../../utils/wallet";
 export default function WalletDisplay(): JSX.Element {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect({
-    onSuccess() {
-      dispatch(web3AccountDisconnected(""));
-      navigate(slugs.root);
-      //
-    },
-    onError(error) {
-      dispatch({ type: "WEB3_ERROR", error });
+    mutation: {
+      onSuccess: () => {
+        dispatch(web3AccountDisconnected(""));
+        navigate(slugs.root);
+      },
+      onError: (error) => {
+        dispatch({ type: "WEB3_ERROR", error });
+      },
     },
   });
+
+  const { address, isConnected } = useAccount();
 
   const avatarBg = isConnected ? "green.500" : "red.500";
 

@@ -1,7 +1,7 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { useEffect, useRef, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { useNetwork } from "wagmi";
+import { useConfig } from "wagmi";
 import { ValidationError } from "yup";
 import { metadataImageSaved, metadataSaved } from "../../actions/projectForm";
 import { RootState } from "../../reducers";
@@ -42,7 +42,7 @@ function ProjectForm({
   const [feedback, setFeedback] = useState([
     { title: "", type: "none", message: "" },
   ]);
-  const { chains } = useNetwork();
+  const { chains } = useConfig();
 
   const [, setLogoImg] = useState<Blob | undefined>();
   const [, setBannerImg] = useState<Blob | undefined>();

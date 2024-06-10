@@ -332,7 +332,7 @@ function ReclaimFundsContent(props: {
           <button
             className="bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded disabled:opacity-50"
             data-testid="reclaim-fund-btn"
-            disabled={walletAddress.length == 0 || balanceData?.value.isZero()}
+            disabled={walletAddress.length == 0 || balanceData?.value === 0n}
             onClick={() => handleReclaimFunds()}
           >
             Reclaim funds

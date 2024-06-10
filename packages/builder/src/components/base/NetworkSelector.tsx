@@ -1,8 +1,8 @@
 import { Avatar, Menu, MenuButton, Tag, TagLabel } from "@chakra-ui/react";
-import { useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 
 export default function NetworkSelector(): JSX.Element {
-  const { chain } = useNetwork();
+  const { chain } = useAccount();
 
   // todo: set this based on current chain
   const colorScheme: string = "white";

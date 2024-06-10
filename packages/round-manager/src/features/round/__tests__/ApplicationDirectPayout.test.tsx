@@ -16,7 +16,7 @@ import {
 } from "common";
 
 import { useWallet } from "../../common/Auth";
-import { useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useDisconnect, useSwitchChain } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import { Erc20__factory } from "../../../types/generated/typechain";
 import moment from "moment";
@@ -122,9 +122,9 @@ describe("<ApplicationDirectPayout />", () => {
     mockTriggerPayout = jest.fn().mockResolvedValue(new Promise(() => {}));
 
     (useWallet as jest.Mock).mockImplementation(() => mockWallet);
-    (useSwitchNetwork as any).mockReturnValue({ chains: [] });
+    (useSwitchChain as any).mockReturnValue({ chains: [] });
     (useDisconnect as any).mockReturnValue({});
-    (useNetwork as jest.Mock).mockReturnValue(mockNetwork);
+    (useAccount as jest.Mock).mockReturnValue(mockNetwork);
     (usePayout as jest.Mock).mockImplementation(() => {
       const originalModule = jest.requireActual(
         "../../../context/application/usePayout"

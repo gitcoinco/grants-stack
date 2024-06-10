@@ -12,7 +12,7 @@ import {
   zeroAddress,
 } from "viem";
 import { CartProject } from "./types";
-import { WalletClient } from "wagmi";
+import { WalletClient } from "viem";
 import { TToken, NATIVE } from "common";
 
 type SignPermitProps = {
