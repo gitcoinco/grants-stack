@@ -4,6 +4,43 @@ import { getChains, TChain } from "@gitcoin/gitcoin-chain-data";
 
 const chainData = getChains();
 
+const rpcUrls: { [key: number]: string | undefined } = {
+  1: "https://eth-mainnet.g.alchemy.com/v2/",
+  10: "https://opt-mainnet.g.alchemy.com/v2/",
+  // 42: "", // lukso
+  137: "https://polygon-mainnet.g.alchemy.com/v2/",
+  // 250: "", // fantom
+  300: "https://zksync-sepolia.g.alchemy.com/v2/",
+  324: "https://zksync-mainnet.g.alchemy.com/v2/",
+  // 4201: "", // lukso test
+  8453: "https://base-mainnet.g.alchemy.com/v2/",
+  42161: "https://arb-mainnet.g.alchemy.com/v2/",
+  42220: "https://celo-mainnet.infura.io/v3/", // celo
+  43113: "https://avalanche-fuji.infura.io/v3/", // fuji
+  43114: "https://avalanche-mainnet.infura.io/v3/", // avax
+  44787: "https://celo-alfajores.infura.io/v3/", // alfajores
+  // 80001: "https://polygon-mumbai.g.alchemy.com/v2/", // not supported anymore
+  // 534351: "", // scroll sepol
+  // 534352: "", // scroll mainnet
+  // 1329: "", // sei
+  // 713715: "", // sei devnet
+  11155111: "https://eth-sepolia.g.alchemy.com/v2/",
+};
+
+const getRpcUrl = (chain: TChain): string => {
+  let envRpc = rpcUrls[chain.id] ?? chain.rpc;
+
+  if (envRpc.includes("alchemy"))
+    envRpc = process.env.REACT_APP_ALCHEMY_ID
+      ? envRpc + process.env.REACT_APP_ALCHEMY_ID
+      : chain.rpc;
+  if (envRpc.includes("infura"))
+    envRpc = process.env.REACT_APP_INFURA_ID
+      ? envRpc + process.env.REACT_APP_INFURA_ID
+      : chain.rpc;
+
+  return envRpc;
+};
 export function stringToBlobUrl(data: string): string {
   const blob = new Blob([data], { type: "image/svg+xml" });
   const url = URL.createObjectURL(blob);
@@ -14,6 +51,8 @@ const parseRainbowChain = (chain: TChain) => {
   const nativeToken = chain.tokens.find(
     (token) => token.address === zeroAddress
   );
+
+  const rpc = getRpcUrl(chain);
 
   // Map the TChain to @rainbow-me/rainbowkit/Chain
   const mappedChain = {
@@ -29,7 +68,7 @@ const parseRainbowChain = (chain: TChain) => {
     },
     rpcUrls: {
       default: {
-        http: [chain.rpc],
+        http: [rpc],
         webSocket: undefined,
       },
       public: {
