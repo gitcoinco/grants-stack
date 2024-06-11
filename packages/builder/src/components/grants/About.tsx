@@ -1,8 +1,7 @@
 import { Box } from "@chakra-ui/react";
-import { renderToHTML } from "common";
+import { renderToHTML, useValidateCredential } from "common";
 import { ProjectApplicationWithRound } from "data-layer";
 import { GithubLogo, TwitterLogo } from "../../assets";
-import useValidateCredential from "../../hooks/useValidateCredential";
 import colors from "../../styles/colors";
 import {
   ApplicationCardType,

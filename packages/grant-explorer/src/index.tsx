@@ -33,6 +33,7 @@ import ViewRound from "./features/round/ViewRoundPage";
 import AlloWrapper from "./features/api/AlloWrapper";
 import { merge } from "lodash";
 import { PostHogProvider } from "posthog-js/react";
+import ViewProject from "./features/projects/ViewProject";
 
 initSentry();
 initDatadog();
@@ -89,10 +90,6 @@ root.render(
                       <Route path="/" element={<LandingPage />} />
 
                       <Route path="/rounds" element={<ExploreRoundsPage />} />
-                      {/* <Route
-                        path="/projects"
-                        element={<ExploreProjectsPage />}
-                      /> */}
 
                       {/* Round Routes */}
                       <Route
@@ -102,6 +99,18 @@ root.render(
                       <Route
                         path="/round/:chainId/:roundId/:applicationId"
                         element={<ViewProjectDetails />}
+                      />
+
+                      {/* Project Routes */}
+
+                      {/* <Route
+                        path="/projects"
+                        element={<ExploreProjectsPage />}
+                      /> */}
+
+                      <Route
+                        path="/projects/:projectId"
+                        element={<ViewProject />}
                       />
 
                       <Route path="/cart" element={<ViewCart />} />

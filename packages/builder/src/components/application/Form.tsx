@@ -15,14 +15,13 @@ import {
   RoundApplicationAnswers,
   RoundApplicationMetadata,
 } from "data-layer/dist/roundApplication.types";
-import { getChainById } from "common";
+import { getChainById, useValidateCredential } from "common";
 import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useNetwork } from "wagmi";
 import { ValidationError } from "yup";
 import { resetApplicationError } from "../../actions/roundApplication";
-import useValidateCredential from "../../hooks/useValidateCredential";
 import { RootState } from "../../reducers";
 import { editPath } from "../../routes";
 import {

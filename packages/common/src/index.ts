@@ -15,7 +15,8 @@ export * from "./allo/common";
 export * from "./allo/application";
 export * from "./payoutTokens";
 
-export { PassportVerifierWithExpiration } from "./credentialVerifier";
+export * from "./services/passport/passportCredentials";
+export { PassportVerifierWithExpiration } from "./services/passport/credentialVerifier";
 export * from "@gitcoin/gitcoin-chain-data";
 
 export function useParams<T extends Record<string, string> = never>() {

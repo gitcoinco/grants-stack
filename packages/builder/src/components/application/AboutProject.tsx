@@ -1,12 +1,11 @@
 import { GlobeAltIcon } from "@heroicons/react/24/solid";
-import { getChainById, stringToBlobUrl } from "common";
+import { getChainById, stringToBlobUrl, useValidateCredential } from "common";
 import {
   RoundApplicationAnswers,
   RoundApplicationQuestion,
 } from "data-layer/dist/roundApplication.types";
 import { useEnsName } from "wagmi";
 import { GithubLogo, TwitterLogo } from "../../assets";
-import useValidateCredential from "../../hooks/useValidateCredential";
 import colors from "../../styles/colors";
 import { Metadata } from "../../types";
 import GreenVerifiedBadge from "../badges/GreenVerifiedBadge";
