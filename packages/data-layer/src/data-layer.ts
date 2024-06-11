@@ -25,6 +25,7 @@ import {
   RoundForExplorer,
   ExpandedApplicationRef,
   RoundApplicationPayout,
+  ProjectApplicationWithRoundAndProgram,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -51,6 +52,7 @@ import {
   getDonationsByDonorAddress,
   getApplicationsForExplorer,
   getPayoutsByChainIdRoundIdProjectId,
+  getApprovedApplicationsByProjectIds,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -332,6 +334,29 @@ export class DataLayer {
       await request(
         this.gsIndexerEndpoint,
         getApplicationsByProjectIds,
+        requestVariables,
+      );
+
+    return response.applications ?? [];
+  }
+
+  /**
+   * getApprovedApplicationsByProjectIds() returns a list of approved applications of given projects.
+   * @param projectIds
+   */
+  async getApprovedApplicationsByProjectIds({
+    projectIds,
+  }: {
+    projectIds: string[];
+  }): Promise<ProjectApplicationWithRoundAndProgram[]> {
+    const requestVariables = {
+      projectIds: projectIds,
+    };
+
+    const response: { applications: ProjectApplicationWithRoundAndProgram[] } =
+      await request(
+        this.gsIndexerEndpoint,
+        getApprovedApplicationsByProjectIds,
         requestVariables,
       );
 

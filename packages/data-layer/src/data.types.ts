@@ -302,6 +302,21 @@ export type ProjectApplicationWithRound = ProjectApplication & {
   };
 };
 
+export type ProjectApplicationWithRoundAndProgram = ProjectApplication & {
+  anchorAddress: Address;
+  round: {
+    applicationsStartTime: string;
+    applicationsEndTime: string;
+    donationsStartTime: string;
+    donationsEndTime: string;
+    roundMetadata: RoundMetadata;
+    project: {
+      name: string;
+    };
+    strategyName: RoundPayoutType;
+  };
+};
+
 /**
  * V2 Round
  */
