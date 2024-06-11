@@ -19,6 +19,7 @@ vi.mock("common", async () => {
     useParams: vi.fn().mockImplementation(() => ({
       projectId: "0xdeadbeef-0xdeadbeef",
     })),
+    useValidateCredential: vi.fn().mockReturnValue({ isValid: false }),
   };
 });
 

@@ -1,6 +1,12 @@
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
-import { formatDateWithOrdinal, renderToHTML, useParams } from "common";
+import {
+  formatDateWithOrdinal,
+  renderToHTML,
+  useParams,
+  useValidateCredential,
+} from "common";
 import React, {
+  ComponentProps,
   ComponentPropsWithRef,
   createElement,
   FunctionComponent,
@@ -15,9 +21,13 @@ import { ReactComponent as GlobeIcon } from "../../assets/icons/globe-icon.svg";
 import { ProjectBanner } from "../common/ProjectBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
-import { useDataLayer, v2Project } from "data-layer";
+import {
+  ProjectApplicationWithRoundAndProgram,
+  useDataLayer,
+  v2Project,
+} from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
-import { useProject } from "./hooks/useProject";
+import { useProject, useProjectApplications } from "./hooks/useProject";
 import NotFoundPage from "../common/NotFoundPage";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
@@ -47,14 +57,29 @@ export default function ViewProject() {
 
   const dataLayer = useDataLayer();
 
-  const { data, error, isLoading } = useProject(
+  const {
+    data: projectData,
+    error: projectError,
+    isLoading: isProjectDataLoading,
+  } = useProject(
     {
       projectId: projectId,
     },
     dataLayer
   );
 
-  const project = data?.project;
+  const {
+    applications: projectApplications,
+    error: projectApplicationsError,
+    isLoading: isProjectApplicationsLoading,
+  } = useProjectApplications(
+    {
+      projectId: projectId,
+    },
+    dataLayer
+  );
+
+  const project = projectData?.project;
 
   const breadCrumbs = [
     {
@@ -77,7 +102,7 @@ export default function ViewProject() {
   const projectDetailsTabs = useMemo(
     () => [
       {
-        name: "Project details",
+        name: "Overview",
         content: (
           <>
             <h3 className="text-3xl mt-8 mb-4 font-modern-era-medium text-blue-800">
@@ -93,8 +118,38 @@ export default function ViewProject() {
           </>
         ),
       },
+      {
+        name: "Past rounds",
+        content: (
+          <>
+            {isProjectApplicationsLoading && <SkeletonText />}
+            {projectApplicationsError && (
+              <p className="ml-4 mt-8">Couldn't load project data.</p>
+            )}
+            {projectApplications && projectApplications?.length > 0 && (
+              <>
+                {projectApplications.map((projectApplication) => (
+                  <RoundListItem
+                    key={projectApplication.id}
+                    projectApplication={projectApplication}
+                  />
+                ))}
+              </>
+            )}
+            {projectApplications && projectApplications?.length === 0 && (
+              <p className="ml-4 mt-8">No past rounds found.</p>
+            )}
+          </>
+        ),
+      },
     ],
-    [project, description]
+    [
+      project,
+      description,
+      projectApplications,
+      isProjectApplicationsLoading,
+      projectApplicationsError,
+    ]
   );
 
   const handleTabChange = (tabIndex: number) => {
@@ -103,7 +158,7 @@ export default function ViewProject() {
 
   return (
     <>
-      {data !== undefined || isLoading ? (
+      {projectData !== undefined || isProjectDataLoading ? (
         <DefaultLayout>
           <div className="flex flex-row justify-between my-8">
             <div className="flex items-center pt-2" data-testid="bread-crumbs">
@@ -125,11 +180,14 @@ export default function ViewProject() {
             </div>
           </div>
           <div className="md:flex gap-4 flex-row-reverse">
+            <Sidebar projectApplications={projectApplications} />
             <div className="flex-1">
-              {error === undefined ? (
+              {projectError === undefined ? (
                 <>
                   <Skeleton
-                    isLoaded={data !== undefined && error === undefined}
+                    isLoaded={
+                      projectData !== undefined && projectError === undefined
+                    }
                   >
                     <h1 className="text-4xl font-modern-era-medium tracking-tight text-grey-500">
                       {title}
@@ -189,8 +247,19 @@ function ProjectLinks({ project }: { project?: v2Project }) {
       projectTwitter,
       projectGithub,
       userGithub,
+      credentials,
     },
   } = project ?? { metadata: {} };
+
+  const { isValid: validTwitterCredential } = useValidateCredential(
+    credentials?.twitter,
+    projectTwitter
+  );
+
+  const { isValid: validGithubCredential } = useValidateCredential(
+    credentials?.github,
+    projectGithub
+  );
 
   const createdOn =
     createdAt &&
@@ -215,7 +284,7 @@ function ProjectLinks({ project }: { project?: v2Project }) {
         <ProjectLink
           url={`https://twitter.com/${projectTwitter}`}
           icon={TwitterIcon}
-          isVerified={false}
+          isVerified={validTwitterCredential}
         >
           {projectTwitter}
         </ProjectLink>
@@ -225,7 +294,7 @@ function ProjectLinks({ project }: { project?: v2Project }) {
         <ProjectLink
           url={`https://github.com/${projectGithub}`}
           icon={GithubIcon}
-          isVerified={false}
+          isVerified={validGithubCredential}
         >
           {projectGithub}
         </ProjectLink>
@@ -302,5 +371,139 @@ function ProjectLogo({ logoImg }: { logoImg?: string }) {
       src={src}
       alt="Project Logo"
     />
+  );
+}
+
+function Sidebar(props: {
+  projectApplications?: ProjectApplicationWithRoundAndProgram[];
+}) {
+  return (
+    <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
+      <ProjectStats projectApplications={props.projectApplications} />
+    </div>
+  );
+}
+
+export function ProjectStats(props: {
+  projectApplications?: ProjectApplicationWithRoundAndProgram[];
+}) {
+  const totalFundingReceived =
+    props.projectApplications
+      ?.reduce(
+        (acc, projectApplication) =>
+          acc + projectApplication.totalAmountDonatedInUsd,
+        0
+      )
+      .toFixed() ?? "0";
+  const totalContributions =
+    props.projectApplications
+      ?.reduce(
+        (acc, projectApplication) =>
+          acc + projectApplication.totalDonationsCount,
+        0
+      )
+      .toFixed() ?? "0";
+  const totalUniqueDonors =
+    props.projectApplications
+      ?.reduce(
+        (acc, projectApplication) => acc + projectApplication.uniqueDonorsCount,
+        0
+      )
+      .toFixed() ?? "0";
+  const totalRoundsParticipated = props.projectApplications?.length ?? 0;
+
+  return (
+    <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
+      <h4 className="text-2xl">All-time stats</h4>
+      <Stat isLoading={false} value={`$${totalFundingReceived}`}>
+        funding received
+      </Stat>
+      <Stat isLoading={false} value={totalContributions}>
+        contributions
+      </Stat>
+      <Stat isLoading={false} value={totalUniqueDonors}>
+        unique contributors
+      </Stat>
+      <Stat isLoading={false} value={totalRoundsParticipated}>
+        rounds participated
+      </Stat>
+    </div>
+  );
+}
+
+export function Stat({
+  value,
+  children,
+  isLoading,
+  className,
+}: {
+  value?: string | number | null;
+  isLoading?: boolean;
+} & ComponentProps<"div">) {
+  return (
+    <div className={`flex flex-col ${className}`}>
+      <Skeleton isLoaded={!isLoading} height={"36px"}>
+        <h4 className="text-3xl">{value}</h4>
+      </Skeleton>
+      <span className="text-sm md:text-base">{children}</span>
+    </div>
+  );
+}
+
+export function RoundListItem({
+  projectApplication,
+}: {
+  projectApplication: ProjectApplicationWithRoundAndProgram;
+}) {
+  const applicationsStartTime = new Date(
+    projectApplication.round.applicationsStartTime
+  ).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  const donationsEndTime = new Date(
+    projectApplication.round.donationsEndTime
+  ).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  const roundType =
+    projectApplication.round.strategyName === "allov1.Direct"
+      ? "Direct Grants"
+      : "Quadratic Funding";
+
+  return (
+    <Box>
+      <Box
+        className="w-full my-8 lg:flex md:flex basis-0 justify-between items-center text-[14px] text-gitcoin-grey-400 px-2"
+        borderBottom="1px solid"
+        borderBottomColor="gray.400"
+      >
+        <Box className="flex-auto my-2 w-36 truncate mr-4">
+          <span className="font-medium">
+            {projectApplication.round.project.name}
+          </span>
+        </Box>
+        <Box className="flex-auto my-2 w-36 truncate mr-4">
+          <span className="font-medium">
+            {projectApplication.round.roundMetadata.name}
+          </span>
+        </Box>
+        <Box className="flex-1 my-2 mr-4">
+          <span>
+            {applicationsStartTime} - {donationsEndTime}
+          </span>
+        </Box>
+        <Box className="flex-1 my-2">
+          <span className="flex bg-green-100 items-center text-md rounded-full p-2 font-modern-era-medium text-black-500">
+            {roundType}
+          </span>
+        </Box>
+      </Box>
+    </Box>
   );
 }
