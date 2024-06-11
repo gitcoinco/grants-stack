@@ -157,9 +157,9 @@ export default function ViewProject() {
     [
       project,
       description,
-      projectApplications,
       isProjectApplicationsLoading,
       projectApplicationsError,
+      pastRroundApplications,
     ]
   );
 
@@ -506,7 +506,10 @@ export function RoundListItem({
   });
 
   const roundType =
-    projectApplication.round.strategyName === "allov1.Direct"
+    projectApplication.round.strategyName === "allov1.Direct" ||
+    projectApplication.round.strategyName ===
+      "allov2.DirectGrantsSimpleStrategy" ||
+    projectApplication.round.strategyName === "allov2.DirectGrantsLiteStrategy"
       ? "Direct grants"
       : "Quadratic funding";
 
@@ -522,13 +525,21 @@ export function RoundListItem({
           {projectApplication.round.roundMetadata.name}
         </span>
       </div>
-      <div className="flex-1 my-2 mr-4 text-gray-500">
-        <span>
-          {applicationsStartTime} - {donationsEndTime}
-        </span>
-      </div>
+      {roundType === "Quadratic funding" ? (
+        <div className="flex-1 my-2 mr-4 text-gray-500">
+          <span>
+            {applicationsStartTime} - {donationsEndTime}
+          </span>
+        </div>
+      ) : (
+        <div className="flex-1 my-2 mr-4 text-gray-500">
+          <span>{applicationsStartTime}</span>
+        </div>
+      )}
       <div className="flex-1 my-2">
-        <span className="flex justify-center bg-green-100 items-center text-md rounded-full p-2 font-medium">
+        <span
+          className={`flex justify-center ${roundType === "Quadratic funding" ? "bg-green-100" : "bg-yellow-100"} items-center text-md rounded-full p-2 font-medium`}
+        >
           <span className="text-black font-medium">{roundType}</span>
         </span>
       </div>
@@ -588,7 +599,7 @@ export function ActiveRoundComponent(props: {
           </div>
         </div>
         <img
-          className="mt-2 inline-block h-9 w-9"
+          className="mt-2 ml-2 inline-block h-9 w-9"
           src={stringToBlobUrl(roundChain.icon)}
           alt={"Chain Logo"}
         />
