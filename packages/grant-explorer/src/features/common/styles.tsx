@@ -71,6 +71,7 @@ const colorMap = {
   grey: "bg-grey-100",
   yellow: "bg-yellow-100",
   orange: "bg-orange-100",
+  rainbow: "bg-rainbow-gradient",
 } as const;
 
 const roundedMap = {

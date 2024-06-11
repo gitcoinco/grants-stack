@@ -12,6 +12,10 @@ module.exports = {
       animation: {
         "pulse-scale": "pulse-scale 2s ease-in-out infinite",
       },
+      backgroundImage: {
+        "rainbow-gradient":
+          "linear-gradient(170deg, #FFD6C9 10%, #B8D9E7 40%, #ABE3EB 60%, #F2DD9E 90%)",
+      },
       colors: {
         transparent: "transparent",
         black: "#000",
@@ -37,7 +41,7 @@ module.exports = {
         },
         green: {
           ...colors.green,
-           50: "#DCF5F2",
+          50: "#DCF5F2",
           100: "#ADEDE5",
           200: "#47A095",
           300: "rgba(0, 67, 59, 1)",
