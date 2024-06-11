@@ -139,6 +139,12 @@ export default function ViewProjectDetails() {
       ? false
       : round && round.roundEndTime <= currentTime);
 
+  const isBeforeRoundStartDate =
+    round &&
+    (isInfiniteDate(round.roundStartTime)
+      ? false
+      : round && currentTime < round.roundStartTime);
+
   const alloVersion = getAlloVersion();
 
   useEffect(() => {
@@ -154,7 +160,8 @@ export default function ViewProjectDetails() {
 
   const disableAddToCartButton =
     (alloVersion === "allo-v2" && roundId.startsWith("0x")) ||
-    isAfterRoundEndDate;
+    isAfterRoundEndDate ||
+    isBeforeRoundStartDate;
   const { projects, add, remove } = useCartStorage();
 
   const isAlreadyInCart = projects.some(

@@ -14,15 +14,13 @@ import {
   getLocalTime,
   formatLocalDateAsISOString,
   renderToPlainText,
-  truncateDescription,
   useTokenPrice,
   TToken,
   getTokensByChainId,
-  getTokens,
   stringToBlobUrl,
   getChainById,
 } from "common";
-import { Button, Input } from "common/src/styles";
+import { Input } from "common/src/styles";
 import AlloV1 from "common/src/icons/AlloV1";
 import AlloV2 from "common/src/icons/AlloV2";
 
@@ -33,12 +31,10 @@ import { ReactComponent as WarpcastIcon } from "../../assets/warpcast-logo.svg";
 import { ReactComponent as TwitterBlueIcon } from "../../assets/x-logo.svg";
 
 import { useRoundById } from "../../context/RoundContext";
-import { CartProject, Project, Requirement, Round } from "../api/types";
+import { CartProject, Project, Round } from "../api/types";
 import { getDaysLeft, isDirectRound, isInfiniteDate } from "../api/utils";
 import { PassportWidget } from "../common/PassportWidget";
 
-import Footer from "common/src/components/Footer";
-import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { ProjectBanner } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
@@ -72,6 +68,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { Box, Tab, Tabs } from "@chakra-ui/react";
 import GenericModal from "../common/GenericModal";
+import RoundStartCountdownBadge from "./RoundStartCountdownBadge";
+import ApplicationsCountdownBanner from "./ApplicationsCountdownBanner";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -132,25 +130,15 @@ export default function ViewRound() {
   ) : (
     <>
       {round && chainId && roundId ? (
-        <>
-          {isBeforeRoundStartDate && (
-            <BeforeRoundStart
-              round={round}
-              chainId={chainId}
-              roundId={roundId}
-            />
-          )}
-
-          {isAfterRoundStartDate && (
-            <AfterRoundStart
-              round={round}
-              chainId={Number(chainId)}
-              roundId={roundId}
-              isBeforeRoundEndDate={isBeforeRoundEndDate}
-              isAfterRoundEndDate={isAfterRoundEndDate}
-            />
-          )}
-        </>
+        <RoundPage
+          round={round}
+          chainId={Number(chainId)}
+          roundId={roundId}
+          isBeforeRoundStartDate={isBeforeRoundStartDate}
+          isAfterRoundStartDate={isAfterRoundStartDate}
+          isBeforeRoundEndDate={isBeforeRoundEndDate}
+          isAfterRoundEndDate={isAfterRoundEndDate}
+        />
       ) : (
         <NotFoundPage />
       )}
@@ -181,41 +169,14 @@ export function AlloVersionBanner({ roundId }: { roundId: string }) {
   );
 }
 
-function BeforeRoundStart(props: {
-  round: Round;
-  chainId: string;
-  roundId: string;
-}) {
-  const { round, chainId, roundId } = props;
-
-  return (
-    <>
-      <Navbar customBackground="bg-[#F0F0F0]" />
-      <div className="relative top-16 px-4 pt-7 h-screen bg-gradient-to-b from-[#F0F0F0] to-[#FFFFFF] h-full">
-        <main>
-          <PreRoundPage
-            round={round}
-            chainId={chainId}
-            roundId={roundId}
-            element={(req: Requirement, index) => (
-              <li key={index}>{req.requirement}</li>
-            )}
-          />
-        </main>
-        <div className="my-11">
-          <Footer />
-        </div>
-      </div>
-    </>
-  );
-}
-
 const alloVersion = getAlloVersion();
 
-function AfterRoundStart(props: {
+function RoundPage(props: {
   round: Round;
   chainId: number;
   roundId: string;
+  isBeforeRoundStartDate?: boolean;
+  isAfterRoundStartDate?: boolean;
   isBeforeRoundEndDate?: boolean;
   isAfterRoundEndDate?: boolean;
 }) {
@@ -238,6 +199,9 @@ function AfterRoundStart(props: {
   const disableAddToCartButton =
     (alloVersion === "allo-v2" && roundId.startsWith("0x")) ||
     props.isAfterRoundEndDate;
+
+  const showProjectCardFooter =
+    !isDirectRound(round) && props.isAfterRoundStartDate;
 
   useEffect(() => {
     if (showCartNotification) {
@@ -369,6 +333,7 @@ function AfterRoundStart(props: {
           <ProjectList
             projects={projects}
             roundRoutePath={`/round/${chainId}/${roundId}`}
+            showProjectCardFooter={showProjectCardFooter}
             isBeforeRoundEndDate={!disableAddToCartButton}
             roundId={roundId}
             isProjectsLoading={isProjectsLoading}
@@ -407,7 +372,9 @@ function AfterRoundStart(props: {
     nativePayoutToken,
     roundId,
     tokenData.symbol,
+    showProjectCardFooter,
   ]);
+
   const roundStart = isDirectRound(round)
     ? round.applicationsStartTime
     : round.roundStartTime;
@@ -447,6 +414,7 @@ function AfterRoundStart(props: {
                 {isAlloV1 && <AlloV1 color="black" />}
                 {!isAlloV1 && <AlloV2 color="black" />}
               </div>
+
               <div className="flex items-center gap-4 mb-4">
                 <h1
                   data-testid="round-title"
@@ -454,7 +422,9 @@ function AfterRoundStart(props: {
                 >
                   {round.roundMetadata?.name}
                 </h1>
-                {!props.isAfterRoundEndDate ? (
+                {props.isBeforeRoundStartDate ? (
+                  <RoundStartCountdownBadge targetDate={roundStart} />
+                ) : !props.isAfterRoundEndDate ? (
                   <Badge
                     color="blue"
                     rounded="full"
@@ -472,6 +442,7 @@ function AfterRoundStart(props: {
                   </Badge>
                 )}
               </div>
+
               <Badge
                 color="grey"
                 rounded="full"
@@ -496,8 +467,46 @@ function AfterRoundStart(props: {
                 </div>
               </div>
 
-              <div className="flex text-grey-500 mb-4">
-                <p className="mr-4 flex items-center">
+              <div className="flex flex-col gap-2 text-grey-500 mb-4">
+                {isBeforeApplicationEndDate && (
+                  <p
+                    data-testId={"application-period"}
+                    className="mr-4 flex items-center"
+                  >
+                    <span className="mr-2">Apply</span>
+                    <CalendarIcon className="w-4 h-4 !text-grey-400 inline-block mr-2" />
+                    <span>
+                      <span className="px-2 rounded bg-grey-50">
+                        <span className="mr-1">
+                          {formatLocalDateAsISOString(
+                            round.applicationsStartTime
+                          )}
+                        </span>
+                        <span>{getLocalTime(round.applicationsStartTime)}</span>
+                      </span>
+                      <span className="px-1.5">-</span>
+                      <span className="px-2 rounded bg-grey-50">
+                        {!isInfiniteDate(roundEnd) ? (
+                          <>
+                            <span className="mr-1">
+                              {formatLocalDateAsISOString(
+                                round.applicationsEndTime
+                              )}
+                            </span>
+
+                            <span>{getLocalTime(roundEnd)}</span>
+                          </>
+                        ) : (
+                          <span>No End Date</span>
+                        )}
+                      </span>
+                    </span>
+                  </p>
+                )}
+                <p
+                  data-testId={"round-period"}
+                  className="mr-4 flex items-center"
+                >
                   <span className="mr-2">Donate</span>
                   <CalendarIcon className="w-4 h-4 !text-grey-400 inline-block mr-2" />
                   <span>
@@ -527,7 +536,10 @@ function AfterRoundStart(props: {
             </div>
 
             {!isDirectRound(round) && (
-              <div className="bg-grey-50 p-8 rounded-2xl">
+              <div
+                data-testId={"matching-funds"}
+                className="bg-grey-50 p-8 rounded-2xl"
+              >
                 <p className="text-3xl mb-2 font-mono tracking-tighter">
                   {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
                   &nbsp;
@@ -541,36 +553,42 @@ function AfterRoundStart(props: {
           <p className="mb-4 overflow-x-auto">
             {round.roundMetadata?.eligibility?.description}
           </p>
-
-          {isDirectRound(round) && isBeforeApplicationEndDate && (
-            <ApplyButton applicationURL={applicationURL} />
-          )}
         </section>
         <hr className="mt-4 mb-8" />
 
-        <div className="mb-10 flex flex-col lg:flex-row w-full justify-between gap-2">
-          <RoundTabs
-            tabs={projectDetailsTabs}
-            selected={selectedTab}
-            onChange={handleTabChange}
-          />
-          {selectedTab === 0 && (
-            <div className="relative">
-              <Search className="absolute h-4 w-4 mt-3 ml-3 " />
-              <Input
-                className="w-full lg:w-64 h-8 rounded-full pl-10 font-mono"
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setSearchQuery(e.target.value)
-                }
-              />
-            </div>
+        <div className="flex flex-col items-center gap-8">
+          {isBeforeApplicationEndDate && (
+            <ApplicationsCountdownBanner
+              startDate={round.applicationsStartTime}
+              endDate={round.applicationsEndTime}
+              applicationURL={applicationURL}
+            />
           )}
-        </div>
 
-        <div>{projectDetailsTabs[selectedTab].content}</div>
+          <div className="mb-2 flex flex-col lg:flex-row w-full justify-between gap-2">
+            <RoundTabs
+              tabs={projectDetailsTabs}
+              selected={selectedTab}
+              onChange={handleTabChange}
+            />
+            {selectedTab === 0 && (
+              <div className="relative">
+                <Search className="absolute h-4 w-4 mt-3 ml-3 " />
+                <Input
+                  className="w-full lg:w-64 h-8 rounded-full pl-10 font-mono"
+                  type="text"
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSearchQuery(e.target.value)
+                  }
+                />
+              </div>
+            )}
+          </div>
+
+          <div>{projectDetailsTabs[selectedTab].content}</div>
+        </div>
       </DefaultLayout>
     </>
   );
@@ -623,6 +641,7 @@ function RoundTabs(props: {
 const ProjectList = (props: {
   projects?: Project[];
   roundRoutePath: string;
+  showProjectCardFooter?: boolean;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
   round: Round;
@@ -675,6 +694,7 @@ const ProjectList = (props: {
                   key={project.projectRegistryId}
                   project={project}
                   roundRoutePath={roundRoutePath}
+                  showProjectCardFooter={props.showProjectCardFooter}
                   isBeforeRoundEndDate={props.isBeforeRoundEndDate}
                   roundId={props.roundId}
                   round={props.round}
@@ -708,6 +728,7 @@ const ProjectList = (props: {
 function ProjectCard(props: {
   project: Project;
   roundRoutePath: string;
+  showProjectCardFooter?: boolean;
   isBeforeRoundEndDate?: boolean;
   roundId: string;
   round: Round;
@@ -717,7 +738,7 @@ function ProjectCard(props: {
   crowdfundedUSD: number;
   uniqueContributorsCount: number;
 }) {
-  const { project, roundRoutePath, round } = props;
+  const { project, roundRoutePath } = props;
   const projectRecipient =
     project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
 
@@ -735,7 +756,10 @@ function ProjectCard(props: {
   cartProject.chainId = Number(props.chainId);
 
   return (
-    <BasicCard className="relative w-full" data-testid="project-card">
+    <BasicCard
+      className={`relative w-full ${props.showProjectCardFooter ? "h-[370px]" : "h-[310px]"}`}
+      data-testid="project-card"
+    >
       <Link
         to={`${roundRoutePath}/${project.grantApplicationId}`}
         data-testid="project-detail-link"
@@ -771,16 +795,13 @@ function ProjectCard(props: {
           </div>
           <CardDescription
             data-testid="project-description"
-            className="h-[130px] overflow-hidden mb-1 !text-sm"
+            className={`mb-1 !text-sm`}
           >
-            {truncateDescription(
-              renderToPlainText(project.projectMetadata.description),
-              90
-            )}
+            {renderToPlainText(project.projectMetadata.description)}
           </CardDescription>
         </CardContent>
       </Link>
-      {!isDirectRound(round) && (
+      {props.showProjectCardFooter && (
         <CardFooter className="bg-white">
           <CardContent className="px-2 text-xs ">
             <div className="border-t pt-1 flex items-center justify-between ">
@@ -1189,215 +1210,5 @@ const ShareStatsButton = ({
       <LinkIcon className="w-4 h-4" />
       Share
     </button>
-  );
-};
-
-function PreRoundPage(props: {
-  round: Round;
-  chainId: string;
-  roundId: string;
-  element: (req: Requirement, index: number) => JSX.Element;
-}) {
-  const { round, chainId, roundId, element } = props;
-
-  const applicationURL = `${builderURL}/#/chains/${chainId}/rounds/${roundId}`;
-
-  const currentTime = new Date();
-  const isBeforeApplicationStartDate =
-    round && round.applicationsStartTime >= currentTime;
-  // covers infinite dates for applicationsEndTime
-  const isDuringApplicationPeriod =
-    (round && currentTime >= round.applicationsStartTime) ||
-    currentTime <=
-      (isInfiniteDate(round.applicationsEndTime) || round.applicationsEndTime);
-
-  const isAfterApplicationEndDateAndBeforeRoundStartDate =
-    round &&
-    round.roundStartTime >= currentTime &&
-    (isInfiniteDate(round.applicationsEndTime) ||
-      round.applicationsEndTime <= currentTime);
-
-  const { data } = useToken({
-    address: getAddress(props.round.token),
-    chainId: Number(chainId),
-  });
-
-  const tokenData = getTokensByChainId(Number(chainId)).find(
-    (t) => t.address.toLowerCase() === props.round.token.toLowerCase()
-  );
-
-  return (
-    <div className="mt-20 flex justify-center">
-      <div className="max-w-screen-lg md:w-full">
-        <div className="text-center">
-          <div className="lg:inline-block md:inline-block"></div>
-          <p className="mb-4 text-2xl text-black font-bold">
-            {round.roundMetadata?.name}
-          </p>
-          <p
-            className="text-lg my-2 font-normal text-grey-400"
-            data-testid="application-period"
-          >
-            Application Period:
-            <span className="mx-1">
-              <span className="mr-1">
-                {formatLocalDateAsISOString(round.applicationsStartTime)}
-              </span>
-
-              <span>( {getLocalTime(round.applicationsStartTime)} )</span>
-
-              <span className="mx-1">-</span>
-
-              {!isInfiniteDate(round.applicationsEndTime) && (
-                <>
-                  <span className="mr-1">
-                    {formatLocalDateAsISOString(round.applicationsEndTime)}
-                  </span>
-
-                  <span>{getLocalTime(round.applicationsEndTime)}</span>
-                </>
-              )}
-              {isInfiniteDate(round.applicationsEndTime) && (
-                <>
-                  <span>No End Date</span>
-                </>
-              )}
-            </span>
-          </p>
-          <p
-            className="text-lg my-2 font-normal text-grey-400"
-            data-testid="round-period"
-          >
-            Round Period:
-            <span>
-              <span className="mx-1">
-                {formatLocalDateAsISOString(round.roundStartTime)}
-              </span>
-
-              <span>( {getLocalTime(round.roundStartTime)} )</span>
-
-              <span className="mx-1">-</span>
-
-              {!isInfiniteDate(round.roundEndTime) && (
-                <>
-                  <span className="mr-1">
-                    {formatLocalDateAsISOString(round.roundEndTime)}
-                  </span>
-
-                  <span>{getLocalTime(round.roundEndTime)}</span>
-                </>
-              )}
-              {isInfiniteDate(round.roundEndTime) && (
-                <>
-                  <span>No End Date</span>
-                </>
-              )}
-            </span>
-          </p>
-          {!isDirectRound(round) && (
-            <div>
-              <p
-                className="text-lg my-2 text-grey-400 font-normal"
-                data-testid="matching-funds"
-              >
-                Matching Funds Available:
-                <span>
-                  {" "}
-                  &nbsp;
-                  {round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable.toLocaleString()}
-                  &nbsp;
-                  {tokenData?.code ?? "..."}
-                </span>
-              </p>
-              <p
-                className="text-lg my-2 text-grey-400 font-normal"
-                data-testid="matching-cap"
-              >
-                Matching Cap:
-                {round.roundMetadata?.quadraticFundingConfig
-                  ?.matchingCapAmount ? (
-                  <span>
-                    {" "}
-                    &nbsp;
-                    {
-                      round.roundMetadata?.quadraticFundingConfig
-                        ?.matchingCapAmount
-                    }
-                    &nbsp;
-                    {"%"}
-                  </span>
-                ) : (
-                  <span>None</span>
-                )}
-              </p>
-            </div>
-          )}
-          <p className="text-lg my-5 text-grey-400 font-normal border-t py-5 border-b">
-            <span>{round.roundMetadata?.eligibility.description}</span>
-          </p>
-          <p
-            className="mb-4 text-2xl text-black font-bold"
-            data-testid="round-eligibility"
-          >
-            Round Eligibility
-          </p>
-          <div className="container justify-center max-w-fit mx-auto">
-            <ul className="list-disc list-inside text-lg text-grey-400 text-left font-normal">
-              {round.roundMetadata?.eligibility.requirements?.map(element)}
-            </ul>
-          </div>
-          <div className="container mx-auto flex mt-4 mb-8 lg:w-96">
-            {isBeforeApplicationStartDate && (
-              <InactiveButton
-                label="Apply to Grant Round"
-                testid="applications-open-button"
-              />
-            )}
-
-            {isDuringApplicationPeriod && (
-              <ApplyButton applicationURL={applicationURL} />
-            )}
-
-            {isAfterApplicationEndDateAndBeforeRoundStartDate && (
-              <InactiveButton
-                label="Application period ended"
-                testid="applications-closed-button"
-              />
-            )}
-          </div>
-        </div>
-        <div className="basis-1/2 right-0"></div>
-      </div>
-    </div>
-  );
-}
-
-const ApplyButton = (props: { applicationURL: string }) => {
-  const { applicationURL } = props;
-
-  return (
-    <Button
-      type="button"
-      onClick={() => window.open(applicationURL, "_blank")}
-      className="mt-2 basis-full items-center justify-center shadow-sm text-sm rounded md:h-12"
-      data-testid="apply-button"
-    >
-      Apply to Grant Round
-    </Button>
-  );
-};
-
-const InactiveButton = (props: { label: string; testid: string }) => {
-  const { label, testid } = props;
-
-  return (
-    <Button
-      type="button"
-      className="basis-full items-center justify-center shadow-sm text-sm bg-grey-300 rounded border-1 md:h-12"
-      data-testid={testid}
-      disabled={true}
-    >
-      {label}
-    </Button>
   );
 };
