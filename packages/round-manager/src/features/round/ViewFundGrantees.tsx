@@ -629,8 +629,9 @@ export function PaidProjectsTable(props: {
                         {project.matchPoolPercentage * 100}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {ethers.utils.formatEther(
-                          project.matchAmountInToken.toString()
+                        {ethers.utils.formatUnits(
+                          project.matchAmountInToken.toString(),
+                          props.token.decimals
                         )}
                         {" " + props.token.code.toUpperCase()}
                         {Boolean(props.price) &&

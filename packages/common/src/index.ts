@@ -475,7 +475,7 @@ export * from "./allo/transaction-builder";
  * @returns the transaction block explorer URL for the provided transaction hash and network
  */
 export const getTxBlockExplorerLink = (chainId: number, txHash: string) => {
-  return getChainById(chainId) + "tx/" + txHash;
+  return getChainById(chainId).blockExplorer + "tx/" + txHash;
 };
 
 export function isChainIdSupported(chainId: number) {
