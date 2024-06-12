@@ -65,6 +65,7 @@ export default function ViewFundGrantees(props: {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         <FinalizedRoundContent
           round={props.round!}
+          allProjects={projects.all}
           paidProjects={paidProjects}
           unpaidProjects={unpaidProjects}
           matchingFundPayoutToken={matchingFundPayoutToken!}
@@ -121,6 +122,7 @@ const TabApplicationCounter = tw.div`
 
 function FinalizedRoundContent(props: {
   round: Round;
+  allProjects: MatchingStatsData[];
   paidProjects: MatchingStatsData[];
   unpaidProjects: MatchingStatsData[];
   matchingFundPayoutToken: TToken;
@@ -172,7 +174,7 @@ function FinalizedRoundContent(props: {
                 token={props.matchingFundPayoutToken!}
                 price={props.price}
                 round={props.round}
-                allProjects={[...props.paidProjects, ...props.unpaidProjects]}
+                allProjects={props.allProjects}
               />
             </Tab.Panel>
             <Tab.Panel>
@@ -629,8 +631,9 @@ export function PaidProjectsTable(props: {
                         {project.matchPoolPercentage * 100}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {ethers.utils.formatEther(
-                          project.matchAmountInToken.toString()
+                        {ethers.utils.formatUnits(
+                          project.matchAmountInToken.toString(),
+                          props.token.decimals
                         )}
                         {" " + props.token.code.toUpperCase()}
                         {Boolean(props.price) &&
