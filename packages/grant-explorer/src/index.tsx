@@ -63,9 +63,9 @@ const dataLayer = new DataLayer({
 root.render(
   <React.StrictMode>
     <PostHogProvider client={posthog}>
-      <WagmiProvider config={config as ResolvedRegister['config']}>
+      <WagmiProvider config={config as ResolvedRegister["config"]}>
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider coolMode>
+          <RainbowKitProvider>
             <ChakraProvider>
               <AlloWrapper>
                 <RoundProvider>
@@ -78,29 +78,29 @@ root.render(
                         {/* Default Route */}
                         <Route path="/" element={<LandingPage />} />
 
-                      <Route path="/rounds" element={<ExploreRoundsPage />} />
+                        <Route path="/rounds" element={<ExploreRoundsPage />} />
 
-                      {/* Round Routes */}
-                      <Route
-                        path="/round/:chainId/:roundId"
-                        element={<ViewRound />}
-                      />
-                      <Route
-                        path="/round/:chainId/:roundId/:applicationId"
-                        element={<ViewProjectDetails />}
-                      />
+                        {/* Round Routes */}
+                        <Route
+                          path="/round/:chainId/:roundId"
+                          element={<ViewRound />}
+                        />
+                        <Route
+                          path="/round/:chainId/:roundId/:applicationId"
+                          element={<ViewProjectDetails />}
+                        />
 
-                      {/* Project Routes */}
+                        {/* Project Routes */}
 
-                      {/* <Route
+                        {/* <Route
                         path="/projects"
                         element={<ExploreProjectsPage />}
                       /> */}
 
-                      <Route
-                        path="/projects/:projectId"
-                        element={<ViewProject />}
-                      />
+                        <Route
+                          path="/projects/:projectId"
+                          element={<ViewProject />}
+                        />
 
                         <Route path="/cart" element={<ViewCart />} />
 

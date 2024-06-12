@@ -1,11 +1,10 @@
-import { Outlet, useOutletContext } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import {
   useAccount,
   usePublicClient,
   useWalletClient,
 } from "wagmi";
 
-import { Web3Instance } from "../api/types";
 import { Spinner } from "./Spinner";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
@@ -43,11 +42,4 @@ export default function Auth() {
   ) : (
     <Outlet context={data} />
   );
-}
-
-/**
- * Wrapper hook to expose wallet auth information to other components
- */
-export function useWallet() {
-  return useOutletContext<Web3Instance>();
 }

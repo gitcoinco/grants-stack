@@ -65,7 +65,7 @@ root.render(
   <React.StrictMode>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider coolMode>
+        <RainbowKitProvider>
           <AlloWrapper>
             <DataLayerProvider client={dataLayerConfig}>
               <HashRouter>

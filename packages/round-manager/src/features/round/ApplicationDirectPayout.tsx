@@ -322,7 +322,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
       setPayoutTokensMap(map);
     };
     createPayoutTokenMap();
-  }, [fetchTokenData, application.applicationIndex, payouts]);
+  }, [fetchTokenData, application.applicationIndex, payouts, chain.id]);
 
   return (
     <>
