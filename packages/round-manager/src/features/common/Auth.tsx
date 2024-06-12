@@ -1,5 +1,5 @@
 import { Outlet, useOutletContext } from "react-router-dom";
-import { useAccount } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { Web3Instance } from "../api/types";
 import { Spinner } from "./Spinner";
 import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
@@ -15,8 +15,8 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
  */
 export default function Auth() {
   const { chain, address, isConnected, isConnecting } = useAccount();
-  const provider = new providers.Web3Provider(window.ethereum, chain?.id);
-  const signer = provider.getSigner(address);
+  const { data: signer } = useWalletClient();
+  const provider = usePublicClient();
 
   const data = {
     address,
