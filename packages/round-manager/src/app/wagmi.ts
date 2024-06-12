@@ -1,28 +1,56 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient } from "@tanstack/react-query";
-import { Chain as RChain, getDefaultConfig } from "@rainbow-me/rainbowkit";
+// import { Chain as RChain, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { allNetworks, mainnetNetworks } from "common/src/chains";
 import { getClient, getConnectorClient } from "@wagmi/core";
 import { providers } from "ethers";
 import { type Account, type Chain, type Client, type Transport } from "viem";
+import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
 import { Connector } from "wagmi";
+import { createWeb3Modal } from "@web3modal/wagmi/react";
 
-const allChains: RChain[] =
-  process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
+const allChains: [Chain, ...Chain[]] =
+  process.env.REACT_APP_ENV === "development"
+    ? (allNetworks as [Chain, ...Chain[]])
+    : (mainnetNetworks as [Chain, ...Chain[]]);
 
 /* TODO: remove hardcoded value once we have environment variables validation */
 const projectId =
   process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
   "2685061cae0bcaf2b244446153eda9e1";
 
-export const config = getDefaultConfig({
-  appName: "Gitcoin Manager",
-  projectId,
-  chains: [...allChains] as [Chain, ...Chain[]],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-}) as any;
+export const queryClient = new QueryClient();
 
-const queryClient = new QueryClient();
+// export const config = getDefaultConfig({
+//   appName: "Gitcoin Manager",
+//   projectId,
+//   chains: [...allChains] as [Chain, ...Chain[]],
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// }) as any;
+
+if (!projectId) throw new Error("Project ID is not defined");
+
+const metadata = {
+  name: "Web3Modal",
+  description: "Web3Modal Example",
+  url: "https://web3modal.com", // origin must match your domain & subdomain
+  icons: ["https://avatars.githubusercontent.com/u/37784886"],
+};
+
+// Create wagmiConfig
+// const chains = [mainnet, sepolia] as const
+export const config = defaultWagmiConfig({
+  chains: allChains as [Chain, ...Chain[]],
+  projectId,
+  metadata,
+});
+
+createWeb3Modal({
+  wagmiConfig: config,
+  projectId,
+  // enableAnalytics: true, // Optional - defaults to your Cloud configuration
+  // enableOnramp: true, // Optional - false as default
+});
 
 export function clientToProvider(client: Client<Transport, Chain>) {
   const { chain, transport } = client;
@@ -64,5 +92,3 @@ export async function getEthersSigner(connector: Connector, chainId: number) {
   const client = await getConnectorClient(config, { chainId, connector });
   return clientToSigner(client);
 }
-
-export default queryClient;

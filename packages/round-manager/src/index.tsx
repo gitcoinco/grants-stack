@@ -1,6 +1,6 @@
 import "./browserPatches";
 
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+// import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -9,7 +9,7 @@ import { initDatadog } from "./datadog";
 import { initTagmanager } from "./tagmanager";
 import reportWebVitals from "./reportWebVitals";
 import { WagmiProvider } from "wagmi";
-import queryClient, { config } from "./app/wagmi";
+import { queryClient, config } from "./app/wagmi";
 
 import "./index.css";
 
@@ -65,7 +65,7 @@ root.render(
   <React.StrictMode>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
+        {/* <RainbowKitProvider> */}
           <AlloWrapper>
             <DataLayerProvider client={dataLayerConfig}>
               <HashRouter>
@@ -145,7 +145,7 @@ root.render(
               </HashRouter>
             </DataLayerProvider>
           </AlloWrapper>
-        </RainbowKitProvider>
+        {/* </RainbowKitProvider> */}
       </QueryClientProvider>
     </WagmiProvider>
   </React.StrictMode>

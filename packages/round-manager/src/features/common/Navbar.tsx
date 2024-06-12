@@ -3,7 +3,7 @@ import { PlusSmIcon } from "@heroicons/react/solid";
 import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dark.svg";
 import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo-dark.svg";
 import { Button } from "common/src/styles";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+// import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { AlloVersionSwitcher } from "common/src/components/AlloVersionSwitcher";
 
 export interface NavbarProps {
@@ -57,7 +57,8 @@ export default function Navbar({
               {alloVersionSwitcherVisible && (
                 <AlloVersionSwitcher color="white" />
               )}
-              <ConnectButton />
+              {/* <ConnectButton /> */}
+              <w3m-button />
             </div>
           </div>
         </div>

@@ -6,8 +6,8 @@ import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg
 import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg";
 import Footer from "common/src/components/Footer";
 import Navbar from "./Navbar";
-import { providers } from "ethers";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+// import { providers } from "ethers";
+// import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 /**
  * Component for protecting child routes that require web3 wallet instance.
@@ -45,7 +45,8 @@ export default function Auth() {
                   <br />
                   rounds and voting mechanisms.
                 </p>
-                <ConnectButton />
+                {/* <ConnectButton /> */}
+                return <w3m-button />
               </div>
             </div>
             <div className="row-span-5">
