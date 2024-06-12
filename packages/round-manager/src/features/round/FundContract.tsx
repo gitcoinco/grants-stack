@@ -142,7 +142,7 @@ export default function FundContract(props: {
   round: Round | undefined;
   roundId: string | undefined;
 }) {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const navigate = useNavigate();
   const { signer } = useWallet();
 
@@ -156,7 +156,6 @@ export default function FundContract(props: {
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
 
-  const { chain } = useAccount() || {};
   const chainId = chain?.id ?? 5;
 
   const allo = useAllo();

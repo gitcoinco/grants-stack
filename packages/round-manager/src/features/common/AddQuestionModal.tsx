@@ -8,8 +8,8 @@ import { SchemaQuestion, typeToText } from "../api/utils";
 import BaseSwitch from "./BaseSwitch";
 import { InputIcon } from "./InputIcon";
 import Option from "./Option";
-import { useWallet } from "./Auth";
 import { isLitUnavailable } from "common";
+import { useAccount } from "wagmi";
 
 const INITIAL_VALUE = "Select a type";
 
@@ -40,7 +40,7 @@ function AddQuestionModal({
 }: AddQuestionModalProps) {
   const questionExists = question && question.index !== undefined;
 
-  const { chain } = useWallet();
+  const { chainId } = useAccount();
 
   const [isOpen, setIsOpen] = useState(show);
   const initialQuestion = question;
@@ -86,7 +86,7 @@ function AddQuestionModal({
         <BaseSwitch
           testid="encrypted-toggle"
           key="encrypted"
-          disabled={isLitUnavailable(chain.id)}
+          disabled={isLitUnavailable(chainId!)}
           activeLabel="Encrypted"
           inactiveLabel="Not Encrypted"
           value={

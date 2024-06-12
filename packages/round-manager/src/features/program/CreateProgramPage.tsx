@@ -7,7 +7,6 @@ import {
   XIcon,
 } from "@heroicons/react/solid";
 
-import { useWallet } from "../common/Auth";
 import { Button, Input } from "common/src/styles";
 import Navbar from "../common/Navbar";
 import Footer from "common/src/components/Footer";
@@ -18,6 +17,7 @@ import { ProgressStatus, ProgressStep } from "../api/types";
 import { CreateProgramState, useCreateProgram } from "./useCreateProgram";
 import ReactTooltip from "react-tooltip";
 import { AlloError, getChainById, stringToBlobUrl } from "common";
+import { useAccount } from "wagmi";
 
 type FormData = {
   name: string;
@@ -55,7 +55,7 @@ export default function CreateProgram() {
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
 
-  const { address, chain } = useWallet();
+  const { address, chain } = useAccount();
 
   const { createProgram, state: createProgramState } = useCreateProgram();
 
@@ -251,14 +251,14 @@ export default function CreateProgram() {
                     </label>
 
                     <div className="opacity-50 flex mt-1 py-[6px] shadow-sm px-3 border rounded-md border-grey-100">
-                      {getChainById(chain.id) ? (
+                      {getChainById(chain!.id) ? (
                         <>
                           <img
-                            src={stringToBlobUrl(getChainById(chain.id).icon)}
+                            src={stringToBlobUrl(getChainById(chain!.id).icon)}
                             alt="program-chain-logo"
                             className="h-4 w-4 ml-1 mr-2 mt-1"
                           />
-                          <p>{chain.name}</p>
+                          <p>{chain!.name}</p>
                         </>
                       ) : (
                         <>

@@ -2,7 +2,7 @@ import { Client } from "allo-indexer-client";
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import useSWR from "swr";
-import { useWallet } from "./features/common/Auth";
+import { useAccount } from "wagmi";
 
 export function useDebugMode(): boolean {
   const [searchParams] = useSearchParams();
@@ -15,15 +15,18 @@ export function useDebugMode(): boolean {
 }
 
 export function useAlloIndexerClient(): Client {
-  const { chain } = useWallet();
+  const { chainId } = useAccount();
 
   return useMemo(() => {
+    if (!chainId) {
+      throw new Error("Chain ID is not set");
+    }
     return new Client(
       fetch.bind(window),
       process.env.REACT_APP_INDEXER_V2_API_URL ?? "",
-      chain.id
+      chainId
     );
-  }, [chain.id]);
+  }, [chainId]);
 }
 
 export function useRoundMatchingFunds(

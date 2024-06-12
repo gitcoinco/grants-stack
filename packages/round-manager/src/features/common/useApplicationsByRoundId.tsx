@@ -1,17 +1,21 @@
+import { useAccount } from "wagmi";
 import { GrantApplication } from "../../features/api/types";
-import { useWallet } from "../../features/common/Auth";
 import { useDataLayer } from "data-layer";
 import useSWR from "swr";
 
 export const useApplicationsByRoundId = (roundId: string) => {
   const dataLayer = useDataLayer();
-  const {
-    chain: { id: chainId },
-  } = useWallet();
+  const { chainId } = useAccount();
 
   return useSWR(
     [roundId, chainId],
     async () => {
+      if (!chainId) {
+        console.error(
+          `Chain ID is not set for round ${roundId} in useApplicationsByRoundId`
+        );
+        return [];
+      }
       const dataLayerApplications = await dataLayer.getApplicationsForManager({
         roundId,
         chainId,

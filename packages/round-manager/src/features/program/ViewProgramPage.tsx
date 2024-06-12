@@ -21,7 +21,6 @@ import { Button } from "common/src/styles";
 import { useEffect, useState } from "react";
 import { abbreviateAddress } from "../api/utils";
 import AccessDenied from "../common/AccessDenied";
-import { useWallet } from "../common/Auth";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
 
@@ -35,6 +34,7 @@ import { parseRoundDates } from "../common/parseRoundDates";
 import { isDirectRound } from "../round/ViewRoundPage";
 import { getRoundDescriptionStatus } from "./getRoundDescriptionStatus";
 import { getAlloVersion } from "common/src/config";
+import { useAccount } from "wagmi";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -42,7 +42,7 @@ export default function ViewProgram() {
 
   const { id: programId } = useParams();
 
-  const { address } = useWallet();
+  const { address } = useAccount();
 
   const { program: programToRender, fetchProgramsStatus } =
     useProgramById(programId);
@@ -67,8 +67,8 @@ export default function ViewProgram() {
         return;
       }
 
-      if (programToRender) {
-        programToRender.operatorWallets.includes(address?.toLowerCase())
+      if (programToRender && address) {
+        programToRender.operatorWallets.includes(address.toLowerCase())
           ? setHasAccess(true)
           : setHasAccess(false);
       } else {
