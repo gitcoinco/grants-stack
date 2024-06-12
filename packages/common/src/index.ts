@@ -411,14 +411,6 @@ interface JsonMap {
   [key: string]: AnyJson;
 }
 type JsonArray = Array<AnyJson>;
-
-/**
- * Wrapper hook to expose wallet auth information to other components
- */
-export function useWallet() {
-  return useOutletContext<Web3Instance>();
-}
-
 export interface Web3Instance {
   /**
    * Currently selected address in ETH format i.e 0x...

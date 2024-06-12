@@ -105,7 +105,7 @@ root.render(
   <ErrorBoundary>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider coolMode>
+        <RainbowKitProvider>
           <ChakraProvider resetCSS={false}>
             <Provider store={store}>
               <AlloWrapper>

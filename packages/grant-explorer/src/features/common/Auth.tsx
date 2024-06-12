@@ -44,10 +44,3 @@ export default function Auth() {
     <Outlet context={data} />
   );
 }
-
-/**
- * Wrapper hook to expose wallet auth information to other components
- */
-export function useWallet() {
-  return useOutletContext<Web3Instance>();
-}
