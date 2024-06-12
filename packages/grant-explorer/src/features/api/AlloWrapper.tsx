@@ -61,10 +61,10 @@ function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
       return;
     }
 
-    const config = getConfig();
+    const globalConfig = getConfig();
     let alloBackend: Allo;
 
-    if (config.allo.version === "allo-v2") {
+    if (globalConfig.allo.version === "allo-v2") {
       alloBackend = new AlloV2({
         chainId: chainID,
         transactionSender: createEthersTransactionSender(signer, provider),

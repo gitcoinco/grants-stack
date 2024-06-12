@@ -1,6 +1,6 @@
+import { Provider } from "@ethersproject/providers";
 import { ethers } from "ethers";
 import { Buffer } from "buffer";
-import { Provider } from "@wagmi/core";
 import { getConfig } from "common/src/config";
 import { isJestRunning } from "common";
 import { global } from "../global";

@@ -29,11 +29,6 @@ jest.mock("../../../actions/grantsMetadata", () => ({
   fetchGrantData: () => ({ type: "TEST" }),
 }));
 
-jest.mock("../../../utils/projects", () => ({
-  ...jest.requireActual("../../../utils/projects"),
-  fetchProjectOwners: jest.fn(),
-}));
-
 describe("<Show />", () => {
   let store: any;
   const projectId = `1`;
