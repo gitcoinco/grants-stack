@@ -44,7 +44,7 @@
     "@headlessui/react": "^1.7.4",
     "@heroicons/react": "^2.0.13",
     "@playwright/test": "^1.41.1",
-    "@rainbow-me/rainbowkit": "2.1.2",
+    "@rainbow-me/rainbowkit": "^2.1.2",
     "@rsbuild/core": "^0.4.1",
     "@rsbuild/plugin-react": "^0.3.11",
     "@rsbuild/plugin-svgr": "^0.3.11",
@@ -112,7 +112,7 @@
     "util": "^0.12.4",
     "verify-env": "*",
     "viem": "^2.9.31",
-    "wagmi": "2.9.2",
+    "wagmi": "^2.9.2",
     "web-vitals": "^2.1.0",
     "zod": "^3.22.4",
     "zustand": "^4.4.0"
