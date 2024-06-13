@@ -28,9 +28,25 @@ describe("listPrograms", () => {
     const expectedPrograms: Program[] = [expectedProgram];
 
     const actualPrograms = await listPrograms("0x0", 1, {
-      getRoundsByProgramIdAndChainId: jest
-        .fn()
-        .mockRejectedValue(new Error(":(")),
+      getProgramsByUser: jest.fn().mockResolvedValue({
+        programs: [
+          {
+            id: expectedProgram.id,
+            roles: [
+              {
+                address: expectedProgram.operatorWallets[0],
+                role: "OWNER",
+                createdAtBlock: "0",
+              },
+            ],
+            metadata: {
+              name: expectedProgram.metadata?.name,
+            },
+            createdByAddress: expectedProgram.operatorWallets[0],
+            tags: ["program"],
+          },
+        ],
+      }),
     } as unknown as DataLayer);
 
     expect(actualPrograms).toEqual(expectedPrograms);
@@ -48,9 +64,22 @@ describe("getProgramById", () => {
     const programId = expectedProgram.id;
 
     const actualProgram = await getProgramById(programId as string, 1, {
-      getRoundsByProgramIdAndChainId: jest
-        .fn()
-        .mockRejectedValue(new Error(":(")),
+      getProgramById: jest.fn().mockResolvedValue({
+        program: {
+          id: expectedProgram.id,
+          roles: [
+            {
+              address: expectedProgram.operatorWallets[0],
+              role: "OWNER",
+              createdAtBlock: "0",
+            },
+          ],
+          metadata: {
+            name: expectedProgram.metadata?.name,
+          },
+          tags: ["program"],
+        },
+      }),
     } as unknown as DataLayer);
 
     expect(actualProgram).toEqual(expectedProgram);
