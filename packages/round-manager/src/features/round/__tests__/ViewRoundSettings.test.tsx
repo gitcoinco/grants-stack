@@ -29,6 +29,14 @@ jest.mock("wagmi", () => ({
   useAccount: () => ({
     chainId: 1,
   }),
+  useDisconnect: jest.fn(),
+}));
+
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
+  }),
 }));
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
@@ -89,9 +97,6 @@ describe("View Round", () => {
         id: mockRoundData.id,
       };
     });
-
-    (useAccount as jest.Mock).mockReturnValue({ chains: [] });
-    (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
   it("when edit is clicked, it enables the imputs for editing and shows the update round button and cancel button", () => {

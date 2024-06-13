@@ -1,7 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useTokenPrice } from "common";
 import { useParams } from "react-router-dom";
-import { useBalance, useDisconnect, useSwitchChain } from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
@@ -12,9 +11,21 @@ import { ProgressStatus, Round } from "../../api/types";
 import ReclaimFunds from "../ReclaimFunds";
 import ViewRoundPage from "../ViewRoundPage";
 
+const mockRoundData: Round = makeRoundData();
+
 jest.mock("wagmi", () => ({
   useAccount: () => ({
     chainId: 1,
+    address: mockRoundData.operatorWallets![0],
+  }),
+  useSwitchChain: () => ({
+    switchChain: jest.fn(),
+  }),
+  useDisconnect: jest.fn(),
+  useBalance: () => ({
+    data: { formatted: "0", value: "0" },
+    error: null,
+    loading: false,
   }),
 }));
 jest.mock("../../common/Auth");
@@ -22,6 +33,13 @@ jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
   getDefaultConfig: jest.fn(),
+}));
+
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
+  }),
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -62,8 +80,6 @@ jest.mock("data-layer", () => ({
 const chainId = "0";
 const roundId = "testRoundId";
 
-const mockRoundData: Round = makeRoundData();
-
 describe("ReclaimFunds", () => {
   it("displays NoInformationContent when round is not over", () => {
     const currentTime = new Date();
@@ -95,9 +111,6 @@ describe("ReclaimFunds", () => {
         };
       });
 
-      (useSwitchChain as jest.Mock).mockReturnValue({ chains: [] });
-      (useDisconnect as jest.Mock).mockReturnValue({});
-
       const currentTime = new Date();
       const roundEndTime = new Date(
         currentTime.getTime() - 1000 * 60 * 60 * 24
@@ -108,11 +121,6 @@ describe("ReclaimFunds", () => {
     it("displays ReclaimFundsContent when round is over", () => {
       (useTokenPrice as jest.Mock).mockImplementation(() => ({
         data: "100",
-        error: null,
-        loading: false,
-      }));
-      (useBalance as jest.Mock).mockImplementation(() => ({
-        data: { formatted: "0", value: "0" },
         error: null,
         loading: false,
       }));

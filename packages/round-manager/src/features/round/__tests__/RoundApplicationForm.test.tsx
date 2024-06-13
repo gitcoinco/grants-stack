@@ -35,6 +35,10 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
   getDefaultConfig: jest.fn(),
 }));
 jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+    address: "0x0",
+  }),
   useNetwork: () => ({
     chain: jest.fn(),
     chains: [

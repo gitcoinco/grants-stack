@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { ethers } from "ethers";
 import { act } from "react-dom/test-utils";
 import { useParams } from "react-router-dom";
-import { useBalance, useDisconnect, useSwitchChain } from "wagmi";
+import { useBalance } from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
@@ -19,6 +19,11 @@ import { parseEther } from "ethers/lib/utils";
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useSwitchChain: () => ({
+    switchChain: jest.fn(),
+  }),
+  useDisconnect: jest.fn(),
   useAccount: () => ({
     chainId: 1,
   }),
@@ -137,8 +142,6 @@ describe("View Fund Grantees", () => {
       };
     });
 
-    (useSwitchChain as jest.Mock).mockReturnValue({ chains: [] });
-    (useDisconnect as jest.Mock).mockReturnValue({});
     (useParams as jest.Mock).mockReturnValueOnce({
       id: undefined,
     });

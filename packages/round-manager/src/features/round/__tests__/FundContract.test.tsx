@@ -1,7 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useTokenPrice } from "common";
 import { useParams } from "react-router-dom";
-import { useAccount, useBalance, useDisconnect, useSwitchChain } from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
@@ -9,16 +8,33 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { ProgressStatus, Round } from "../../api/types";
-import ReclaimFunds from "../ReclaimFunds";
 import ViewRoundPage from "../ViewRoundPage";
+import { useBalance } from "wagmi";
 
+const mockRoundData: Round = makeRoundData();
 jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useSwitchChain: () => ({
+    switchChain: jest.fn(),
+  }),
+  useDisconnect: jest.fn(),
   useAccount: () => ({
     chainId: 1,
+    address: mockRoundData.operatorWallets![0],
+  }),
+  useBalance: () => ({
+    data: { formatted: "0", value: "0" },
+    error: null,
+    loading: false,
   }),
 }));
 jest.mock("../../common/Auth");
-
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
+  }),
+}));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
   getDefaultConfig: jest.fn(),
@@ -59,8 +75,6 @@ jest.mock("data-layer", () => ({
   useApplicationsByRoundId: () => {},
 }));
 
-const mockRoundData: Round = makeRoundData();
-
 describe("fund contract tabr", () => {
   beforeEach(() => {
     (useParams as jest.Mock).mockImplementation(() => {
@@ -68,13 +82,6 @@ describe("fund contract tabr", () => {
         id: mockRoundData.id,
       };
     });
-
-    (useSwitchChain as jest.Mock).mockReturnValue({ chains: [] });
-    (useDisconnect as jest.Mock).mockReturnValue({});
-
-    (useAccount as jest.Mock).mockImplementation(() => ({
-      address: mockRoundData.operatorWallets![0],
-    }));
 
     const currentTime = new Date();
     const roundEndTime = new Date(currentTime.getTime() - 1000 * 60 * 60 * 24);
@@ -84,11 +91,6 @@ describe("fund contract tabr", () => {
   it("displays fund contract tab", () => {
     (useTokenPrice as jest.Mock).mockImplementation(() => ({
       data: "100",
-      error: null,
-      loading: false,
-    }));
-    (useBalance as jest.Mock).mockImplementation(() => ({
-      data: { formatted: "0", value: "0" },
       error: null,
       loading: false,
     }));

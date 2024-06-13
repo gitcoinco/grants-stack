@@ -43,6 +43,8 @@ import {
 } from "common";
 import { zeroAddress } from "viem";
 import { DistributionMatch } from "data-layer";
+import { WagmiProvider } from "wagmi";
+import { config } from "./app/wagmi";
 
 export const mockedOperatorWallet = faker.finance.ethereumAddress();
 

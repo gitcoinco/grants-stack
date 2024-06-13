@@ -183,7 +183,6 @@ export const useRoundById = (roundId?: string) => {
 
   useEffect(() => {
     if (roundId) {
-      console.log("=====> provider", provider);
       const existingRound = context.state.data.find(
         (round) =>
           round.id === roundId && round.chainId === provider.network.chainId

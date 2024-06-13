@@ -29,7 +29,7 @@ import {
   makeGrantApplicationData,
   makeRoundData,
 } from "../../../test-utils";
-import { GrantApplication, ProgressStatus } from "../../api/types";
+import { GrantApplication, ProgressStatus, Round } from "../../api/types";
 import { useWallet } from "../../common/Auth";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import ViewApplicationPage from "../ViewApplicationPage";
@@ -96,13 +96,32 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
   getDefaultConfig: jest.fn(),
 }));
-jest.mock("wagmi", () => ({
-  useAccount: () => ({
-    chainId: 1,
+
+jest.mock("../../common/useApplicationsByRoundId");
+
+jest.mock("../../../features/common/Auth", () => ({
+  useWallet: () => mockWallet,
+}));
+
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
   }),
 }));
 
-jest.mock("../../common/useApplicationsByRoundId");
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useSwitchChain: () => ({
+    switchChain: jest.fn(),
+  }),
+  useDisconnect: jest.fn(),
+  usePayout: jest.fn(),
+  useAccount: () => ({
+    chainId: 1,
+    address: "0x0",
+  }),
+}));
 
 const verifyCredentialMock = jest.spyOn(
   PassportVerifierWithExpiration.prototype,
@@ -113,11 +132,6 @@ describe("ViewApplicationPage", () => {
   let mockBulkUpdateApplicationStatus: jest.Mock;
 
   beforeEach(() => {
-    (useWallet as jest.Mock).mockImplementation(() => mockWallet);
-    (useAccount as jest.Mock).mockReturnValue(mockNetwork);
-    (useSwitchChain as any).mockReturnValue({ chains: [] });
-    (useDisconnect as any).mockReturnValue({});
-
     mockBulkUpdateApplicationStatus = jest.fn().mockImplementation(() => {
       return new AlloOperation(async () => ({
         type: "success",
@@ -141,19 +155,16 @@ describe("ViewApplicationPage", () => {
   });
 
   it("should display access denied when wallet accessing is not round operator", async () => {
-    const application = makeGrantApplicationData({ applicationIdOverride });
+    const application = makeGrantApplicationData({
+      applicationIdOverride,
+    });
     (useApplicationsByRoundId as jest.Mock).mockReturnValue({
       data: [application],
       isLoading: false,
     });
-
-    const wrongAddress = faker.finance.ethereumAddress();
-    (useWallet as jest.Mock).mockImplementation(() => ({
-      ...mockWallet,
-      address: wrongAddress,
-    }));
-
-    renderWithContext(<ViewApplicationPage />);
+    renderWithContext(<ViewApplicationPage />, {}, () => {}, {
+      operatorWallets: ["0x123"],
+    });
 
     await waitFor(() => {
       expect(screen.getByText("Access Denied!")).toBeInTheDocument();
@@ -535,12 +546,6 @@ describe("ViewApplicationPage", () => {
 });
 
 describe("ViewApplicationPage verification badges", () => {
-  beforeEach(() => {
-    (useWallet as jest.Mock).mockImplementation(() => mockWallet);
-    (useSwitchChain as any).mockReturnValue({ chains: [] });
-    (useDisconnect as any).mockReturnValue({});
-  });
-
   it("shows project twitter with no badge when there is no credential", async () => {
     const provider = "twitter";
     verifyCredentialMock.mockResolvedValue(true);
@@ -842,7 +847,8 @@ describe("ViewApplicationPage verification badges", () => {
 export const renderWithContext = (
   ui: JSX.Element,
   bulkUpdateGrantApplicationStateOverrides: Partial<BulkUpdateGrantApplicationState> = {},
-  dispatch: any = jest.fn()
+  dispatch: any = jest.fn(),
+  roundOverrides?: Partial<Round>
 ) =>
   render(
     <MemoryRouter>
@@ -859,6 +865,7 @@ export const renderWithContext = (
                 makeRoundData({
                   id: roundIdOverride,
                   operatorWallets: [mockAddress],
+                  ...roundOverrides,
                 }),
               ],
               fetchRoundStatus: ProgressStatus.IS_SUCCESS,

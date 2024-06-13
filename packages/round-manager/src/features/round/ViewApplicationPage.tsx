@@ -287,7 +287,10 @@ export default function ViewApplicationPage() {
         return;
       }
 
+
+      console.log("======> Round AND Address", round, address);
       if (round && address) {
+        console.log("=====> Round", round);
         setHasAccess(!!round.operatorWallets?.includes(address.toLowerCase()));
       }
     }
