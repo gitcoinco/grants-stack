@@ -274,8 +274,8 @@ importers:
         specifier: ^0.11.0
         version: 0.11.3
       verify-env:
-        specifier: '*'
-        version: 0.0.1
+        specifier: ^1.0.0
+        version: link:../verify-env
       viem:
         specifier: ^2.9.31
         version: 2.13.8(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
@@ -850,8 +850,8 @@ importers:
         specifier: ^0.12.4
         version: 0.12.5
       verify-env:
-        specifier: '*'
-        version: 0.0.1
+        specifier: ^1.0.0
+        version: link:../verify-env
       viem:
         specifier: ^2.9.31
         version: 2.13.1(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
