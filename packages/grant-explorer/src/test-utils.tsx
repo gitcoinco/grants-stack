@@ -60,7 +60,8 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     token: faker.finance.ethereumAddress(),
     payoutStrategy: {
       id: "some-id",
-      strategyName: "allov1.QF",
+      strategyName:
+        "allov2.DonationVotingMerkleDistributionDirectTransferStrategy",
     },
     votingStrategy: faker.finance.ethereumAddress(),
     ownedBy: faker.finance.ethereumAddress(),
@@ -136,7 +137,8 @@ export const makeRoundOverviewData = (
     matchTokenAddress: zeroAddress,
     roundMetadata: makeRoundMetadata(roundMetadataOverrides),
     applications: Array.from({ length: 2 }).map((_, i) => ({ id: String(i) })),
-    strategyName: "allov1.QF",
+    strategyName:
+      "allov2.DonationVotingMerkleDistributionDirectTransferStrategy",
     strategyAddress: faker.finance.ethereumAddress(),
     strategyId: "",
     tags: [],
