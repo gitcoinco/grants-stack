@@ -124,7 +124,7 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
       },
     ],
     finalized: false,
-    tags: ["allo-v1"],
+    tags: ["allo-v2"],
     matchAmount: 0n,
     matchAmountInUsd: 0,
     fundedAmount: 0n,

@@ -61,7 +61,7 @@ describe("<ViewProgram />", () => {
 
     stubProgram = makeProgramData({
       id: programId,
-      tags: ["allo-v1"],
+      tags: ["allo-v2"],
       operatorWallets: [mockedOperatorWallet],
       roles: [
         {
@@ -91,12 +91,6 @@ describe("<ViewProgram />", () => {
   });
 
   it("should display access denied when wallet accessing is not program operator", () => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: {},
-      address: faker.finance.ethereumAddress(),
-      provider: { getNetwork: () => Promise.resolve({ chainId: "0x0" }) },
-    });
-
     render(
       wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram />, {
@@ -104,7 +98,19 @@ describe("<ViewProgram />", () => {
           fetchRoundStatus: ProgressStatus.IS_SUCCESS,
         }),
         {
-          programs: [stubProgram],
+          programs: [
+            {
+              ...stubProgram,
+              roles: [
+                {
+                  address: faker.finance.ethereumAddress(),
+                  role: "OWNER",
+                  createdAtBlock: "0",
+                },
+              ],
+              operatorWallets: [faker.finance.ethereumAddress()],
+            },
+          ],
           fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
         }
       )
@@ -134,6 +140,7 @@ describe("<ViewProgram />", () => {
       faker.finance.ethereumAddress(),
       faker.finance.ethereumAddress(),
       faker.finance.ethereumAddress(),
+      mockedOperatorWallet,
     ];
 
     const stubProgram = makeProgramData({ id: programId, operatorWallets });
