@@ -161,7 +161,7 @@ export const useRounds = (programId?: string) => {
         fetchRounds(context.dispatch, dataLayer, network.chainId, programId);
       });
     }
-  }, [dataLayer, provider, programId, context.dispatch]);
+  }, [dataLayer, programId, context.dispatch]);
 
   return { ...context.state, dispatch: context.dispatch };
 };
