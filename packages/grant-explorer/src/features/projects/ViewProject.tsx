@@ -1,9 +1,7 @@
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import {
   formatDateWithOrdinal,
-  getChainById,
   renderToHTML,
-  stringToBlobUrl,
   useParams,
   useValidateCredential,
 } from "common";
@@ -20,8 +18,6 @@ import DefaultLogoImage from "../../assets/default_logo.png";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GlobeIcon } from "../../assets/icons/globe-icon.svg";
-import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle.svg";
-import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ProjectBanner } from "../common/ProjectBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
@@ -33,8 +29,6 @@ import {
 import { DefaultLayout } from "../common/DefaultLayout";
 import { useProject, useProjectApplications } from "./hooks/useProject";
 import NotFoundPage from "../common/NotFoundPage";
-import { useCartStorage } from "../../store";
-import { CartProject } from "../api/types";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -85,11 +79,6 @@ export default function ViewProject() {
     dataLayer
   );
 
-  const pastRroundApplications = projectApplications?.filter(
-    (projectApplication) =>
-      new Date(projectApplication.round.donationsEndTime) < new Date()
-  );
-
   const project = projectData?.project;
 
   const breadCrumbs = [
@@ -99,7 +88,7 @@ export default function ViewProject() {
     },
     {
       name: "Projects",
-      path: `/`,
+      path: `/projects/`,
     },
     {
       name: project?.metadata.title,
@@ -137,9 +126,9 @@ export default function ViewProject() {
             {projectApplicationsError && (
               <p className="ml-4 mt-8">Couldn't load project data.</p>
             )}
-            {pastRroundApplications && pastRroundApplications?.length > 0 && (
+            {projectApplications && projectApplications?.length > 0 && (
               <>
-                {pastRroundApplications.map((projectApplication) => (
+                {projectApplications.map((projectApplication) => (
                   <RoundListItem
                     key={projectApplication.id}
                     projectApplication={projectApplication}
@@ -147,7 +136,7 @@ export default function ViewProject() {
                 ))}
               </>
             )}
-            {pastRroundApplications && pastRroundApplications?.length === 0 && (
+            {projectApplications && projectApplications?.length === 0 && (
               <p className="ml-4 mt-8">No past rounds found.</p>
             )}
           </>
@@ -157,9 +146,9 @@ export default function ViewProject() {
     [
       project,
       description,
+      projectApplications,
       isProjectApplicationsLoading,
       projectApplicationsError,
-      pastRroundApplications,
     ]
   );
 
@@ -388,32 +377,9 @@ function ProjectLogo({ logoImg }: { logoImg?: string }) {
 function Sidebar(props: {
   projectApplications?: ProjectApplicationWithRoundAndProgram[];
 }) {
-  const activeQFRoundApplications = props.projectApplications?.filter(
-    (projectApplication) =>
-      new Date(projectApplication.round.donationsEndTime) > new Date() &&
-      projectApplication.round.strategyName ===
-        "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"
-  );
-  const { projects, add, remove } = useCartStorage();
   return (
-    <div className="flex flex-col">
-      <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
-        <ProjectStats projectApplications={props.projectApplications} />
-      </div>
-      {activeQFRoundApplications && activeQFRoundApplications?.length > 0 && (
-        <h4 className="text-xl font-medium">Active rounds</h4>
-      )}
-      <div className="mt-4 max-w-[320px] h-fit mb-6 rounded-3xl ">
-        {activeQFRoundApplications?.map((projectApplication) => (
-          <ActiveRoundComponent
-            key={projectApplication.id}
-            projectApplication={projectApplication}
-            addToCart={add}
-            removeFromCart={remove}
-            projectsInCart={projects}
-          />
-        ))}
-      </div>
+    <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
+      <ProjectStats projectApplications={props.projectApplications} />
     </div>
   );
 }
@@ -506,128 +472,38 @@ export function RoundListItem({
   });
 
   const roundType =
-    projectApplication.round.strategyName === "allov1.Direct" ||
-    projectApplication.round.strategyName ===
-      "allov2.DirectGrantsSimpleStrategy" ||
-    projectApplication.round.strategyName === "allov2.DirectGrantsLiteStrategy"
-      ? "Direct grants"
-      : "Quadratic funding";
+    projectApplication.round.strategyName === "allov1.Direct"
+      ? "Direct Grants"
+      : "Quadratic Funding";
 
   return (
-    <div className="w-full my-8 flex flex-col md:flex-row justify-between items-center text-sm px-2 border-b border-gray-400">
-      <div className="flex md:flex-auto my-2 md:w-24 truncate mr-4">
-        <span className="text-black-400 font-semibold">
-          {projectApplication.round.project.name}
-        </span>
-      </div>
-      <div className="flex md:flex-auto my-2 md:w-24 truncate mr-4">
-        <span className="text-black-400 font-semibold">
-          {projectApplication.round.roundMetadata.name}
-        </span>
-      </div>
-      {roundType === "Quadratic funding" ? (
-        <div className="flex-1 my-2 mr-4 text-gray-500">
+    <Box>
+      <Box
+        className="w-full my-8 lg:flex md:flex basis-0 justify-between items-center text-[14px] text-gitcoin-grey-400 px-2"
+        borderBottom="1px solid"
+        borderBottomColor="gray.400"
+      >
+        <Box className="flex-auto my-2 w-36 truncate mr-4">
+          <span className="font-medium">
+            {projectApplication.round.project.name}
+          </span>
+        </Box>
+        <Box className="flex-auto my-2 w-36 truncate mr-4">
+          <span className="font-medium">
+            {projectApplication.round.roundMetadata.name}
+          </span>
+        </Box>
+        <Box className="flex-1 my-2 mr-4">
           <span>
             {applicationsStartTime} - {donationsEndTime}
           </span>
-        </div>
-      ) : (
-        <div className="flex-1 my-2 mr-4 text-gray-500">
-          <span>{applicationsStartTime}</span>
-        </div>
-      )}
-      <div className="flex-1 my-2">
-        <span
-          className={`flex justify-center ${roundType === "Quadratic funding" ? "bg-green-100" : "bg-yellow-100"} items-center text-md rounded-full p-2 font-medium`}
-        >
-          <span className="text-black font-medium">{roundType}</span>
-        </span>
-      </div>
-    </div>
-  );
-}
-
-export function ActiveRoundComponent(props: {
-  projectApplication: ProjectApplicationWithRoundAndProgram;
-  addToCart: (project: CartProject) => void;
-  removeFromCart: (project: CartProject) => void;
-  projectsInCart: CartProject[];
-}) {
-  const roundName = props.projectApplication.round.roundMetadata.name;
-  const roundStartDate = new Date(
-    props.projectApplication.round.donationsStartTime
-  ).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-  const roundEndDate = new Date(
-    props.projectApplication.round.donationsEndTime
-  ).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-  const cartProject: CartProject = {
-    grantApplicationId: props.projectApplication.id,
-    projectRegistryId: props.projectApplication.projectId,
-    anchorAddress: props.projectApplication.anchorAddress,
-    recipient: props.projectApplication.metadata.application.recipient,
-    projectMetadata: props.projectApplication.metadata.application.project,
-    grantApplicationFormAnswers: [],
-    status: props.projectApplication.status,
-    applicationIndex: 0,
-    roundId: props.projectApplication.roundId,
-    chainId: props.projectApplication.chainId,
-    amount: "0",
-  };
-  const roundLink = `https://explorer.gitcoin.co/#/round/${props.projectApplication.chainId}/${props.projectApplication.roundId}`;
-  const roundChain = getChainById(props.projectApplication.chainId);
-  const isProjectInCart = props.projectsInCart.some(
-    (project) => project.projectRegistryId === cartProject.projectRegistryId
-  );
-
-  return (
-    <div className="p-4 bg-gray-50 rounded-3xl flex flex-col space-y-4">
-      <div className="flex justify-between items-center">
-        <div>
-          <div className="text-lg font-semibold text-gray-900 mb-2">
-            {roundName}
-          </div>
-          <div className="text-gray-500mb-4">
-            {roundStartDate} - {roundEndDate}
-          </div>
-        </div>
-        <img
-          className="mt-2 ml-2 inline-block h-9 w-9"
-          src={stringToBlobUrl(roundChain.icon)}
-          alt={"Chain Logo"}
-        />
-      </div>
-      <div className="flex justify-between gap-2">
-        <a
-          href={roundLink}
-          target="_blank"
-          className="flex justify-center bg-green-100 text-black-500 rounded-xl px-4 py-2 w-3/4"
-        >
-          View round
-        </a>
-        {isProjectInCart ? (
-          <div
-            onClick={() => props.removeFromCart(cartProject)}
-            className="flex text-black-500 w-1/4 justify-center cursor-pointer"
-          >
-            <CheckedCircleIcon className="w-10" />
-          </div>
-        ) : (
-          <div
-            onClick={() => props.addToCart(cartProject)}
-            className="flex text-black-500 w-1/4 justify-center cursor-pointer"
-          >
-            <CartCircleIcon className="w-10" />
-          </div>
-        )}
-      </div>
-    </div>
+        </Box>
+        <Box className="flex-1 my-2">
+          <span className="flex bg-green-100 items-center text-md rounded-full p-2 font-modern-era-medium text-black-500">
+            {roundType}
+          </span>
+        </Box>
+      </Box>
+    </Box>
   );
 }
