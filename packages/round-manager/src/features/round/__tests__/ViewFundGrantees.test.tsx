@@ -149,12 +149,6 @@ describe("View Fund Grantees", () => {
     (useParams as jest.Mock).mockReturnValueOnce({
       id: undefined,
     });
-
-    // (useBalance as jest.Mock).mockImplementation(() => ({
-    //   data: { formatted: "0", value: ethers.utils.parseEther("1000") },
-    //   error: null,
-    //   loading: false,
-    // }));
   });
 
   it("displays non-finalized status when round is not finalized", () => {
