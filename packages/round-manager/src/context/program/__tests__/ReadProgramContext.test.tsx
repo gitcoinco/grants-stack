@@ -24,6 +24,7 @@ jest.mock("../../../features/common/Auth", () => ({
 jest.mock("wagmi", () => ({
   useAccount: () => ({
     chainId: 1,
+    address: "0x0",
   }),
 }));
 jest.mock("@rainbow-me/rainbowkit", () => ({
