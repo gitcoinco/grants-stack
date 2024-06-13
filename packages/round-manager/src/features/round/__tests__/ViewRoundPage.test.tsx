@@ -2,7 +2,6 @@
 
 import { render, screen } from "@testing-library/react";
 import { useParams } from "react-router-dom";
-import { useDisconnect, useSwitchChain } from "wagmi";
 import {
   makeDirectGrantRoundData,
   makeGrantApplicationData,
@@ -15,6 +14,8 @@ import { GrantApplication, ProgressStatus, Round } from "../../api/types";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import ViewRoundPage from "../ViewRoundPage";
 
+const mockRoundData: Round = makeRoundData();
+
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
   useAllo: jest.fn(),
@@ -22,8 +23,20 @@ jest.mock("common", () => ({
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useSwitchChain: () => ({
+    switchChain: jest.fn(),
+  }),
+  useDisconnect: jest.fn(),
   useAccount: () => ({
     chainId: 1,
+    address: mockRoundData.operatorWallets![0],
+  }),
+}));
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
   }),
 }));
 
@@ -48,8 +61,6 @@ Object.assign(navigator, {
     },
   },
 });
-
-const mockRoundData: Round = makeRoundData();
 
 const mockDirectGrantRoundData: Round = makeDirectGrantRoundData();
 
@@ -88,8 +99,6 @@ describe("View Round", () => {
       };
     });
 
-    (useSwitchChain as jest.Mock).mockReturnValue({ chains: [] });
-    (useDisconnect as jest.Mock).mockReturnValue({});
     (useApplicationsByRoundId as jest.Mock).mockReturnValue({
       data: [],
       isLoading: false,
