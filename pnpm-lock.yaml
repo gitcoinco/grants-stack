@@ -1181,8 +1181,8 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1
       verify-env:
-        specifier: '*'
-        version: 0.0.1
+        specifier: ^1.0.0
+        version: link:../verify-env
       viem:
         specifier: ^2.9.31
         version: 2.13.8(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
@@ -15673,9 +15673,6 @@ packages:
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
-
-  verify-env@0.0.1:
-    resolution: {integrity: sha512-NNniee3edMzaN9kdjvNp8WN+ygMoO/gQzvSPQqfoAgwHoD6AydF49n56xo4yorXmhtm9yoEwNiTxyE9xxR2R+g==}
 
   verror@1.10.0:
     resolution: {integrity: sha512-ZZKSmDAEFOijERBLkmYfJ+vmk3w+7hOLYDNkRCuRuMJGEmqYNCNLyBBFwWKVMhfwaEF3WOd0Zlw86U/WC/+nYw==}
@@ -37473,8 +37470,6 @@ snapshots:
   varint@6.0.0: {}
 
   vary@1.1.2: {}
-
-  verify-env@0.0.1: {}
 
   verror@1.10.0:
     dependencies:
