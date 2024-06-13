@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { ethers } from "ethers";
 import { act } from "react-dom/test-utils";
 import { useParams } from "react-router-dom";
-import { useBalance } from "wagmi";
+import wagmi from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
@@ -19,7 +19,11 @@ import { parseEther } from "ethers/lib/utils";
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi", () => ({
-  ...jest.requireActual("wagmi"),
+  useBalance: () => ({
+    data: { formatted: "0", value: "0" },
+    error: null,
+    loading: false,
+  }),
   useSwitchChain: () => ({
     switchChain: jest.fn(),
   }),
@@ -145,6 +149,12 @@ describe("View Fund Grantees", () => {
     (useParams as jest.Mock).mockReturnValueOnce({
       id: undefined,
     });
+
+    // (useBalance as jest.Mock).mockImplementation(() => ({
+    //   data: { formatted: "0", value: ethers.utils.parseEther("1000") },
+    //   error: null,
+    //   loading: false,
+    // }));
   });
 
   it("displays non-finalized status when round is not finalized", () => {
@@ -255,11 +265,13 @@ describe("View Fund Grantees", () => {
     });
 
     it("Should show the confirmation modal and close on cancel", async () => {
-      (useBalance as jest.Mock).mockImplementation(() => ({
-        data: { formatted: "0", value: ethers.utils.parseEther("1000") },
+
+      const useBalanceSpy = jest.spyOn(wagmi, 'useBalance').mockImplementation(() => ({
+        data: { formatted: '0', value: ethers.utils.parseEther('1000') },
         error: null,
         loading: false,
       }));
+
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
         checkboxes[0].click();
@@ -281,8 +293,8 @@ describe("View Fund Grantees", () => {
     });
 
     it("Should show the progress modal", async () => {
-      (useBalance as jest.Mock).mockImplementation(() => ({
-        data: { formatted: "0", value: ethers.utils.parseEther("1000") },
+      const useBalanceSpy = jest.spyOn(wagmi, 'useBalance').mockImplementation(() => ({
+        data: { formatted: '0', value: ethers.utils.parseEther('1000') },
         error: null,
         loading: false,
       }));
@@ -305,8 +317,8 @@ describe("View Fund Grantees", () => {
     });
 
     it("Should show the warning when not enough funds in contract", async () => {
-      (useBalance as jest.Mock).mockImplementation(() => ({
-        data: { formatted: "0", value: "0" },
+      const useBalanceSpy = jest.spyOn(wagmi, 'useBalance').mockImplementation(() => ({
+        data: { formatted: '0', value:'0' },
         error: null,
         loading: false,
       }));
