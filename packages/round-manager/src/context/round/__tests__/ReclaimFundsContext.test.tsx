@@ -8,7 +8,11 @@ import {
 import { error, success } from "common/dist/allo/common";
 import { AlloV1, createMockTransactionSender, AlloOperation } from "common";
 
-jest.mock("wagmi");
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+  }),
+}));
 jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
 
 jest.mock("viem", () => ({

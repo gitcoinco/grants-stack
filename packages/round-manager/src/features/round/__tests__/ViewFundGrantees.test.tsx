@@ -18,10 +18,15 @@ import { faker } from "@faker-js/faker";
 import { parseEther } from "ethers/lib/utils";
 
 jest.mock("../../common/Auth");
-jest.mock("wagmi");
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+  }),
+}));
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
 
 Object.assign(navigator, {

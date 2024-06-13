@@ -18,6 +18,7 @@ jest.mock("../../api/ipfs");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
 
 jest.mock("../../../constants", () => ({
@@ -35,6 +36,16 @@ jest.mock("data-layer", () => ({
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
   useAllo: jest.fn(),
+}));
+
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 10,
+    address: "0x0000000000000000000000000000000000000000",
+    chain: {
+      id: 10,
+    },
+  }),
 }));
 
 describe("<CreateProgramPage />", () => {

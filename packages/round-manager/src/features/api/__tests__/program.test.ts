@@ -1,3 +1,4 @@
+import { DataLayer } from "data-layer";
 import { makeProgramData } from "../../../test-utils";
 import { getProgramById, listPrograms } from "../program";
 import { Program } from "../types";
@@ -26,35 +27,11 @@ describe("listPrograms", () => {
     };
     const expectedPrograms: Program[] = [expectedProgram];
 
-    const actualPrograms = await listPrograms(
-      "0x0",
-      {
-        getNetwork: async () =>
-          // @ts-expect-error Test file
-          Promise.resolve({ chainId: 1 }),
-      },
-      {
-        getProgramsByUser: jest.fn().mockResolvedValue({
-          programs: [
-            {
-              id: expectedProgram.id,
-              roles: [
-                {
-                  address: expectedProgram.operatorWallets[0],
-                  role: "OWNER",
-                  createdAtBlock: "0",
-                },
-              ],
-              metadata: {
-                name: expectedProgram.metadata?.name,
-              },
-              createdByAddress: expectedProgram.operatorWallets[0],
-              tags: ["program"],
-            },
-          ],
-        }),
-      }
-    );
+    const actualPrograms = await listPrograms("0x0", 1, {
+      getRoundsByProgramIdAndChainId: jest
+        .fn()
+        .mockRejectedValue(new Error(":(")),
+    } as unknown as DataLayer);
 
     expect(actualPrograms).toEqual(expectedPrograms);
   });
@@ -70,32 +47,11 @@ describe("getProgramById", () => {
     });
     const programId = expectedProgram.id;
 
-    const actualProgram = await getProgramById(
-      programId as string,
-      {
-        getNetwork: async () =>
-          // @ts-expect-error Test file
-          Promise.resolve({ chainId: 1 }),
-      },
-      {
-        getProgramById: jest.fn().mockResolvedValue({
-          program: {
-            id: expectedProgram.id,
-            roles: [
-              {
-                address: expectedProgram.operatorWallets[0],
-                role: "OWNER",
-                createdAtBlock: "0",
-              },
-            ],
-            metadata: {
-              name: expectedProgram.metadata?.name,
-            },
-            tags: ["program"],
-          },
-        }),
-      }
-    );
+    const actualProgram = await getProgramById(programId as string, 1, {
+      getRoundsByProgramIdAndChainId: jest
+        .fn()
+        .mockRejectedValue(new Error(":(")),
+    } as unknown as DataLayer);
 
     expect(actualProgram).toEqual(expectedProgram);
   });

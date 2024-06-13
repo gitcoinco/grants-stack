@@ -27,9 +27,17 @@ import { DataLayer, DataLayerContext } from "data-layer";
 
 jest.mock("../../../types/generated/typechain");
 jest.mock("../../common/Auth");
-jest.mock("wagmi");
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+  }),
+}));
 jest.mock("../../../context/application/usePayout");
 jest.mock("../usePayouts");
+
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  getDefaultConfig: jest.fn(),
+}));
 
 const mockAddress = ethers.constants.AddressZero;
 const mockWallet = {

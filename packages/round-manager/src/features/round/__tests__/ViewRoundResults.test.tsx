@@ -26,6 +26,7 @@ jest.mock("../../api/round");
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
 
 const mockNetwork = {
@@ -37,11 +38,22 @@ const mockSigner = {
     /* do nothing.*/
   },
 };
+let mockRoundData: Round = makeRoundData();
 jest.mock("wagmi", () => ({
   useNetwork: () => mockNetwork,
   useSigner: () => ({ data: mockSigner }),
   useDisconnect: jest.fn(),
   useSwitchChain: jest.fn(),
+  useAccount: () => ({
+    chainId: 1,
+    address: mockRoundData.operatorWallets![0],
+  }),
+}));
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
+  }),
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -54,7 +66,6 @@ jest.mock("data-layer", () => ({
   useDataLayer: () => ({}),
 }));
 
-let mockRoundData: Round = makeRoundData();
 
 jest.mock("../../../hooks", () => ({
   ...jest.requireActual("../../../hooks"),

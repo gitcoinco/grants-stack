@@ -94,8 +94,13 @@ const roundIdOverride = "some-round-id";
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
-jest.mock("wagmi");
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+  }),
+}));
 
 jest.mock("../../common/useApplicationsByRoundId");
 

@@ -23,6 +23,7 @@ jest.mock("../../common/Auth");
 jest.mock("../../api/program");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -36,6 +37,21 @@ jest.mock("data-layer", () => ({
     fetchRounds: jest.fn(),
   }),
 }));
+export const mockedOperatorWallet = faker.finance.ethereumAddress();
+
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+    address: mockedOperatorWallet,
+  }),
+}));
+
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
+  }),
+}));
 
 describe("<ViewProgram />", () => {
   let stubProgram: Program;
@@ -43,7 +59,18 @@ describe("<ViewProgram />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    stubProgram = makeProgramData({ id: programId, tags: ["allo-v1"] });
+    stubProgram = makeProgramData({
+      id: programId,
+      tags: ["allo-v1"],
+      operatorWallets: [mockedOperatorWallet],
+      roles: [
+        {
+          address: mockedOperatorWallet,
+          role: "OWNER",
+          createdAtBlock: "0",
+        },
+      ],
+    });
 
     (useWallet as jest.Mock).mockReturnValue({
       chain: {},

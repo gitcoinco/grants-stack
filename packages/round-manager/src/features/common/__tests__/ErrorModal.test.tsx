@@ -5,6 +5,7 @@ import ErrorModal from "../../common/ErrorModal";
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
 
 describe("<ErrorModal />", () => {
