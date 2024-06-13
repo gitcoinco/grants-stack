@@ -110,7 +110,7 @@
     "typescript": "^5.1.6",
     "url": "^0.11.0",
     "util": "^0.12.4",
-    "verify-env": "^1.0.0",
+    "verify-env": "*",
     "viem": "^2.9.31",
     "wagmi": "2.9.2",
     "web-vitals": "^2.1.0",
