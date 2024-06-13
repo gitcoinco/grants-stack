@@ -77,7 +77,7 @@ jest.mock("data-layer", () => ({
   useApplicationsByRoundId: () => {},
 }));
 
-const chainId = "0";
+const chainId = "1";
 const roundId = "testRoundId";
 
 describe("ReclaimFunds", () => {
@@ -124,6 +124,8 @@ describe("ReclaimFunds", () => {
         error: null,
         loading: false,
       }));
+
+      mockRoundData.roundEndTime = new Date("0");
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithReadProgramContext(
