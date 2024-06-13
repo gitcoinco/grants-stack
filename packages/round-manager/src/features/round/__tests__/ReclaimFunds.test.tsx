@@ -82,6 +82,8 @@ const roundId = "testRoundId";
 
 describe("ReclaimFunds", () => {
   it("displays NoInformationContent when round is not over", () => {
+    const isV2 = process.env.REACT_APP_ALLO_VERSION === "allo-v2";
+    const claimTime = 31;
     const currentTime = new Date();
     const roundEndTime = new Date(currentTime.getTime() + 1000 * 60 * 60 * 25);
     mockRoundData.roundEndTime = roundEndTime;
@@ -92,9 +94,10 @@ describe("ReclaimFunds", () => {
     render(
       <ReclaimFunds round={mockRoundData} chainId={chainId} roundId={roundId} />
     );
-
     expect(
-      screen.getByText(`${daysLeftInRound} days until you can reclaim funds`)
+      screen.getByText(
+        `${isV2 ? claimTime : daysLeftInRound} days until you can reclaim funds`
+      )
     ).toBeInTheDocument();
     expect(
       screen.getByText(
