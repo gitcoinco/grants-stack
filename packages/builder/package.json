@@ -84,7 +84,7 @@
     "ts-jest": "^27.0",
     "typescript": "^5.3.3",
     "url": "^0.11.0",
-    "verify-env": "^1.0.0",
+    "verify-env": "workspace:*",
     "viem": "^2.13.10",
     "wagmi": "2.10.2",
     "web-vitals": "^2.1.4",
