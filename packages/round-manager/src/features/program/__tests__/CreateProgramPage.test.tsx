@@ -13,7 +13,7 @@ import { zeroAddress } from "viem";
 import { errorModalDelayMs } from "../../../constants";
 import { useWallet } from "../../common/Auth";
 import CreateProgramPage from "../CreateProgramPage";
-import wagmi from "wagmi";
+import wagmi, { Config, UseAccountReturnType } from "wagmi";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../common/Auth");
@@ -154,20 +154,21 @@ describe("<CreateProgramPage />", () => {
   });
 
   it("displays wrong network when connected to unsupported network", async () => {
-
-    const useAccount = jest.spyOn(wagmi, 'useAccount').mockImplementation(() => ({
-      chainId: 9999,
-      address: "0x0000000000000000000000000000000000000000",
-      chain: {
-        id: 9999,
-      },
-    }));
+    jest.spyOn(wagmi, "useAccount").mockImplementation(
+      () =>
+        ({
+          chainId: 9999,
+          address: "0x0000000000000000000000000000000000000000",
+          chain: {
+            id: 9999,
+          },
+        }) as unknown as UseAccountReturnType<Config>
+    );
 
     renderWithContext(<CreateProgramPage />);
 
     expect(await screen.findByText("Wrong Network")).toBeInTheDocument();
   });
-
 });
 
 export const renderWithContext = (ui: JSX.Element) =>

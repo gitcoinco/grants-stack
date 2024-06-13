@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { ethers } from "ethers";
 import { act } from "react-dom/test-utils";
 import { useParams } from "react-router-dom";
-import wagmi from "wagmi";
+import wagmi, { UseBalanceReturnType } from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
@@ -259,12 +259,14 @@ describe("View Fund Grantees", () => {
     });
 
     it("Should show the confirmation modal and close on cancel", async () => {
-
-      const useBalanceSpy = jest.spyOn(wagmi, 'useBalance').mockImplementation(() => ({
-        data: { formatted: '0', value: ethers.utils.parseEther('1000') },
-        error: null,
-        loading: false,
-      }));
+      jest.spyOn(wagmi, "useBalance").mockImplementation(
+        () =>
+          ({
+            data: { formatted: "0", value: ethers.utils.parseEther("1000") },
+            error: null,
+            loading: false,
+          }) as unknown as UseBalanceReturnType<unknown>
+      );
 
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
@@ -287,11 +289,14 @@ describe("View Fund Grantees", () => {
     });
 
     it("Should show the progress modal", async () => {
-      const useBalanceSpy = jest.spyOn(wagmi, 'useBalance').mockImplementation(() => ({
-        data: { formatted: '0', value: ethers.utils.parseEther('1000') },
-        error: null,
-        loading: false,
-      }));
+      jest.spyOn(wagmi, "useBalance").mockImplementation(
+        () =>
+          ({
+            data: { formatted: "0", value: ethers.utils.parseEther("1000") },
+            error: null,
+            loading: false,
+          }) as unknown as UseBalanceReturnType<unknown>
+      );
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
         checkboxes[0].click();
@@ -311,11 +316,14 @@ describe("View Fund Grantees", () => {
     });
 
     it("Should show the warning when not enough funds in contract", async () => {
-      const useBalanceSpy = jest.spyOn(wagmi, 'useBalance').mockImplementation(() => ({
-        data: { formatted: '0', value:'0' },
-        error: null,
-        loading: false,
-      }));
+      jest.spyOn(wagmi, "useBalance").mockImplementation(
+        () =>
+          ({
+            data: { formatted: "0", value: "0" },
+            error: null,
+            loading: false,
+          }) as unknown as UseBalanceReturnType<unknown>
+      );
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
         checkboxes[0].click();
