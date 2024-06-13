@@ -623,7 +623,7 @@ importers:
         version: 2.8.2(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@emotion/styled@11.11.5(@emotion/react@11.11.4(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(framer-motion@10.18.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@craco/craco':
         specifier: ^7.1.0
-        version: 7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)
+        version: 7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)
       '@datadog/browser-logs':
         specifier: ^4.19.0
         version: 4.50.1(@datadog/browser-rum@4.50.1)
@@ -728,7 +728,7 @@ importers:
         version: link:../common
       craco-esbuild:
         specifier: ^0.5.2
-        version: 0.5.2(@craco/craco@7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5))(esbuild@0.18.20)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(webpack@5.92.0(esbuild@0.18.20))
+        version: 0.5.2(@craco/craco@7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5))(esbuild@0.18.20)(react-scripts@5.0.1(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(webpack@5.92.0(esbuild@0.18.20))
       crypto-browserify:
         specifier: ^3.12.0
         version: 3.12.0
@@ -972,7 +972,7 @@ importers:
         version: 7.24.7
       '@craco/craco':
         specifier: ^7.1.0
-        version: 7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)
+        version: 7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)
       '@datadog/browser-logs':
         specifier: ^4.17.1
         version: 4.50.1(@datadog/browser-rum@4.50.1)
@@ -1002,7 +1002,7 @@ importers:
         version: 1.0.6
       '@rainbow-me/rainbowkit':
         specifier: 2.1.2
-        version: 2.1.2(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(viem@2.13.10(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(wagmi@2.10.2(@tanstack/query-core@5.40.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@9.0.21)(react-dom@18.3.1(react@18.3.1))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(rollup@2.79.1)(typescript@5.4.5)(utf-8-validate@5.0.10)(viem@2.13.10(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8))
+        version: 2.1.2(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(viem@2.13.10(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(wagmi@2.10.2(@tanstack/query-core@5.40.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@9.0.21)(react-dom@18.3.1(react@18.3.1))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(rollup@3.29.4)(typescript@5.4.5)(utf-8-validate@5.0.10)(viem@2.13.10(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8))
       '@reduxjs/toolkit':
         specifier: ^1.8.1
         version: 1.9.7(react-redux@8.1.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(redux@4.2.1))(react@18.3.1)
@@ -1188,7 +1188,7 @@ importers:
         version: 2.13.10(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
       wagmi:
         specifier: 2.10.2
-        version: 2.10.2(@tanstack/query-core@5.40.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@9.0.21)(react-dom@18.3.1(react@18.3.1))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(rollup@2.79.1)(typescript@5.4.5)(utf-8-validate@5.0.10)(viem@2.13.10(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8)
+        version: 2.10.2(@tanstack/query-core@5.40.0)(@tanstack/react-query@5.45.0(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(immer@9.0.21)(react-dom@18.3.1(react@18.3.1))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(encoding@0.1.13)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(rollup@3.29.4)(typescript@5.4.5)(utf-8-validate@5.0.10)(viem@2.13.10(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8))(zod@3.23.8)
       web-vitals:
         specifier: ^2.1.0
         version: 2.1.4
@@ -1255,7 +1255,7 @@ importers:
         version: 10.4.19(postcss@8.4.38)
       craco-esbuild:
         specifier: ^0.5.2
-        version: 0.5.2(@craco/craco@7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5))(esbuild@0.18.20)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(webpack@5.92.0(esbuild@0.18.20))
+        version: 0.5.2(@craco/craco@7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5))(esbuild@0.18.20)(react-scripts@5.0.1(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(webpack@5.92.0(esbuild@0.18.20))
       dotenv:
         specifier: ^16.4.1
         version: 16.4.5
@@ -17411,7 +17411,7 @@ snapshots:
     dependencies:
       chalk: 4.1.2
 
-  '@craco/craco@7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)':
+  '@craco/craco@7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)':
     dependencies:
       autoprefixer: 10.4.19(postcss@8.4.38)
       cosmiconfig: 7.1.0
@@ -23865,9 +23865,9 @@ snapshots:
     optionalDependencies:
       typescript: 5.4.5
 
-  craco-esbuild@0.5.2(@craco/craco@7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5))(esbuild@0.18.20)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(webpack@5.92.0(esbuild@0.18.20)):
+  craco-esbuild@0.5.2(@craco/craco@7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5))(esbuild@0.18.20)(react-scripts@5.0.1(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(webpack@5.92.0(esbuild@0.18.20)):
     dependencies:
-      '@craco/craco': 7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)
+      '@craco/craco': 7.1.0(@types/node@17.0.45)(postcss@8.4.38)(react-scripts@5.0.1(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)
       esbuild-jest: 0.5.0(esbuild@0.18.20)
       esbuild-loader: 2.21.0(webpack@5.92.0(esbuild@0.18.20))
       react-scripts: 5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@17.0.45)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10)
@@ -33929,24 +33929,6 @@ snapshots:
       - supports-color
       - terser
 
-  vite-node@0.34.6(@types/node@20.14.2)(terser@5.31.1):
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.5(supports-color@8.1.1)
-      mlly: 1.7.1
-      pathe: 1.1.2
-      picocolors: 1.0.1
-      vite: 4.5.3(@types/node@20.14.2)(terser@5.31.1)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
   vite@4.5.3(@types/node@17.0.45)(terser@5.31.1):
     dependencies:
       esbuild: 0.18.20
@@ -33964,16 +33946,6 @@ snapshots:
       rollup: 3.29.4
     optionalDependencies:
       '@types/node': 18.19.34
-      fsevents: 2.3.3
-      terser: 5.31.1
-
-  vite@4.5.3(@types/node@20.14.2)(terser@5.31.1):
-    dependencies:
-      esbuild: 0.18.20
-      postcss: 8.4.38
-      rollup: 3.29.4
-    optionalDependencies:
-      '@types/node': 20.14.2
       fsevents: 2.3.3
       terser: 5.31.1
 
@@ -34027,7 +33999,7 @@ snapshots:
     dependencies:
       '@types/chai': 4.3.16
       '@types/chai-subset': 1.3.5
-      '@types/node': 20.14.2
+      '@types/node': 18.19.34
       '@vitest/expect': 0.34.6
       '@vitest/runner': 0.34.6
       '@vitest/snapshot': 0.34.6
@@ -34046,8 +34018,8 @@ snapshots:
       strip-literal: 1.3.0
       tinybench: 2.8.0
       tinypool: 0.7.0
-      vite: 4.5.3(@types/node@20.14.2)(terser@5.31.1)
-      vite-node: 0.34.6(@types/node@20.14.2)(terser@5.31.1)
+      vite: 4.5.3(@types/node@18.19.34)(terser@5.31.1)
+      vite-node: 0.34.6(@types/node@18.19.34)(terser@5.31.1)
       why-is-node-running: 2.2.2
     optionalDependencies:
       happy-dom: 11.2.0
