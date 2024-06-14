@@ -86,7 +86,7 @@ export const getAddressType = async (address: string): Promise<AddressType> => {
       chainId: (web3Provider as any).chain.id,
     });
 
-    returnValue.isContract = addressCode !== "0x";
+    returnValue.isContract = !!addressCode;
 
     if (returnValue.isContract) {
       try {
