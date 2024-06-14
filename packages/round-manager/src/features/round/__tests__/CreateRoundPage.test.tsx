@@ -9,7 +9,15 @@ import * as FormWizardImport from "../../common/FormWizard";
 import { fireEvent, screen } from "@testing-library/react";
 import QuadraticFundingForm from "../QuadraticFundingForm";
 import { DataLayer, DataLayerProvider } from "data-layer";
-
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+  }),
+}));
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
+}));
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
 const formWizardSpy = jest.spyOn(FormWizardImport, "FormWizard");

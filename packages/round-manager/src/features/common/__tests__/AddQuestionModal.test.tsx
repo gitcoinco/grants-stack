@@ -7,6 +7,11 @@ jest.mock("../../api/round");
 jest.mock("../../../features/common/Auth", () => ({
   useWallet: () => mockWallet,
 }));
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+  }),
+}));
 
 const mockWallet = {
   address: "0x0",

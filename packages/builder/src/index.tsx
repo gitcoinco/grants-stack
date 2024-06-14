@@ -1,18 +1,17 @@
 import "./browserPatches";
 
-import { PostHogProvider } from "posthog-js/react";
-
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import { ReduxRouter } from "@lagunovsky/redux-react-router";
-import { lightTheme, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getConfig } from "common/src/config";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router";
-import { WagmiConfig } from "wagmi";
+import { WagmiProvider } from "wagmi";
 import AlloWrapper from "./utils/AlloWrapper";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
@@ -30,8 +29,7 @@ import { slugs } from "./routes";
 import setupStore from "./store";
 import "./styles/index.css";
 import initDatadog from "./utils/datadog";
-import wagmiClient, { chains } from "./utils/wagmi";
-import { initPosthog } from "./utils/posthog";
+import queryClient, { config } from "./utils/wagmi";
 import initTagmanager from "./tagmanager";
 
 const dataLayerConfig = new DataLayer({
@@ -50,9 +48,6 @@ const store = setupStore();
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
-
-const gtcLightTheme = lightTheme();
-gtcLightTheme.shadows.connectButton = "0 0 0 0px";
 
 // Initialize datadog
 initDatadog();
@@ -111,9 +106,9 @@ if (pathname && pathname !== window.location.pathname) {
 
 root.render(
   <ErrorBoundary>
-    <PostHogProvider client={posthog}>
-      <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains} theme={gtcLightTheme} coolMode>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
           <ChakraProvider resetCSS={false}>
             <Provider store={store}>
               <AlloWrapper>
@@ -147,8 +142,8 @@ root.render(
             </Provider>
           </ChakraProvider>
         </RainbowKitProvider>
-      </WagmiConfig>
-    </PostHogProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   </ErrorBoundary>
 );
 

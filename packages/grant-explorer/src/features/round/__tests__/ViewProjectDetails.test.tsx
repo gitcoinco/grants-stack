@@ -25,7 +25,7 @@ vi.mock("common", async () => {
     ...actual,
     useParams: vi.fn().mockImplementation(() => ({
       chainId: 1,
-      roundId: "0x0",
+      roundId: "1",
       applicationId: "0xdeadbeef-0xdeadbeef",
     })),
   };
@@ -65,7 +65,7 @@ vi.mock("react-router-dom", async () => {
     useNavigate: vi.fn(),
     useParams: vi.fn().mockImplementation(() => ({
       chainId: 1,
-      roundId: "0x0",
+      roundId: "1",
       applicationId: "0xdeadbeef-0xdeadbeef",
     })),
   };

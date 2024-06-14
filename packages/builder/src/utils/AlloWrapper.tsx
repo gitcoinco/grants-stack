@@ -1,4 +1,9 @@
 import {
+  FallbackProvider,
+  JsonRpcProvider,
+  JsonRpcSigner,
+} from "@ethersproject/providers";
+import {
   Allo,
   AlloProvider,
   AlloV1,
@@ -9,67 +14,89 @@ import {
   isChainIdSupported,
 } from "common";
 import { getConfig } from "common/src/config";
-import { useEffect, useState } from "react";
-import { useNetwork, useProvider, useSigner } from "wagmi";
+import { useEffect, useMemo, useState } from "react";
 import { AlloVersionProvider } from "common/src/components/AlloVersionSwitcher";
+import { reconnect } from "@wagmi/core";
+import { useAccount } from "wagmi";
+import { config, getEthersProvider, getEthersSigner } from "./wagmi";
 
 function AlloWrapper({ children }: { children: JSX.Element | JSX.Element[] }) {
-  const { chain } = useNetwork();
-  const web3Provider = useProvider();
-  const { data: signer } = useSigner();
+  const { chain, isConnected, connector } = useAccount();
+  const [signer, setSigner] = useState<JsonRpcSigner>();
+  const [provider, setProvider] = useState<
+    JsonRpcProvider | FallbackProvider | undefined
+  >();
+  const [backend, setBackend] = useState<Allo | null>(null);
+
   const chainID = chain?.id;
 
-  const [backend, setBackend] = useState<Allo | null>(null);
+  useEffect(() => {
+    const init = async () => {
+      const s = await getEthersSigner(connector!, chainID!);
+      const p = getEthersProvider(chainID!);
+
+      setSigner(s);
+      setProvider(p);
+    };
+
+    const connect = async () => {
+      await reconnect(config);
+    };
+
+    if (isConnected && chainID && connector?.getAccounts) init();
+    if (!isConnected) connect();
+  }, [chainID, isConnected, connector]);
 
   useEffect(() => {
     const chainIdSupported = chainID ? isChainIdSupported(chainID) : false;
 
-    if (!web3Provider || !signer || !chainID || !chainIdSupported) {
-      setBackend(null);
-    } else {
-      const config = getConfig();
-      let alloBackend: Allo;
-
-      if (config.allo.version === "allo-v2") {
-        alloBackend = new AlloV2({
-          chainId: chainID,
-          transactionSender: createEthersTransactionSender(
-            signer,
-            web3Provider
-          ),
-          ipfsUploader: createPinataIpfsUploader({
-            token: getConfig().pinata.jwt,
-            endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
-          }),
-          waitUntilIndexerSynced: createWaitForIndexerSyncTo(
-            `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
-          ),
-        });
-
-        setBackend(alloBackend);
-      } else {
-        alloBackend = new AlloV1({
-          chainId: chainID,
-          transactionSender: createEthersTransactionSender(
-            signer,
-            web3Provider
-          ),
-          ipfsUploader: createPinataIpfsUploader({
-            token: getConfig().pinata.jwt,
-            endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
-          }),
-          waitUntilIndexerSynced: createWaitForIndexerSyncTo(
-            `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
-          ),
-        });
-
-        setBackend(alloBackend);
-      }
+    if (
+      !isConnected ||
+      !connector ||
+      !provider ||
+      !signer ||
+      !chainID ||
+      !chainIdSupported
+    ) {
+      return;
     }
-  }, [web3Provider, signer, chainID]);
+
+    const globalConfig = getConfig();
+    let alloBackend: Allo;
+
+    if (globalConfig.allo.version === "allo-v2") {
+      alloBackend = new AlloV2({
+        chainId: chainID,
+        transactionSender: createEthersTransactionSender(signer, provider),
+        ipfsUploader: createPinataIpfsUploader({
+          token: getConfig().pinata.jwt,
+          endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
+        }),
+        waitUntilIndexerSynced: createWaitForIndexerSyncTo(
+          `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
+        ),
+      });
+    } else {
+      alloBackend = new AlloV1({
+        chainId: chainID,
+        transactionSender: createEthersTransactionSender(signer, provider),
+        ipfsUploader: createPinataIpfsUploader({
+          token: getConfig().pinata.jwt,
+          endpoint: `${getConfig().pinata.baseUrl}/pinning/pinFileToIPFS`,
+        }),
+        waitUntilIndexerSynced: createWaitForIndexerSyncTo(
+          `${getConfig().dataLayer.gsIndexerEndpoint}/graphql`
+        ),
+      });
+    }
+
+    setBackend(alloBackend);
+  }, [provider, signer, chainID]);
+
+  const memoizedBackend = useMemo(() => backend, [backend]);
 
   return (
-    <AlloProvider backend={backend}>
+    <AlloProvider backend={memoizedBackend}>
       <AlloVersionProvider>{children}</AlloVersionProvider>
     </AlloProvider>
   );

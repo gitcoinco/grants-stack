@@ -15,7 +15,7 @@ import { getTokensByChainId } from "common";
 
 fetchMock.mockIf(/summary/, JSON.stringify({}));
 
-const roundId = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const roundId = "1";
 
 vi.mock("common", async () => {
   const actual = await vi.importActual<typeof import("common")>("common");
@@ -63,7 +63,7 @@ vi.mock("wagmi", async () => {
 vi.mock("react-router-dom", async () => {
   const useParamsFn = () => ({
     chainId: 10,
-    roundId: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    roundId: "1",
   });
   const actual =
     await vi.importActual<typeof import("react-router-dom")>(

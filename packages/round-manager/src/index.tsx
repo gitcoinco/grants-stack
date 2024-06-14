@@ -1,15 +1,17 @@
 import "./browserPatches";
 
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import { WagmiConfig } from "wagmi";
 import { initDatadog } from "./datadog";
 import { initTagmanager } from "./tagmanager";
 import { PostHogProvider } from "posthog-js/react";
 import { chains, client as WagmiClient } from "./app/wagmi";
 import reportWebVitals from "./reportWebVitals";
+import { WagmiProvider } from "wagmi";
+import queryClient, { config } from "./app/wagmi";
 
 import "./index.css";
 
@@ -67,9 +69,9 @@ const dataLayerConfig = new DataLayer({
 
 root.render(
   <React.StrictMode>
-    <PostHogProvider client={posthog}>
-      <WagmiConfig client={WagmiClient}>
-        <RainbowKitProvider coolMode chains={chains}>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
           <AlloWrapper>
             <DataLayerProvider client={dataLayerConfig}>
               <HashRouter>
@@ -150,8 +152,8 @@ root.render(
             </DataLayerProvider>
           </AlloWrapper>
         </RainbowKitProvider>
-      </WagmiConfig>
-    </PostHogProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   </React.StrictMode>
 );
 

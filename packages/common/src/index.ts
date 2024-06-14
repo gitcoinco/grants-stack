@@ -2,7 +2,6 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Network, Web3Provider } from "@ethersproject/providers";
 import { useEffect, useState } from "react";
 import { useParams as useRouterParams } from "react-router";
-import { useOutletContext } from "react-router-dom";
 import z from "zod";
 import { Round } from "data-layer";
 import { getAlloVersion, getConfig } from "./config";
@@ -411,14 +410,6 @@ interface JsonMap {
   [key: string]: AnyJson;
 }
 type JsonArray = Array<AnyJson>;
-
-/**
- * Wrapper hook to expose wallet auth information to other components
- */
-export function useWallet() {
-  return useOutletContext<Web3Instance>();
-}
-
 export interface Web3Instance {
   /**
    * Currently selected address in ETH format i.e 0x...
@@ -475,7 +466,7 @@ export * from "./allo/transaction-builder";
  * @returns the transaction block explorer URL for the provided transaction hash and network
  */
 export const getTxBlockExplorerLink = (chainId: number, txHash: string) => {
-  return getChainById(chainId) + "tx/" + txHash;
+  return getChainById(chainId)?.blockExplorer + "tx/" + txHash;
 };
 
 export function isChainIdSupported(chainId: number) {

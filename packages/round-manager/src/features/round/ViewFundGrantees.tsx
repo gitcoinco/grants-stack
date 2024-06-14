@@ -12,7 +12,7 @@ import { BigNumber, ethers } from "ethers";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import tw from "tailwind-styled-components";
-import { useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { errorModalDelayMs, modalDelayMs } from "../../constants";
 import { useGroupProjectsByPaymentStatus } from "../api/payoutStrategy/payoutStrategy";
 import {
@@ -22,7 +22,6 @@ import {
   Round,
 } from "../api/types";
 import { formatCurrency } from "../api/utils";
-import { useWallet } from "../common/Auth";
 import ConfirmationModal from "../common/ConfirmationModal";
 import InfoModal from "../common/InfoModal";
 import ProgressModal from "../common/ProgressModal";
@@ -46,9 +45,9 @@ export default function ViewFundGrantees(props: {
 
   const tokenRedstoneId = matchingFundPayoutToken?.redstoneTokenId;
   const { data, error, loading } = useTokenPrice(tokenRedstoneId);
-  const { chain } = useWallet();
+  const { chainId } = useAccount();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const projects = useGroupProjectsByPaymentStatus(chain?.id, props.round!);
+  const projects = useGroupProjectsByPaymentStatus(chainId!, props.round!);
 
   useEffect(() => {
     if (data && !error && !loading) {
@@ -56,7 +55,7 @@ export default function ViewFundGrantees(props: {
     }
     setPaidProjects(projects["paid"]);
     setUnpaidProjects(projects["unpaid"]);
-  }, [projects]);
+  }, [projects, data, error, loading]);
 
   return (
     <div className="flex flex-center flex-col mx-auto mt-3">
@@ -65,11 +64,12 @@ export default function ViewFundGrantees(props: {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         <FinalizedRoundContent
           round={props.round!}
+          allProjects={projects.all}
           paidProjects={paidProjects}
           unpaidProjects={unpaidProjects}
           matchingFundPayoutToken={matchingFundPayoutToken!}
           price={price}
-          chain={{ id: chain!.id }}
+          chain={{ id: chainId! }}
         />
       ) : (
         <NonFinalizedRoundContent />
@@ -121,6 +121,7 @@ const TabApplicationCounter = tw.div`
 
 function FinalizedRoundContent(props: {
   round: Round;
+  allProjects: MatchingStatsData[];
   paidProjects: MatchingStatsData[];
   unpaidProjects: MatchingStatsData[];
   matchingFundPayoutToken: TToken;
@@ -172,7 +173,7 @@ function FinalizedRoundContent(props: {
                 token={props.matchingFundPayoutToken!}
                 price={props.price}
                 round={props.round}
-                allProjects={[...props.paidProjects, ...props.unpaidProjects]}
+                allProjects={props.allProjects}
               />
             </Tab.Panel>
             <Tab.Panel>
@@ -201,7 +202,6 @@ export function PayProjectsTable(props: {
 }) {
   // TODO: Add button check
   // TOOD: Connect wallet and payout contracts to pay grantees
-  const { signer } = useWallet();
   const allo = useAllo();
   const alloVersion = getConfig().allo.version;
   const roundId = props.round.id;
@@ -629,8 +629,9 @@ export function PaidProjectsTable(props: {
                         {project.matchPoolPercentage * 100}%
                       </td>
                       <td className="px-3 py-3.5 text-sm font-medium text-gray-900">
-                        {ethers.utils.formatEther(
-                          project.matchAmountInToken.toString()
+                        {ethers.utils.formatUnits(
+                          project.matchAmountInToken.toString(),
+                          props.token.decimals
                         )}
                         {" " + props.token.code.toUpperCase()}
                         {Boolean(props.price) &&
