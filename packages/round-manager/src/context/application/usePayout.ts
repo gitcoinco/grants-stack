@@ -1,11 +1,11 @@
 import { ProgressStatus, ProgressStep } from "../../features/api/types";
 import { Erc20__factory } from "../../types/generated/typechain";
-import { ethers } from "ethers";
 import { Allo, TToken } from "common";
 import { Hex } from "viem";
 import { datadogRum } from "@datadog/browser-rum";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useState } from "react";
+import { JsonRpcSigner } from "@ethersproject/providers";
 
 export function usePayout() {
   const [contractApproveSpendStatus, setContractApproveSpendStatus] =
@@ -50,7 +50,7 @@ export function usePayout() {
 
   type Args = {
     address: string;
-    signer: ethers.Signer;
+    signer: JsonRpcSigner;
     token: TToken;
     applicationId: Hex;
     applicationIndex: number;

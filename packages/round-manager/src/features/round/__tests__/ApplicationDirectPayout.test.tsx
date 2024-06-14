@@ -1,4 +1,4 @@
-import React from "react";
+import React, { act } from "react";
 import {
   fireEvent,
   render,
@@ -16,7 +16,7 @@ import {
 } from "common";
 
 import { useWallet } from "../../common/Auth";
-import { useAccount, useDisconnect } from "wagmi";
+import { Connector, useAccount, useDisconnect } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import { Erc20__factory } from "../../../types/generated/typechain";
 import moment from "moment";
@@ -24,6 +24,7 @@ import { parseUnits } from "ethers/lib/utils.js";
 import { usePayout } from "../../../context/application/usePayout";
 import { usePayouts } from "../usePayouts";
 import { DataLayer, DataLayerContext } from "data-layer";
+import { getEthersSigner } from "../../../app/wagmi";
 
 jest.mock("../../../types/generated/typechain");
 jest.mock("../../common/Auth");
@@ -93,7 +94,31 @@ jest.mock("wagmi", () => ({
   usePayout: jest.fn(),
   useAccount: () => ({
     chainId: 1,
+    address: "0x0000000000000000000000000000000000000000",
+    chain: {
+      id: 1,
+    },
+    connector: {
+      getChainId: jest.fn(),
+      getAccounts: jest.fn(),
+      getAddress: jest.fn(),
+    },
   }),
+}));
+
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
+  }),
+  getEthersSigner: async (connector: Connector, chainId: number) => {
+    return {
+      provider: {
+        getNetwork: () => Promise.resolve({ chainId }),
+      },
+      chainId,
+    };
+  },
 }));
 
 const backend = new AlloV2({
