@@ -23,12 +23,12 @@ import {
   getPayoutTokens,
   getTokenByChainIdAndAddress,
 } from "common";
-import { useNetwork } from "wagmi";
 import { errorModalDelayMs } from "../../constants";
 import { usePayouts } from "./usePayouts";
 import { Hex, isAddress, zeroAddress } from "viem";
 import { useDataLayer } from "data-layer";
 import { getConfig } from "common/src/config";
+import { useAccount } from "wagmi";
 
 const schema = yup.object().shape({
   amount: yup
@@ -54,6 +54,7 @@ type Props = {
 
 export default function ApplicationDirectPayout({ round, application }: Props) {
   const { chain, address, signer } = useWallet();
+  const { chain: network } = useAccount();
   const { triggerPayout, progressSteps: payoutProgressSteps } = usePayout();
   const [isPayoutProgressModelOpen, setIsPayoutProgressModelOpen] =
     useState(false);
@@ -89,8 +90,6 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
   const [payoutTokensMap, setPayoutTokensMap] = useState<
     Map<string, { decimal: number; name: string; totalAmount: BigNumber }>
   >(new Map());
-
-  const network = useNetwork();
 
   const allInputs = watch();
   const allo = useAllo();
@@ -323,7 +322,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
       setPayoutTokensMap(map);
     };
     createPayoutTokenMap();
-  }, [fetchTokenData, application.applicationIndex, payouts]);
+  }, [fetchTokenData, application.applicationIndex, payouts, chain.id]);
 
   return (
     <>
@@ -382,7 +381,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
                                 </span>
                                 <a
                                   target="_blank"
-                                  href={`${network.chain?.blockExplorers?.default.url}/tx/${payout.txnHash}`}
+                                  href={`${network?.blockExplorers?.default.url}/tx/${payout.txnHash}`}
                                   className="inline items-center ml-2"
                                   rel="noreferrer"
                                 >

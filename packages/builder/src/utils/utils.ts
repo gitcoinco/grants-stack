@@ -1,4 +1,7 @@
+import { Hex } from "viem";
+import { getBytecode } from "@wagmi/core";
 import { BigNumberish, ethers } from "ethers";
+import { config } from "./wagmi";
 import gnosisABI from "../contracts/abis/gnosis.json";
 import { global } from "../global";
 import { AddressType, Metadata, Project } from "../types";
@@ -62,31 +65,6 @@ export const metadataToProject = (
 };
 
 /**
- * Get the provider for a given chain ID
- *
- * @param chainId
- *
- * @returns The provider
- */
-export const getProviderByChainId = (chainId: number) => {
-  const { web3Provider } = global;
-
-  const chainConfig = web3Provider?.chains?.find(
-    // Yes, parameter type for chainId is number, but sometimes we pass it as a string
-    // so adding a cast to Number just in case
-    (i) => i.id === Number(chainId)
-  );
-
-  if (!chainConfig) {
-    console.log(`chainConfig not found for chain ID ${chainId}`);
-    return undefined;
-  }
-
-  // TODO: Create a more robust RPC here to avoid fails
-  return ethers.getDefaultProvider(chainConfig.rpcUrls.default.http[0]);
-};
-
-/**
  * Get the address type of an address
  *
  * @remarks
@@ -103,9 +81,12 @@ export const getAddressType = async (address: string): Promise<AddressType> => {
   const returnValue = { resolved: false, isContract: false, isSafe: false };
 
   if (web3Provider) {
-    const addressCode = await web3Provider.getCode(address);
+    const addressCode = await getBytecode(config, {
+      address: address as Hex,
+      chainId: (web3Provider as any).chain.id,
+    });
 
-    returnValue.isContract = addressCode !== "0x";
+    returnValue.isContract = !!addressCode;
 
     if (returnValue.isContract) {
       try {

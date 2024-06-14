@@ -8,7 +8,11 @@ import {
 import { error, success } from "common/dist/allo/common";
 import { AlloV1, createMockTransactionSender, AlloOperation } from "common";
 
-jest.mock("wagmi");
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+  }),
+}));
 jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
 
 jest.mock("viem", () => ({
@@ -22,15 +26,6 @@ jest.mock("common", () => ({
   
 }));
 
-const mockSigner = {
-  getChainId: () => {
-    /* do nothing.*/
-  },
-};
-jest.mock("wagmi", () => ({
-  useSigner: () => ({ data: mockSigner }),
-}));
-
 const alloBackend = new AlloV1({
   chainId: 1,
   ipfsUploader: async () =>
@@ -41,6 +36,7 @@ const alloBackend = new AlloV1({
   waitUntilIndexerSynced: jest.fn(),
   transactionSender: createMockTransactionSender(),
 });
+
 
 const testParams: ReclaimFundsParams = {
   allo: alloBackend,

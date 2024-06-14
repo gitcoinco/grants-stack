@@ -1,7 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useTokenPrice } from "common";
 import { useParams } from "react-router-dom";
-import { useBalance, useDisconnect, useSigner, useSwitchNetwork } from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,
@@ -12,11 +11,35 @@ import { ProgressStatus, Round } from "../../api/types";
 import ReclaimFunds from "../ReclaimFunds";
 import ViewRoundPage from "../ViewRoundPage";
 
-jest.mock("wagmi");
+const mockRoundData: Round = makeRoundData();
+
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+    address: mockRoundData.operatorWallets![0],
+  }),
+  useSwitchChain: () => ({
+    switchChain: jest.fn(),
+  }),
+  useDisconnect: jest.fn(),
+  useBalance: () => ({
+    data: { formatted: "0", value: "0" },
+    error: null,
+    loading: false,
+  }),
+}));
 jest.mock("../../common/Auth");
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
+}));
+
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
+  }),
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -54,10 +77,8 @@ jest.mock("data-layer", () => ({
   useApplicationsByRoundId: () => {},
 }));
 
-const chainId = "0";
+const chainId = "1";
 const roundId = "testRoundId";
-
-const mockRoundData: Round = makeRoundData();
 
 describe("ReclaimFunds", () => {
   it("displays NoInformationContent when round is not over", () => {
@@ -71,9 +92,8 @@ describe("ReclaimFunds", () => {
     render(
       <ReclaimFunds round={mockRoundData} chainId={chainId} roundId={roundId} />
     );
-
     expect(
-      screen.getByText(`${daysLeftInRound} days until you can reclaim funds`)
+      screen.getByText(`31 days until you can reclaim funds`)
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -90,9 +110,6 @@ describe("ReclaimFunds", () => {
         };
       });
 
-      (useSwitchNetwork as jest.Mock).mockReturnValue({ chains: [] });
-      (useDisconnect as jest.Mock).mockReturnValue({});
-
       const currentTime = new Date();
       const roundEndTime = new Date(
         currentTime.getTime() - 1000 * 60 * 60 * 24
@@ -106,16 +123,8 @@ describe("ReclaimFunds", () => {
         error: null,
         loading: false,
       }));
-      (useBalance as jest.Mock).mockImplementation(() => ({
-        data: { formatted: "0", value: "0" },
-        error: null,
-        loading: false,
-      }));
-      (useSigner as jest.Mock).mockImplementation(() => ({
-        signer: {
-          getBalance: () => Promise.resolve("0"),
-        },
-      }));
+
+      mockRoundData.roundEndTime = new Date("0");
       render(
         wrapWithBulkUpdateGrantApplicationContext(
           wrapWithReadProgramContext(

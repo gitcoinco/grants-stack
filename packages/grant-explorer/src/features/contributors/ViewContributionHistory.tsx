@@ -16,6 +16,7 @@ import {
   getTokenByChainIdAndAddress,
 } from "common";
 import { Contribution } from "data-layer";
+import { normalize } from "viem/ens";
 
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")
@@ -62,7 +63,7 @@ function ViewContributionHistoryFetcher(props: {
   });
 
   const { data: ensAvatar } = useEnsAvatar({
-    name: ensName,
+    name: ensName ? normalize(ensName) : undefined,
     chainId: 1,
   });
 

@@ -16,7 +16,7 @@ import {
 } from "common";
 
 import { useWallet } from "../../common/Auth";
-import { useDisconnect, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import { Erc20__factory } from "../../../types/generated/typechain";
 import moment from "moment";
@@ -27,9 +27,12 @@ import { DataLayer, DataLayerContext } from "data-layer";
 
 jest.mock("../../../types/generated/typechain");
 jest.mock("../../common/Auth");
-jest.mock("wagmi");
 jest.mock("../../../context/application/usePayout");
 jest.mock("../usePayouts");
+
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  getDefaultConfig: jest.fn(),
+}));
 
 const mockAddress = ethers.constants.AddressZero;
 const mockWallet = {
@@ -77,6 +80,22 @@ const correctAnswerBlocks = [
   },
 ];
 
+jest.mock("../../../features/common/Auth", () => ({
+  useWallet: () => mockWallet,
+}));
+
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useSwitchChain: () => ({
+    switchChain: jest.fn(),
+  }),
+  useDisconnect: jest.fn(),
+  usePayout: jest.fn(),
+  useAccount: () => ({
+    chainId: 1,
+  }),
+}));
+
 const backend = new AlloV2({
   chainId: 1,
   ipfsUploader: jest.fn(),
@@ -121,10 +140,6 @@ describe("<ApplicationDirectPayout />", () => {
 
     mockTriggerPayout = jest.fn().mockResolvedValue(new Promise(() => {}));
 
-    (useWallet as jest.Mock).mockImplementation(() => mockWallet);
-    (useSwitchNetwork as any).mockReturnValue({ chains: [] });
-    (useDisconnect as any).mockReturnValue({});
-    (useNetwork as jest.Mock).mockReturnValue(mockNetwork);
     (usePayout as jest.Mock).mockImplementation(() => {
       const originalModule = jest.requireActual(
         "../../../context/application/usePayout"

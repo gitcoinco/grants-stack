@@ -9,7 +9,7 @@ import {
   RoundState,
 } from "./context/RoundContext";
 import { CartProject, ProjectMetadata, Round } from "./features/api/types";
-import { parseUnits } from "viem";
+import { parseUnits, zeroAddress } from "viem";
 import {
   DataLayer,
   DataLayerProvider,
@@ -60,7 +60,8 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     token: faker.finance.ethereumAddress(),
     payoutStrategy: {
       id: "some-id",
-      strategyName: "allov1.QF",
+      strategyName:
+        "allov2.DonationVotingMerkleDistributionDirectTransferStrategy",
     },
     votingStrategy: faker.finance.ethereumAddress(),
     ownedBy: faker.finance.ethereumAddress(),
@@ -133,10 +134,11 @@ export const makeRoundOverviewData = (
     donationsEndTime: makeTimestamp(30),
     matchAmountInUsd: 1000000000000000000000000,
     matchAmount: "1000000000000000000000000",
-    matchTokenAddress: faker.finance.ethereumAddress(),
+    matchTokenAddress: zeroAddress,
     roundMetadata: makeRoundMetadata(roundMetadataOverrides),
     applications: Array.from({ length: 2 }).map((_, i) => ({ id: String(i) })),
-    strategyName: "allov1.QF",
+    strategyName:
+      "allov2.DonationVotingMerkleDistributionDirectTransferStrategy",
     strategyAddress: faker.finance.ethereumAddress(),
     strategyId: "",
     tags: [],

@@ -27,9 +27,9 @@ import {
 import ReactTooltip from "react-tooltip";
 import * as yup from "yup";
 import { Round } from "../api/types";
-import { useWallet } from "../common/Auth";
 import { FormStepper } from "../common/FormStepper";
 import { FormContext } from "../common/FormWizard";
+import { useAccount } from "wagmi";
 interface QuadraticFundingFormProps {
   stepper: typeof FormStepper;
 }
@@ -99,7 +99,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
       sybilDefense: "passport-mbds",
     };
 
-  const { chain } = useWallet();
+  const { chainId } = useAccount();
   const payoutTokenOptions: TToken[] = [
     {
       code: "Choose Payout Token",
@@ -109,7 +109,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
       canVote: false,
       redstoneTokenId: "",
     },
-    ...getPayoutTokens(chain.id).filter(
+    ...getPayoutTokens(chainId!).filter(
       (token) => token.address.toLowerCase() !== NATIVE.toLowerCase()
     ),
   ];

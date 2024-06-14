@@ -8,7 +8,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { useParams } from "react-router-dom";
-import { useDisconnect, useNetwork } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import {
   makeDirectGrantRoundData,
   makeRoundData,
@@ -25,10 +25,23 @@ jest.mock("common", () => ({
 }));
 
 jest.mock("../../common/Auth");
-jest.mock("wagmi");
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+  }),
+  useDisconnect: jest.fn(),
+}));
+
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
+  }),
+}));
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
 
 jest.mock("../../common/Auth", () => ({
@@ -84,9 +97,6 @@ describe("View Round", () => {
         id: mockRoundData.id,
       };
     });
-
-    (useNetwork as jest.Mock).mockReturnValue({ chains: [] });
-    (useDisconnect as jest.Mock).mockReturnValue({});
   });
 
   it("when edit is clicked, it enables the imputs for editing and shows the update round button and cancel button", () => {

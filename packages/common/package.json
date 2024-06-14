@@ -22,8 +22,9 @@
     "@gitcoin/gitcoin-chain-data": "^1.0.17",
     "@gitcoinco/passport-sdk-types": "^0.2.0",
     "@openzeppelin/merkle-tree": "^1.0.2",
-    "@rainbow-me/rainbowkit": "^0.12.16",
+    "@rainbow-me/rainbowkit": "2.1.2",
     "@spruceid/didkit-wasm": "0.3.0-alpha0",
+    "@tanstack/react-query": "^5.40.0",
     "@wagmi/chains": "^1.8.0",
     "abitype": "^0.10.3",
     "classnames": "^2.3.2",
@@ -43,8 +44,8 @@
     "tiny-emitter": "^2.1.0",
     "ts-debounce": "^4.0.0",
     "typescript": "latest",
-    "viem": "^1.5.3",
-    "wagmi": "0.12.19",
+    "viem": "^2.13.10",
+    "wagmi": "2.10.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {

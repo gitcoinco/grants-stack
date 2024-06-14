@@ -1,4 +1,4 @@
-import { Program, Web3Instance } from "./types";
+import { Program } from "./types";
 import { datadogLogs } from "@datadog/browser-logs";
 import { DataLayer } from "data-layer";
 import { getAlloVersion } from "common/src/config";
@@ -12,15 +12,10 @@ import { getChainById, stringToBlobUrl } from "common";
  */
 export async function listPrograms(
   address: string,
-  signerOrProvider: Web3Instance["provider"],
+  chainId: number,
   dataLayer: DataLayer
 ): Promise<Program[]> {
   try {
-    // fetch chain id
-    const { chainId } = (await signerOrProvider.getNetwork()) as {
-      chainId: number;
-    };
-
     // fetch programs from indexer
 
     const programsRes = await dataLayer.getProgramsByUser({
@@ -64,13 +59,9 @@ export async function listPrograms(
 // TODO(shavinac) change params to expect chainId instead of signerOrProvider
 export async function getProgramById(
   programId: string,
-  signerOrProvider: Web3Instance["provider"],
+  chainId: number,
   dataLayer: DataLayer
 ): Promise<Program | null> {
-  // fetch chain id
-  const { chainId } = (await signerOrProvider.getNetwork()) as {
-    chainId: number;
-  };
 
   // fetch program from indexer
   const { program: program } = await dataLayer.getProgramById({

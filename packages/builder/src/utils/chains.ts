@@ -1,9 +1,6 @@
-import { Chain } from "@rainbow-me/rainbowkit";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { infuraProvider } from "wagmi/providers/infura";
-import { publicProvider } from "wagmi/providers/public";
 import { getConfig } from "common/src/config";
 import { allNetworks, mainnetNetworks } from "common/src/chains";
+import { Chain } from "@rainbow-me/rainbowkit";
 
 const allChains: Chain[] =
   process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
@@ -11,7 +8,6 @@ const allChains: Chain[] =
 export function getEnabledChainsAndProviders() {
   const config = getConfig();
   const chains: Chain[] = [];
-  const providers = [publicProvider({ priority: 2 })];
 
   const {
     blockchain: { chainsOverride },
@@ -25,15 +21,15 @@ export function getEnabledChainsAndProviders() {
     // When we finish the refactoring to use the global config everywhere, we can change the way we
     // verify the env vars
     chainsOverride !== "-"
-      ? chainsOverride.split(",").map((name) => name.trim())
+      ? chainsOverride.split(",").map((id) => id.trim())
       : [];
 
   if (selectedChainsNames.length > 0) {
     // if REACT_APP_CHAINS_OVERRIDE is specified we use those
-    selectedChainsNames.forEach((name) => {
-      const chain = allChains.find((c) => c.network === name);
+    selectedChainsNames.forEach((id) => {
+      const chain = allChains.find((c) => c.id === Number(id));
       if (chain === undefined) {
-        throw new Error(`allChains doesn't contain a chain called "${name}"`);
+        throw new Error(`allChains doesn't contain a chain with id "${id}"`);
       }
 
       chains.push(chain);
@@ -47,18 +43,5 @@ export function getEnabledChainsAndProviders() {
     // default chains for staging
     chains.push(...allNetworks);
   }
-
-  if (config.blockchain.infuraId !== undefined) {
-    providers.push(
-      infuraProvider({ apiKey: config.blockchain.infuraId!, priority: 0 })
-    );
-  }
-
-  if (config.blockchain.alchemyId !== undefined) {
-    providers.push(
-      alchemyProvider({ apiKey: config.blockchain.alchemyId!, priority: 1 })
-    );
-  }
-
-  return { chains, providers };
+  return { chains };
 }

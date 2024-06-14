@@ -32,8 +32,13 @@ jest.mock("../../common/Auth");
 jest.mock("../../api/payoutStrategy/payoutStrategy");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
 jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+    address: "0x0",
+  }),
   useNetwork: () => ({
     chain: jest.fn(),
     chains: [

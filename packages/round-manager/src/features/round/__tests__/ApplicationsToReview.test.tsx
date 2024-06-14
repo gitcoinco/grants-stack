@@ -26,6 +26,17 @@ jest.mock("common", () => ({
   useAllo: jest.fn(),
 }));
 
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+  }),
+}));
+
+jest.mock("@rainbow-me/rainbowkit", () => ({
+  ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
+}));
+
 jest.mock("common/src/allo/backends/allo-v1");
 
 const mockBulkUpdateApplicationStatus = jest.fn().mockResolvedValue({

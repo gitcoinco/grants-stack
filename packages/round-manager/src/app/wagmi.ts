@@ -1,21 +1,13 @@
 import "@rainbow-me/rainbowkit/styles.css";
-import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
-import {
-  coinbaseWallet,
-  injectedWallet,
-  walletConnectWallet,
-  metaMaskWallet,
-} from "@rainbow-me/rainbowkit/wallets";
-import { createClient, configureChains } from "wagmi";
-import { publicProvider } from "wagmi/providers/public";
-import { infuraProvider } from "wagmi/providers/infura";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { getConfig } from "common/src/config";
+import { QueryClient } from "@tanstack/react-query";
+import { Chain as RChain, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { allNetworks, mainnetNetworks } from "common/src/chains";
+import { getClient, getConnectorClient } from "@wagmi/core";
+import { providers } from "ethers";
+import { type Account, type Chain, type Client, type Transport } from "viem";
+import { Connector } from "wagmi";
 
-const config = getConfig();
-
-const allChains: Chain[] =
+const allChains: RChain[] =
   process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
 
 /* TODO: remove hardcoded value once we have environment variables validation */
@@ -23,41 +15,54 @@ const projectId =
   process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
   "2685061cae0bcaf2b244446153eda9e1";
 
-const providers = [publicProvider({ priority: 2 })];
-if (config.blockchain.infuraId !== undefined) {
-  providers.push(
-    infuraProvider({ apiKey: config.blockchain.infuraId!, priority: 0 })
-  );
+export const config = getDefaultConfig({
+  appName: "Gitcoin Manager",
+  projectId,
+  chains: [...allChains] as [Chain, ...Chain[]],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+}) as any;
+
+const queryClient = new QueryClient();
+
+export function clientToProvider(client: Client<Transport, Chain>) {
+  const { chain, transport } = client;
+  const network = {
+    chainId: chain.id,
+    name: chain.name,
+    ensAddress: chain.contracts?.ensRegistry?.address,
+  };
+  if (transport.type === "fallback")
+    return new providers.FallbackProvider(
+      (transport.transports as ReturnType<Transport>[]).map(
+        ({ value }) => new providers.JsonRpcProvider(value?.url, network)
+      )
+    );
+  return new providers.JsonRpcProvider(transport.url, network);
 }
 
-if (config.blockchain.alchemyId !== undefined) {
-  providers.push(
-    alchemyProvider({ apiKey: config.blockchain.alchemyId!, priority: 1 })
-  );
+/** Action to convert a viem Public Client to an ethers.js Provider. */
+export function getEthersProvider(chainId: number) {
+  const client = getClient(config, { chainId });
+  if (!client) return;
+  return clientToProvider(client);
 }
 
-export const { chains, provider, webSocketProvider } = configureChains(
-  allChains,
-  providers
-);
+export function clientToSigner(client: Client<Transport, Chain, Account>) {
+  const { account, chain, transport } = client;
+  const network = {
+    chainId: chain.id,
+    name: chain.name,
+    ensAddress: chain.contracts?.ensRegistry?.address,
+  };
+  const provider = new providers.Web3Provider(transport, network);
+  const signer = provider.getSigner(account.address);
+  return signer;
+}
 
-// Custom wallet connectors: more can be added by going here:
-// https://www.rainbowkit.com/docs/custom-wallet-list
-const connectors = connectorsForWallets([
-  {
-    groupName: "Recommended",
-    wallets: [
-      injectedWallet({ chains }),
-      walletConnectWallet({ chains, projectId }),
-      metaMaskWallet({ chains, projectId }),
-      coinbaseWallet({ appName: "Gitcoin Round Manager", chains }),
-    ],
-  },
-]);
+/** Action to convert a Viem Client to an ethers.js Signer. */
+export async function getEthersSigner(connector: Connector, chainId: number) {
+  const client = await getConnectorClient(config, { chainId, connector });
+  return clientToSigner(client);
+}
 
-export const client = createClient({
-  autoConnect: true,
-  connectors: connectors,
-  provider,
-  webSocketProvider,
-});
+export default queryClient;

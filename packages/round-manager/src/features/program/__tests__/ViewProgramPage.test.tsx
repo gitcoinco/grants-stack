@@ -23,6 +23,7 @@ jest.mock("../../common/Auth");
 jest.mock("../../api/program");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -36,6 +37,21 @@ jest.mock("data-layer", () => ({
     fetchRounds: jest.fn(),
   }),
 }));
+export const mockedOperatorWallet = faker.finance.ethereumAddress();
+
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+    address: mockedOperatorWallet,
+  }),
+}));
+
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
+  }),
+}));
 
 describe("<ViewProgram />", () => {
   let stubProgram: Program;
@@ -43,7 +59,18 @@ describe("<ViewProgram />", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    stubProgram = makeProgramData({ id: programId, tags: ["allo-v1"] });
+    stubProgram = makeProgramData({
+      id: programId,
+      tags: ["allo-v2"],
+      operatorWallets: [mockedOperatorWallet],
+      roles: [
+        {
+          address: mockedOperatorWallet,
+          role: "OWNER",
+          createdAtBlock: "0",
+        },
+      ],
+    });
 
     (useWallet as jest.Mock).mockReturnValue({
       chain: {},
@@ -64,12 +91,6 @@ describe("<ViewProgram />", () => {
   });
 
   it("should display access denied when wallet accessing is not program operator", () => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: {},
-      address: faker.finance.ethereumAddress(),
-      provider: { getNetwork: () => Promise.resolve({ chainId: "0x0" }) },
-    });
-
     render(
       wrapWithReadProgramContext(
         wrapWithRoundContext(<ViewProgram />, {
@@ -77,7 +98,19 @@ describe("<ViewProgram />", () => {
           fetchRoundStatus: ProgressStatus.IS_SUCCESS,
         }),
         {
-          programs: [stubProgram],
+          programs: [
+            {
+              ...stubProgram,
+              roles: [
+                {
+                  address: faker.finance.ethereumAddress(),
+                  role: "OWNER",
+                  createdAtBlock: "0",
+                },
+              ],
+              operatorWallets: [faker.finance.ethereumAddress()],
+            },
+          ],
           fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
         }
       )
@@ -107,6 +140,7 @@ describe("<ViewProgram />", () => {
       faker.finance.ethereumAddress(),
       faker.finance.ethereumAddress(),
       faker.finance.ethereumAddress(),
+      mockedOperatorWallet,
     ];
 
     const stubProgram = makeProgramData({ id: programId, operatorWallets });

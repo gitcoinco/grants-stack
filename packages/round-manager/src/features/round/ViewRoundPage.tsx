@@ -26,7 +26,6 @@ import {
   Round,
 } from "../api/types";
 import AccessDenied from "../common/AccessDenied";
-import { useWallet } from "../common/Auth";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
@@ -54,6 +53,7 @@ import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import AlloV1 from "common/src/icons/AlloV1";
 import AlloV2 from "common/src/icons/AlloV2";
 import ViewManageTeam from "./ViewManageTeam";
+import { useAccount } from "wagmi";
 
 export const isDirectRound = (round: Round | undefined) => {
   return (
@@ -69,7 +69,7 @@ export default function ViewRoundPage() {
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
   const { id } = useParams() as { id: string };
-  const { address, chain } = useWallet();
+  const { address, chainId } = useAccount();
 
   const { round, fetchRoundStatus, error } = useRoundById(id.toLowerCase());
   const isRoundFetched =
@@ -85,14 +85,11 @@ export default function ViewRoundPage() {
     debugModeEnabled ||
     (round
       ? round?.roles?.some(
-          (role) => role.address.toLowerCase() === address.toLowerCase()
+          (role) => role.address.toLowerCase() === address?.toLowerCase()
         )
       : true);
 
   const roundNotFound = fetchRoundStatus === ProgressStatus.IS_ERROR;
-
-  console.log("====> round", round);
-  console.log("====> fetchRoundStatus", fetchRoundStatus);
 
   return (
     <>
@@ -143,7 +140,7 @@ export default function ViewRoundPage() {
                 <div className="absolute right-0">
                   <ViewGrantsExplorerButton
                     iconStyle="h-4 w-4"
-                    chainId={`${chain.id}`}
+                    chainId={`${chainId}`}
                     roundId={round.id}
                   />
                 </div>
@@ -358,7 +355,7 @@ export default function ViewRoundPage() {
                         applications={applications}
                         isRoundsFetched={isRoundFetched}
                         fetchRoundStatus={fetchRoundStatus}
-                        chainId={`${chain.id}`}
+                        chainId={`${chainId}`}
                         roundId={id}
                       />
                     </Tab.Panel>
@@ -373,7 +370,7 @@ export default function ViewRoundPage() {
                     <Tab.Panel>
                       <ViewManageTeam
                         round={round}
-                        userAddress={address.toString()}
+                        userAddress={address!.toString()}
                       />
                     </Tab.Panel>
                     {!isDirectRound(round) && (
@@ -396,7 +393,7 @@ export default function ViewRoundPage() {
                         <Tab.Panel>
                           <ReclaimFunds
                             round={round}
-                            chainId={`${chain.id}`}
+                            chainId={`${chainId}`}
                             roundId={id}
                           />
                         </Tab.Panel>

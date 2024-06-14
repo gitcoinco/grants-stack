@@ -13,11 +13,13 @@ import { zeroAddress } from "viem";
 import { errorModalDelayMs } from "../../../constants";
 import { useWallet } from "../../common/Auth";
 import CreateProgramPage from "../CreateProgramPage";
+import wagmi, { Config, UseAccountReturnType } from "wagmi";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
 
 jest.mock("../../../constants", () => ({
@@ -37,6 +39,16 @@ jest.mock("common", () => ({
   useAllo: jest.fn(),
 }));
 
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 10,
+    address: "0x0000000000000000000000000000000000000000",
+    chain: {
+      id: 10,
+    },
+  }),
+}));
+
 describe("<CreateProgramPage />", () => {
   beforeEach(() => {
     (useWallet as jest.Mock).mockReturnValue({
@@ -51,12 +63,6 @@ describe("<CreateProgramPage />", () => {
     expect(
       await screen.findByTestId("program-chain-tooltip")
     ).toBeInTheDocument();
-  });
-
-  it("displays wrong network when connected to unsupported network", async () => {
-    renderWithContext(<CreateProgramPage />);
-
-    expect(await screen.findByText("Wrong Network")).toBeInTheDocument();
   });
 
   it("submitting form calls allo interface with correct data", async () => {
@@ -145,6 +151,23 @@ describe("<CreateProgramPage />", () => {
     });
 
     expect(screen.queryByTestId("error-modal")).not.toBeInTheDocument();
+  });
+
+  it("displays wrong network when connected to unsupported network", async () => {
+    jest.spyOn(wagmi, "useAccount").mockImplementation(
+      () =>
+        ({
+          chainId: 9999,
+          address: "0x0000000000000000000000000000000000000000",
+          chain: {
+            id: 9999,
+          },
+        }) as unknown as UseAccountReturnType<Config>
+    );
+
+    renderWithContext(<CreateProgramPage />);
+
+    expect(await screen.findByText("Wrong Network")).toBeInTheDocument();
   });
 });
 

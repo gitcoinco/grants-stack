@@ -7,12 +7,23 @@ import { ProgressStatus, Round } from "../../../features/api/types";
 import { DataLayer, DataLayerProvider } from "data-layer";
 
 jest.mock("../../../features/api/round");
-jest.mock("wagmi");
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+  }),
+}));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
+  getDefaultConfig: jest.fn(),
 }));
 jest.mock("../../../features/common/Auth", () => ({
   useWallet: () => mockWallet,
+}));
+jest.mock("../../../app/wagmi", () => ({
+  getEthersProvider: (chainId: number) => ({
+    getNetwork: () => Promise.resolve({ network: { chainId } }),
+    network: { chainId },
+  }),
 }));
 
 const mockWallet = {
