@@ -108,6 +108,7 @@ jest.mock("../../../app/wagmi", () => ({
     getNetwork: () => Promise.resolve({ network: { chainId } }),
     network: { chainId },
   }),
+  getEthersSigner: jest.fn(),
 }));
 
 jest.mock("wagmi", () => ({
@@ -120,6 +121,14 @@ jest.mock("wagmi", () => ({
   useAccount: () => ({
     chainId: 1,
     address: "0x0",
+    chain: {
+      id: 1,
+    },
+    connector: {
+      getChainId: jest.fn(),
+      getAccounts: jest.fn(),
+      getAddress: jest.fn()
+    }
   }),
 }));
 

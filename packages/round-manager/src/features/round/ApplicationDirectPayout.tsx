@@ -203,7 +203,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
     // check round exists
     if (
       round === undefined ||
-      signer === undefined ||
+      address === undefined ||
       application.project?.id === undefined ||
       application.applicationIndex === undefined ||
       application.projectId === undefined
@@ -227,7 +227,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
       tokenInfo.address !== zeroAddress &&
       tokenInfo.address.toLowerCase() !== NATIVE.toLowerCase()
     ) {
-      const erc20 = Erc20__factory.connect(tokenInfo.address, signer);
+      const erc20 = Erc20__factory.connect(tokenInfo.address, signer!);
       allowance = await erc20.allowance(data.address, round.payoutStrategy.id);
       if (
         allowance.lt(amountWithFeeBN) &&
@@ -254,7 +254,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
 
         await triggerPayout({
           address,
-          signer,
+          signer: signer!,
           token: tokenInfo,
           applicationId: (application.anchorAddress ||
             application.projectId) as Hex,
