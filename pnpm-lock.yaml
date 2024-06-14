@@ -221,7 +221,7 @@ importers:
         version: 8.4.38
       posthog-js:
         specifier: ^1.132.0
-        version: 1.132.0
+        version: 1.139.1
       process:
         specifier: ^0.11.10
         version: 0.11.10
@@ -1119,7 +1119,7 @@ importers:
         version: 5.4.1
       posthog-js:
         specifier: ^1.138.1
-        version: 1.138.1
+        version: 1.139.1
       process:
         specifier: ^0.11.10
         version: 0.11.10
@@ -17433,7 +17433,6 @@ snapshots:
       - '@types/node'
       - postcss
       - typescript
-    dev: false
 
   '@craco/craco@7.1.0(@types/node@18.19.34)(postcss@8.4.38)(react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@18.19.34)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10))(typescript@5.4.5)':
     dependencies:
@@ -23832,7 +23831,6 @@ snapshots:
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
-    dev: false
 
   cosmiconfig-typescript-loader@4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.4.5))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.4.5))(typescript@5.4.5):
     dependencies:
@@ -25093,7 +25091,6 @@ snapshots:
       - eslint-import-resolver-webpack
       - jest
       - supports-color
-    dev: false
 
   eslint-config-react-app@7.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(eslint@8.57.0)(jest@27.5.1(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@18.19.34)(typescript@5.4.5))(utf-8-validate@5.0.10))(typescript@5.4.5):
     dependencies:
@@ -31782,7 +31779,6 @@ snapshots:
       - webpack-cli
       - webpack-hot-middleware
       - webpack-plugin-serve
-    dev: false
 
   react-scripts@5.0.1(@babel/plugin-syntax-flow@7.24.7(@babel/core@7.24.7))(@babel/plugin-transform-react-jsx@7.24.7(@babel/core@7.24.7))(@rspack/core@0.5.7(@swc/helpers@0.5.3))(@types/babel__core@7.20.5)(@types/webpack@5.28.0(esbuild@0.18.20))(bufferutil@4.0.8)(esbuild@0.18.20)(eslint@8.57.0)(react@18.3.1)(ts-node@10.9.2(@types/node@18.19.34)(typescript@5.4.5))(type-fest@2.19.0)(typescript@5.4.5)(utf-8-validate@5.0.10):
     dependencies:
@@ -33408,7 +33404,6 @@ snapshots:
       typescript: 5.4.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
-    dev: false
 
   ts-node@10.9.2(@types/node@20.5.1)(typescript@5.4.5):
     dependencies:
