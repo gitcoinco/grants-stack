@@ -2,6 +2,9 @@ import { BigNumberish, ethers } from "ethers";
 import gnosisABI from "../contracts/abis/gnosis.json";
 import { global } from "../global";
 import { AddressType, Metadata, Project } from "../types";
+import { getBytecode } from "@wagmi/core";
+import { Hex } from "viem";
+import { config } from "./wagmi";
 
 /**
  * Parse a round to apply string
@@ -78,7 +81,10 @@ export const getAddressType = async (address: string): Promise<AddressType> => {
   const returnValue = { resolved: false, isContract: false, isSafe: false };
 
   if (web3Provider) {
-    const addressCode = await web3Provider.getCode(address);
+    const addressCode = await getBytecode(config, {
+      address: address as Hex,
+      chainId: web3Provider.network.chainId
+    });
 
     returnValue.isContract = addressCode !== "0x";
 
