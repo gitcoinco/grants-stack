@@ -8,7 +8,6 @@ const allChains: Chain[] =
 export function getEnabledChainsAndProviders() {
   const config = getConfig();
   const chains: Chain[] = [];
-  // const providers: Record<number, HttpTransport> = {};
 
   const {
     blockchain: { chainsOverride },
