@@ -1,8 +1,8 @@
-import { Provider } from "@ethersproject/providers";
-import { ethers } from "ethers";
+import { Network, Provider } from "@ethersproject/providers";
+import { ethers, providers } from "ethers";
 import { Buffer } from "buffer";
 import { getConfig } from "common/src/config";
-import { isJestRunning } from "common";
+import { getChainById, isJestRunning } from "common";
 import { global } from "../global";
 
 const LitJsSdk = isJestRunning() ? null : require("gitcoin-lit-js-sdk");
@@ -117,7 +117,17 @@ export default class Lit {
   async encryptString(content: string) {
     const client = await getClient();
 
-    const litProvider: LitProvider = global.web3Provider as Provider;
+    if (!global.chainID) throw new Error("Chain ID is not set in global state");
+
+    const litProvider: LitProvider = new providers.JsonRpcProvider(
+      getChainById(global.chainID).rpc
+    ) as Provider;
+
+    const network: Network = {
+      name: this.chain,
+      chainId: global.chainID!,
+    };
+    litProvider.getNetwork = async () => network;
 
     litProvider.getSigner = () => global.signer;
     litProvider.listAccounts = () => [global.address as string];

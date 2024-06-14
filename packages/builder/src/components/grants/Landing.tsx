@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 import { Link } from "react-router-dom";
 import { RootState } from "../../reducers";
 import {
@@ -12,6 +12,7 @@ import {
 } from "../../assets";
 import { grantsPath } from "../../routes";
 import { initializeWeb3 } from "../../actions/web3";
+import { getEthersSigner } from "../../utils/wagmi";
 
 function LandingHeader() {
   return (
@@ -46,15 +47,19 @@ function Landing() {
     web3Initializing: state.web3.initializing,
   }));
 
-  const { chain, address, isConnected } = useAccount();
-  const { data: signer } = useWalletClient();
+  const { chain, address, isConnected, connector } = useAccount();
+
   const provider = usePublicClient();
   // dispatch initializeWeb3 when address changes
   useEffect(() => {
-    if (signer && provider && chain && address) {
-      dispatch(initializeWeb3(signer, provider, chain, address));
-    }
-  }, [address, chain, signer, provider]);
+    const init = async () => {
+      if (connector?.getAccounts && provider && chain && address) {
+        const signer = await getEthersSigner(connector, chain.id);
+        dispatch(initializeWeb3(signer, provider, chain, address));
+      }
+    };
+    init();
+  }, [address, connector, chain, provider]);
 
   return (
     <div className="flex flex-col absolute h-full w-full">
