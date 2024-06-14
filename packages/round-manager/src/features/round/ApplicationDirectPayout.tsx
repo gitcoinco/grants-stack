@@ -29,6 +29,8 @@ import { Hex, isAddress, zeroAddress } from "viem";
 import { useDataLayer } from "data-layer";
 import { getConfig } from "common/src/config";
 import { useAccount } from "wagmi";
+import { getEthersSigner } from "../../app/wagmi";
+import { JsonRpcSigner } from "@ethersproject/providers";
 
 const schema = yup.object().shape({
   amount: yup
@@ -53,9 +55,9 @@ type Props = {
 };
 
 export default function ApplicationDirectPayout({ round, application }: Props) {
-  const { chain, address, signer } = useWallet();
-  const { chain: network } = useAccount();
+  const { chain, address, connector } = useAccount();
   const { triggerPayout, progressSteps: payoutProgressSteps } = usePayout();
+  const [signer, setSigner] = useState<JsonRpcSigner | undefined>();
   const [isPayoutProgressModelOpen, setIsPayoutProgressModelOpen] =
     useState(false);
   const [payoutError, setPayoutError] = useState<
@@ -69,6 +71,19 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
+
+  if (!chain || !address || !connector) {
+    throw Error("Chain, address or connector not found!");
+  }
+
+  useEffect(() => {
+    const getSigner = async () => {
+      const signer = await getEthersSigner(connector!, chain!.id);
+      setSigner(signer);
+    };
+
+    if (connector && chain) getSigner();
+  }, [connector, chain]);
 
   const isV2 = getConfig().allo.version === "allo-v2";
   // in v1 you can't use native payout token
@@ -381,7 +396,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
                                 </span>
                                 <a
                                   target="_blank"
-                                  href={`${network?.blockExplorers?.default.url}/tx/${payout.txnHash}`}
+                                  href={`${chain?.blockExplorers?.default.url}/tx/${payout.txnHash}`}
                                   className="inline items-center ml-2"
                                   rel="noreferrer"
                                 >
