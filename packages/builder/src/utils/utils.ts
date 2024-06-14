@@ -1,10 +1,10 @@
+import { Hex } from "viem";
+import { getBytecode } from "@wagmi/core";
 import { BigNumberish, ethers } from "ethers";
+import { config } from "./wagmi";
 import gnosisABI from "../contracts/abis/gnosis.json";
 import { global } from "../global";
 import { AddressType, Metadata, Project } from "../types";
-import { getBytecode } from "@wagmi/core";
-import { Hex } from "viem";
-import { config } from "./wagmi";
 
 /**
  * Parse a round to apply string
@@ -83,7 +83,7 @@ export const getAddressType = async (address: string): Promise<AddressType> => {
   if (web3Provider) {
     const addressCode = await getBytecode(config, {
       address: address as Hex,
-      chainId: web3Provider.network.chainId
+      chainId: (web3Provider as any).chain.id,
     });
 
     returnValue.isContract = addressCode !== "0x";
