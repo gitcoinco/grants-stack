@@ -11,7 +11,7 @@ import { gql } from "graphql-request";
 export const getProgramsByUserAndTag = gql`
   query ($userAddress: String!, $chainIds: [Int!]!, $tags: [String!]!) {
     projects(
-      orderBy: ID_DESC
+      orderBy: PRIMARY_KEY_DESC
       first: 100
       filter: {
         tags: { contains: $tags }
