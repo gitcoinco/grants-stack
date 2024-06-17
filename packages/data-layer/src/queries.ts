@@ -424,6 +424,42 @@ export const getProjectsByAddress = gql`
   }
 `;
 
+/**
+ * Get active projects in the given range
+`* @param $first - The number of projects to return
+ * @param $offset - The offset of the projects
+ *
+ * @returns The v2Projects
+ */
+export const getPaginatedProjects = gql`
+  query getPaginatedProjectsQuery(
+  first: Int!
+  offset: Int!
+  ) {
+    projects(
+      filter: {
+        tags: { equalTo: allo-v2 }
+        not: { tags: { contains: "program" } }
+      }
+      first: $first
+      offset: $offset
+    ) {
+      id
+      chainId
+      metadata
+      metadataCid
+      name
+      nodeId
+      projectNumber
+      registryAddress
+      tags
+      nonce
+      anchorAddress
+      projectType
+    }
+  }
+`;
+
 export const getProjectsAndRolesByAddress = gql`
   query getProjectsAndRolesByAddressQuery(
     $address: String!
