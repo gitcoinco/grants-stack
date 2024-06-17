@@ -53,6 +53,7 @@ import {
   getApplicationsForExplorer,
   getPayoutsByChainIdRoundIdProjectId,
   getApprovedApplicationsByProjectIds,
+  getPaginatedProjects,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -303,6 +304,38 @@ export class DataLayer {
     const response: { projects: v2Project[] } = await request(
       this.gsIndexerEndpoint,
       getProjectsAndRolesByAddress,
+      requestVariables,
+    );
+
+    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
+      response.projects,
+    );
+
+    return projects;
+  }
+
+  /**
+   * Gets all active projects in the given range.
+   * @param first // number of projects to return
+   * @param offset // number of projects to skip
+   *
+   * @returns v2Project[]
+   */
+  async getPaginatedProjects({
+    first,
+    offset,
+  }: {
+    first: number;
+    offset: number;
+  }): Promise<v2Project[]> {
+    const requestVariables = {
+      first,
+      offset,
+    };
+
+    const response: { projects: v2Project[] } = await request(
+      this.gsIndexerEndpoint,
+      getPaginatedProjects,
       requestVariables,
     );
 
