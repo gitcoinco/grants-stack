@@ -1,5 +1,5 @@
 import { ViewGrantsExplorerButtonType } from "./types";
-import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
+import { ReactComponent as GrantExplorerLogo } from "../../assets/explorer.svg";
 
 export function ViewGrantsExplorerButton(props: ViewGrantsExplorerButtonType) {
   const { chainId, roundId } = props;
@@ -26,7 +26,6 @@ export function ViewGrantsExplorerButton(props: ViewGrantsExplorerButtonType) {
       }}
       data-testid="round-explorer"
     >
-      {/* todo: update icon for expolorer */}
       <GrantExplorerLogo className={props.iconStyle} aria-hidden="true" />
       <span className="text-xs font-mono ml-2">View round</span>
     </span>
