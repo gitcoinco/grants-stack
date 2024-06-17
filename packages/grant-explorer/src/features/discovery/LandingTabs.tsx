@@ -37,13 +37,12 @@ export default function LandingTabs() {
       children: isDesktop ? "Explore rounds" : "Rounds",
       tabName: "home-rounds-tab",
     },
-    // Note: removing when a GG round is not running.
-    // {
-    //   to: "/projects",
-    //   activeRegExp: /^\/projects/,
-    //   children: isDesktop ? "Explore projects" : "Projects",
-    //   tabName: "home-projects-tab",
-    // },
+    {
+      to: "/projects",
+      activeRegExp: /^\/projects/,
+      children: isDesktop ? "Explore projects" : "Projects",
+      tabName: "home-projects-tab",
+    },
   ];
 
   return (
