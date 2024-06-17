@@ -57,18 +57,19 @@ function ListPrograms() {
           dgRoundsCount={program.dgRoundsCount}
           footerContent={
             <>
-              <div className="mr-auto">
+              <div className="flex">
                 <img
                   src={program.chain?.logo}
                   alt="Chain"
                   className="rounded-full w-6 h-6 mr-2"
                 />
+                {program.tags?.includes("allo-v1") && (
+                  <div className="mt-1">
+                    <AlloV1Black/>
+                  </div>
+                )}
               </div>
-              {program.tags?.includes("allo-v1") && (
-                <div className="-ml-[4rem] 2xl:-ml-[5rem] mr-1">
-                  <AlloV1Black/>
-                </div>
-              )}
+
               <div
                 className="text-gray-500 font-normal ml-auto"
                 data-testid="program-card"
