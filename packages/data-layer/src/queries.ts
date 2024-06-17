@@ -11,6 +11,7 @@ import { gql } from "graphql-request";
 export const getProgramsByUserAndTag = gql`
   query ($userAddress: String!, $chainIds: [Int!]!, $tags: [String!]!) {
     projects(
+      orderBy: ID_DESC
       first: 100
       filter: {
         tags: { contains: $tags }
@@ -678,6 +679,7 @@ export const getRoundForManager = gql`
 export const getRoundsForManager = gql`
   query getRoundsForManager($chainId: Int!, $programId: String!) {
     rounds(
+      orderBy: ID_DESC
       first: 1000
       filter: {
         chainId: { equalTo: $chainId }
@@ -692,6 +694,7 @@ export const getRoundsForManager = gql`
 export const getRoundsForManagerByAddress = gql`
   query getRoundsForManager($chainIds: [Int!]!, $address: String!) {
     rounds(
+      orderBy: ID_DESC
       first: 1000
       filter: {
         chainId: {in: $chainIds}, 
