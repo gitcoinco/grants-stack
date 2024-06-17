@@ -29,6 +29,12 @@ export const getProgramsByUserAndTag = gql`
         role
         createdAtBlock
       }
+      qfRounds: rounds(filter: {strategyName: {equalTo: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"}}) {
+        id
+      }
+      dgRounds: rounds(filter: {strategyName: {equalTo: "allov2.DirectGrantsLiteStrategy"}}) {
+        id
+      }
     }
   }
 `;

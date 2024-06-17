@@ -4,14 +4,16 @@ import { GrantApplication, ProgressStatus } from "../api/types";
 export type CardProps = {
   title: string;
   description: string;
-  displayDate: string;
+  footerContent: React.ReactNode;
+  displayDate?: string;
   status?: {
     status: string;
     style: string;
   }; // todo: update to Status type
   strategyType?: string;
   color?: string;
-  footerContent: React.ReactNode;
+  qfRoundsCount?: number;
+  dgRoundsCount?: number;
 };
 
 export type SpinnerProps = {

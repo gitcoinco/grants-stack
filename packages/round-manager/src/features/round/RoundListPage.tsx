@@ -85,84 +85,88 @@ function ListRounds() {
   });
 
   return (
-    <div className="bg-grey-50 w-full mx-20">
-      {fetchRoundStatus === ProgressStatus.IN_PROGRESS && (
-        <Spinner text="We're fetching your Programs." />
-      )}
-      {/* todo: remove when ready */}
-      {version === "allo-v1" && (
-        <div className="bg-blue-100 py-4 text-center font-medium flex flex-col items-center justify-center">
-          <div>
-            <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
-            You are currently on Allo v1. To switch to the most current version
-            of Manager,&nbsp;
-            <button
-              type="button"
-              className="underline"
-              onClick={(e) => {
-                e.preventDefault();
-                switchToVersion("allo-v2");
-              }}
-            >
-              switch to Allo v2.
-            </button>
-            &nbsp;
-          </div>
-          <div>
-            Click&nbsp;
-            <a
-              href="https://gitcoin.notion.site/Navigating-the-Transition-to-Allo-v2-A-Guide-for-Grants-Managers-63e2bdddccb94792af83fdffb1530b85?pvs=74"
-              rel="noreferrer"
-              className="underline"
-              target="_blank"
-            >
-              here
-            </a>
-            &nbsp;to learn more about Allo v2.
-          </div>
-        </div>
-      )}
-      <main className="max-w-screen-2xl mx-auto px-8 max-h-full">
-        <div className="flex flex-col mb-6">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex flex-row items-center justify-start pt-8">
-              <span className="text-2xl font-medium text-gray-500 antialiased mr-2">
-                Rounds
-              </span>
-              <span
-                className="md:ml-8 mt-1 text-xs font-mono hover:cursor-pointer"
-                onClick={() => {
-                  setViewAllRounds(!viewAllRounds);
+    <main className="container max-h-full">
+      <div className="bg-grey-50 w-full">
+        {fetchRoundStatus === ProgressStatus.IN_PROGRESS && (
+          <Spinner text="We're fetching your Rounds." />
+        )}
+        {/* todo: remove when ready */}
+        {version === "allo-v1" && (
+          <div className="bg-blue-100 py-4 text-center font-medium flex flex-col items-center justify-center">
+            <div>
+              <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
+              You are currently on Allo v1. To switch to the most current version
+              of Manager,&nbsp;
+              <button
+                type="button"
+                className="underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  switchToVersion("allo-v2");
                 }}
               >
-                {viewAllRounds ? "View less" : "View all"}
-              </span>
+                switch to Allo v2.
+              </button>
+              &nbsp;
             </div>
-            <Tooltip text="Coming Soon!">
-              <div className="flex flex-row items-center justify-end pt-8">
-                <span className="text-xs font-mono font-medium hover:cursor-pointer">
-                  Sort by Recent
-                </span>
-                <ChevronUpIcon className="h-4 w-4 inline ml-2 hover:cursor-pointer" />
-                <span className="text-xs font-mono font-medium hover:cursor-pointer ml-6">
-                  Filter by <span className="text-nectary-600">All</span>
-                </span>
-                <ChevronUpIcon className="h-4 w-4 inline ml-2 hover:cursor-pointer" />
-              </div>
-            </Tooltip>
+            <div>
+              Click&nbsp;
+              <a
+                href="https://gitcoin.notion.site/Navigating-the-Transition-to-Allo-v2-A-Guide-for-Grants-Managers-63e2bdddccb94792af83fdffb1530b85?pvs=74"
+                rel="noreferrer"
+                className="underline"
+                target="_blank"
+              >
+                here
+              </a>
+              &nbsp;to learn more about Allo v2.
+            </div>
           </div>
-        </div>
-        <div className="w-full">
-          {roundList.length === 0 && (
-            <div className="text-md font-normal">
-              If you’re an operator of a round and you’re not a program admin,
-              that round will appear here.
+        )}
+        {isSuccess && 
+          <main className="max-w-screen-2xl mx-auto px-8 max-h-full">
+            <div className="flex flex-col mb-6">
+              <div className="flex flex-col md:flex-row items-center justify-between">
+                <div className="flex flex-row items-center justify-start pt-8">
+                  <span className="text-2xl font-medium text-gray-500 antialiased mr-2">
+                    Rounds
+                  </span>
+                  <span
+                    className="md:ml-8 mt-1 text-xs font-mono hover:cursor-pointer"
+                    onClick={() => {
+                      setViewAllRounds(!viewAllRounds);
+                    }}
+                  >
+                    {viewAllRounds ? "View less" : "View all"}
+                  </span>
+                </div>
+                <Tooltip text="Coming Soon!">
+                  <div className="flex flex-row items-center justify-end pt-8">
+                    <span className="text-xs font-mono font-medium hover:cursor-pointer">
+                      Sort by Recent
+                    </span>
+                    <ChevronUpIcon className="h-4 w-4 inline ml-2 hover:cursor-pointer" />
+                    <span className="text-xs font-mono font-medium hover:cursor-pointer ml-6">
+                      Filter by <span className="text-nectary-600">All</span>
+                    </span>
+                    <ChevronUpIcon className="h-4 w-4 inline ml-2 hover:cursor-pointer" />
+                  </div>
+                </Tooltip>
+              </div>
             </div>
-          )}
-          {viewAllRounds ? roundList : roundList.slice(0, maxRoundsPerSite)}
-        </div>
-      </main>
-    </div>
+            <div className="w-full">
+              {roundList.length === 0 && (
+                <div className="text-md font-normal">
+                  If you’re an operator of a round and you’re not a program admin,
+                  that round will appear here.
+                </div>
+              )}
+              {viewAllRounds ? roundList : roundList.slice(0, maxRoundsPerSite)}
+            </div>
+          </main>
+        }
+      </div>
+    </main>
   );
 }
 

@@ -50,6 +50,8 @@ export async function listPrograms(
         },
         createdByAddress: program.createdByAddress,
         roles: program.roles,
+        qfRoundsCount: program.qfRounds?.length || 0,
+        dgRoundsCount: program.dgRounds?.length || 0,
       });
     }
     return programs;

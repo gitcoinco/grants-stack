@@ -15,14 +15,12 @@ function LandingPage() {
     fetchProgramsStatus === ProgressStatus.IS_SUCCESS && !listProgramsError;
 
   return (
-    <>
-      <div className="bg-grey-50 flex flex-col items-center">
-        <Navbar programCta={isSuccess} />
+    <div className="bg-grey-50 flex flex-col items-center">
+      <Navbar programCta={isSuccess} />
         <ProgramListPage />
         <RoundListPage />
-        <Footer />
-      </div>
-    </>
+      <Footer />
+    </div>
   );
 }
 

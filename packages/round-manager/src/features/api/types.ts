@@ -111,6 +111,8 @@ export interface Program {
 
   tags?: string[];
   roles?: AddressAndRole[];
+  qfRoundsCount?: number;
+  dgRoundsCount?: number;
 }
 
 export type InputType =

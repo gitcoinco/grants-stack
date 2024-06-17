@@ -8,7 +8,7 @@ import {
 import { CardProps } from "../common/types";
 
 export const RoundCard: React.FC<CardProps> = (props: CardProps) => (
-  <BasicCard className="border border-gray-200 w-full mb-8 rounded-xl md:h-[230px]">
+  <BasicCard className="border border-gray-200 w-full mb-8 rounded-xl md:h-[220px]">
     <CardContent className="p-4 px-5">
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-col">
@@ -37,7 +37,7 @@ export const RoundCard: React.FC<CardProps> = (props: CardProps) => (
         <div className="flex justify-end text-sm font-mono mt-16">
           {/* todo: figure out the status display by dates */}
           <span
-            className={`border-none p-1 px-2 rounded-full ${props.status && props.status.style}`}
+            className={`border-none p-1 px-3 rounded-full ${props.status && props.status.style}`}
           >
             {props.status && props.status.status}
           </span>
