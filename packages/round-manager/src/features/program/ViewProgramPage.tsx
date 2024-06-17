@@ -27,10 +27,10 @@ export default function ViewProgram() {
   const programChainId = chainId ? Number(chainId) : chain?.id;
 
   const { program: programToRender, fetchProgramsStatus } = useProgramById(
-    programChainId!,
+    programChainId as number,
     programId
   );
-  const { fetchRoundStatus } = useRounds(programChainId!, programId);
+  const { fetchRoundStatus } = useRounds(programChainId as number, programId);
   const [programExists] = useState(true);
   const [hasAccess] = useState(true);
 
@@ -38,7 +38,7 @@ export default function ViewProgram() {
     if (programChainId !== chain?.id) {
       switchChain({ connector, chainId: programChainId as number });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const operatorWallets: JSX.Element = (

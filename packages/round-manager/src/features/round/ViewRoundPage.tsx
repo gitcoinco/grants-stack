@@ -105,6 +105,7 @@ export default function ViewRoundPage() {
                   <span>{"My Programs"}</span>
                 </Link>
                 <ChevronRightIcon className="h-6 w-6" />
+                {/* todo: update to use program id not the round id... */}
                 <Link to={`/chain/${roundChainId}/program/${id}`}>
                   <span>{"Program Details"}</span>
                 </Link>

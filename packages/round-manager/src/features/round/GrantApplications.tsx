@@ -44,7 +44,7 @@ function GrantApplications(props: {
   };
 
   const TabApplicationCounter = tw.div`
-      rounded-md
+      rounded-lg
       ml-2
       w-8
       h-5
@@ -124,7 +124,7 @@ function GrantApplications(props: {
                                   className={
                                     selected ? "bg-violet-100" : "bg-grey-150"
                                   }
-                                  data-testid="received-application-counter"
+                                  data-testid="in-review-application-counter"
                                 >
                                   {inReviewApplications?.length || 0}
                                 </TabApplicationCounter>
