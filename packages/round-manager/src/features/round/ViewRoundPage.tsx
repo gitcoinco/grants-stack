@@ -68,6 +68,9 @@ export default function ViewRoundPage() {
     roundChainId as number,
     id.toLowerCase()
   );
+
+  console.log("round", round);
+
   const isRoundFetched =
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
   const { data: applications } = useApplicationsByRoundId(id);
@@ -106,7 +109,9 @@ export default function ViewRoundPage() {
                 </Link>
                 <ChevronRightIcon className="h-6 w-6" />
                 {/* todo: update to use program id not the round id... */}
-                <Link to={`/chain/${roundChainId}/program/${id}`}>
+                <Link
+                  to={`/chain/${roundChainId}/program/${round.roundMetadata.programContractAddress}`}
+                >
                   <span>{"Program Details"}</span>
                 </Link>
                 <ChevronRightIcon className="h-6 w-6" />
