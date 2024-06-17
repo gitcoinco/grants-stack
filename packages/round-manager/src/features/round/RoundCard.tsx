@@ -18,7 +18,6 @@ export const RoundCard: React.FC<CardProps> = (props: CardProps) => (
           <CardDescription className=" text-gray-500">
             <div className="flex flex-col mt-4">
               <div>
-                {/* todo: udpate bg color for strategy type */}
                 <span
                   className={`border border-${props.color} rounded-2xl bg-${props.color} p-1 px-2 font-mono`}
                 >

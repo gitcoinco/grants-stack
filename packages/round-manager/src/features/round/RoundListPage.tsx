@@ -62,8 +62,8 @@ function ListRounds() {
             status={status}
             color={
               round.strategyName === "allov2.DirectGrantsLiteStrategy"
-                ? "green-100"
-                : "yellow-100"
+                ? "yellow-100"
+                : "green-100"
             }
             displayDate={prettyDates(round.roundStartTime, round.roundEndTime)}
             footerContent={
