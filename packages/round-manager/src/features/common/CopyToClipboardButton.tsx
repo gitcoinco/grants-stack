@@ -19,7 +19,7 @@ export default function CopyToClipboardButton(props: CopyToClipboardType) {
       }}
     >
       <LinkIcon className={props.iconStyle} aria-hidden="true" />
-      {active ? "Link Copied" : "Round Application"}
+      {active ? "Link Copied" : "Round application"}
     </span>
   );
 }
