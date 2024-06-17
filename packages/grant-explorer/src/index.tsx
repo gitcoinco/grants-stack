@@ -92,10 +92,10 @@ root.render(
 
                         {/* Project Routes */}
 
-                        {/* <Route
-                        path="/projects"
-                        element={<ExploreProjectsPage />}
-                      /> */}
+                        <Route
+                          path="/projects"
+                          element={<ExploreProjectsPage />}
+                        />
 
                         <Route
                           path="/projects/:projectId"
