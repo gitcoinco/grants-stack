@@ -34,6 +34,7 @@ import ViewRound from "./features/round/ViewRoundPage";
 import AlloWrapper from "./features/api/AlloWrapper";
 import { PostHogProvider } from "posthog-js/react";
 import ViewProject from "./features/projects/ViewProject";
+import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
 
 initSentry();
 initDatadog();
@@ -94,7 +95,7 @@ root.render(
 
                         <Route
                           path="/projects"
-                          element={<ExploreApplicationsPage />}
+                          element={<ExploreProjectsPage />}
                         />
 
                         <Route
