@@ -35,7 +35,6 @@ export default function Navbar({ programCta: programCta = true }: NavbarProps) {
                     smallScreen: "avatar",
                     largeScreen: "full",
                   }}
-                  chainStatus={{ smallScreen: "none", largeScreen: "none" }}
                   label="Log in"
                 />
               </div>
