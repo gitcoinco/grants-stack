@@ -219,6 +219,9 @@ importers:
       postcss:
         specifier: ^8.4.14
         version: 8.4.38
+      posthog-js:
+        specifier: ^1.132.0
+        version: 1.139.1
       process:
         specifier: ^0.11.10
         version: 0.11.10
@@ -1114,6 +1117,9 @@ importers:
       papaparse:
         specifier: ^5.4.1
         version: 5.4.1
+      posthog-js:
+        specifier: ^1.138.1
+        version: 1.139.1
       process:
         specifier: ^0.11.10
         version: 0.11.10

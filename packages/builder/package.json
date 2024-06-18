@@ -66,6 +66,7 @@
     "os-browserify": "^0.3.0",
     "pnpm": "7",
     "postcss": "^8.4.14",
+    "posthog-js": "^1.132.0",
     "process": "^0.11.10",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
