@@ -94,6 +94,10 @@ export default function ViewRoundPage() {
     }
   }, [chain?.id, roundChainId, connector, switchChain]);
 
+  const strategyName = round?.payoutStrategy.strategyName;
+  console.log("strategyName", strategyName);
+  const badgeColor = strategyName === "MERKLE" ? "green-100" : "yellow-100";
+
   return (
     <>
       {roundNotFound && <NotFoundPage />}
@@ -125,7 +129,7 @@ export default function ViewRoundPage() {
                 round.payoutStrategy.strategyName || ""
               ) && (
                 <div
-                  className={`text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-green-100 px-3 my-2`}
+                  className={`text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-${badgeColor} px-3 my-2`}
                   style={{ borderRadius: "20px" }}
                 >
                   {getPayoutRoundDescription(
@@ -141,9 +145,7 @@ export default function ViewRoundPage() {
               </div>
               <div className="flex flex-row items-center justify-between mt-4">
                 <div className="flex flex-row justify-start">
-                  {!isDirectRound(round) && (
-                    <RoundOpenDateRange round={round} />
-                  )}
+                  <RoundOpenDateRange round={round} />
                 </div>
                 <div className="flex flex-row justify-end">
                   <div className="mr-4">

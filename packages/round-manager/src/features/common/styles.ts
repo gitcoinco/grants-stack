@@ -4,7 +4,7 @@ export const CardsContainer = tw.div`
   flex
   flex-row
   flex-grow
-  justify-between
+  justify-start
   w-full
 `;
 
