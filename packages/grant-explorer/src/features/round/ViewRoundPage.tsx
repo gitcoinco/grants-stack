@@ -36,7 +36,7 @@ import { getDaysLeft, isDirectRound, isInfiniteDate } from "../api/utils";
 import { PassportWidget } from "../common/PassportWidget";
 
 import NotFoundPage from "../common/NotFoundPage";
-import { ProjectBanner } from "../common/ProjectBanner";
+import { ProjectBanner, ProjectLogo } from "../common/ProjectBanner";
 import RoundEndedBanner from "../common/RoundEndedBanner";
 import { Spinner } from "../common/Spinner";
 import {
@@ -59,7 +59,6 @@ import { getAlloVersion } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { getUnixTime } from "date-fns";
-import { ProjectLogo } from "../common/ApplicationCard";
 import { Application, useDataLayer } from "data-layer";
 import { useRoundApprovedApplications } from "../projects/hooks/useRoundApplications";
 import {

@@ -1,8 +1,9 @@
 import PlusIcon from "@heroicons/react/20/solid/PlusIcon";
 import { LoadingRing } from "../common/Spinner";
-import { ApplicationCard, CardSkeleton } from "../common/ApplicationCard";
+import { ApplicationCard } from "../common/ApplicationCard";
 import { ApplicationSummary } from "data-layer";
 import { usePostHog } from "posthog-js/react";
+import { CardSkeleton } from "../common/ProjectBanner";
 
 interface PaginatedApplicationsListProps {
   applications: ApplicationSummary[];

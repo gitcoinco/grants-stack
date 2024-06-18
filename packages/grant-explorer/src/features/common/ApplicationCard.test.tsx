@@ -1,9 +1,10 @@
 import { vi } from "vitest";
 import { render, fireEvent, screen } from "@testing-library/react";
-import { ApplicationCard, CardSkeleton } from "./ApplicationCard";
+import { ApplicationCard } from "./ApplicationCard";
 import { ApplicationSummary } from "data-layer";
 import { zeroAddress } from "viem";
 import { ChakraProvider } from "@chakra-ui/react";
+import { CardSkeleton } from "./ProjectBanner";
 
 vi.mock("common/src/config", async () => {
   return {
