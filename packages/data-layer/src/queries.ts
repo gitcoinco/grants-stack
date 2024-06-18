@@ -432,13 +432,10 @@ export const getProjectsByAddress = gql`
  * @returns The v2Projects
  */
 export const getPaginatedProjects = gql`
-  query getPaginatedProjectsQuery(
-  first: Int!
-  offset: Int!
-  ) {
+  query getPaginatedProjects($first: Int!, $offset: Int!) {
     projects(
       filter: {
-        tags: { equalTo: allo-v2 }
+        tags: { equalTo: "allo-v2" }
         not: { tags: { contains: "program" } }
       }
       first: $first
