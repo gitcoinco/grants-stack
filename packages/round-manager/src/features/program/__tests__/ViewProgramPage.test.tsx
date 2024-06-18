@@ -1,19 +1,19 @@
 import { faker } from "@faker-js/faker";
-// import { render, screen } from "@testing-library/react";
-// import {
-//   ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
-//   ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
-//   formatLocalDateAsISOString,
-// } from "common";
+import { render, screen } from "@testing-library/react";
+import {
+  ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
+  ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
+  formatLocalDateAsISOString,
+} from "common";
 import {
   makeProgramData,
-  // makeRoundData,
-  // wrapWithReadProgramContext,
-  // wrapWithRoundContext,
+  makeRoundData,
+  wrapWithReadProgramContext,
+  wrapWithRoundContext,
 } from "../../../test-utils";
-import { Program } from "../../api/types";
+import { Program, ProgressStatus } from "../../api/types";
 import { useWallet } from "../../common/Auth";
-// import ViewProgram from "../ViewProgramPage";
+import ViewProgram from "../ViewProgramPage";
 
 const programId = faker.datatype.number().toString();
 const useParamsFn = () => ({ id: programId });
@@ -56,6 +56,11 @@ jest.mock("../../../app/wagmi", () => ({
   }),
 }));
 
+// jest.mock("../../context/round/RoundContext", () => ({
+//   ...jest.requireActual("../../context/round/RoundContext"),
+//   useRounds: jest.fn(),
+// }));
+
 describe("<ViewProgram />", () => {
   let stubProgram: Program;
 
@@ -64,6 +69,7 @@ describe("<ViewProgram />", () => {
 
     stubProgram = makeProgramData({
       id: programId,
+      chain: { id: 1 },
       tags: ["allo-v2"],
       operatorWallets: [mockedOperatorWallet],
       roles: [
@@ -79,13 +85,9 @@ describe("<ViewProgram />", () => {
 
   it("should display NotFoundPage when no program is found", () => {
     expect(true).toBe(true);
-    //     render(
-    //       wrapWithReadProgramContext(wrapWithRoundContext(<ViewProgram />), {
-    //         programs: [],
-    //         fetchProgramsStatus: ProgressStatus.IS_SUCCESS,
-    //       })
-    //     );
-    //     expect(screen.getByText("404 ERROR")).toBeInTheDocument();
+    // render(wrapWithReadProgramContext(wrapWithRoundContext(<ViewProgram />)));
+
+    // expect(screen.getByText("404 ERROR")).toBeInTheDocument();
   });
 
   //   it("should display access denied when wallet accessing is not program operator", () => {

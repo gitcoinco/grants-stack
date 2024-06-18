@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-// import { render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { useParams } from "react-router-dom";
 import {
-  // makeDirectGrantRoundData,
-  // makeGrantApplicationData,
+  makeDirectGrantRoundData,
+  makeGrantApplicationData,
   makeRoundData,
-  // wrapWithBulkUpdateGrantApplicationContext,
-  // wrapWithReadProgramContext,
-  // wrapWithRoundContext,
+  wrapWithBulkUpdateGrantApplicationContext,
+  wrapWithReadProgramContext,
+  wrapWithRoundContext,
 } from "../../../test-utils";
-import { Round } from "../../api/types";
+import { Round, ProgressStatus } from "../../api/types";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
-// import ViewRoundPage from "../ViewRoundPage";
+import ViewRoundPage from "../ViewRoundPage";
 
 const mockRoundData: Round = makeRoundData();
 
@@ -107,23 +107,20 @@ describe("View Round", () => {
 
   it("displays a 404 when there no round is found", () => {
     expect(true).toBe(true);
-    //   (useParams as jest.Mock).mockReturnValueOnce({
-    //     id: undefined,
-    //   });
+    (useParams as jest.Mock).mockReturnValueOnce({
+      id: undefined,
+    });
 
-    //   render(
-    //     wrapWithBulkUpdateGrantApplicationContext(
-    //       wrapWithReadProgramContext(
-    //         wrapWithRoundContext(<ViewRoundPage />, {
-    //           data: [],
-    //           fetchRoundStatus: ProgressStatus.IS_ERROR,
-    //         }),
-    //         { programs: [] }
-    //       )
-    //     )
-    //   );
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [],
+            fetchRoundStatus: ProgressStatus.IS_ERROR,
+          }),
+      )
+    );
 
-    //   expect(screen.getByText("404 ERROR")).toBeInTheDocument();
+    expect(screen.getByText("404 ERROR")).toBeInTheDocument();
   });
 
   // it("displays access denied when wallet accessing is not round operator", () => {

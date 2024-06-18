@@ -14,6 +14,7 @@ export interface ReadProgramState {
   fetchProgramsStatus: ProgressStatus;
   listProgramsError?: Error;
   getProgramByIdError?: Error;
+  chainId?: number;
 }
 
 enum ActionType {

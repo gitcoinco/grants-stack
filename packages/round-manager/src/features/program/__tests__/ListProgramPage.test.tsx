@@ -27,12 +27,12 @@ jest.mock("data-layer", () => ({
   }),
   fetchProgramsByAddress: jest.fn(),
   listPrograms: jest.fn(),
-  // type: {
-  //   RoundCategory: {
-  //     QuadraticFunding: 0,
-  //     Direct: 1,
-  //   },
-  // },
+  type: {
+    RoundCategory: {
+      QuadraticFunding: 0,
+      Direct: 1,
+    },
+  },
 }));
 
 describe("<ListProgramPage />", () => {

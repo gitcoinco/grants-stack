@@ -40,7 +40,7 @@ export const TabGroup = () => {
     programId
   );
   const { data: rounds, fetchRoundStatus } = useRounds(
-    programChainId!,
+    programChainId as number,
     programId
   );
   const isRoundsFetched = fetchRoundStatus == ProgressStatus.IS_SUCCESS;

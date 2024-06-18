@@ -13,6 +13,7 @@ import { getEthersProvider } from "../../app/wagmi";
 export interface RoundState {
   data: Round[];
   fetchRoundStatus: ProgressStatus;
+  chainId?: number;
   error?: Error;
 }
 
@@ -186,6 +187,7 @@ export const useRounds = (chainId: number, programId?: string) => {
   const dataLayer = useDataLayer();
 
   if (context === undefined || !chainId) {
+    console.log("useRounds", context, chainId ?? "fuck");
     throw new Error("useRounds must be used within a RoundProvider");
   }
   const provider = getEthersProvider(chainId);
@@ -209,6 +211,7 @@ export const useRoundById = (chainId: number, roundId?: string) => {
   const dataLayer = useDataLayer();
 
   if (context === undefined || !chainId) {
+    console.log("useRoundById", context, chainId);
     throw new Error("useRounds must be used within a RoundProvider");
   }
   const provider = getEthersProvider(chainId);

@@ -93,11 +93,19 @@ const viewApplication = (
 );
 
 const viewProgram = (
-  <RoundProvider>
-    <ReadProgramProvider>
+  <ReadProgramProvider>
+    <RoundProvider>
       <ViewProgram />
-    </ReadProgramProvider>
-  </RoundProvider>
+    </RoundProvider>
+  </ReadProgramProvider>
+);
+
+const landing = (
+  <ReadProgramProvider>
+    <RoundProvider>
+      <LandingPage />
+    </RoundProvider>
+  </ReadProgramProvider>
 );
 
 root.render(
