@@ -9,3 +9,7 @@ export function applicationPath(p: {
 export function collectionPath(collectionCid: string): string {
   return `/#/collections/${collectionCid}`;
 }
+
+export function projectPath(p: { projectId: string }): string {
+  return `/#/projects/${p.projectId}`;
+}
