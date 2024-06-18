@@ -59,7 +59,7 @@ import { getAlloVersion } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { getUnixTime } from "date-fns";
-import { ProjectLogo } from "../common/ProjectCard";
+import { ProjectLogo } from "../common/ApplicationCard";
 import { Application, useDataLayer } from "data-layer";
 import { useRoundApprovedApplications } from "../projects/hooks/useRoundApplications";
 import {

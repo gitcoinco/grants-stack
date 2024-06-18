@@ -3,7 +3,7 @@ import "./browserPatches";
 import { getConfig } from "common/src/config";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
+import { ExploreApplicationsPage } from "./features/discovery/ExploreApplicationsPage";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -94,7 +94,7 @@ root.render(
 
                         <Route
                           path="/projects"
-                          element={<ExploreProjectsPage />}
+                          element={<ExploreApplicationsPage />}
                         />
 
                         <Route
@@ -118,7 +118,7 @@ root.render(
                         />
                         <Route
                           path="/collections/:collectionCid"
-                          element={<ExploreProjectsPage />}
+                          element={<ExploreApplicationsPage />}
                         />
 
                         {/* 404 */}

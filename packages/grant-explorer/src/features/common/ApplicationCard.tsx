@@ -40,7 +40,7 @@ export function ProjectLogo(props: {
   );
 }
 
-export function ProjectCardSkeleton(): JSX.Element {
+export function CardSkeleton(): JSX.Element {
   return (
     <div className="bg-white rounded-3xl overflow-hidden p-4 pb-10">
       <Skeleton height="110px" />
@@ -51,7 +51,7 @@ export function ProjectCardSkeleton(): JSX.Element {
   );
 }
 
-export function ProjectCard(props: {
+export function ApplicationCard(props: {
   application: ApplicationSummary;
   inCart: boolean;
   onAddToCart: (app: ApplicationSummary) => void;

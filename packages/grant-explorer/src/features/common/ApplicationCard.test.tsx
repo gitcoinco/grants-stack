@@ -1,6 +1,6 @@
 import { vi } from "vitest";
 import { render, fireEvent, screen } from "@testing-library/react";
-import { ProjectCard, ProjectCardSkeleton } from "./ProjectCard";
+import { ApplicationCard, CardSkeleton } from "./ApplicationCard";
 import { ApplicationSummary } from "data-layer";
 import { zeroAddress } from "viem";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -13,7 +13,7 @@ vi.mock("common/src/config", async () => {
   };
 });
 
-describe("ProjectCard", () => {
+describe("ApplicationCard", () => {
   const mockApplication: ApplicationSummary = {
     roundName: "This is a round name!",
     applicationRef: "1",
@@ -37,7 +37,7 @@ describe("ProjectCard", () => {
     const removeFromCart = vi.fn();
 
     render(
-      <ProjectCard
+      <ApplicationCard
         application={mockApplication}
         inCart={false}
         onAddToCart={addToCart}
@@ -55,7 +55,7 @@ describe("ProjectCard", () => {
     const removeFromCart = vi.fn();
 
     render(
-      <ProjectCard
+      <ApplicationCard
         application={mockApplication}
         inCart={false}
         onAddToCart={addToCart}
@@ -72,7 +72,7 @@ describe("ProjectCard", () => {
     const removeFromCart = vi.fn();
 
     render(
-      <ProjectCard
+      <ApplicationCard
         application={mockApplication}
         inCart={true}
         onAddToCart={addToCart}
@@ -87,7 +87,7 @@ describe("ProjectCard", () => {
   it("renders ProjectCardSkeleton correctly", () => {
     render(
       <ChakraProvider>
-        <ProjectCardSkeleton />
+        <CardSkeleton />
       </ChakraProvider>
     );
   });
