@@ -69,37 +69,42 @@ export default function ViewProgram() {
       {!programExists && <NotFoundPage />}
       {!hasAccess && <AccessDenied />}
       {programExists && hasAccess && (
-        <>
+        <div className="bg-gray-50">
           <Navbar programCta={true} />
-          <div className="container mx-auto flex flex-col">
+          <div className="flex flex-col">
             <header className="flex flex-col justify-center bg-white pl-2 py-6">
-              <div className="flex flex-row items-center text-grey-400 font-normal text-sm font-sans">
-                <Link to={`/`}>
-                  <p>Home</p>
-                </Link>
-                <ChevronRightIcon className="h-6 w-6 mx-3" aria-hidden="true" />
-                <p>Program Details</p>
-              </div>
-              <div className="flex flex-row items-center">
-                <div className="flex">
-                  <img
-                    src={programToRender?.chain?.logo}
-                    alt="Chain"
-                    className="rounded-full w-6 h-6 mr-2"
+              <div className="mx-10">
+                <div className="flex flex-row items-center text-grey-400 font-normal text-sm font-sans">
+                  <Link to={`/`}>
+                    <p>Home</p>
+                  </Link>
+                  <ChevronRightIcon
+                    className="h-6 w-6 mx-3"
+                    aria-hidden="true"
                   />
-                  {programToRender?.tags?.includes("allo-v1") && (
-                    <div className="mt-1">
-                      <AlloV1Black />
-                    </div>
-                  )}
+                  <p>Program Details</p>
                 </div>
-                <h1 className="text-3xl sm:text-[32px] my-2">
-                  {programToRender?.metadata?.name || "Program Details"}
-                </h1>
+                <div className="flex flex-row items-center">
+                  <div className="flex">
+                    <img
+                      src={programToRender?.chain?.logo}
+                      alt="Chain"
+                      className="rounded-full w-6 h-6 mr-2"
+                    />
+                    {programToRender?.tags?.includes("allo-v1") && (
+                      <div className="mt-1">
+                        <AlloV1Black />
+                      </div>
+                    )}
+                  </div>
+                  <h1 className="text-3xl sm:text-[32px] my-2">
+                    {programToRender?.metadata?.name || "Program Details"}
+                  </h1>
+                </div>
+                {operatorWallets}
               </div>
-              {operatorWallets}
             </header>
-            <main className="flex-grow flex flex-col">
+            <main className="flex-grow flex flex-col mx-10">
               {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
                 <Spinner text="We're fetching your Rounds." />
               )}
@@ -109,7 +114,7 @@ export default function ViewProgram() {
             </main>
           </div>
           <Footer />
-        </>
+        </div>
       )}
     </div>
   );
