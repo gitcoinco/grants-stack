@@ -106,7 +106,7 @@ export default function ViewRoundPage() {
         <>
           <Navbar />
           <div className="flex flex-col w-screen mx-0">
-            <header className="px-3 md:px-20 py-6">
+            <header className="px-3 md:px-20 py-6 bg-gray-50">
               <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">
                 <Link to={`/`}>
                   <span>{"My Programs"}</span>
