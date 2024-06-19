@@ -35,7 +35,7 @@ import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
 import { RoundDates, parseRoundDates } from "../common/parseRoundDates";
 import moment from "moment";
-import { getRoundStrategyType } from "common";
+import { getChainById, getRoundStrategyType, stringToBlobUrl } from "common";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import AlloV1 from "common/src/icons/AlloV1";
 import ViewManageTeam from "./ViewManageTeam";
@@ -106,7 +106,7 @@ export default function ViewRoundPage() {
         <>
           <Navbar />
           <div className="flex flex-col w-screen mx-0">
-            <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
+            <header className="px-3 md:px-20 py-6">
               <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">
                 <Link to={`/`}>
                   <span>{"My Programs"}</span>
@@ -137,6 +137,13 @@ export default function ViewRoundPage() {
                 </div>
               )}
               <div className="flex flex-row items-center">
+                <img
+                  src={stringToBlobUrl(
+                    getChainById(roundChainId as number).icon
+                  )}
+                  alt="Chain"
+                  className="rounded-full w-6 h-6 mr-2 mt-2"
+                />
                 <RoundName round={round} />
                 {round?.tags?.includes("allo-v1") && (
                   <AlloV1 className="mt-2 ml-2" color="black" />

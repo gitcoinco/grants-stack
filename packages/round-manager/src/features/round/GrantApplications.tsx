@@ -12,7 +12,6 @@ import ApplicationStatusView from "./ApplicationStatusView";
 import tw from "tailwind-styled-components";
 import { Tab } from "@headlessui/react";
 import { horizontalTabStyles } from "../common/Utils";
-import { FaTools } from "react-icons/fa";
 import { MdRateReview } from "react-icons/md";
 
 function GrantApplications(props: {
