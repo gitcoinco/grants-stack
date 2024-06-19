@@ -54,6 +54,7 @@ import {
   getPayoutsByChainIdRoundIdProjectId,
   getApprovedApplicationsByProjectIds,
   getPaginatedProjects,
+  getProjectsBySearchTerm,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -341,6 +342,42 @@ export class DataLayer {
 
     const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
       response.projects,
+    );
+
+    return projects;
+  }
+
+  /**
+   * Gets all projects that match the search term.
+   * @param searchTerm // search term to filter projects
+   * @param first // number of projects to return
+   * @param offset // number of projects to skip
+   *
+   * @returns v2Project[]
+   */
+  async getProjectsBySearchTerm({
+    searchTerm,
+    first,
+    offset,
+  }: {
+    searchTerm: string;
+    first: number;
+    offset: number;
+  }): Promise<v2Project[]> {
+    const requestVariables = {
+      searchTerm,
+      first,
+      offset,
+    };
+
+    const response: { searchProjects: v2Project[] } = await request(
+      this.gsIndexerEndpoint,
+      getProjectsBySearchTerm,
+      requestVariables,
+    );
+
+    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
+      response.searchProjects,
     );
 
     return projects;

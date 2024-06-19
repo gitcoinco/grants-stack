@@ -457,6 +457,45 @@ export const getPaginatedProjects = gql`
   }
 `;
 
+/**
+ * Get projects by search term
+ * @param $searchTerm - The search term
+`* @param $first - The number of projects to return
+ * @param $offset - The offset of the projects
+ *
+ * @returns The v2Projects
+ */
+export const getProjectsBySearchTerm = gql`
+  query getProjectsBySearchTerm(
+    $searchTerm: String!
+    $first: Int!
+    $offset: Int!
+  ) {
+    searchProjects(
+      searchTerm: $searchTerm
+      filter: {
+        tags: { equalTo: "allo-v2" }
+        not: { tags: { contains: "program" } }
+      }
+      first: $first
+      offset: $offset
+    ) {
+      id
+      chainId
+      metadata
+      metadataCid
+      name
+      nodeId
+      projectNumber
+      registryAddress
+      tags
+      nonce
+      anchorAddress
+      projectType
+    }
+  }
+`;
+
 export const getProjectsAndRolesByAddress = gql`
   query getProjectsAndRolesByAddressQuery(
     $address: String!
