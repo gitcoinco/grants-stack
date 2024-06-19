@@ -129,8 +129,7 @@ export default function ViewRoundPage() {
                 round.payoutStrategy.strategyName || ""
               ) && (
                 <div
-                  className={`text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-${badgeColor} px-3 my-2`}
-                  style={{ borderRadius: "20px" }}
+                  className={`text-sm rounded-2xl text-gray-900 h-[20px] inline-flex flex-col justify-center bg-${badgeColor} px-3 my-2`}
                 >
                   {getPayoutRoundDescription(
                     round.payoutStrategy.strategyName || ""

@@ -221,7 +221,7 @@ importers:
         version: 8.4.38
       posthog-js:
         specifier: ^1.132.0
-        version: 1.139.1
+        version: 1.139.2
       process:
         specifier: ^0.11.10
         version: 0.11.10
@@ -1119,7 +1119,7 @@ importers:
         version: 5.4.1
       posthog-js:
         specifier: ^1.138.1
-        version: 1.139.1
+        version: 1.139.2
       process:
         specifier: ^0.11.10
         version: 0.11.10
@@ -18295,7 +18295,7 @@ snapshots:
   '@jest/console@28.1.3':
     dependencies:
       '@jest/types': 28.1.3
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
       chalk: 4.1.2
       jest-message-util: 28.1.3
       jest-util: 28.1.3
@@ -20796,7 +20796,7 @@ snapshots:
 
   '@types/bn.js@4.11.6':
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
 
   '@types/bn.js@5.1.5':
     dependencies:
@@ -20828,13 +20828,13 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
 
   '@types/cookie@0.4.1': {}
 
   '@types/cors@2.8.17':
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
 
   '@types/debug@4.1.12':
     dependencies:
@@ -20842,7 +20842,7 @@ snapshots:
 
   '@types/dns-packet@5.6.5':
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
 
   '@types/dom-screen-wake-lock@1.0.3': {}
 
@@ -20993,7 +20993,7 @@ snapshots:
 
   '@types/pbkdf2@3.1.2':
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
 
   '@types/prettier@2.7.3': {}
 
@@ -21025,7 +21025,7 @@ snapshots:
 
   '@types/resolve@1.17.1':
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
 
   '@types/resolve@1.20.2': {}
 
@@ -21037,7 +21037,7 @@ snapshots:
 
   '@types/secp256k1@4.0.6':
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
 
   '@types/semver@7.5.8': {}
 
@@ -21097,13 +21097,13 @@ snapshots:
 
   '@types/webpack-sources@3.2.3':
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
       '@types/source-list-map': 0.1.6
       source-map: 0.7.4
 
   '@types/webpack@4.41.38':
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
       '@types/tapable': 1.0.12
       '@types/uglify-js': 3.17.5
       '@types/webpack-sources': 3.2.3
@@ -28073,7 +28073,7 @@ snapshots:
     dependencies:
       '@jest/types': 26.6.2
       '@types/graceful-fs': 4.1.9
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
       anymatch: 3.1.3
       fb-watchman: 2.0.2
       graceful-fs: 4.2.11
@@ -28276,7 +28276,7 @@ snapshots:
 
   jest-serializer@26.6.2:
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
       graceful-fs: 4.2.11
 
   jest-serializer@27.5.1:
@@ -28316,7 +28316,7 @@ snapshots:
   jest-util@26.6.2:
     dependencies:
       '@jest/types': 26.6.2
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
       chalk: 4.1.2
       graceful-fs: 4.2.11
       is-ci: 2.0.0
@@ -28416,7 +28416,7 @@ snapshots:
 
   jest-worker@26.6.2:
     dependencies:
-      '@types/node': 18.19.34
+      '@types/node': 20.14.2
       merge-stream: 2.0.0
       supports-color: 7.2.0
 

@@ -63,9 +63,13 @@ const ApplicationStatusView: React.FC<ApplicationStatusViewProps> = (props) => {
         <div className="flex justify-center mt-20 border border-gray-100 p-4 rounded-2xl">
           <div className="flex flex-col justify-between items-center text-gray-500 font-normal">
             <span className="flex flex-row items-center font-normal mb-4">
-              To review applications, please use
-              <CheckerLogo className="inline h-6 w-6 mx-1" />
-              Checker
+              <span className="text-center px-4 md:px-8">
+                Looking for a more powerful review experience? Leverage
+                AI-enabled application screening and allow for multiple
+                evaluations with
+                <CheckerLogo className="inline h-6 w-6 mx-1" />
+                Checker
+              </span>
             </span>
             {/* todo: implement - need the checker URL for passing the right params */}
             <Link

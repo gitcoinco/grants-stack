@@ -20,7 +20,7 @@ export function ViewGrantsExplorerButton(props: ViewGrantsExplorerButtonType) {
 
   return (
     <span
-      className={`inline-flex bg-white text-gray-500 w-50 rounded-lg justify-center cursor-pointer border-gray-100 py-2 px-3 shadow-sm hover:border-gray-200 hover:shadow-md ${props.styles}`}
+      className={`inline-flex bg-white text-gray-500 w-50 rounded-lg justify-center cursor-pointer border-gray-100 py-2 px-3 hover:border-gray-200 hover:shadow-md ${props.styles}`}
       onClick={() => {
         redirectToGrantExplorer(chainId, roundId);
       }}
