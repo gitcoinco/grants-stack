@@ -437,6 +437,10 @@ export const getPaginatedProjects = gql`
       filter: {
         tags: { equalTo: "allo-v2" }
         not: { tags: { contains: "program" } }
+        chainId: {
+          in: [1, 137, 10, 324, 42161, 42220, 43114, 534352, 8453, 1329]
+        }
+        rounds: { every: { applicationsExist: true } }
       }
       first: $first
       offset: $offset
@@ -476,6 +480,10 @@ export const getProjectsBySearchTerm = gql`
       filter: {
         tags: { equalTo: "allo-v2" }
         not: { tags: { contains: "program" } }
+        chainId: {
+          in: [1, 137, 10, 324, 42161, 42220, 43114, 534352, 8453, 1329]
+        }
+        rounds: { every: { applicationsExist: true } }
       }
       first: $first
       offset: $offset
