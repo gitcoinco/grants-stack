@@ -13,6 +13,7 @@ import { ProgressStatus } from "../api/types";
 import { Spinner } from "../common/Spinner";
 import { TabGroup } from "./TabGroup";
 import { useAccount, useSwitchChain } from "wagmi";
+import AlloV1Black from "common/src/icons/AlloV1Black";
 
 export default function ViewProgram() {
   datadogLogs.logger.info("====> Route: /program/:id");
@@ -25,7 +26,6 @@ export default function ViewProgram() {
   };
   const { chain, connector } = useAccount();
   const programChainId = chainId ? Number(chainId) : chain?.id;
-
   const { program: programToRender, fetchProgramsStatus } = useProgramById(
     programChainId as number,
     programId
@@ -42,20 +42,22 @@ export default function ViewProgram() {
   }, []);
 
   const operatorWallets: JSX.Element = (
-    <div className="flex flex-row flex-wrap">
+    <div className="flex flex-row flex-wrap items-center">
       {programToRender?.operatorWallets.map((operatorWallet, index) => (
         <div
           className="bg-white text-grey-400 pb-2 pr-5"
           data-testid="program-operator-wallet"
           key={index}
         >
-          <UserIcon className="inline h-4 w-4 text-grey-400 mr-1" />
-          <span className="text-sm text-grey-400" key={index}>
+          <UserIcon className="inline h-4 w-4 text-grey-400 mr-1 mb-1" />
+          <span className="text-sm text-grey-400 font-mono" key={index}>
             {abbreviateAddress(operatorWallet)}
           </span>
         </div>
       )) || (
-        <p className="text-grey-400 text-sm">Fetching operator wallets...</p>
+        <p className="text-grey-400 text-sm pb-2 pr-5">
+          Fetching operator wallets...
+        </p>
       )}
     </div>
   );
@@ -63,24 +65,38 @@ export default function ViewProgram() {
   return fetchProgramsStatus !== ProgressStatus.IS_SUCCESS ? (
     <Spinner text="We're fetching your Program." />
   ) : (
-    <>
+    <div className="bg-gray-50">
       {!programExists && <NotFoundPage />}
       {!hasAccess && <AccessDenied />}
       {programExists && hasAccess && (
         <>
           <Navbar programCta={true} />
           <div className="container mx-auto flex flex-col">
-            <header className="flex flex-col justify-center border-b border-grey-100 pl-2 py-6">
-              <div className="flex flex-row items-center text-grey-400 font-bold text-sm font-sans">
+            <header className="flex flex-col justify-center bg-white pl-2 py-6">
+              <div className="flex flex-row items-center text-grey-400 font-normal text-sm font-sans">
                 <Link to={`/`}>
                   <p>Home</p>
                 </Link>
                 <ChevronRightIcon className="h-6 w-6 mx-3" aria-hidden="true" />
                 <p>Program Details</p>
               </div>
-              <h1 className="text-3xl sm:text-[32px] my-2">
-                {programToRender?.metadata?.name || "Program Details"}
-              </h1>
+              <div className="flex flex-row items-center">
+                <div className="flex">
+                  <img
+                    src={programToRender?.chain?.logo}
+                    alt="Chain"
+                    className="rounded-full w-6 h-6 mr-2"
+                  />
+                  {programToRender?.tags?.includes("allo-v1") && (
+                    <div className="mt-1">
+                      <AlloV1Black />
+                    </div>
+                  )}
+                </div>
+                <h1 className="text-3xl sm:text-[32px] my-2">
+                  {programToRender?.metadata?.name || "Program Details"}
+                </h1>
+              </div>
               {operatorWallets}
             </header>
             <main className="flex-grow flex flex-col">
@@ -95,6 +111,6 @@ export default function ViewProgram() {
           <Footer />
         </>
       )}
-    </>
+    </div>
   );
 }
