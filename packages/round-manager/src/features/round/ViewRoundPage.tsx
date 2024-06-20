@@ -436,9 +436,11 @@ export default function ViewRoundPage() {
                   </Tab.Panels>
                 </div>
               </Tab.Group>
+              <div className="w-full">
+                <Footer />
+              </div>
             </main>
           </div>
-          <Footer />
         </>
       )}
     </>

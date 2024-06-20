@@ -43,8 +43,8 @@ const COMMIT_HASH = process.env.REACT_APP_GIT_SHA ?? "localhost";
 
 export default function Footer() {
   return (
-    <footer className="bg-transparent py-3 px-4 sm:px-6 lg:px-20 max-w-screen-2xl mx-auto">
-      <div className="flex flex-row-reverse justify-between py-12 overflow-hidden">
+    <footer className="py-3 px-4 sm:px-6 lg:px-20">
+      <div className="flex flex-row-reverse justify-between py-6 overflow-hidden">
         <div className="flex justify-around space-x-4 md:order-1">
           {navigation.map((item) => (
             <a

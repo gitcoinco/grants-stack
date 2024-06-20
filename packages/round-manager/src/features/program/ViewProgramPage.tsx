@@ -65,13 +65,13 @@ export default function ViewProgram() {
   return fetchProgramsStatus !== ProgressStatus.IS_SUCCESS ? (
     <Spinner text="We're fetching your Program." />
   ) : (
-    <div className="bg-grey-50">
+    <div className="h-screen flex flex-col relative bg-grey-50">
       {!programExists && <NotFoundPage />}
       {!hasAccess && <AccessDenied />}
       {programExists && hasAccess && (
-        <div className="bg-grey-50">
+        <>
           <Navbar programCta={true} />
-          <div className="flex flex-col items-center">
+          <div className="flex-grow flex flex-col items-center">
             <header className="w-full bg-white pl-2 py-6">
               <div className="w-full max-w-screen-2xl mx-auto px-8">
                 <div className="flex flex-row items-center text-grey-400 font-normal text-sm font-sans">
@@ -104,7 +104,7 @@ export default function ViewProgram() {
                 {operatorWallets}
               </div>
             </header>
-            <div className="w-full max-w-screen-2xl px-8">
+            <div className="w-full max-w-screen-2xl px-8 flex-grow">
               <main className="flex-grow flex flex-col">
                 {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
                   <Spinner text="We're fetching your Rounds." />
@@ -115,8 +115,10 @@ export default function ViewProgram() {
               </main>
             </div>
           </div>
-          <Footer />
-        </div>
+          <div className="w-full max-w-screen-2xl mx-auto px-8">
+            <Footer />
+          </div>
+        </>
       )}
     </div>
   );
