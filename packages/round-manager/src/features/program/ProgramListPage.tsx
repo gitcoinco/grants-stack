@@ -71,7 +71,7 @@ function ListPrograms() {
               </div>
 
               <div
-                className="text-gray-500 font-normal ml-auto"
+                className="text-grey-500 font-normal ml-auto"
                 data-testid="program-card"
               >
                 View details{" "}
@@ -86,7 +86,7 @@ function ListPrograms() {
 
   return (
     <main className="container max-h-full">
-      <div className="bg-grey-50 w-full">
+      <div className="bg-grey-50">
         {fetchProgramsStatus === ProgressStatus.IN_PROGRESS && (
           <Spinner text="We're fetching your Programs." />
         )}
@@ -123,13 +123,13 @@ function ListPrograms() {
             </div>
           </div>
         )}
-        <main className="max-w-screen-2xl mx-auto px-8 max-h-full">
+        <div className="max-w-screen-2xl mx-auto px-8 max-h-full">
         {/* {version === "allo-v2" && ()} */}
           {isSuccess && 
             <div className="flex flex-col mb-6">
               <div className="flex flex-col md:flex-row items-center justify-between pt-2 md:pt-8">
                 <div className="flex flex-row items-center justify-start mb-2">
-                  <span className="text-2xl font-medium text-gray-500 antialiased">
+                  <span className="text-2xl font-medium text-grey-500 antialiased">
                     Programs
                   </span>
                   <span
@@ -143,7 +143,7 @@ function ListPrograms() {
                 </div>
                 <div className="flex flex-row items-center justify-end">
                   <Link to="/program/create">
-                    <span className="flex flex-row items-center justify-between p-2 bg-white hover:border-gray-200 border border-transparent rounded-lg text-xs font-mono font-medium hover:cursor-pointer">
+                    <span className="flex flex-row items-center justify-between p-2 bg-white hover:border-grey-200 border border-transparent rounded-lg text-xs font-mono font-medium hover:cursor-pointer">
                       <PlusIcon className="h-5 w-5 inline mr-2" />
                       <span data-testid="create-round-small-link">
                         Create program
@@ -174,7 +174,7 @@ function ListPrograms() {
               </div>
             ))}
           </div>
-        </main>
+        </div>
       </div>
     </main>
   );

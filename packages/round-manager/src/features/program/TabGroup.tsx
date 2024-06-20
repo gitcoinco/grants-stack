@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useState, Key } from "react";
-import { classNames, getStatusStyle, prettyDates } from "../common/Utils";
+import { classNames, getStatusStyle, prettyDates, prettyDates3 } from "../common/Utils";
 import { RefreshIcon, PlusIcon, PlusSmIcon } from "@heroicons/react/solid";
 import Close from "../../assets/close.svg";
 import DirectGrants from "../../assets/direct-grants.svg";
@@ -74,7 +74,8 @@ export const TabGroup = () => {
               description={"Quadratic funding"}
               color={"green-100"}
               status={status}
-              displayDate={prettyDates(
+              strategyType="quadratic"
+              displayDate={prettyDates3(
                 round.roundStartTime,
                 round.roundEndTime
               )}
@@ -86,7 +87,7 @@ export const TabGroup = () => {
                       alt="Chain"
                       className="rounded-full w-5 h-5 mr-2"
                     />
-                    <span className="text-gray-500">{chain.prettyName}</span>
+                    <span className="text-grey-500">{chain.prettyName}</span>
                   </div>
                 </>
               }
@@ -114,6 +115,7 @@ export const TabGroup = () => {
               description={"Direct grants"}
               color={"yellow-100"}
               status={status}
+              strategyType="direct"
               displayDate={prettyDates(
                 round.roundStartTime,
                 round.roundEndTime
@@ -126,7 +128,7 @@ export const TabGroup = () => {
                       alt="Chain"
                       className="rounded-full w-5 h-5 mr-2"
                     />
-                    <span className="text-gray-500">{chain.prettyName}</span>
+                    <span className="text-grey-500">{chain.prettyName}</span>
                   </div>
                 </>
               }
@@ -275,7 +277,7 @@ export const TabGroup = () => {
           <select
             id="tabs"
             name="tabs"
-            className="block w-full rounded-md py-2 pl-3 pr-10 font-mono focus:border-gray-500 focus:outline-none focus:ring-gray-500 text-lg"
+            className="block w-full rounded-md py-2 pl-3 pr-10 font-mono focus:border-grey-500 focus:outline-none focus:ring-grey-500 text-lg"
             value={currentTab}
             onChange={(e) => handleTabChange(e.target.value)}
           >
@@ -302,8 +304,8 @@ export const TabGroup = () => {
                     }}
                     className={classNames(
                       tab.name === currentTab
-                        ? "border-gray-500 border-b-2 text-gray-500 mr-8"
-                        : "text-gray-400 hover:border-b-2 hover:text-gray-700 mr-8",
+                        ? "border-grey-500 border-b-2 text-grey-500 mr-8"
+                        : "text-grey-400 hover:border-b-2 hover:text-grey-700 mr-8",
                       "items-center whitespace-nowrap px-1 py-4 text-sm font-medium"
                     )}
                     aria-current={tab.name === currentTab ? "page" : undefined}
@@ -325,7 +327,7 @@ export const TabGroup = () => {
                     onClick={() => {
                       setIsModalOpen(true);
                     }}
-                    className="flex flex-row justify-between items-center border border-transparent p-2 rounded-lg text-sm text-gray-500 font-mono ml-auto bg-yellow-100 cursor-pointer"
+                    className="flex flex-row justify-between items-center border border-transparent p-2 rounded-lg text-sm text-grey-500 font-mono ml-auto bg-yellow-100 cursor-pointer"
                     data-testid="create-round-small-link"
                   >
                     <PlusSmIcon

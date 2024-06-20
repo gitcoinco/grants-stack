@@ -9,10 +9,10 @@ import ApplicationsRejected from "./ApplicationsRejected";
 import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
 import ApplicationsToReview from "./ApplicationsToReview";
 import ApplicationStatusView from "./ApplicationStatusView";
-import tw from "tailwind-styled-components";
 import { Tab } from "@headlessui/react";
 import { horizontalTabStyles } from "../common/Utils";
 import { MdRateReview } from "react-icons/md";
+import { TabApplicationCounter } from "../common/styles";
 
 function GrantApplications(props: {
   isDirectRound?: boolean;
@@ -22,6 +22,7 @@ function GrantApplications(props: {
   chainId: string;
   roundId: string | undefined;
 }) {
+  // Filter applications into pending, approved, rejected & in-review
   const pendingApplications = (props.applications || [])
     .filter((a) => a.status === ApplicationStatus.PENDING.toString())
     .filter((a) => (props.isDirectRound ? !a.inReview : true));
@@ -35,23 +36,12 @@ function GrantApplications(props: {
   const inReviewApplications = (props.applications || []).filter((a) =>
     props.isDirectRound ? a.inReview : true
   );
-
   const allApplications = {
     pendingApplications,
     approvedApplications,
     rejectedApplications,
     inReviewApplications,
   };
-
-  const TabApplicationCounter = tw.div`
-      rounded-lg
-      ml-2
-      w-8
-      h-5
-      float-right
-      font-sm
-      font-normal
-    `;
 
   return (
     <div>

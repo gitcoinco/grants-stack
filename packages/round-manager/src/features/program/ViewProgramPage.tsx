@@ -65,15 +65,15 @@ export default function ViewProgram() {
   return fetchProgramsStatus !== ProgressStatus.IS_SUCCESS ? (
     <Spinner text="We're fetching your Program." />
   ) : (
-    <div className="bg-gray-50">
+    <div className="bg-grey-50">
       {!programExists && <NotFoundPage />}
       {!hasAccess && <AccessDenied />}
       {programExists && hasAccess && (
-        <div className="bg-gray-50">
+        <div className="bg-grey-50">
           <Navbar programCta={true} />
-          <div className="flex flex-col">
-            <header className="flex flex-col justify-center bg-white pl-2 py-6">
-              <div className="mx-10">
+          <div className="flex flex-col items-center">
+            <header className="w-full bg-white pl-2 py-6">
+              <div className="w-full max-w-screen-2xl mx-auto px-8">
                 <div className="flex flex-row items-center text-grey-400 font-normal text-sm font-sans">
                   <Link to={`/`}>
                     <p>Home</p>
@@ -104,14 +104,16 @@ export default function ViewProgram() {
                 {operatorWallets}
               </div>
             </header>
-            <main className="flex-grow flex flex-col mx-10">
-              {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
-                <Spinner text="We're fetching your Rounds." />
-              )}
-              <div className="px-2 py-3 md:py-6">
-                <TabGroup />
-              </div>
-            </main>
+            <div className="w-full max-w-screen-2xl px-8">
+              <main className="flex-grow flex flex-col">
+                {fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
+                  <Spinner text="We're fetching your Rounds." />
+                )}
+                <div className="px-2 py-3 md:py-6">
+                  <TabGroup />
+                </div>
+              </main>
+            </div>
           </div>
           <Footer />
         </div>

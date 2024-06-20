@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo.svg";
-import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoinlogo-white.svg";
+import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dark.svg";
+import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo.svg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { NavbarProps } from "./types";
 
@@ -8,7 +8,7 @@ import { NavbarProps } from "./types";
 export default function Navbar({ programCta: programCta = true }: NavbarProps) {
   return (
     <>
-      <nav className="bg-black shadow-md z-10 w-full">
+      <nav className="bg-white drop-shadow-md z-10 w-full">
         <div className="mx-auto px-6 text-white max-w-screen-2xl">
           <div className="flex justify-between h-16">
             <div className="flex">
@@ -19,7 +19,7 @@ export default function Navbar({ programCta: programCta = true }: NavbarProps) {
               >
                 <GitcoinLogoDark className="block h-8 w-auto" />
                 <div className="hidden lg:block md:block">
-                  <span className="mx-6">|</span>
+                  <span className="mx-6 text-black">|</span>
                   <ManagerLogoDark className="lg:inline-block md:inline-block" />
                 </div>
               </Link>

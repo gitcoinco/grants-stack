@@ -13,7 +13,7 @@ import { useAccount } from "wagmi";
 import { getChainById, stringToBlobUrl } from "common";
 import { RoundCard } from "./RoundCard";
 import Tooltip from "../common/Tooltip";
-import { getStatusStyle, prettyDates } from "../common/Utils";
+import { getStatusStyle, prettyDates3 } from "../common/Utils";
 import { Key } from "react";
 
 const maxRoundsPerSite = 5;
@@ -46,6 +46,10 @@ function ListRounds() {
 
     const chain = getChainById(round.chainId);
     const status = getStatusStyle(round);
+    const strategyType =
+      round.strategyName === "allov2.DirectGrantsLiteStrategy"
+        ? "direct"
+        : "quadratic";
 
     return (
       isSuccess &&
@@ -56,7 +60,7 @@ function ListRounds() {
             title={round.roundMetadata.name}
             description={
               round.strategyName === "allov2.DirectGrantsLiteStrategy"
-                ? "Direct Grants"
+                ? "Direct grants"
                 : "Quadratic funding"
             }
             status={status}
@@ -65,7 +69,8 @@ function ListRounds() {
                 ? "yellow-100"
                 : "green-100"
             }
-            displayDate={prettyDates(round.roundStartTime, round.roundEndTime)}
+            displayDate={prettyDates3(round.roundStartTime, round.roundEndTime)}
+            strategyType={strategyType}
             footerContent={
               <>
                 <div className="flex flex-row items-center">
@@ -74,7 +79,7 @@ function ListRounds() {
                     alt="Chain"
                     className="rounded-full w-5 h-5 mr-2"
                   />
-                  <span className="text-gray-500">{chain.prettyName}</span>
+                  <span className="text-grey-500">{chain.prettyName}</span>
                 </div>
               </>
             }
@@ -95,8 +100,8 @@ function ListRounds() {
           <div className="bg-blue-100 py-4 text-center font-medium flex flex-col items-center justify-center">
             <div>
               <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
-              You are currently on Allo v1. To switch to the most current version
-              of Manager,&nbsp;
+              You are currently on Allo v1. To switch to the most current
+              version of Manager,&nbsp;
               <button
                 type="button"
                 className="underline"
@@ -123,12 +128,12 @@ function ListRounds() {
             </div>
           </div>
         )}
-        {isSuccess && 
+        {isSuccess && (
           <main className="max-w-screen-2xl mx-auto px-8 max-h-full">
             <div className="flex flex-col mb-6">
               <div className="flex flex-col md:flex-row items-center justify-between">
                 <div className="flex flex-row items-center justify-start pt-8">
-                  <span className="text-2xl font-medium text-gray-500 antialiased mr-2">
+                  <span className="text-2xl font-medium text-grey-500 antialiased mr-2">
                     Rounds
                   </span>
                   <span
@@ -157,14 +162,14 @@ function ListRounds() {
             <div className="w-full">
               {roundList.length === 0 && (
                 <div className="text-md font-normal">
-                  If you’re an operator of a round and you’re not a program admin,
-                  that round will appear here.
+                  If you’re an operator of a round and you’re not a program
+                  admin, that round will appear here.
                 </div>
               )}
               {viewAllRounds ? roundList : roundList.slice(0, maxRoundsPerSite)}
             </div>
           </main>
-        }
+        )}
       </div>
     </main>
   );

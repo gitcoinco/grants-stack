@@ -96,7 +96,8 @@ export default function ViewRoundPage() {
 
   const strategyName = round?.payoutStrategy.strategyName;
   console.log("strategyName", strategyName);
-  const badgeColor = strategyName === "MERKLE" ? "green-100" : "yellow-100";
+  const badgeColor =
+    strategyName === "MERKLE" ? "gradient-border-qf" : "gradient-border-direct";
 
   return (
     <>
@@ -105,86 +106,91 @@ export default function ViewRoundPage() {
       {round && hasAccess && (
         <>
           <Navbar />
-          <div className="flex flex-col w-screen mx-0">
-            <header className="px-3 md:px-20 py-6 bg-gray-50">
-              <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">
-                <Link to={`/`}>
-                  <span>{"My Programs"}</span>
-                </Link>
-                <ChevronRightIcon className="h-6 w-6" />
-                {/* todo: update to use program id not the round id... */}
-                <Link
-                  to={`/chain/${roundChainId}/program/${round.roundMetadata.programContractAddress}`}
-                >
-                  <span>{"Program Details"}</span>
-                </Link>
-                <ChevronRightIcon className="h-6 w-6" />
-                <Link to={`/round/${id}`}>
-                  <span>{"Round Details"}</span>
-                </Link>
-                <RoundBadgeStatus round={round} />
-              </div>
-              {/* Round type */}
-              {getPayoutRoundDescription(
-                round.payoutStrategy.strategyName || ""
-              ) && (
-                <div
-                  className={`text-sm rounded-2xl text-gray-900 h-[20px] inline-flex flex-col justify-center bg-${badgeColor} px-3 my-2`}
-                >
-                  {getPayoutRoundDescription(
-                    round.payoutStrategy.strategyName || ""
-                  )}
+          <div className="flex flex-col items-center bg-gray-50">
+            <header className="w-full bg-grey-50">
+              <div className="w-full max-w-screen-2xl mx-auto px-8 py-6">
+                {/* Breadcrumb */}
+                <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">
+                  <Link to={`/`}>
+                    <span>{"My Programs"}</span>
+                  </Link>
+                  <ChevronRightIcon className="h-6 w-6" />
+                  <Link
+                    to={`/chain/${roundChainId}/program/${round.roundMetadata.programContractAddress}`}
+                  >
+                    <span>{"Program Details"}</span>
+                  </Link>
+                  <ChevronRightIcon className="h-6 w-6" />
+                  <Link to={`/round/${id}`}>
+                    <span>{"Round Details"}</span>
+                  </Link>
+                  <RoundBadgeStatus round={round} />
                 </div>
-              )}
-              <div className="flex flex-row items-center">
-                <img
-                  src={stringToBlobUrl(
-                    getChainById(roundChainId as number).icon
-                  )}
-                  alt="Chain"
-                  className="rounded-full w-6 h-6 mr-2 mt-2"
-                />
-                <RoundName round={round} />
-                {round?.tags?.includes("allo-v1") && (
-                  <AlloV1 className="mt-2 ml-2" color="black" />
-                )}
-              </div>
-              <div className="flex flex-row items-center justify-between mt-4">
-                <div className="flex flex-row justify-start">
-                  <RoundOpenDateRange round={round} />
-                </div>
-                <div className="flex flex-row justify-end">
-                  <div className="mr-4">
-                    <CopyToClipboardButton
-                      textToCopy={`${builderLink}/#/chains/${round.chainId}/rounds/${round.id}`}
-                      styles="text-xs font-mono p-2"
-                      iconStyle="h-4 w-4 mr-2"
-                    />
+                {/* Round type badge */}
+                {getPayoutRoundDescription(
+                  round.payoutStrategy.strategyName || ""
+                ) && (
+                  <div
+                    className={`text-sm text-grey-900 h-[20px] inline-flex flex-col justify-center ${badgeColor} px-3 my-2`}
+                  >
+                    {getPayoutRoundDescription(
+                      round.payoutStrategy.strategyName || ""
+                    )}
                   </div>
-                  <div className="">
-                    <ViewGrantsExplorerButton
-                      iconStyle="h-4 w-4"
-                      chainId={`${chain?.id}`}
-                      roundId={round.id}
-                    />
-                  </div>{" "}
+                )}
+                <div className="flex flex-row items-center">
+                  {/* Chain icon (allo v1 badge if v1) & Round name */}
+                  <img
+                    src={stringToBlobUrl(
+                      getChainById(roundChainId as number).icon
+                    )}
+                    alt="Chain"
+                    className="rounded-full w-6 h-6 mr-2 mt-2"
+                  />
+                  <RoundName round={round} />
+                  {round?.tags?.includes("allo-v1") && (
+                    <AlloV1 className="mt-2 ml-2" color="black" />
+                  )}
+                </div>
+                {/* Round open date range & buttons */}
+                <div className="flex flex-row items-center justify-between mt-4">
+                  <div className="flex flex-row justify-start">
+                    <RoundOpenDateRange round={round} />
+                  </div>
+                  <div className="flex flex-row justify-end">
+                    <div className="mr-4">
+                      <CopyToClipboardButton
+                        textToCopy={`${builderLink}/#/chains/${round.chainId}/rounds/${round.id}`}
+                        styles="text-xs font-mono p-2"
+                        iconStyle="h-4 w-4 mr-2"
+                      />
+                    </div>
+                    <div className="">
+                      <ViewGrantsExplorerButton
+                        iconStyle="h-4 w-4"
+                        chainId={`${chain?.id}`}
+                        roundId={round.id}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </header>
-            <main className="px-3 md:px-20 pt-6">
+            {/* Main content & tab */}
+            <main className="w-full max-w-screen-2xl mx-auto px-8 py-6">
               <Tab.Group vertical>
                 <div className="flex font-semibold">
-                  <div className="border-r md:pr-12">
+                  <div className="border-r border-r-grey-100 md:pr-12">
                     <Tab.List
                       className="flex flex-col h-max mr-20"
                       data-testid="side-nav-bar"
                     >
                       <Tab
-                        className={({ selected }: { selected: boolean }) =>
+                        className={({ selected }) =>
                           verticalTabStyles(selected)
                         }
                       >
-                        {({ selected }: { selected: boolean }) => (
+                        {({ selected }) => (
                           <div
                             className={
                               selected
@@ -204,11 +210,11 @@ export default function ViewRoundPage() {
                       </Tab>
                       {!isDirectRound(round) && (
                         <Tab
-                          className={({ selected }: { selected: boolean }) =>
+                          className={({ selected }) =>
                             verticalTabStyles(selected)
                           }
                         >
-                          {({ selected }: { selected: boolean }) => (
+                          {({ selected }) => (
                             <div
                               className={
                                 selected
@@ -228,11 +234,11 @@ export default function ViewRoundPage() {
                         </Tab>
                       )}
                       <Tab
-                        className={({ selected }: { selected: boolean }) =>
+                        className={({ selected }) =>
                           verticalTabStyles(selected)
                         }
                       >
-                        {({ selected }: { selected: boolean }) => (
+                        {({ selected }) => (
                           <div
                             className={
                               selected
@@ -251,11 +257,11 @@ export default function ViewRoundPage() {
                         )}
                       </Tab>
                       <Tab
-                        className={({ selected }: { selected: boolean }) =>
+                        className={({ selected }) =>
                           verticalTabStyles(selected)
                         }
                       >
-                        {({ selected }: { selected: boolean }) => (
+                        {({ selected }) => (
                           <div
                             className={
                               selected
@@ -275,11 +281,11 @@ export default function ViewRoundPage() {
                       </Tab>
                       {!isDirectRound(round) && (
                         <Tab
-                          className={({ selected }: { selected: boolean }) =>
+                          className={({ selected }) =>
                             verticalTabStyles(selected)
                           }
                         >
-                          {({ selected }: { selected: boolean }) => (
+                          {({ selected }) => (
                             <div
                               className={
                                 selected
@@ -301,11 +307,11 @@ export default function ViewRoundPage() {
                       {!isDirectRound(round) && (
                         <>
                           <Tab
-                            className={({ selected }: { selected: boolean }) =>
+                            className={({ selected }) =>
                               verticalTabStyles(selected)
                             }
                           >
-                            {({ selected }: { selected: boolean }) => (
+                            {({ selected }) => (
                               <div
                                 className={
                                   selected
@@ -324,11 +330,11 @@ export default function ViewRoundPage() {
                             )}
                           </Tab>
                           <Tab
-                            className={({ selected }: { selected: boolean }) =>
+                            className={({ selected }) =>
                               verticalTabStyles(selected)
                             }
                           >
-                            {({ selected }: { selected: boolean }) => (
+                            {({ selected }) => (
                               <div
                                 className={
                                   selected
@@ -347,11 +353,11 @@ export default function ViewRoundPage() {
                             )}
                           </Tab>
                           <Tab
-                            className={({ selected }: { selected: boolean }) =>
+                            className={({ selected }) =>
                               verticalTabStyles(selected)
                             }
                           >
-                            {({ selected }: { selected: boolean }) => (
+                            {({ selected }) => (
                               <div
                                 className={
                                   selected
@@ -484,16 +490,16 @@ export function RoundOpenDateRange({ round }: { round: RoundDates }) {
 
   return (
     <div className="flex flex-row text-sm text-grey-400">
-      <ClockIcon className="h-5 w-5" />
+      <ClockIcon className="h-5 w-5 text-grey-500" />
       <span className="mx-2">Round:</span>
-      <span className="text-gray-500">{dates.start.date}</span>
+      <span className="text-grey-500">{dates.start.date}</span>
       <span className="mx-1">
         {dates.start.time} {dates.start.timezone}
       </span>
       {" - "}
       {dates.end && (
         <>
-          <span className="text-gray-500 ml-1">
+          <span className="text-grey-500 ml-1">
             {dates.end.date ?? dates.end}
           </span>
           <span className="mx-1">

@@ -5,12 +5,12 @@ import { Round } from "../api/types";
 export const verticalTabStyles = (selected: boolean) =>
   selected
     ? "whitespace-nowrap py-4 px-1 text-sm outline-none"
-    : "text-grey-400 hover:text-gray-700 whitespace-nowrap py-4 px-1 font-medium text-sm";
+    : "text-grey-400 hover:text-grey-700 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
 export const horizontalTabStyles = (selected: boolean) =>
   selected
     ? "border-violet-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm outline-none"
-    : "border-transparent text-grey-400 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
+    : "border-transparent text-grey-400 hover:text-grey-700 hover:border-grey-300 whitespace-nowrap py-4 px-1 font-medium text-sm";
 
 export const getPayoutRoundDescription = (key: string | undefined) => {
   if (!key) return "Unknown";
@@ -68,6 +68,15 @@ export const prettyDates2 = (
   };
 };
 
+export const prettyDates3 = (start: Date, end: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  };
+  return `${start.toLocaleDateString("en-US", options)} - ${end.toLocaleDateString("en-US", options)}`;
+};
+
 export function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -76,8 +85,8 @@ export function classNames(...classes: string[]) {
 export const statusStyleMap: Record<number, { status: string; style: string }> =
   {
     [0]: {
-      status: "Round not started",
-      style: "bg-gray-200 text-gray-500",
+      status: "Pre-round",
+      style: "bg-grey-200 text-grey-500",
     },
     [1]: {
       status: "Round in progress",
@@ -85,15 +94,19 @@ export const statusStyleMap: Record<number, { status: string; style: string }> =
     },
     [2]: {
       status: "Applications open",
-      style: "bg-blue-100 text-gray-500",
+      style: "bg-blue-100 text-grey-500",
     },
     [3]: {
       status: "Applications closed",
-      style: "bg-rose-200 text-gray-500",
+      style: "bg-rose-200 text-grey-500",
     },
     [4]: {
       status: "Round ended",
-      style: "bg-gray-200 text-gray-500",
+      style: "bg-grey-200 text-grey-500",
+    },
+    [5]: {
+      status: "Funding pending",
+      style: "text-orange-400",
     },
   };
 
@@ -101,7 +114,7 @@ function getCurrentStatus(round: Round): number {
   const currentTime = new Date();
 
   if (currentTime < round.roundStartTime) {
-    return 0; // "Round not started"
+    return 0; // "Pre-round"
   } else if (
     currentTime >= round.roundStartTime &&
     currentTime < round.roundEndTime
@@ -119,7 +132,7 @@ function getCurrentStatus(round: Round): number {
       currentTime < round.applicationsEndTime &&
       currentTime > round.roundStartTime
     ) {
-    return 1; // "Round in progress"
+      return 1; // "Round in progress"
     }
   } else if (currentTime >= round.roundEndTime) {
     return 4; // "Round ended"

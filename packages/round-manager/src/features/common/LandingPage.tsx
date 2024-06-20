@@ -17,8 +17,8 @@ function LandingPage() {
   return (
     <div className="bg-grey-50 flex flex-col items-center">
       <Navbar programCta={isSuccess} />
-        <ProgramListPage />
-        <RoundListPage />
+      <ProgramListPage />
+      <RoundListPage />
       <Footer />
     </div>
   );

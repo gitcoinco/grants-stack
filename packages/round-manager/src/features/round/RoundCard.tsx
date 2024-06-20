@@ -1,4 +1,3 @@
-import { CalendarIcon } from "common";
 import {
   BasicCard,
   CardContent,
@@ -6,28 +5,60 @@ import {
   CardDescription,
 } from "../common/styles";
 import { CardProps } from "../common/types";
+import { ClockIcon } from "@heroicons/react/solid";
 
 export const RoundCard: React.FC<CardProps> = (props: CardProps) => (
-  <BasicCard className="border border-gray-200 w-full mb-8 rounded-xl md:h-[220px]">
+  <BasicCard className="w-full mb-8 rounded-xl md:h-[220px]">
     <CardContent className="p-4 px-5">
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-col">
           <CardTitle className="font-medium text-2xl font-sans">
             {props.title}
           </CardTitle>
-          <CardDescription className=" text-gray-500">
+          <CardDescription className=" text-grey-500">
             <div className="flex flex-col mt-4">
               <div>
-                <span
-                  className={`border border-${props.color} rounded-2xl bg-${props.color} p-1 px-2 font-mono`}
-                >
-                  {props.description}
-                </span>
+                {props.description === "Direct grants" ? (
+                  <span
+                    className={`gradient-border-direct rounded-2xl p-1 px-2 font-mono`}
+                  >
+                    {props.description}
+                  </span>
+                ) : (
+                  <span
+                    className={`gradient-border-qf rounded-2xl p-1 px-2 font-mono`}
+                  >
+                    {props.description}
+                  </span>
+                )}
               </div>
               <div className="mt-4">
-                <div className="flex flex-row items-center p-1 text-gray-400 font-sans">
-                  <CalendarIcon className="h-4 w-4 inline mr-2" />
-                  <span className="text-lg">{props.displayDate}</span>
+                <div className="flex flex-row items-center p-1 text-grey-400 font-sans">
+                  {props.strategyType === "quadratic" ? (
+                    <>
+                      {/* todo: add to next pr */}
+                      {/* <CalendarIcon className="h-4 w-4 inline mr-2 text-grey-500" />
+                      <span className="text-grey-400 text-lg mr-2">
+                        Applications:
+                      </span>
+                      <span className="text-lg text-grey-400 mr-2">
+                        {props.displayDate}
+                      </span> */}
+                      <ClockIcon className="h-4 w-4 inline mr-2 text-grey-500" />
+                      <span className="text-grey-400 text-lg mr-2">Round:</span>
+                      <span className="text-lg text-grey-400">
+                        {props.displayDate}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <ClockIcon className="h-4 w-4 inline mr-2 text-grey-500" />
+                      <span className="text-grey-400 text-lg mr-2">Round:</span>
+                      <span className="text-lg text-grey-400">
+                        {props.displayDate}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
