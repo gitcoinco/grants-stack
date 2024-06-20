@@ -112,6 +112,7 @@ export const statusStyleMap: Record<number, { status: string; style: string }> =
 
 function getCurrentStatus(round: Round): number {
   const currentTime = new Date();
+  console.log(round.strategyName);
 
   if (currentTime < round.roundStartTime) {
     return 0; // "Pre-round"
@@ -119,7 +120,9 @@ function getCurrentStatus(round: Round): number {
     currentTime >= round.roundStartTime &&
     currentTime < round.roundEndTime
   ) {
-    if (
+    if (round.strategyName === "allov2.DirectGrantsLiteStrategy") {
+      return 1; // "Round in progress" for direct grant
+    } else if (
       currentTime >= round.applicationsStartTime &&
       currentTime < round.applicationsEndTime
     ) {
