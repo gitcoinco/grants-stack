@@ -127,7 +127,7 @@ function ListPrograms() {
         {/* {version === "allo-v2" && ()} */}
           {isSuccess && 
             <div className="flex flex-col mb-6">
-              <div className="flex flex-col md:flex-row items-center justify-between pt-2 md:pt-8">
+              <div className="flex flex-col sm:flex-row items-center justify-between pt-2 md:pt-8">
                 <div className="flex flex-row items-center justify-start mb-2">
                   <span className="text-2xl font-medium text-grey-500 antialiased">
                     Programs
@@ -167,7 +167,7 @@ function ListPrograms() {
                 className="flex flex-row flex-wrap w-full items-center justify-between"
               >
                 {programsChunk.map((program, index) => (
-                  <div key={index} className="w-full md:w-auto">
+                  <div key={index} className="w-full flex items-center justify-center md:w-auto">
                     {program}
                   </div>
                 ))}
