@@ -10,7 +10,7 @@ import {
 import { CardProps } from "../common/types";
 
 export const ProgramCard: React.FC<CardProps> = (props: CardProps) => (
-  <BasicCard className="program-card border-none my-2 mb-8 min-w-[350px] sm:min-w-[375px] md:min-w-[400px] lg:min-w-[400px] xl:min-w-[200px] 2xl:min-w-[340px] relative rounded-lg mr-auto">
+  <BasicCard className="program-card border-none gap-4 min-w-[350px] sm:min-w-[375px] md:min-w-[400px] lg:min-w-[400px] xl:min-w-[200px] 2xl:min-w-[340px] relative rounded-lg mr-auto">
     <CardContent className="p-4 px-5">
       <CardTitle className="font-medium text-2xl font-sans">
         {props.title}
