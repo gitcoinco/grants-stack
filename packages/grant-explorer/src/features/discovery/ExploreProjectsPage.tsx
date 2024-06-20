@@ -100,8 +100,12 @@ export function ExploreProjectsPage(): JSX.Element {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           <PaginatedProjectsList
             projects={searchQuery.length > 0 ? projectsFromSearch : projects}
-            isLoading={searchQuery.length > 0 ? searchLoading : isLoading}
           />
+        </div>
+      )}
+      {(searchQuery.length > 0 ? searchLoading : isLoading) && (
+        <div className="flex justify-center my-8">
+          <LoadingRing />
         </div>
       )}
     </GradientLayout>
@@ -110,12 +114,10 @@ export function ExploreProjectsPage(): JSX.Element {
 
 export type PaginatedProjectsListProps = {
   projects: v2Project[] | undefined;
-  isLoading: boolean;
 };
 
 export function PaginatedProjectsList({
   projects,
-  isLoading,
 }: PaginatedProjectsListProps): JSX.Element {
   return (
     <>
@@ -123,11 +125,6 @@ export function PaginatedProjectsList({
         projects.map((project) => (
           <ProjectCard key={project.id} project={project} />
         ))}
-      {isLoading && (
-        <div className="flex justify-center">
-          <LoadingRing />
-        </div>
-      )}
     </>
   );
 }
