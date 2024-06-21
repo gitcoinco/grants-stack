@@ -69,7 +69,17 @@ function ListRounds() {
                 ? "yellow-100"
                 : "green-100"
             }
-            displayDate={prettyDates3(round.roundStartTime, round.roundEndTime)}
+            displayBar={{
+              applicationDate:
+                round.strategyName === "allov2.DirectGrantsLiteStrategy"
+                  ? ""
+                  : prettyDates3(
+                      round.applicationsStartTime,
+                      round.applicationsEndTime
+                    ),
+              roundDate: prettyDates3(round.roundStartTime, round.roundEndTime),
+              matchingFunds: "",
+            }}
             strategyType={strategyType}
             footerContent={
               <>

@@ -20,7 +20,11 @@ const startAProgramCard = (
       description={
         "Create a Grant Program to manage applications, round dates, and voting mechanisms, as well as approve or reject projects all in one place."
       }
-      displayDate=""
+      displayBar={{
+        applicationDate: "",
+        roundDate: "",
+        matchingFunds: "",
+      }}
       footerContent={
         <p className="text-violet-400">
           Create Program{" "}
@@ -65,7 +69,7 @@ function ListPrograms() {
                 />
                 {program.tags?.includes("allo-v1") && (
                   <div className="mt-1">
-                    <AlloV1Black/>
+                    <AlloV1Black />
                   </div>
                 )}
               </div>
@@ -95,8 +99,8 @@ function ListPrograms() {
           <div className="bg-[#D3EDFE] py-4 text-center font-medium flex flex-col items-center justify-center">
             <div>
               <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
-              You are currently on Allo v1. To switch to the most current version
-              of Manager,&nbsp;
+              You are currently on Allo v1. To switch to the most current
+              version of Manager,&nbsp;
               <button
                 type="button"
                 className="underline"
@@ -124,8 +128,8 @@ function ListPrograms() {
           </div>
         )}
         <div className="max-w-screen-2xl mx-auto px-8 max-h-full">
-        {/* {version === "allo-v2" && ()} */}
-          {isSuccess && 
+          {/* {version === "allo-v2" && ()} */}
+          {isSuccess && (
             <div className="flex flex-col mb-6">
               <div className="flex flex-col sm:flex-row items-center justify-between pt-2 md:pt-8">
                 <div className="flex flex-row items-center justify-start mb-2">
@@ -143,7 +147,7 @@ function ListPrograms() {
                 </div>
                 <div className="flex flex-row items-center justify-end">
                   <Link to="/program/create">
-                    <span className="flex flex-row items-center justify-between p-2 bg-white hover:border-grey-200 border border-transparent rounded-lg text-xs font-mono font-medium hover:cursor-pointer">
+                    <span className="flex flex-row items-center justify-between p-2 bg-white hover:shadow-md rounded-lg text-xs font-mono font-medium hover:cursor-pointer">
                       <PlusIcon className="h-5 w-5 inline mr-2" />
                       <span data-testid="create-round-small-link">
                         Create program
@@ -153,7 +157,7 @@ function ListPrograms() {
                 </div>
               </div>
             </div>
-          }
+          )}
           <div className="w-full overflow-hidden">
             {isSuccess && hasNoPrograms() && startAProgramCard}
             {chunk(
@@ -167,7 +171,10 @@ function ListPrograms() {
                 className="flex flex-row flex-wrap w-full items-center justify-between"
               >
                 {programsChunk.map((program, index) => (
-                  <div key={index} className="w-full flex items-center justify-center md:w-auto">
+                  <div
+                    key={index}
+                    className="w-full flex items-center justify-center md:w-auto"
+                  >
                     {program}
                   </div>
                 ))}

@@ -5,7 +5,11 @@ export type CardProps = {
   title: string;
   description: string;
   footerContent: React.ReactNode;
-  displayDate?: string;
+  displayBar?: {
+    applicationDate: string;
+    roundDate: string;
+    matchingFunds: string;
+  };
   status?: {
     status: string;
     style: string;

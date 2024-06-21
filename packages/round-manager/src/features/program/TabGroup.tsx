@@ -1,7 +1,11 @@
 "use client";
 
 import { Fragment, useState, Key } from "react";
-import { classNames, getStatusStyle, prettyDates, prettyDates3 } from "../common/Utils";
+import {
+  classNames,
+  getStatusStyle,
+  prettyDates3,
+} from "../common/Utils";
 import { RefreshIcon, PlusIcon, PlusSmIcon } from "@heroicons/react/solid";
 import Close from "../../assets/close.svg";
 import DirectGrants from "../../assets/direct-grants.svg";
@@ -32,9 +36,7 @@ export const TabGroup = () => {
     id: string;
   };
   const { chain } = useAccount();
-
   const programChainId = chainId ? Number(chainId) : chain?.id;
-
   const { program: programToRender } = useProgramById(
     programChainId!,
     programId
@@ -75,10 +77,14 @@ export const TabGroup = () => {
               color={"green-100"}
               status={status}
               strategyType="quadratic"
-              displayDate={prettyDates3(
-                round.roundStartTime,
-                round.roundEndTime
-              )}
+              displayBar={{
+                applicationDate: "",
+                roundDate: prettyDates3(
+                  round.roundStartTime,
+                  round.roundEndTime
+                ),
+                matchingFunds: "",
+              }}
               footerContent={
                 <>
                   <div className="flex flex-row items-center">
@@ -116,10 +122,14 @@ export const TabGroup = () => {
               color={"yellow-100"}
               status={status}
               strategyType="direct"
-              displayDate={prettyDates(
-                round.roundStartTime,
-                round.roundEndTime
-              )}
+              displayBar={{
+                applicationDate: "",
+                roundDate: prettyDates3(
+                  round.roundStartTime,
+                  round.roundEndTime
+                ),
+                matchingFunds: "",
+              }}
               footerContent={
                 <>
                   <div className="flex flex-row items-center">
@@ -327,7 +337,7 @@ export const TabGroup = () => {
                     onClick={() => {
                       setIsModalOpen(true);
                     }}
-                    className="flex flex-row justify-between items-center border border-transparent p-2 rounded-lg text-sm text-grey-500 font-mono ml-auto bg-yellow-100 cursor-pointer"
+                    className="flex flex-row justify-between items-center hover:shadow-md p-2 rounded-lg text-sm text-grey-500 font-mono ml-auto bg-yellow-100 cursor-pointer"
                     data-testid="create-round-small-link"
                   >
                     <PlusSmIcon

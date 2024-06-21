@@ -5,7 +5,7 @@ import {
   CardDescription,
 } from "../common/styles";
 import { CardProps } from "../common/types";
-import { ClockIcon } from "@heroicons/react/solid";
+import { CalendarIcon, ClockIcon } from "@heroicons/react/solid";
 
 export const RoundCard: React.FC<CardProps> = (props: CardProps) => (
   <BasicCard className="w-full mb-8 rounded-xl md:h-[220px]">
@@ -36,18 +36,17 @@ export const RoundCard: React.FC<CardProps> = (props: CardProps) => (
                 <div className="flex flex-row items-center p-1 text-grey-400 font-sans">
                   {props.strategyType === "quadratic" ? (
                     <>
-                      {/* todo: add to next pr */}
-                      {/* <CalendarIcon className="h-4 w-4 inline mr-2 text-grey-500" />
+                      <CalendarIcon className="h-4 w-4 inline mr-2 text-grey-500" />
                       <span className="text-grey-400 text-lg mr-2">
                         Applications:
                       </span>
                       <span className="text-lg text-grey-400 mr-2">
-                        {props.displayDate}
-                      </span> */}
+                        {props.displayBar?.applicationDate}
+                      </span>
                       <ClockIcon className="h-4 w-4 inline mr-2 text-grey-500" />
                       <span className="text-grey-400 text-lg mr-2">Round:</span>
                       <span className="text-lg text-grey-400">
-                        {props.displayDate}
+                        {props.displayBar?.roundDate}
                       </span>
                     </>
                   ) : (
@@ -55,7 +54,7 @@ export const RoundCard: React.FC<CardProps> = (props: CardProps) => (
                       <ClockIcon className="h-4 w-4 inline mr-2 text-grey-500" />
                       <span className="text-grey-400 text-lg mr-2">Round:</span>
                       <span className="text-lg text-grey-400">
-                        {props.displayDate}
+                        {props.displayBar?.roundDate}
                       </span>
                     </>
                   )}

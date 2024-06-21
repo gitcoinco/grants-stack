@@ -81,7 +81,6 @@ export function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-// todo: set this up dynamically for both types of rounds
 export const statusStyleMap: Record<number, { status: string; style: string }> =
   {
     [0]: {
@@ -112,7 +111,6 @@ export const statusStyleMap: Record<number, { status: string; style: string }> =
 
 function getCurrentStatus(round: Round): number {
   const currentTime = new Date();
-  console.log(round.strategyName);
 
   if (currentTime < round.roundStartTime) {
     return 0; // "Pre-round"
