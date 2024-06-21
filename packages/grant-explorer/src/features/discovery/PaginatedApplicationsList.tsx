@@ -1,10 +1,11 @@
 import PlusIcon from "@heroicons/react/20/solid/PlusIcon";
 import { LoadingRing } from "../common/Spinner";
-import { ProjectCard, ProjectCardSkeleton } from "../common/ProjectCard";
+import { ApplicationCard } from "../common/ApplicationCard";
 import { ApplicationSummary } from "data-layer";
 import { usePostHog } from "posthog-js/react";
+import { CardSkeleton } from "../common/ProjectBanner";
 
-interface PaginatedProjectsListProps {
+interface PaginatedApplicationsListProps {
   applications: ApplicationSummary[];
   isLoading: boolean;
   isLoadingMore: boolean;
@@ -15,7 +16,7 @@ interface PaginatedProjectsListProps {
   applicationExistsInCart: (application: ApplicationSummary) => boolean;
 }
 
-export function PaginatedProjectsList({
+export function PaginatedApplicationsList({
   applications,
   isLoading,
   isLoadingMore,
@@ -24,13 +25,13 @@ export function PaginatedProjectsList({
   onAddApplicationToCart,
   onRemoveApplicationFromCart,
   applicationExistsInCart,
-}: PaginatedProjectsListProps): JSX.Element {
+}: PaginatedApplicationsListProps): JSX.Element {
   const posthog = usePostHog();
 
   return (
     <>
       {applications.map((application) => (
-        <ProjectCard
+        <ApplicationCard
           key={application.applicationRef}
           application={application}
           inCart={applicationExistsInCart(application)}
@@ -50,11 +51,11 @@ export function PaginatedProjectsList({
       ))}
       {isLoadingMore && (
         <>
-          <ProjectCardSkeleton />
-          <ProjectCardSkeleton />
-          <ProjectCardSkeleton />
-          <ProjectCardSkeleton />
-          <ProjectCardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
         </>
       )}
       {!isLoading && hasMorePages && (

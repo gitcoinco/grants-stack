@@ -99,7 +99,7 @@ export default function ViewProject() {
     },
     {
       name: "Projects",
-      path: `/`,
+      path: `/projects`,
     },
     {
       name: project?.metadata.title,

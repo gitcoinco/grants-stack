@@ -9,7 +9,7 @@ import { useCartStorage } from "../../../store";
 import { CartWithProjects } from "./CartWithProjects";
 import { SummaryContainer } from "./SummaryContainer";
 import { useDataLayer } from "data-layer";
-import { createCartProjectFromApplication } from "../../discovery/ExploreProjectsPage";
+import { createCartProjectFromApplication } from "../../discovery/ExploreApplicationsPage";
 
 export default function ViewCart() {
   const { projects, setCart } = useCartStorage();

@@ -3,7 +3,7 @@ import "./browserPatches";
 import { getConfig } from "common/src/config";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
+import { ExploreApplicationsPage } from "./features/discovery/ExploreApplicationsPage";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -34,6 +34,7 @@ import ViewRound from "./features/round/ViewRoundPage";
 import AlloWrapper from "./features/api/AlloWrapper";
 import { PostHogProvider } from "posthog-js/react";
 import ViewProject from "./features/projects/ViewProject";
+import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
 
 initSentry();
 initDatadog();
@@ -92,10 +93,10 @@ root.render(
 
                         {/* Project Routes */}
 
-                        {/* <Route
-                        path="/projects"
-                        element={<ExploreProjectsPage />}
-                      /> */}
+                        <Route
+                          path="/projects"
+                          element={<ExploreProjectsPage />}
+                        />
 
                         <Route
                           path="/projects/:projectId"
@@ -118,7 +119,7 @@ root.render(
                         />
                         <Route
                           path="/collections/:collectionCid"
-                          element={<ExploreProjectsPage />}
+                          element={<ExploreApplicationsPage />}
                         />
 
                         {/* 404 */}

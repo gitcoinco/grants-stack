@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
-import { PaginatedProjectsList } from "./PaginatedProjectsList"; // Adjust the import path as needed
+import { PaginatedApplicationsList } from "./PaginatedApplicationsList"; // Adjust the import path as needed
 import { ApplicationSummary } from "data-layer";
 import { zeroAddress } from "viem";
 
@@ -54,10 +54,10 @@ const mockAddApplicationToCart = vi.fn();
 const mockRemoveApplicationFromCart = vi.fn();
 const mockApplicationExistsInCart = vi.fn();
 
-describe("PaginatedProjectsList", () => {
+describe("PaginatedApplicationsList", () => {
   it("renders list of applications", () => {
     render(
-      <PaginatedProjectsList
+      <PaginatedApplicationsList
         applications={applicationsMock}
         isLoading={false}
         isLoadingMore={false}
@@ -78,7 +78,7 @@ describe("PaginatedProjectsList", () => {
 
   it("calls loadNextPage when Load more button is clicked", async () => {
     render(
-      <PaginatedProjectsList
+      <PaginatedApplicationsList
         applications={applicationsMock}
         isLoading={false}
         isLoadingMore={false}
