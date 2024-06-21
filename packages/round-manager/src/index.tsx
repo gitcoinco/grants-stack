@@ -1,6 +1,6 @@
 import "./browserPatches";
 
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
 import { QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -113,7 +113,16 @@ root.render(
     <PostHogProvider client={posthog}>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
+          <RainbowKitProvider
+            theme={{
+              ...lightTheme(),
+              colors: {
+                ...lightTheme().colors,
+                accentColor: "#FFEFBE",
+                accentColorForeground: "#000000",
+              },
+            }}
+          >
             <AlloWrapper>
               <DataLayerProvider client={dataLayerConfig}>
                 <HashRouter>

@@ -25,9 +25,9 @@ export default function Auth() {
 
   // todo: add background image
   return !isConnected ? (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navbar programCta={false} />
-      <main className="pt-4">
+      <main className="flex-grow pt-4 container mx-auto">
         {isConnecting ? (
           <Spinner text="Logging you in..." />
         ) : (
@@ -44,7 +44,11 @@ export default function Auth() {
           </div>
         )}
       </main>
-      <Footer />
+      <div className="w-full bg-white">
+        <div className="container mx-auto">
+          <Footer />
+        </div>
+      </div>
     </div>
   ) : (
     <Outlet context={data} />
