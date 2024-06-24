@@ -3,7 +3,6 @@ import ProgressModal from "../common/ProgressModal";
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import ReactTooltip from "react-tooltip";
 import ErrorModal from "../common/ErrorModal";
-import { useWallet } from "../common/Auth";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";

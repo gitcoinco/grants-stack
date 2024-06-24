@@ -18,7 +18,6 @@ import {
   ApplicationMetadata,
   ProgressStatus,
 } from "../../api/types";
-import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import {
@@ -75,19 +74,6 @@ const randomMetadata = {
 
 describe("<RoundApplicationForm />", () => {
   beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: { name: "my blockchain" },
-      provider: {
-        getNetwork: () =>
-          Promise.resolve({
-            chainId: 5,
-          }),
-      },
-      signer: {
-        getChainId: () => 5,
-      },
-      address: "0x0",
-    });
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
   });
 
@@ -207,20 +193,6 @@ describe("<RoundApplicationForm />", () => {
 });
 
 describe("Application Form Builder", () => {
-  beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: { name: "my blockchain" },
-      provider: {
-        getNetwork: () => ({
-          chainId: 0,
-        }),
-      },
-      signer: {
-        getChainId: () => 0,
-      },
-      address: "0x0",
-    });
-  });
 
   it("displays the four default questions", () => {
     renderWithContext(
@@ -626,20 +598,6 @@ describe("Application Form Builder", () => {
     });
   });
   describe("Project Socials", () => {
-    beforeEach(() => {
-      (useWallet as jest.Mock).mockReturnValue({
-        chain: { name: "my blockchain" },
-        provider: {
-          getNetwork: () => ({
-            chainId: 0,
-          }),
-        },
-        signer: {
-          getChainId: () => 0,
-        },
-        address: "0x0",
-      });
-    });
 
     it("displays the Project Socials", () => {
       renderWithContext(

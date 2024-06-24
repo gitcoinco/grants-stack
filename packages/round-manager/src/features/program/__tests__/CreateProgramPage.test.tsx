@@ -11,7 +11,6 @@ import { success } from "common/src/allo/common";
 import { MemoryRouter } from "react-router-dom";
 import { zeroAddress } from "viem";
 import { errorModalDelayMs } from "../../../constants";
-import { useWallet } from "../../common/Auth";
 import CreateProgramPage from "../CreateProgramPage";
 import wagmi, { Config, UseAccountReturnType } from "wagmi";
 
@@ -51,10 +50,7 @@ jest.mock("wagmi", () => ({
 
 describe("<CreateProgramPage />", () => {
   beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: {},
-      address: zeroAddress,
-    });
+
   });
 
   it("shows program chain tooltip", async () => {

@@ -30,7 +30,6 @@ import {
   makeRoundData,
 } from "../../../test-utils";
 import { GrantApplication, ProgressStatus, Round } from "../../api/types";
-import { useWallet } from "../../common/Auth";
 import { useApplicationsByRoundId } from "../../common/useApplicationsByRoundId";
 import ViewApplicationPage from "../ViewApplicationPage";
 
@@ -53,33 +52,6 @@ jest.mock("../../../constants", () => ({
 }));
 
 const mockAddress = "0x0";
-const mockWallet = {
-  provider: {
-    network: {
-      chainId: 1,
-    },
-  },
-  address: mockAddress,
-  signer: {
-    getChainId: () => {
-      /* do nothing */
-    },
-  },
-  chain: {
-    name: "abc",
-    id: 1,
-  },
-};
-
-const mockNetwork = {
-  chain: {
-    blockExplorers: {
-      default: {
-        url: "https://mock-blockexplorer.com",
-      },
-    },
-  },
-};
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -98,10 +70,6 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 }));
 
 jest.mock("../../common/useApplicationsByRoundId");
-
-jest.mock("../../../features/common/Auth", () => ({
-  useWallet: () => mockWallet,
-}));
 
 jest.mock("../../../app/wagmi", () => ({
   getEthersProvider: (chainId: number) => ({

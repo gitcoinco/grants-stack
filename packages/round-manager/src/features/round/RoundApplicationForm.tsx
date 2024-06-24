@@ -35,7 +35,6 @@ import {
   typeToText,
 } from "../api/utils";
 import AddQuestionModal from "../common/AddQuestionModal";
-import { useWallet } from "../common/Auth";
 import BaseSwitch from "../common/BaseSwitch";
 import ErrorModal from "../common/ErrorModal";
 import { FormStepper as FS } from "../common/FormStepper";
@@ -43,6 +42,9 @@ import { FormContext } from "../common/FormWizard";
 import { InputIcon } from "../common/InputIcon";
 import PreviewQuestionModal from "../common/PreviewQuestionModal";
 import ProgressModal from "../common/ProgressModal";
+import { JsonRpcSigner } from "@ethersproject/providers";
+import { useAccount } from "wagmi";
+import { getEthersSigner } from "../../app/wagmi";
 
 export const getInitialQuestionsQF = (chainId: number): SchemaQuestion[] => [
   {
@@ -162,11 +164,20 @@ export function RoundApplicationForm(props: {
   stepper: typeof FS;
   configuration?: { roundCategory?: RoundCategory };
 }) {
+  const [signer, setSigner] = useState<JsonRpcSigner>();
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [openAddQuestionModal, setOpenAddQuestionModal] = useState(false);
   const [toEdit, setToEdit] = useState<EditQuestion | undefined>();
-  const { signer: walletSigner, chain } = useWallet();
+  const { chainId, isConnected, connector } = useAccount();
+
+  useEffect(() => {
+    const init = async () => {
+      const s = await getEthersSigner(connector!, chainId!);
+      setSigner(s);
+    };
+    if (isConnected && chainId && connector?.getAccounts) init();
+  }, [chainId, isConnected, connector]);
 
   const { currentStep, setCurrentStep, stepsCount, formData } =
     useContext(FormContext);
@@ -187,8 +198,8 @@ export function RoundApplicationForm(props: {
   const defaultQuestions: ApplicationMetadata["questions"] = questionsArg
     ? questionsArg
     : roundCategory === RoundCategory.QuadraticFunding
-    ? getInitialQuestionsQF(chain.id)
-    : getInitialQuestionsDirect(chain.id);
+    ? getInitialQuestionsQF(chainId!)
+    : getInitialQuestionsDirect(chainId!);
 
   const { control, handleSubmit } = useForm<Round>({
     defaultValues: {
@@ -308,7 +319,7 @@ export function RoundApplicationForm(props: {
           roundOperators: round.operatorWallets.map(getAddress),
         },
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        walletSigner: walletSigner!,
+        walletSigner: signer!,
       });
     } catch (error) {
       datadogLogs.logger.error(

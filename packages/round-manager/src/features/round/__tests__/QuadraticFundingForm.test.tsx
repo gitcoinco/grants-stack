@@ -3,7 +3,6 @@ import { fireEvent, screen } from "@testing-library/react";
 import { renderWrapped } from "../../../test-utils";
 import { NATIVE, getPayoutTokens } from "common";
 
-import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import QuadraticFundingForm from "../QuadraticFundingForm";
 
@@ -21,12 +20,6 @@ jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),
   errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
-
-beforeEach(() => {
-  (useWallet as jest.Mock).mockReturnValue({
-    chain: { id: 10 },
-  });
-});
 
 describe("<QuadraticFundingForm />", () => {
   beforeEach(() => {
