@@ -12,7 +12,6 @@ import {
   wrapWithRoundContext,
 } from "../../../test-utils";
 import { Program, ProgressStatus } from "../../api/types";
-import { useWallet } from "../../common/Auth";
 import ViewProgram from "../ViewProgramPage";
 
 const programId = faker.datatype.number().toString();
@@ -72,11 +71,6 @@ describe("<ViewProgram />", () => {
       ],
     });
 
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: {},
-      address: stubProgram.operatorWallets[0],
-      provider: { getNetwork: () => Promise.resolve({ chainId: "0x0" }) },
-    });
   });
 
   it("should display NotFoundPage when no program is found", () => {

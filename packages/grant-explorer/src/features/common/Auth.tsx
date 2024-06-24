@@ -21,7 +21,7 @@ export default function Auth() {
 
   useEffect(() => {
     const init = async () => {
-      const s = await getEthersSigner(connector!, chain?.id!);
+      const s = await getEthersSigner(connector!, chain!.id);
       setSigner(s);
     };
     if (isConnected && chain && connector?.getAccounts) init();

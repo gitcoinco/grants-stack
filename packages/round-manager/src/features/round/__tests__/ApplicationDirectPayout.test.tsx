@@ -15,7 +15,6 @@ import {
   ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
 } from "common";
 
-import { useWallet } from "../../common/Auth";
 import { Connector, useAccount, useDisconnect } from "wagmi";
 import { BigNumber, ethers } from "ethers";
 import { Erc20__factory } from "../../../types/generated/typechain";
@@ -36,32 +35,6 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 }));
 
 const mockAddress = ethers.constants.AddressZero;
-const mockWallet = {
-  provider: {
-    network: {
-      chainId: 1,
-    },
-  },
-  address: mockAddress,
-  signer: {
-    getChainId: () => {
-      /* do nothing */
-    },
-  },
-  chain: {
-    name: "abc",
-    id: 1,
-  },
-};
-const mockNetwork = {
-  chain: {
-    blockExplorers: {
-      default: {
-        url: "https://mock-blockexplorer.com",
-      },
-    },
-  },
-};
 
 const correctAnswerBlocks = [
   {
@@ -80,10 +53,6 @@ const correctAnswerBlocks = [
     answer: "0x444",
   },
 ];
-
-jest.mock("../../../features/common/Auth", () => ({
-  useWallet: () => mockWallet,
-}));
 
 jest.mock("wagmi", () => ({
   ...jest.requireActual("wagmi"),

@@ -18,7 +18,6 @@ import {
   ApplicationMetadata,
   ProgressStatus,
 } from "../../api/types";
-import { useWallet } from "../../common/Auth";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import {
@@ -75,19 +74,6 @@ const randomMetadata = {
 
 describe("<RoundApplicationForm />", () => {
   beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: { name: "my blockchain" },
-      provider: {
-        getNetwork: () =>
-          Promise.resolve({
-            chainId: 5,
-          }),
-      },
-      signer: {
-        getChainId: () => 5,
-      },
-      address: "0x0",
-    });
     (saveToIPFS as jest.Mock).mockResolvedValue("some ipfs hash");
   });
 
