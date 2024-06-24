@@ -1,19 +1,19 @@
 import { faker } from "@faker-js/faker";
-import { render, screen } from "@testing-library/react";
-import {
-  ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
-  ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
-  formatLocalDateAsISOString,
-} from "common";
+// import { render, screen } from "@testing-library/react";
+// import {
+//   ROUND_PAYOUT_DIRECT_OLD as ROUND_PAYOUT_DIRECT,
+//   ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
+//   formatLocalDateAsISOString,
+// } from "common";
 import {
   makeProgramData,
-  makeRoundData,
-  wrapWithReadProgramContext,
-  wrapWithRoundContext,
+  // makeRoundData,
+  // wrapWithReadProgramContext,
+  // wrapWithRoundContext,
 } from "../../../test-utils";
-import { Program, ProgressStatus } from "../../api/types";
-import { useWallet } from "../../common/Auth";
-import ViewProgram from "../ViewProgramPage";
+import { Program } from "../../api/types";
+// import { useWallet } from "../../common/Auth";
+// import ViewProgram from "../ViewProgramPage";
 
 const programId = faker.datatype.number().toString();
 const useParamsFn = () => ({ id: programId });
@@ -80,7 +80,6 @@ describe("<ViewProgram />", () => {
         },
       ],
     });
-
   });
 
   it("should display NotFoundPage when no program is found", () => {
