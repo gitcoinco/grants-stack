@@ -193,20 +193,6 @@ describe("<RoundApplicationForm />", () => {
 });
 
 describe("Application Form Builder", () => {
-  beforeEach(() => {
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: { name: "my blockchain" },
-      provider: {
-        getNetwork: () => ({
-          chainId: 0,
-        }),
-      },
-      signer: {
-        getChainId: () => 0,
-      },
-      address: "0x0",
-    });
-  });
 
   it("displays the four default questions", () => {
     renderWithContext(
@@ -612,20 +598,6 @@ describe("Application Form Builder", () => {
     });
   });
   describe("Project Socials", () => {
-    beforeEach(() => {
-      (useWallet as jest.Mock).mockReturnValue({
-        chain: { name: "my blockchain" },
-        provider: {
-          getNetwork: () => ({
-            chainId: 0,
-          }),
-        },
-        signer: {
-          getChainId: () => 0,
-        },
-        address: "0x0",
-      });
-    });
 
     it("displays the Project Socials", () => {
       renderWithContext(

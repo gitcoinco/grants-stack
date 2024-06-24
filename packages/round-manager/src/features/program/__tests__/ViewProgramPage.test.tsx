@@ -138,11 +138,6 @@ describe("<ViewProgram />", () => {
     ];
 
     const stubProgram = makeProgramData({ id: programId, operatorWallets });
-    (useWallet as jest.Mock).mockReturnValue({
-      chain: {},
-      address: stubProgram.operatorWallets[0],
-      provider: { getNetwork: () => Promise.resolve({ chainId: "0x0" }) },
-    });
 
     render(
       wrapWithReadProgramContext(
