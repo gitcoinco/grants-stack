@@ -26,10 +26,8 @@ export default function ViewProgram() {
   };
   const { chain, connector } = useAccount();
   const programChainId = chainId ? Number(chainId) : chain?.id;
-  const { program: programToRender, fetchProgramsStatus } = useProgramById(
-    programChainId as number,
-    programId
-  );
+  const { program: programToRender, fetchProgramsStatus } =
+    useProgramById(programId);
   const { fetchRoundStatus } = useRounds(programChainId as number, programId);
   const [programExists] = useState(true);
   const [hasAccess] = useState(true);

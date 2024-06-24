@@ -1,11 +1,7 @@
 "use client";
 
 import { Fragment, useState, Key } from "react";
-import {
-  classNames,
-  getStatusStyle,
-  prettyDates3,
-} from "../common/Utils";
+import { classNames, getStatusStyle, prettyDates3 } from "../common/Utils";
 import { RefreshIcon, PlusIcon, PlusSmIcon } from "@heroicons/react/solid";
 import Close from "../../assets/close.svg";
 import DirectGrants from "../../assets/direct-grants.svg";
@@ -37,10 +33,7 @@ export const TabGroup = () => {
   };
   const { chain } = useAccount();
   const programChainId = chainId ? Number(chainId) : chain?.id;
-  const { program: programToRender } = useProgramById(
-    programChainId!,
-    programId
-  );
+  const { program: programToRender } = useProgramById(programId);
   const { data: rounds, fetchRoundStatus } = useRounds(
     programChainId as number,
     programId
