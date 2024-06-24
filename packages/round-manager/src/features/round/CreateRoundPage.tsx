@@ -12,7 +12,6 @@ import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
 import QuadraticFundingForm from "./QuadraticFundingForm";
 import { RoundApplicationForm } from "./RoundApplicationForm";
 import { RoundDetailForm } from "./RoundDetailForm";
-import { useWallet } from "../common/Auth";
 
 function ExitCreateRound(props: { onClick: () => void }) {
   return (
@@ -32,7 +31,6 @@ export default function CreateRound() {
   datadogLogs.logger.info("====> Route: /round/create");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
 
-  const { chain } = useWallet();
   const [searchParams] = useSearchParams();
   const programId = searchParams.get("programId");
   const roundCategoryParam = searchParams.get("roundCategory");
@@ -50,7 +48,7 @@ export default function CreateRound() {
           RoundApplicationForm,
         ];
 
-  const { program } = useProgramById(chain.id, programId ?? undefined);
+  const { program } = useProgramById(programId ?? undefined);
 
   const navigate = useNavigate();
 

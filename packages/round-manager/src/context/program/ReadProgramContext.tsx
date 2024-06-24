@@ -1,7 +1,4 @@
-import {
-  Program,
-  ProgressStatus,
-} from "../../features/api/types";
+import { Program, ProgressStatus } from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { getProgramById, listPrograms } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
@@ -47,7 +44,7 @@ const fetchProgramsByAddress = async (
   dispatch: Dispatch,
   address: string,
   dataLayer: DataLayer,
-  chainId: number,
+  chainId: number
 ) => {
   datadogLogs.logger.info(`fetchProgramsByAddress: address - ${address}`);
 
@@ -170,7 +167,6 @@ export const usePrograms = (): ReadProgramState & { dispatch: Dispatch } => {
 };
 
 export const useProgramById = (
-  chainId: number,
   id?: string
 ): {
   program: Program | undefined;
@@ -179,13 +175,12 @@ export const useProgramById = (
 } => {
   const context = useContext(ReadProgramContext);
   const { switchToVersion, version } = useAlloVersion();
-
   const dataLayer = useDataLayer();
   if (context === undefined) {
     throw new Error("useProgramById must be used within a ProgramProvider");
   }
 
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
 
   useEffect(() => {
     if (id) {
@@ -206,6 +201,7 @@ export const useProgramById = (
   }, [id, chainId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const program = context.state.programs.find((program) => program.id === id);
+
   useEffect(() => {
     if (program?.tags?.includes("allo-v2") && version === "allo-v1") {
       switchToVersion("allo-v2");
