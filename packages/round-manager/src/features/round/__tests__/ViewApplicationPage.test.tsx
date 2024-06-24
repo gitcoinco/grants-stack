@@ -52,24 +52,24 @@ jest.mock("../../../constants", () => ({
   errorModalDelayMs: 0, // NB: use smaller delay for faster tests
 }));
 
-const mockAddress = "0x0";
-const mockWallet = {
-  provider: {
-    network: {
-      chainId: 1,
-    },
-  },
-  address: mockAddress,
-  signer: {
-    getChainId: () => {
-      /* do nothing */
-    },
-  },
-  chain: {
-    name: "abc",
-    id: 1,
-  },
-};
+// const mockAddress = "0x0";
+// const mockWallet = {
+//   provider: {
+//     network: {
+//       chainId: 1,
+//     },
+//   },
+//   address: mockAddress,
+//   signer: {
+//     getChainId: () => {
+//       /* do nothing */
+//     },
+//   },
+//   chain: {
+//     name: "abc",
+//     id: 1,
+//   },
+// };
 
 // const mockNetwork = {
 //   chain: {

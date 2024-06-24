@@ -200,6 +200,6 @@ describe("<ReadProgramProvider />", () => {
 //   );
 // };
 
-function renderWithProvider(ui: JSX.Element) {
-  render(<ReadProgramProvider>{ui}</ReadProgramProvider>);
-}
+// function renderWithProvider(ui: JSX.Element) {
+//   render(<ReadProgramProvider>{ui}</ReadProgramProvider>);
+// }

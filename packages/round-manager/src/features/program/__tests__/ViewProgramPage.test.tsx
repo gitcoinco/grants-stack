@@ -5,13 +5,13 @@ import { faker } from "@faker-js/faker";
 //   ROUND_PAYOUT_MERKLE_OLD as ROUND_PAYOUT_MERKLE,
 //   formatLocalDateAsISOString,
 // } from "common";
-import {
-  makeProgramData,
-  // makeRoundData,
-  // wrapWithReadProgramContext,
-  // wrapWithRoundContext,
-} from "../../../test-utils";
-import { Program } from "../../api/types";
+// import {
+// makeProgramData,
+// makeRoundData,
+// wrapWithReadProgramContext,
+// wrapWithRoundContext,
+// } from "../../../test-utils";
+// import { Program } from "../../api/types";
 // import { useWallet } from "../../common/Auth";
 // import ViewProgram from "../ViewProgramPage";
 
@@ -62,24 +62,24 @@ jest.mock("../../../app/wagmi", () => ({
 // }));
 
 describe("<ViewProgram />", () => {
-  let stubProgram: Program;
+  // let stubProgram: Program;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
-    stubProgram = makeProgramData({
-      id: programId,
-      chain: { id: 1 },
-      tags: ["allo-v2"],
-      operatorWallets: [mockedOperatorWallet],
-      roles: [
-        {
-          address: mockedOperatorWallet,
-          role: "OWNER",
-          createdAtBlock: "0",
-        },
-      ],
-    });
+    // stubProgram = makeProgramData({
+    //   id: programId,
+    //   chain: { id: 1 },
+    //   tags: ["allo-v2"],
+    //   operatorWallets: [mockedOperatorWallet],
+    //   roles: [
+    //     {
+    //       address: mockedOperatorWallet,
+    //       role: "OWNER",
+    //       createdAtBlock: "0",
+    //     },
+    //   ],
+    // });
   });
 
   it("should display NotFoundPage when no program is found", () => {
