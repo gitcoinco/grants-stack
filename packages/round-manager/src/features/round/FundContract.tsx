@@ -25,8 +25,9 @@ import {
 import { assertAddress } from "common/src/address";
 import { formatUnits, zeroAddress } from "viem";
 import { Erc20__factory } from "../../types/generated/typechain";
-import { useWallet } from "../common/Auth";
 import { getAlloAddress } from "common/src/allo/backends/allo-v2";
+import { JsonRpcSigner } from "@ethersproject/providers";
+import { getEthersSigner } from "../../app/wagmi";
 
 // fixme: move this to its own hook
 export function useContractAmountFunded(args: {
@@ -142,10 +143,10 @@ export default function FundContract(props: {
   round: Round | undefined;
   roundId: string | undefined;
 }) {
-  const { address, chain } = useAccount();
   const navigate = useNavigate();
-  const { signer } = useWallet();
 
+  const { address, chainId, isConnected, connector } = useAccount();
+  const [signer, setSigner] = useState<JsonRpcSigner>();
   const [amountToFund, setAmountToFund] = useState("");
   const [insufficientBalance, setInsufficientBalance] = useState(false);
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
@@ -156,7 +157,13 @@ export default function FundContract(props: {
   >();
   const [transactionReplaced, setTransactionReplaced] = useState(false);
 
-  const chainId = chain?.id ?? 5;
+  useEffect(() => {
+    const init = async () => {
+      const s = await getEthersSigner(connector!, chainId!);
+      setSigner(s);
+    };
+    if (isConnected && chainId && connector?.getAccounts) init();
+  }, [chainId, isConnected, connector]);
 
   const allo = useAllo();
 
@@ -522,7 +529,7 @@ export default function FundContract(props: {
                   onClick={() =>
                     window.open(
                       getTxExplorerForContract(
-                        chainId,
+                        chainId!,
                         props.roundId as string
                       ),
                       "_blank"
@@ -670,7 +677,7 @@ export default function FundContract(props: {
 
       const alloVersion = props.round?.tags?.includes("allo-v2") ? "v2" : "v1";
       const roundAddress =
-        alloVersion === "v1" ? props.round?.id : getAlloAddress(chainId);
+        alloVersion === "v1" ? props.round?.id : getAlloAddress(chainId!);
 
       if (
         matchingFundPayoutToken?.address !== undefined &&

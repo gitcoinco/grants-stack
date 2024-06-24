@@ -2,19 +2,31 @@ import { Outlet } from "react-router-dom";
 import {
   useAccount,
   usePublicClient,
-  useWalletClient,
 } from "wagmi";
 
 import { Spinner } from "./Spinner";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { getEthersSigner } from "../../app/wagmi";
+import { JsonRpcSigner } from "@ethersproject/providers";
+import { useState, useEffect } from "react";
 
 /**
  * Component for protecting child routes that require web3 wallet instance.
  * It prompts a user to connect wallet if no web3 instance is found.
  */
 export default function Auth() {
-  const { chain, address, isConnected, isConnecting } = useAccount();
-  const { data: signer } = useWalletClient();
+  const [signer, setSigner] = useState<JsonRpcSigner>();
+
+  const { address, chain, isConnected, isConnecting, connector } = useAccount();
+
+  useEffect(() => {
+    const init = async () => {
+      const s = await getEthersSigner(connector!, chain?.id!);
+      setSigner(s);
+    };
+    if (isConnected && chain && connector?.getAccounts) init();
+  }, [chain, isConnected, connector]);
+
   const provider = usePublicClient();
 
   const data = {
