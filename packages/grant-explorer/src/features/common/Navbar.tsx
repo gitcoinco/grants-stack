@@ -46,60 +46,12 @@ export default function Navbar(props: NavbarProps) {
   // Note: we use this during a GG round, disabling until then.
   // todo: update this list with GG21 featured rounds.
   // const rounds: ExploreRoundsDropdownProps[] = [
+  // example:
   //   {
   //     chainId: 42161,
   //     roundId: "26",
   //     name: "WEB3 Infrastructure",
   //     link: "/round/42161/26",
-  //   },
-  //   {
-  //     chainId: 42161,
-  //     roundId: "27",
-  //     name: "Developer Tooling",
-  //     link: "/round/42161/27",
-  //   },
-  //   {
-  //     chainId: 42161,
-  //     roundId: "25",
-  //     name: "dApps & Apps",
-  //     link: "/round/42161/25",
-  //   },
-  //   {
-  //     chainId: 42161,
-  //     roundId: "23",
-  //     name: "Hackathon Alumni",
-  //     link: "/round/42161/23",
-  //   },
-  //   {
-  //     chainId: 42161,
-  //     roundId: "29",
-  //     name: "Climate Solutions",
-  //     link: "/round/42161/29",
-  //   },
-  //   {
-  //     chainId: 42161,
-  //     roundId: "24",
-  //     name: "ENS",
-  //     link: "/round/42161/24",
-  //   },
-  //   {
-  //     chainId: 10,
-  //     roundId: "9",
-  //     name: "Token Engineering Commons (TEC)",
-  //     link: "/round/10/9",
-  //     customClasses: "w-[7.5rem]",
-  //   },
-  //   {
-  //     chainId: 42161,
-  //     roundId: "31",
-  //     name: "Open Civics",
-  //     link: "/round/42161/31",
-  //   },
-  //   {
-  //     chainId: 42161,
-  //     roundId: "28",
-  //     name: "Hypercerts Ecosystem",
-  //     link: "/round/42161/28",
   //   },
   // ];
 
