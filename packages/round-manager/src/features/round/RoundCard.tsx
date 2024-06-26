@@ -33,27 +33,27 @@ export const RoundCard: React.FC<CardProps> = (props: CardProps) => (
                 )}
               </div>
               <div className="mt-4">
-                <div className="flex flex-row items-center p-1 text-grey-400 font-sans">
+                <div className="flex flex-row items-center p-1 text-lg text-grey-400 font-sans">
                   {props.strategyType === "quadratic" ? (
                     <>
                       <CalendarIcon className="h-4 w-4 inline mr-2 text-grey-500" />
-                      <span className="text-grey-400 text-lg mr-2">
+                      <span className=" mr-2">
                         Applications:
                       </span>
-                      <span className="text-lg text-grey-400 mr-2">
+                      <span className="mr-2">
                         {props.displayBar?.applicationDate}
                       </span>
                       <ClockIcon className="h-4 w-4 inline mr-2 text-grey-500" />
-                      <span className="text-grey-400 text-lg mr-2">Round:</span>
-                      <span className="text-lg text-grey-400">
+                      <span className=" mr-2">Round:</span>
+                      <span className="">
                         {props.displayBar?.roundDate}
                       </span>
                     </>
                   ) : (
                     <>
                       <ClockIcon className="h-4 w-4 inline mr-2 text-grey-500" />
-                      <span className="text-grey-400 text-lg mr-2">Round:</span>
-                      <span className="text-lg text-grey-400">
+                      <span className=" mr-2">Round:</span>
+                      <span className="">
                         {props.displayBar?.roundDate}
                       </span>
                     </>

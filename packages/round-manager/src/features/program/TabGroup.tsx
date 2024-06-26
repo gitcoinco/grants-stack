@@ -71,7 +71,7 @@ export const TabGroup = () => {
               status={status}
               strategyType="quadratic"
               displayBar={{
-                applicationDate: "",
+                applicationDate: prettyDates3(round.applicationsStartTime, round.applicationsEndTime),
                 roundDate: prettyDates3(
                   round.roundStartTime,
                   round.roundEndTime

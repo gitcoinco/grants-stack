@@ -1,7 +1,7 @@
 import React from "react";
 import { ApplicationStatusViewProps } from "../common/types";
-import { Link } from "react-router-dom";
-import { ReactComponent as CheckerLogo } from "../../assets/checker-logo.svg";
+// import { Link } from "react-router-dom";
+// import { ReactComponent as CheckerLogo } from "../../assets/checker-logo.svg";
 // import ActionPanel from "../common/ActionPanel";
 
 const ApplicationStatusView: React.FC<ApplicationStatusViewProps> = (props) => {
@@ -39,7 +39,8 @@ const ApplicationStatusView: React.FC<ApplicationStatusViewProps> = (props) => {
         </div>
         {/* todo: add a check if any actions and display the action panel */}
         {/* <ActionPanel /> */}
-        <div className="flex justify-center mt-6 border border-grey-100 p-4 rounded-2xl">
+        {/* todo: implement - need the checker URL for passing the right params */}
+        {/* <div className="flex justify-center mt-6 border border-grey-100 p-4 rounded-2xl">
           <div className="flex flex-col justify-between items-center text-grey-500 font-normal">
             <span className="flex flex-row items-center font-normal mb-4">
               <span className="text-center px-4 md:px-8">
@@ -50,7 +51,6 @@ const ApplicationStatusView: React.FC<ApplicationStatusViewProps> = (props) => {
                 Checker
               </span>
             </span>
-            {/* todo: implement - need the checker URL for passing the right params */}
             <Link
               to={"https://checker.gitcoin.co"}
               rel="_blank"
@@ -59,7 +59,7 @@ const ApplicationStatusView: React.FC<ApplicationStatusViewProps> = (props) => {
               Review applications
             </Link>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
