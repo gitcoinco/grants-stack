@@ -1269,7 +1269,6 @@ function FinalizeResultsButton(props: {
         onClick={() => {
           props.setWarningModalOpen(true);
         }}
-        disabled={!props.isRoundFullyFunded}
         className={`self-end w-fit ${
           props.isRoundFullyFunded ? "bg-violet-400" : "bg-violet-200"
         } text-white py-2 mt-2 px-3 rounded`}
