@@ -77,7 +77,7 @@ export default function ViewCart() {
           <Breadcrumb items={breadCrumbs} />
         </div>
         <main>
-          <Header projects={projects} />
+          <Header />
           <div className="flex flex-col md:flex-row gap-5">
             {projects.length === 0 ? (
               <>
