@@ -132,7 +132,7 @@ export const isDirectRound = (round: Round) =>
 
 export const isInfiniteDate = (roundTime: Date) => {
   return (
-    roundTime.toString() === "Invalid Date" || roundTime.getFullYear() === 1970
+    roundTime.toString() === "Invalid Date" || roundTime.getFullYear() <= 1970
   );
 };
 
