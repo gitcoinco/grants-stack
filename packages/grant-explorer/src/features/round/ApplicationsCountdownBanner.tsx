@@ -1,5 +1,10 @@
 import { Button } from "common/src/styles";
-import { TimeLeft, getTimeLeft, parseTimeLeftString } from "../api/utils";
+import {
+  TimeLeft,
+  getTimeLeft,
+  isInfiniteDate,
+  parseTimeLeftString,
+} from "../api/utils";
 
 type ApplicationPeriodStatus =
   | "pre-application"
@@ -27,7 +32,9 @@ const generateBannerString = (
     case "pre-application":
       return `Applications open in ${generateCountdownString(targetDate)}!`;
     case "during-application":
-      return `Applications close in ${generateCountdownString(targetDate)}!`;
+      return targetDate === undefined || isInfiniteDate(targetDate)
+        ? "Applications are open"
+        : `Applications close in ${generateCountdownString(targetDate)}!`;
     case "post-application":
       return `Applications are closed`;
     default:
@@ -49,7 +56,8 @@ function ApplicationsCountdownBanner(props: {
 
   const isBeforeApplicationPeriod = currentTime < startDate;
   const isDuringApplicationPeriod =
-    currentTime >= startDate && currentTime < endDate;
+    isInfiniteDate(endDate) ||
+    (currentTime >= startDate && currentTime < endDate);
 
   if (isDuringApplicationPeriod) {
     targetDate = endDate;
