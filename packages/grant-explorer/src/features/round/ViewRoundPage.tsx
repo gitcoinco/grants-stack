@@ -502,35 +502,37 @@ function RoundPage(props: {
                     </span>
                   </p>
                 )}
-                <p
-                  data-testId={"round-period"}
-                  className="mr-4 flex items-center"
-                >
-                  <span className="mr-2">Donate</span>
-                  <CalendarIcon className="w-4 h-4 !text-grey-400 inline-block mr-2" />
-                  <span>
-                    <span className="px-2 rounded bg-grey-50">
-                      <span className="mr-1">
-                        {formatLocalDateAsISOString(roundStart)}
+                {!isDirectRound(round) && (
+                  <p
+                    data-testId={"round-period"}
+                    className="mr-4 flex items-center"
+                  >
+                    <span className="mr-2">Donate</span>
+                    <CalendarIcon className="w-4 h-4 !text-grey-400 inline-block mr-2" />
+                    <span>
+                      <span className="px-2 rounded bg-grey-50">
+                        <span className="mr-1">
+                          {formatLocalDateAsISOString(roundStart)}
+                        </span>
+                        <span>{getLocalTime(roundStart)}</span>
                       </span>
-                      <span>{getLocalTime(roundStart)}</span>
-                    </span>
-                    <span className="px-1.5">-</span>
-                    <span className="px-2 rounded bg-grey-50">
-                      {!isInfiniteDate(roundEnd) ? (
-                        <>
-                          <span className="mr-1">
-                            {formatLocalDateAsISOString(roundEnd)}
-                          </span>
+                      <span className="px-1.5">-</span>
+                      <span className="px-2 rounded bg-grey-50">
+                        {!isInfiniteDate(roundEnd) ? (
+                          <>
+                            <span className="mr-1">
+                              {formatLocalDateAsISOString(roundEnd)}
+                            </span>
 
-                          <span>{getLocalTime(roundEnd)}</span>
-                        </>
-                      ) : (
-                        <span>No End Date</span>
-                      )}
+                            <span>{getLocalTime(roundEnd)}</span>
+                          </>
+                        ) : (
+                          <span>No End Date</span>
+                        )}
+                      </span>
                     </span>
-                  </span>
-                </p>
+                  </p>
+                )}
               </div>
             </div>
 
