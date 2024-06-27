@@ -43,10 +43,6 @@ import {
 } from "common";
 import { zeroAddress } from "viem";
 import { DistributionMatch } from "data-layer";
-// import { WagmiProvider } from "wagmi";
-// import queryClient, { config } from "./app/wagmi";
-// import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-// import { QueryClientProvider } from "@tanstack/react-query";
 
 export const mockedOperatorWallet = faker.finance.ethereumAddress();
 
@@ -55,11 +51,6 @@ export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   metadata: {
     name: faker.company.bsBuzz(),
   },
-  // TODO add this back in for createProgram
-  // store: {
-  //   protocol: randomInt(1, 10),
-  //   pointer: faker.random.alpha({ count: 59, casing: "lower" })
-  // },
   operatorWallets: [mockedOperatorWallet],
   roles: [
     {

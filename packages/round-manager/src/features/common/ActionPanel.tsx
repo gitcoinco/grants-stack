@@ -2,7 +2,6 @@ import { CheckIcon, ExclamationCircleIcon } from "@heroicons/react/solid";
 import { MdClose } from "react-icons/md";
 
 // todo: next scope: add actions to the action panel
-// const actions: any[] = [];
 
 const ActionPanel = () => {
   return (
@@ -15,12 +14,6 @@ const ActionPanel = () => {
           </span>
         </div>
         <ul className="flex flex-row justify-start space-x-5">
-          {/* {actions &&
-          actions.map((action) => {
-            console.log(action);
-  
-            return <></>;
-          })} */}
           <li className="flex flex-row items-center justify-start my-2">
             <CheckIcon className="h-5 w-5 inline mr-2 text-green-500" />
             <span className="text-grey-500 font-normal font-sans">

@@ -1,8 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { Spinner } from "./Spinner";
-// import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
-// import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg";
 import Footer from "common/src/components/Footer";
 import Navbar from "./Navbar";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
