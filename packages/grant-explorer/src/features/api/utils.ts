@@ -128,7 +128,8 @@ export const isDirectRound = (round: Round) =>
   // @ts-expect-error support old rounds
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT_OLD ||
   round.payoutStrategy.strategyName === ROUND_PAYOUT_DIRECT ||
-  round.payoutStrategy.strategyName === "allov2.DirectGrantsLiteStrategy";
+  round.payoutStrategy.strategyName === "allov2.DirectGrantsLiteStrategy" ||
+  round.payoutStrategy.strategyName === "allov2.DirectGrantsSimpleStrategy";
 
 export const isInfiniteDate = (roundTime: Date) => {
   return (
