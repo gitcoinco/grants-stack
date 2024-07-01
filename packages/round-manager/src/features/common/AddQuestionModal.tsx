@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Dialog, Listbox, Transition } from "@headlessui/react";
 import { ChevronDownIcon, PlusIcon, XCircleIcon } from "@heroicons/react/solid";
 import { Button } from "common/src/styles";
@@ -185,7 +184,7 @@ function AddQuestionModal({
           <Option
             index={i + 1}
             value={questionOptions.choices?.[i] || ""}
-            onChange={(event: any) => {
+            onChange={(event) => {
               event.preventDefault();
               if (questionOptions.choices?.length)
                 setQuestionOptions({
