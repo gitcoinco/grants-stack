@@ -41,7 +41,7 @@ export default function ApplicationsApproved() {
     throw new Error("id is undefined");
   }
 
-  const { data: applications, isLoading } = useApplicationsByRoundId(id);
+const { data: applications, isLoading } = useApplicationsByRoundId(id);
 
   const approvedApplications =
     applications?.filter(

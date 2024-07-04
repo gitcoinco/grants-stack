@@ -3,7 +3,7 @@ import tw from "tailwind-styled-components";
 export const CardsContainer = tw.div`
   flex
   flex-row
-  flex-grow
+  flex-wrap
   justify-start
   w-full
 `;
