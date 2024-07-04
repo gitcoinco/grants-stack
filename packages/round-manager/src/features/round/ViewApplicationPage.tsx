@@ -69,6 +69,8 @@ import ApplicationDirectPayout from "./ApplicationDirectPayout";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import { useAccount } from "wagmi";
 import { ViewGrantsExplorerButton } from "../common/ViewGrantsExplorerButton";
+import { useDataLayer } from "data-layer";
+import { convertApplications } from "../api/utils";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
@@ -95,6 +97,7 @@ export default function ViewApplicationPage() {
   const [reviewDecision, setReviewDecision] = useState<
     ApplicationStatus | undefined
   >(undefined);
+  const dataLayer = useDataLayer();
 
   const [openModal, setOpenModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
@@ -115,9 +118,9 @@ export default function ViewApplicationPage() {
   const { chain, address } = useAccount();
   const roundChainId = chainId ? Number(chainId) : chain?.id;
 
-  const { data: applications, isLoading } = useApplicationsByRoundId(roundId!);
-  const filteredApplication = applications?.filter((a) => a.id == id) || [];
-  const application = filteredApplication[0];
+  const [applications, setApplications] = useState<GrantApplication[]>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [application, setApplication] = useState<GrantApplication>();
 
   const {
     bulkUpdateGrantApplications,
@@ -149,6 +152,25 @@ export default function ViewApplicationPage() {
           : ProgressStatus.NOT_STARTED,
     },
   ];
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      const dataLayerApplications = await dataLayer.getApplicationsForManager({
+        roundId,
+        chainId: Number(roundChainId!),
+      });
+
+      const applications: GrantApplication[] = convertApplications(
+        dataLayerApplications
+      );
+      const filteredApplication = applications.filter((a) => a.id == id);
+      setApplications(applications);
+      setApplication(filteredApplication[0]);
+      setIsLoading(false);
+    };
+
+    if (roundChainId) fetchApplications();
+  }, [roundChainId, roundId]);
 
   useEffect(() => {
     if (contractUpdatingStatus === ProgressStatus.IS_ERROR) {
@@ -490,9 +512,9 @@ export default function ViewApplicationPage() {
     <Spinner text="We're fetching the round application." />
   ) : (
     <>
-      {!applicationExists && <NotFoundPage />}
-      {applicationExists && !hasAccess && <AccessDenied />}
-      {applicationExists && hasAccess && (
+      {(!application || !applicationExists) && <NotFoundPage />}
+      {application && applicationExists && !hasAccess && <AccessDenied />}
+      {application && applicationExists && hasAccess && (
         <>
           <Navbar />
           <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
