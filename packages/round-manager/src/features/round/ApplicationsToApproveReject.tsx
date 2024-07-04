@@ -308,7 +308,7 @@ export default function ApplicationsToApproveReject({
                   application={application}
                 />
               </CardHeader>
-              <Link to={`/round/${id}/application/${application.id}`}>
+              <Link target="_blank" to={`/round/${id}/application/${application.id}`}>
                 <CardContent>
                   <CardTitle>{application?.project?.title}</CardTitle>
                   <CardDescription>

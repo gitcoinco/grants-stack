@@ -207,6 +207,7 @@ export default function ApplicationsRejected() {
                 />
               </CardHeader>
               <Link
+                target="_blank"
                 key={index}
                 to={`/round/${id}/application/${application.id}`}
               >

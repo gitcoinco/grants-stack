@@ -22,6 +22,7 @@ function GrantApplications(props: {
   chainId: string;
   roundId: string | undefined;
 }) {
+  console.log("===> A0")
   // Filter applications into pending, approved, rejected & in-review
   const pendingApplications = (props.applications || [])
     .filter((a) => a.status === ApplicationStatus.PENDING.toString())
