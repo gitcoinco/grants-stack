@@ -3,8 +3,7 @@ import tw from "tailwind-styled-components";
 export const CardsContainer = tw.div`
   flex
   flex-row
-  flex-grow
-  justify-start
+  flex-wrap
   w-full
 `;
 
@@ -16,6 +15,7 @@ export const BasicCard = tw.div`
   my-3
   rounded
   bg-white
+  shadow-md
   `;
 
 export const CardHeader = tw.div`
@@ -59,15 +59,6 @@ export const CardFooterContent = tw.div`
   flex
   flex-row
   items-center
+  h-full
   w-full
   `;
-
-export const TabApplicationCounter = tw.div`
-  rounded-lg
-  ml-2
-  w-8
-  h-5
-  float-right
-  font-sm
-  font-normal
-`;

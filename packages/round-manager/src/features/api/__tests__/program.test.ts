@@ -1,7 +1,7 @@
 import { DataLayer } from "data-layer";
 import { makeProgramData } from "../../../test-utils";
-import { getProgramById } from "../program";
-// import { Program } from "../types";
+import { getProgramById, listPrograms } from "../program";
+import { Program } from "../types";
 
 jest.mock("data-layer", () => ({
   ...jest.requireActual("data-layer"),
@@ -13,44 +13,44 @@ jest.mock("data-layer", () => ({
 }));
 
 describe("listPrograms", () => {
-  // it("calls the indexer endpoint", async () => {
-  //   // const address = "0x0"
-  //   let expectedProgram = makeProgramData({
-  //     chain: {
-  //       id: 1,
-  //       name: "Ethereum",
-  //     },
-  //   });
-  //   expectedProgram = {
-  //     ...expectedProgram,
-  //     createdByAddress: expectedProgram.operatorWallets[0],
-  //   };
-  //   const expectedPrograms: Program[] = [expectedProgram];
+  it("calls the indexer endpoint", async () => {
+    // const address = "0x0"
+    let expectedProgram = makeProgramData({
+      chain: {
+        id: 1,
+        name: "Ethereum",
+      },
+    });
+    expectedProgram = {
+      ...expectedProgram,
+      createdByAddress: expectedProgram.operatorWallets[0],
+    };
+    const expectedPrograms: Program[] = [expectedProgram];
 
-  //   const actualPrograms = await listPrograms("0x0", 1, {
-  //     getProgramsByUser: jest.fn().mockResolvedValue({
-  //       programs: [
-  //         {
-  //           id: expectedProgram.id,
-  //           roles: [
-  //             {
-  //               address: expectedProgram.operatorWallets[0],
-  //               role: "OWNER",
-  //               createdAtBlock: "0",
-  //             },
-  //           ],
-  //           metadata: {
-  //             name: expectedProgram.metadata?.name,
-  //           },
-  //           createdByAddress: expectedProgram.operatorWallets[0],
-  //           tags: ["program"],
-  //         },
-  //       ],
-  //     }),
-  //   } as unknown as DataLayer);
+    const actualPrograms = await listPrograms("0x0", 1, {
+      getProgramsByUser: jest.fn().mockResolvedValue({
+        programs: [
+          {
+            id: expectedProgram.id,
+            roles: [
+              {
+                address: expectedProgram.operatorWallets[0],
+                role: "OWNER",
+                createdAtBlock: "0",
+              },
+            ],
+            metadata: {
+              name: expectedProgram.metadata?.name,
+            },
+            createdByAddress: expectedProgram.operatorWallets[0],
+            tags: ["program"],
+          },
+        ],
+      }),
+    } as unknown as DataLayer);
 
-  //   expect(actualPrograms).toEqual(expectedPrograms);
-  // });
+    expect(actualPrograms).toEqual(expectedPrograms);
+  });
 });
 
 describe("getProgramById", () => {

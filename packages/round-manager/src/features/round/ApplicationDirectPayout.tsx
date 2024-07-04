@@ -6,6 +6,7 @@ import ErrorModal from "../common/ErrorModal";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+
 import { ExternalLinkIcon } from "@heroicons/react/outline";
 import { Erc20__factory } from "../../types/generated/typechain";
 import { usePayout } from "../../context/application/usePayout";
@@ -76,8 +77,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
 
   useEffect(() => {
     const getSigner = async () => {
-      const signer = await getEthersSigner(connector, chain!.id);
-
+      const signer = await getEthersSigner(connector!, chain!.id);
       setSigner(signer);
     };
 

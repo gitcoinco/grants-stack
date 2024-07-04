@@ -43,6 +43,10 @@ import {
 } from "common";
 import { zeroAddress } from "viem";
 import { DistributionMatch } from "data-layer";
+import { WagmiProvider } from "wagmi";
+import queryClient, { config } from "./app/wagmi";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 export const mockedOperatorWallet = faker.finance.ethereumAddress();
 
@@ -51,6 +55,11 @@ export const makeProgramData = (overrides: Partial<Program> = {}): Program => ({
   metadata: {
     name: faker.company.bsBuzz(),
   },
+  // TODO add this back in for createProgram
+  // store: {
+  //   protocol: randomInt(1, 10),
+  //   pointer: faker.random.alpha({ count: 59, casing: "lower" })
+  // },
   operatorWallets: [mockedOperatorWallet],
   roles: [
     {
@@ -72,7 +81,6 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
   const protocolFeePercentage = 10000;
   return {
     id: faker.finance.ethereumAddress(),
-    strategyName: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy",
     chainId: 1,
     roundMetadata: {
       name: faker.company.name(),
@@ -140,7 +148,6 @@ export const makeDirectGrantRoundData = (
   const protocolFeePercentage = 10000;
   return {
     id: faker.finance.ethereumAddress(),
-    strategyName: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy",
     chainId: 1,
     roundMetadata: {
       name: faker.company.name(),

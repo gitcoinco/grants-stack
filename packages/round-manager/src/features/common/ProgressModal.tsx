@@ -1,8 +1,22 @@
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon, XIcon } from "@heroicons/react/solid";
 import { ProgressStatus } from "../api/types";
-import { ProgressModalProps, Step } from "./types";
+
+export type Step = {
+  name: string;
+  description: string;
+  status: ProgressStatus;
+};
+
+interface ProgressModalProps {
+  isOpen: boolean;
+  steps: Step[];
+  heading?: string;
+  subheading?: string;
+  redirectUrl?: string;
+  children?: ReactNode;
+}
 
 export default function ProgressModal({
   isOpen,

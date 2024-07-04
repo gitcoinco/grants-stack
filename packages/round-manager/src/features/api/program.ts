@@ -3,7 +3,6 @@ import { datadogLogs } from "@datadog/browser-logs";
 import { DataLayer } from "data-layer";
 import { getAlloVersion } from "common/src/config";
 import { getChainById, stringToBlobUrl } from "common";
-import { allChains } from "../../app/wagmi";
 
 /**
  * Fetch a list of programs
@@ -13,18 +12,15 @@ import { allChains } from "../../app/wagmi";
  */
 export async function listPrograms(
   address: string,
-  chainId: number, // TODO: verify if this is needed
+  chainId: number,
   dataLayer: DataLayer
 ): Promise<Program[]> {
   try {
-    // fetch chain id
-    const chainIds = allChains.map(chain => chain.id);
-
     // fetch programs from indexer
 
     const programsRes = await dataLayer.getProgramsByUser({
       address,
-      chainIds,
+      chainId,
       tags: getAlloVersion() === "allo-v1" ? ["allo-v1"] : [],
     });
 
@@ -35,7 +31,7 @@ export async function listPrograms(
     const programs: Program[] = [];
 
     for (const program of programsRes.programs) {
-      const chain = getChainById(program.chainId);
+      const chain = getChainById(chainId);
       programs.push({
         id: program.id,
         metadata: program.metadata,
@@ -44,14 +40,12 @@ export async function listPrograms(
         ),
         tags: program.tags,
         chain: {
-          id: program.chainId,
+          id: chainId,
           name: chain.prettyName,
           logo: stringToBlobUrl(chain.icon),
         },
         createdByAddress: program.createdByAddress,
         roles: program.roles,
-        qfRoundsCount: program.qfRounds?.length || 0,
-        dgRoundsCount: program.dgRounds?.length || 0,
       });
     }
     return programs;
@@ -68,6 +62,7 @@ export async function getProgramById(
   chainId: number,
   dataLayer: DataLayer
 ): Promise<Program | null> {
+
   // fetch program from indexer
   const { program: program } = await dataLayer.getProgramById({
     programId,

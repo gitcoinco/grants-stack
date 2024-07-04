@@ -105,7 +105,6 @@ function indexerV2RoundToRound(round: RoundForManager): Round {
 
   return {
     id: round.id,
-    strategyName: round.strategyName,
     chainId: round.chainId,
     roundMetadata: round.roundMetadata as Round["roundMetadata"],
     applicationMetadata:
@@ -157,23 +156,6 @@ export async function listRounds(args: {
     .getRoundsForManager({
       chainId: chainId,
       programId,
-    })
-    .then((rounds) => rounds.map(indexerV2RoundToRound));
-
-  return { rounds };
-}
-
-export async function listRoundsByAddress(args: {
-  chainIds: number[];
-  dataLayer: DataLayer;
-  address: string;
-}): Promise<{ rounds: Round[] }> {
-  const { chainIds, dataLayer, address } = args;
-
-  const rounds = await dataLayer
-    .getRoundsForManagersByAddress({
-      chainIds,
-      address,
     })
     .then((rounds) => rounds.map(indexerV2RoundToRound));
 

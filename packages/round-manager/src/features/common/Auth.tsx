@@ -1,10 +1,11 @@
 import { Outlet } from "react-router-dom";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { Spinner } from "./Spinner";
+import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
+import { ReactComponent as LandingLogo } from "../../assets/landing/logo.svg";
 import Footer from "common/src/components/Footer";
 import Navbar from "./Navbar";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
 
 /**
  * Component for protecting child routes that require web3 wallet instance.
@@ -22,33 +23,36 @@ export default function Auth() {
     provider,
   };
 
-  // todo: add background image
   return !isConnected ? (
-    <div className="flex flex-col min-h-screen">
-      <LandingBanner className="absolute inset-0 w-full h-full object-cover z-[-1]" />
-      <Navbar programCta={false} />
-      <main className="flex-grow pt-4 container mx-auto">
+    <div>
+      <Navbar programCta={false} alloVersionSwitcherVisible={false} />
+      <main className="pt-4">
         {isConnecting ? (
-          <Spinner text="Logging you in..." />
+          <Spinner text="Connecting Wallet" />
         ) : (
-          <div className="flex flex-col bg-transparent">
-            <div className="my-[15rem] sm:ml-4 md:ml-8 lg:ml-20">
-              <span className="mb-6 text-6xl">Fund the future.</span>
-              <p className="text-2xl mt-2 mb-6 text-grey-400">
-                Customize your own grant rounds to support
-                <br />
-                innovative projects and streamline fund allocation.
-              </p>
-              <ConnectButton label="Log In" />
+          <div className="grid grid-rows-3 grid-flow-col bg-white">
+            <div className="row-span-2"></div>
+            <div className="row-span-5">
+              <div className="my-[15rem]">
+                <LandingLogo className="block w-auto mb-6 ml-2"></LandingLogo>
+                <h1 className="mb-6">Manager</h1>
+                <p className="text-2xl mt-2 mb-6 text-grey-400">
+                  As a round operator you can manage high-impact
+                  <br />
+                  grant programs and distribute funds across different
+                  <br />
+                  rounds and voting mechanisms.
+                </p>
+                <ConnectButton />
+              </div>
+            </div>
+            <div className="row-span-5">
+              <LandingBanner className="align-middle float-right"></LandingBanner>
             </div>
           </div>
         )}
       </main>
-      <div className="w-full bg-transparent">
-        <div className="container mx-auto">
-          <Footer />
-        </div>
-      </div>
+      <Footer />
     </div>
   ) : (
     <Outlet context={data} />

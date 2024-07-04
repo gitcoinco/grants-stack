@@ -124,8 +124,6 @@ export default function ViewRound() {
     }
   }, [roundId, alloVersion, isAfterRoundEndDate]);
 
-  console.log("round", round, "chainId", chainId, "roundId", roundId);
-
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
   ) : (
@@ -384,8 +382,6 @@ function RoundPage(props: {
     : round.roundEndTime;
 
   const chain = getChainById(chainId);
-
-  console.log("round", round, "chainId", chainId, "roundId", roundId);
 
   return (
     <>

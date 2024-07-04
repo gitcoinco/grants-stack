@@ -109,7 +109,7 @@ export default function QuadraticFundingForm(props: QuadraticFundingFormProps) {
       canVote: false,
       redstoneTokenId: "",
     },
-    ...getPayoutTokens(chainId as number).filter(
+    ...getPayoutTokens(chainId!).filter(
       (token) => token.address.toLowerCase() !== NATIVE.toLowerCase()
     ),
   ];

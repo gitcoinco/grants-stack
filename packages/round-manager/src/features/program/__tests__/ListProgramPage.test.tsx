@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { makeProgramData, renderWithProgramContext } from "../../../test-utils";
 import { ProgressStatus } from "../../api/types";
-import ListProgramPage from "../ProgramListPage";
+import ListProgramPage from "../ListProgramPage";
 
 jest.mock("../../common/Auth", () => ({
   useWallet: () => ({
@@ -27,12 +27,12 @@ jest.mock("data-layer", () => ({
   }),
   fetchProgramsByAddress: jest.fn(),
   listPrograms: jest.fn(),
-  type: {
-    RoundCategory: {
-      QuadraticFunding: 0,
-      Direct: 1,
-    },
-  },
+  // type: {
+  //   RoundCategory: {
+  //     QuadraticFunding: 0,
+  //     Direct: 1,
+  //   },
+  // },
 }));
 
 describe("<ListProgramPage />", () => {

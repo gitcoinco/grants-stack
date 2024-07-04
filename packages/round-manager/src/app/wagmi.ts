@@ -7,7 +7,7 @@ import { providers } from "ethers";
 import { type Account, type Chain, type Client, type Transport } from "viem";
 import { Connector } from "wagmi";
 
-export const allChains: RChain[] =
+const allChains: RChain[] =
   process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
 
 /* TODO: remove hardcoded value once we have environment variables validation */

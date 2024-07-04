@@ -47,10 +47,11 @@ import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import {
   RoundName,
+  ViewGrantsExplorerButton,
+  ApplicationOpenDateRange,
   RoundOpenDateRange,
   RoundBadgeStatus,
   isDirectRound,
-  ApplicationOpenDateRange,
 } from "./ViewRoundPage";
 
 import {
@@ -68,7 +69,6 @@ import moment from "moment";
 import ApplicationDirectPayout from "./ApplicationDirectPayout";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import { useAccount } from "wagmi";
-import { ViewGrantsExplorerButton } from "../common/ViewGrantsExplorerButton";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
@@ -107,13 +107,8 @@ export default function ViewApplicationPage() {
     twitter: VerifiedCredentialState.PENDING,
   });
 
-  const { chainId, roundId, id } = useParams() as {
-    chainId?: string;
-    roundId: string;
-    id: string;
-  };
-  const { chain, address } = useAccount();
-  const roundChainId = chainId ? Number(chainId) : chain?.id;
+  const { roundId, id } = useParams() as { roundId: string; id: string };
+  const { chainId, address } = useAccount();
 
   const { data: applications, isLoading } = useApplicationsByRoundId(roundId!);
   const filteredApplication = applications?.filter((a) => a.id == id) || [];
@@ -194,9 +189,9 @@ export default function ViewApplicationPage() {
       };
       verify();
     }
-  }, [application, application?.project?.owners, isLoading, verifiedProviders]);
+  }, [application, application?.project?.owners, isLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { round } = useRoundById(roundChainId!, roundId);
+  const { round } = useRoundById(roundId);
   const allo = useAllo();
 
   const handleReview = async () => {
@@ -324,7 +319,7 @@ export default function ViewApplicationPage() {
               const encryptedString: Blob = await response.blob();
 
               const lit = new Lit({
-                chainId: Number(chainId!),
+                chainId: chainId!,
                 contract: roundId.startsWith("0x")
                   ? roundId
                   : round?.payoutStrategy.id ?? "",
@@ -378,10 +373,10 @@ export default function ViewApplicationPage() {
           status === "done" || status === "approved"
             ? "bg-teal-500 border-teal-500"
             : status === "current"
-              ? "border-violet-500"
-              : status === "rejected"
-                ? "bg-red-500 border-red-500"
-                : ""
+            ? "border-violet-500"
+            : status === "rejected"
+            ? "bg-red-500 border-red-500"
+            : ""
         }
         `}
         >
@@ -416,8 +411,8 @@ export default function ViewApplicationPage() {
               status === "done"
                 ? "bg-teal-500"
                 : status === "rejected"
-                  ? "bg-red-500"
-                  : "bg-grey-200"
+                ? "bg-red-500"
+                : "bg-grey-200"
             }`}
             style={{
               transform: "rotate(180deg)",
@@ -529,10 +524,10 @@ export default function ViewApplicationPage() {
               </div>
             )}
             <div className="flex flex-row flex-wrap relative">
-              {round && <ApplicationOpenDateRange round={round} />}
-              {round && !isDirectRound(round) && (
+              {round && <ApplicationOpenDateRange round={round} /> }
+              {round && !isDirectRound(round) &&
                 <RoundOpenDateRange round={round} />
-              )}
+              }
               <div className="absolute right-0">
                 <ViewGrantsExplorerButton
                   iconStyle="h-4 w-4"

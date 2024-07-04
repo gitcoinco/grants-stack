@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { faker } from "@faker-js/faker";
-// import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useParams } from "react-router-dom";
 import { useDisconnect, useSwitchChain } from "wagmi";
 import { useRound, useRoundMatchingFunds } from "../../../hooks";
@@ -8,13 +8,13 @@ import {
   makeApprovedProjectData,
   makeQFDistribution,
   makeRoundData,
-  // wrapWithBulkUpdateGrantApplicationContext,
-  // wrapWithFinalizeRoundContext,
-  // wrapWithReadProgramContext,
-  // wrapWithRoundContext,
+  wrapWithBulkUpdateGrantApplicationContext,
+  wrapWithFinalizeRoundContext,
+  wrapWithReadProgramContext,
+  wrapWithRoundContext,
 } from "../../../test-utils";
-import { Round } from "../../api/types";
-// import ViewRoundPage from "../ViewRoundPage";
+import { ProgressStatus, Round } from "../../api/types";
+import ViewRoundPage from "../ViewRoundPage";
 
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
@@ -65,6 +65,7 @@ jest.mock("data-layer", () => ({
   ...jest.requireActual("data-layer"),
   useDataLayer: () => ({}),
 }));
+
 
 jest.mock("../../../hooks", () => ({
   ...jest.requireActual("../../../hooks"),
@@ -157,31 +158,29 @@ describe("View Round Results", () => {
   });
 
   it("View Round Results before distribution data is finalized to contract", async () => {
-    expect(true).toBe(true);
-    //   render(
-    //     wrapWithBulkUpdateGrantApplicationContext(
-    //       wrapWithReadProgramContext(
-    //         wrapWithFinalizeRoundContext(
-    //           wrapWithRoundContext(<ViewRoundPage />, {
-    //             data: [mockRoundData],
-    //             fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-    //           })
-    //         )
-    //       )
-    //     )
-    //   );
-    // act(async () => {
-    //   const roundResultsTab = await screen.getByTestId("round-results");
-    //   fireEvent.click(roundResultsTab);
-    //   const matchStatsTitle = await screen.findByTestId("match-stats-title");
-    //   expect(matchStatsTitle).toBeInTheDocument();
-    //   const matchStatsTable = await screen.findByTestId("match-stats-table");
-    //   expect(matchStatsTable).toBeInTheDocument();
-    //   const finalizeResultsButton = await screen.findByTestId(
-    //     "finalize-results-button"
-    //   );
-    //
-    //   expect(finalizeResultsButton).toBeInTheDocument();
-    // });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithFinalizeRoundContext(
+            wrapWithRoundContext(<ViewRoundPage />, {
+              data: [mockRoundData],
+              fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+            })
+          )
+        )
+      )
+    );
+    act(async () => {
+      const roundResultsTab = await screen.getByTestId("round-results");
+      fireEvent.click(roundResultsTab);
+      const matchStatsTitle = await screen.findByTestId("match-stats-title");
+      expect(matchStatsTitle).toBeInTheDocument();
+      const matchStatsTable = await screen.findByTestId("match-stats-table");
+      expect(matchStatsTable).toBeInTheDocument();
+      const finalizeResultsButton = await screen.findByTestId(
+        "finalize-results-button"
+      );
+      expect(finalizeResultsButton).toBeInTheDocument();
+    });
   });
 });

@@ -1,10 +1,10 @@
 import Discord from "../icons/Discord";
 import Github from "../icons/Github";
 import Gitbook from "../icons/Gitbook";
+// import { getConfig } from "../config";
 import ManagerIcon from "../icons/ManagerIcon";
 import BuilderIcon from "../icons/BuilderIcon";
 
-// Note: Footer Navigation items
 const navigation = [
   // note: the Manager and Builder icons are white... so they are not visible on the white background of the footer
   {
@@ -39,18 +39,21 @@ const navigation = [
   },
 ];
 
-const COMMIT_HASH = process.env.REACT_APP_GIT_SHA ?? "localhost";
+// note: not sure if we need this anymore? We could keep it as a hidden value for debugging purposes.
+// const config = getConfig();
+// const COMMIT_HASH = process.env.REACT_APP_GIT_SHA ?? "localhost";
+// const ALLO_VERSION = config.allo.version;
 
 export default function Footer() {
   return (
-    <footer className="py-3 px-4 sm:px-6 lg:px-20">
-      <div className="flex flex-row-reverse justify-between py-6 overflow-hidden">
+    <footer className="bg-transparent py-3 px-4 sm:px-6 lg:px-20 max-w-screen-2xl mx-auto">
+      <div className="flex flex-row-reverse justify-between py-12 overflow-hidden">
         <div className="flex justify-around space-x-4 md:order-1">
           {navigation.map((item) => (
             <a
               key={item.name}
               href={item.href}
-              className="text-gray-500 hover:text-gray-500"
+              className="text-gray-400 hover:text-gray-500"
               data-testid={item.testid}
             >
               <span className="sr-only hidden">{item.name}</span>
@@ -59,7 +62,6 @@ export default function Footer() {
           ))}
         </div>
       </div>
-      <div className="hidden">{COMMIT_HASH}</div>
     </footer>
   );
 }

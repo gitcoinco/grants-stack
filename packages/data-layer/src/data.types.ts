@@ -211,8 +211,6 @@ export type v2Project = {
    * The linked chains to the canonical project
    */
   linkedChains?: number[];
-  qfRounds? : string[];
-  dgRounds? : string[];
 };
 
 /**

@@ -55,7 +55,6 @@ import {
   getApprovedApplicationsByProjectIds,
   getPaginatedProjects,
   getProjectsBySearchTerm,
-  getRoundsForManagerByAddress,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -144,16 +143,16 @@ export class DataLayer {
    */
   async getProgramsByUser({
     address,
-    chainIds,
+    chainId,
     tags,
   }: {
     address: string;
-    chainIds: number[];
+    chainId: number;
     tags: string[];
   }): Promise<{ programs: Program[] }> {
     const requestVariables = {
       userAddress: address.toLowerCase(),
-      chainIds,
+      chainId,
       tags: ["program", ...tags],
     };
 
@@ -659,22 +658,6 @@ export class DataLayer {
       this.gsIndexerEndpoint,
       getRoundsForManager,
       args,
-    );
-
-    return response.rounds;
-  }
-
-  async getRoundsForManagersByAddress({
-    address,
-    chainIds,
-  }: {
-    address: string;
-    chainIds: number[];
-  }): Promise<RoundForManager[]> {
-    const response: { rounds: RoundForManager[] } = await request(
-      this.gsIndexerEndpoint,
-      getRoundsForManagerByAddress,
-      { chainIds, address },
     );
 
     return response.rounds;

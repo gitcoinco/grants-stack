@@ -13,20 +13,31 @@ import {
   UserGroupIcon,
   UserAddIcon,
 } from "@heroicons/react/solid";
+import { Button } from "common/src/styles";
 import { Link, useParams } from "react-router-dom";
+import tw from "tailwind-styled-components";
+import { ReactComponent as GrantExplorerLogo } from "../../assets/grantexplorer-icon.svg";
 import { useRoundById } from "../../context/round/RoundContext";
 import { useDebugMode } from "../../hooks";
-import { ProgressStatus, Round } from "../api/types";
+import {
+  ApplicationStatus,
+  GrantApplication,
+  ProgressStatus,
+  Round,
+} from "../api/types";
 import AccessDenied from "../common/AccessDenied";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
+import { Spinner } from "../common/Spinner";
 import {
   getPayoutRoundDescription,
-  prettyDates2,
+  horizontalTabStyles,
   verticalTabStyles,
 } from "../common/Utils";
+import ApplicationsApproved from "./ApplicationsApproved";
+import ApplicationsRejected from "./ApplicationsRejected";
 import FundContract from "./FundContract";
 import ReclaimFunds from "./ReclaimFunds";
 import ViewFundGrantees from "./ViewFundGrantees";
@@ -35,16 +46,14 @@ import ViewRoundSettings from "./ViewRoundSettings";
 import ViewRoundStats from "./ViewRoundStats";
 import { RoundDates, parseRoundDates } from "../common/parseRoundDates";
 import moment from "moment";
-import { getChainById, getRoundStrategyType, stringToBlobUrl } from "common";
+import ApplicationsToApproveReject from "./ApplicationsToApproveReject";
+import ApplicationsToReview from "./ApplicationsToReview";
+import { getRoundStrategyType } from "common";
 import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import AlloV1 from "common/src/icons/AlloV1";
+import AlloV2 from "common/src/icons/AlloV2";
 import ViewManageTeam from "./ViewManageTeam";
-import GrantApplications from "./GrantApplications";
-import { ViewGrantsExplorerButton } from "../common/ViewGrantsExplorerButton";
-import { useEffect } from "react";
-import { useAccount, useSwitchChain } from "wagmi";
-
-const builderLink = process.env.REACT_APP_BUILDER_URL;
+import { useAccount } from "wagmi";
 
 export const isDirectRound = (round: Round | undefined) => {
   return (
@@ -58,46 +67,29 @@ export const isDirectRound = (round: Round | undefined) => {
 export default function ViewRoundPage() {
   datadogLogs.logger.info("====> Route: /round/:id");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
-  const { switchChain } = useSwitchChain();
 
-  const { chainId, id } = useParams() as { chainId?: string; id: string };
-  const { address, chain, connector } = useAccount();
+  const { id } = useParams() as { id: string };
+  const { address, chainId } = useAccount();
 
-  const roundChainId = chainId ? Number(chainId) : chain?.id;
-  const { round, fetchRoundStatus, error } = useRoundById(
-    roundChainId as number,
-    id.toLowerCase()
-  );
-
-  console.log("round", round);
-
+  const { round, fetchRoundStatus, error } = useRoundById(id.toLowerCase());
   const isRoundFetched =
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
+
   const { data: applications } = useApplicationsByRoundId(id);
   const roundStrategyType = round?.payoutStrategy?.strategyName
     ? getRoundStrategyType(round?.payoutStrategy?.strategyName)
     : null;
+
   const debugModeEnabled = useDebugMode();
   const hasAccess =
     debugModeEnabled ||
     (round
       ? round?.roles?.some(
-          (role: { address: string }) =>
-            role.address.toLowerCase() === address?.toLowerCase()
+          (role) => role.address.toLowerCase() === address?.toLowerCase()
         )
       : true);
+
   const roundNotFound = fetchRoundStatus === ProgressStatus.IS_ERROR;
-
-  useEffect(() => {
-    if (roundChainId !== chain?.id) {
-      switchChain({ connector, chainId: roundChainId as number });
-    }
-  }, [chain?.id, roundChainId, connector, switchChain]);
-
-  const strategyName = round?.payoutStrategy.strategyName;
-  console.log("strategyName", strategyName);
-  const badgeColor =
-    strategyName === "MERKLE" ? "gradient-border-qf" : "gradient-border-direct";
 
   return (
     <>
@@ -105,84 +97,61 @@ export default function ViewRoundPage() {
       {!hasAccess && <AccessDenied />}
       {round && hasAccess && (
         <>
-          <Navbar />
-          <div className="flex flex-col items-center bg-gray-50">
-            <header className="w-full bg-grey-50">
-              <div className="w-full max-w-screen-2xl mx-auto px-8 py-6">
-                {/* Breadcrumb */}
-                <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">
-                  <Link to={`/`}>
-                    <span>{"My Programs"}</span>
-                  </Link>
-                  <ChevronRightIcon className="h-6 w-6" />
-                  <Link
-                    to={`/chain/${roundChainId}/program/${round.roundMetadata.programContractAddress}`}
-                  >
-                    <span>{"Program Details"}</span>
-                  </Link>
-                  <ChevronRightIcon className="h-6 w-6" />
-                  <Link to={`/round/${id}`}>
-                    <span>{"Round Details"}</span>
-                  </Link>
-                  <RoundBadgeStatus round={round} />
-                </div>
-                {/* Round type badge */}
-                {getPayoutRoundDescription(
-                  round.payoutStrategy.strategyName || ""
-                ) && (
-                  <div
-                    className={`text-sm text-grey-900 h-[20px] inline-flex flex-col justify-center ${badgeColor} px-3 my-2`}
-                  >
-                    {getPayoutRoundDescription(
-                      round.payoutStrategy.strategyName || ""
-                    )}
-                  </div>
-                )}
-                <div className="flex flex-row items-center">
-                  {/* Chain icon (allo v1 badge if v1) & Round name */}
-                  <img
-                    src={stringToBlobUrl(
-                      getChainById(roundChainId as number).icon
-                    )}
-                    alt="Chain"
-                    className="rounded-full w-6 h-6 mr-2 mt-2"
-                  />
-                  <RoundName round={round} />
-                  {round?.tags?.includes("allo-v1") && (
-                    <AlloV1 className="mt-2 ml-2" color="black" />
+          <Navbar alloVersionSwitcherVisible={false} />
+          <div className="flex flex-col w-screen mx-0">
+            <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
+              <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">
+                <Link to={`/`}>
+                  <span>{"My Programs"}</span>
+                </Link>
+                <ChevronRightIcon className="h-6 w-6" />
+                <Link to={`/program/${round?.ownedBy}`}>
+                  <span>{"Program Details"}</span>
+                </Link>
+                <ChevronRightIcon className="h-6 w-6" />
+                <Link to={`/round/${id}`}>
+                  <span>{"Round Details"}</span>
+                </Link>
+                <RoundBadgeStatus round={round} />
+              </div>
+              {/* Round type */}
+              {getPayoutRoundDescription(
+                round.payoutStrategy.strategyName || ""
+              ) && (
+                <div
+                  className={`text-sm text-gray-900 h-[20px] inline-flex flex-col justify-center bg-grey-100 px-3 mt-4`}
+                  style={{ borderRadius: "20px" }}
+                >
+                  {getPayoutRoundDescription(
+                    round.payoutStrategy.strategyName || ""
                   )}
                 </div>
-                {/* Round open date range & buttons */}
-                <div className="flex flex-row items-center justify-between mt-4">
-                  <div className="flex flex-row justify-start">
-                    <RoundOpenDateRange round={round} />
-                  </div>
-                  <div className="flex flex-row justify-end">
-                    <div className="mr-4">
-                      <CopyToClipboardButton
-                        textToCopy={`${builderLink}/#/chains/${round.chainId}/rounds/${round.id}`}
-                        styles="text-xs font-mono p-2"
-                        iconStyle="h-4 w-4 mr-2"
-                      />
-                    </div>
-                    <div className="">
-                      <ViewGrantsExplorerButton
-                        iconStyle="h-4 w-4"
-                        chainId={`${chain?.id}`}
-                        roundId={round.id}
-                      />
-                    </div>
-                  </div>
+              )}
+              <div className="flex flex-row mb-1 items-center">
+                <RoundName round={round} />
+              </div>
+              <div className="mb-3">
+                {round?.tags?.includes("allo-v1") && <AlloV1 color="black" />}
+                {round?.tags?.includes("allo-v2") && <AlloV2 color="black" />}
+              </div>
+              <div className="flex flex-row flex-wrap relative gap-2 md:gap-8 xl:gap-36 pr-44">
+                <ApplicationOpenDateRange round={round} />
+                {!isDirectRound(round) && <RoundOpenDateRange round={round} />}
+                <div className="absolute right-0">
+                  <ViewGrantsExplorerButton
+                    iconStyle="h-4 w-4"
+                    chainId={`${chainId}`}
+                    roundId={round.id}
+                  />
                 </div>
               </div>
             </header>
-            {/* Main content & tab */}
-            <main className="w-full max-w-screen-2xl mx-auto px-8 py-6">
+            <main className="px-3 md:px-20 pt-6">
               <Tab.Group vertical>
-                <div className="flex font-semibold">
-                  <div className="border-r border-r-grey-100 md:pr-12">
+                <div className="flex">
+                  <div className="border-r md:pr-12 pr-4">
                     <Tab.List
-                      className="flex flex-col h-max mr-20"
+                      className="flex flex-col h-max"
                       data-testid="side-nav-bar"
                     >
                       <Tab
@@ -386,7 +355,7 @@ export default function ViewRoundPage() {
                         applications={applications}
                         isRoundsFetched={isRoundFetched}
                         fetchRoundStatus={fetchRoundStatus}
-                        chainId={`${chain?.id}`}
+                        chainId={`${chainId}`}
                         roundId={id}
                       />
                     </Tab.Panel>
@@ -396,15 +365,12 @@ export default function ViewRoundPage() {
                       </Tab.Panel>
                     )}
                     <Tab.Panel>
-                      <ViewRoundSettings
-                        chainId={roundChainId as number}
-                        id={round?.id}
-                      />
+                      <ViewRoundSettings id={round?.id} />
                     </Tab.Panel>
                     <Tab.Panel>
                       <ViewManageTeam
                         round={round}
-                        userAddress={address?.toString() ?? "0x"}
+                        userAddress={address!.toString()}
                       />
                     </Tab.Panel>
                     {!isDirectRound(round) && (
@@ -427,7 +393,7 @@ export default function ViewRoundPage() {
                         <Tab.Panel>
                           <ReclaimFunds
                             round={round}
-                            chainId={`${chain?.id}`}
+                            chainId={`${chainId}`}
                             roundId={id}
                           />
                         </Tab.Panel>
@@ -436,23 +402,224 @@ export default function ViewRoundPage() {
                   </Tab.Panels>
                 </div>
               </Tab.Group>
-              <div className="w-full">
-                <Footer />
-              </div>
             </main>
           </div>
+          <Footer />
         </>
       )}
     </>
   );
 }
 
+function GrantApplications(props: {
+  isDirectRound?: boolean;
+  applications: GrantApplication[] | undefined;
+  isRoundsFetched: boolean;
+  fetchRoundStatus: ProgressStatus;
+  chainId: string;
+  roundId: string | undefined;
+}) {
+  const pendingApplications = (props.applications || [])
+    .filter((a) => a.status === ApplicationStatus.PENDING.toString())
+    .filter((a) => (props.isDirectRound ? !a.inReview : true));
+
+  const approvedApplications = (props.applications || []).filter(
+    (a) => a.status === ApplicationStatus.APPROVED.toString()
+  );
+  const rejectedApplications = (props.applications || []).filter(
+    (a) => a.status === ApplicationStatus.REJECTED.toString()
+  );
+  const inReviewApplications = (props.applications || []).filter((a) =>
+    props.isDirectRound ? a.inReview : true
+  );
+
+  const builderLink = process.env.REACT_APP_BUILDER_URL;
+
+  const TabApplicationCounter = tw.div`
+  rounded-md
+  ml-2
+  w-8
+  h-5
+  float-right
+  font-sm
+  font-normal
+`;
+
+  return (
+    <div>
+      {props.isRoundsFetched && (
+        <div>
+          <div>
+            <Tab.Group>
+              <div className="justify-end grow relative">
+                <Tab.List className="border-b mb-6 flex items-center justify-between">
+                  <div className="space-x-8">
+                    <Tab
+                      className={({ selected }) =>
+                        horizontalTabStyles(selected)
+                      }
+                    >
+                      {({ selected }) => (
+                        <div className={selected ? "text-violet-500" : ""}>
+                          Received
+                          <TabApplicationCounter
+                            className={
+                              selected ? "bg-violet-100" : "bg-grey-150"
+                            }
+                            data-testid="received-application-counter"
+                          >
+                            {pendingApplications?.length || 0}
+                          </TabApplicationCounter>
+                        </div>
+                      )}
+                    </Tab>
+                    {props.isDirectRound && (
+                      <Tab
+                        className={({ selected }) =>
+                          horizontalTabStyles(selected)
+                        }
+                      >
+                        {({ selected }) => (
+                          <div className={selected ? "text-violet-500" : ""}>
+                            In Review
+                            <TabApplicationCounter
+                              className={
+                                selected ? "bg-violet-100" : "bg-grey-150"
+                              }
+                              data-testid="received-application-counter"
+                            >
+                              {inReviewApplications?.length || 0}
+                            </TabApplicationCounter>
+                          </div>
+                        )}
+                      </Tab>
+                    )}
+                    <Tab
+                      className={({ selected }) =>
+                        horizontalTabStyles(selected)
+                      }
+                    >
+                      {({ selected }) => (
+                        <div className={selected ? "text-violet-500" : ""}>
+                          Approved
+                          <TabApplicationCounter
+                            className={
+                              selected ? "bg-violet-100" : "bg-grey-150"
+                            }
+                            data-testid="approved-application-counter"
+                          >
+                            {approvedApplications?.length || 0}
+                          </TabApplicationCounter>
+                        </div>
+                      )}
+                    </Tab>
+                    <Tab
+                      className={({ selected }) =>
+                        horizontalTabStyles(selected)
+                      }
+                    >
+                      {({ selected }) => (
+                        <div className={selected ? "text-violet-500" : ""}>
+                          Rejected
+                          <TabApplicationCounter
+                            className={
+                              selected ? "bg-violet-100" : "bg-grey-150"
+                            }
+                            data-testid="rejected-application-counter"
+                          >
+                            {rejectedApplications?.length || 0}
+                          </TabApplicationCounter>
+                        </div>
+                      )}
+                    </Tab>
+                  </div>
+                </Tab.List>
+                <div className="text-right absolute ml-24 bottom-4 left-3/4">
+                  <CopyToClipboardButton
+                    textToCopy={`${builderLink}/#/chains/${props.chainId}/rounds/${props.roundId}`}
+                    styles="text-xs p-2"
+                    iconStyle="h-4 w-4 mr-1"
+                  />
+                </div>
+              </div>
+              <Tab.Panels>
+                <Tab.Panel>
+                  {props.isDirectRound ? (
+                    <ApplicationsToReview />
+                  ) : (
+                    <ApplicationsToApproveReject
+                      isDirectRound={Boolean(props.isDirectRound)}
+                    />
+                  )}
+                </Tab.Panel>
+                {props.isDirectRound && (
+                  <Tab.Panel>
+                    <ApplicationsToApproveReject
+                      isDirectRound={Boolean(props.isDirectRound)}
+                    />
+                  </Tab.Panel>
+                )}
+                <Tab.Panel>
+                  <ApplicationsApproved />
+                </Tab.Panel>
+                <Tab.Panel>
+                  <ApplicationsRejected />
+                </Tab.Panel>
+              </Tab.Panels>
+            </Tab.Group>
+          </div>
+        </div>
+      )}
+      {props.fetchRoundStatus == ProgressStatus.IN_PROGRESS && (
+        <Spinner text="We're fetching your Round." />
+      )}
+    </div>
+  );
+}
+
+type ViewGrantsExplorerButtonType = {
+  styles?: string;
+  iconStyle?: string;
+  chainId: string;
+  roundId: string | undefined;
+};
+
 export function RoundName(props: { round?: Round }) {
   return (
-    <h1 className="text-3xl sm:text-[32px] my-1 -mb-2">
+    <h1 className="text-3xl sm:text-[32px] my-2">
       {props.round?.roundMetadata?.name || "Round Details"}
     </h1>
   );
+}
+
+export function ViewGrantsExplorerButton(props: ViewGrantsExplorerButtonType) {
+  const { chainId, roundId } = props;
+
+  return (
+    <Button
+      type="button"
+      className={`inline-flex items-center bg-white text-xs border border-grey-100 text-grey-500 py-1.5 px-2.5 w-48 h-7 drop-shadow-sm justify-center ${props.styles}`}
+      onClick={() => {
+        redirectToGrantExplorer(chainId, roundId);
+      }}
+      data-testid="round-explorer"
+    >
+      <GrantExplorerLogo className={props.iconStyle} aria-hidden="true" />
+      View on Explorer
+    </Button>
+  );
+}
+
+function redirectToGrantExplorer(chainId: string, roundId: string | undefined) {
+  const isAlloV1 = roundId?.startsWith("0x");
+  const explorerBaseUrl = isAlloV1
+    ? "https://explorer-v1.gitcoin.co"
+    : process.env.REACT_APP_GRANT_EXPLORER;
+
+  const url = `${explorerBaseUrl}/#/round/${chainId}/${roundId}`;
+  setTimeout(() => {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }, 1000);
 }
 
 export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
@@ -488,27 +655,28 @@ export function ApplicationOpenDateRange({ round }: { round: RoundDates }) {
 }
 
 export function RoundOpenDateRange({ round }: { round: RoundDates }) {
-  const dates = prettyDates2(round.roundStartTime, round.roundEndTime);
-
+  const res = parseRoundDates(round);
   return (
-    <div className="flex flex-row text-sm text-grey-400">
-      <ClockIcon className="h-5 w-5 text-grey-500" />
-      <span className="mx-2">Round:</span>
-      <span className="text-grey-500">{dates.start.date}</span>
-      <span className="mx-1">
-        {dates.start.time} {dates.start.timezone}
-      </span>
-      {" - "}
-      {dates.end && (
-        <>
-          <span className="text-grey-500 ml-1">
-            {dates.end.date ?? dates.end}
+    <div className="flex gap-2 text-sm">
+      <ClockIcon className="h-5 w-5 text-grey-400" />
+      <span className="text-grey-400 mr-2">Round:</span>
+      <div className="flex flex-row gap-2">
+        <p className="flex flex-col">
+          <span>{res.round.local_iso.start}</span>
+          <span className="text-grey-400 text-xs">{res.round.local.start}</span>
+        </p>
+        <p className="flex flex-col">
+          <span className="mx-1">-</span>
+        </p>
+        <p className="flex flex-col">
+          <span className="[&>*]:flex [&>*]:flex-col">
+            {res.round.local_iso.end}
           </span>
-          <span className="mx-1">
-            {dates.end.time ?? ""} {dates.end.timezone ?? ""}
-          </span>
-        </>
-      )}
+          {res.round.local.end && (
+            <span className="text-grey-400 text-xs">{res.round.local.end}</span>
+          )}
+        </p>
+      </div>
     </div>
   );
 }
@@ -535,7 +703,7 @@ export function RoundBadgeStatus({ round }: { round: Round }) {
           borderRadius: "24px",
           lineHeight: "1.2",
         }}
-        className={`text-sm h-[24px] inline-flex flex-col justify-center px-4 mt-2 ml-auto bg-blue-100 text-black font-normal`}
+        className={`text-sm h-[24px] inline-flex flex-col justify-center px-4 ml-auto bg-violet-500 text-white font-normal`}
       >
         Applications in progress
       </div>

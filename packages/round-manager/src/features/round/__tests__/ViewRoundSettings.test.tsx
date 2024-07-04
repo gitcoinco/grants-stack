@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-// import {
-//   act,
-//   fireEvent,
-//   render,
-//   screen,
-//   waitFor,
-// } from "@testing-library/react";
-import { useParams } from "react-router-dom";
-// import { useAccount, useDisconnect } from "wagmi";
 import {
-  // makeDirectGrantRoundData,
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { useParams } from "react-router-dom";
+import { useAccount, useDisconnect } from "wagmi";
+import {
+  makeDirectGrantRoundData,
   makeRoundData,
-  // wrapWithBulkUpdateGrantApplicationContext,
-  // wrapWithReadProgramContext,
-  // wrapWithRoundContext,
+  wrapWithBulkUpdateGrantApplicationContext,
+  wrapWithReadProgramContext,
+  wrapWithRoundContext,
 } from "../../../test-utils";
-import { Round } from "../../api/types";
-// import ViewRoundPage from "../ViewRoundPage";
+import { ProgressStatus, Round } from "../../api/types";
+import ViewRoundPage from "../ViewRoundPage";
 
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
@@ -36,9 +36,6 @@ jest.mock("../../../app/wagmi", () => ({
   getEthersProvider: (chainId: number) => ({
     getNetwork: () => Promise.resolve({ network: { chainId } }),
     network: { chainId },
-  }),
-  useSwitchChain: () => ({
-    switchChain: jest.fn(),
   }),
 }));
 
@@ -91,7 +88,7 @@ jest.mock("data-layer", () => ({
 
 const mockRoundData: Round = makeRoundData();
 
-// const mockDirectGrantRoundData: Round = makeDirectGrantRoundData();
+const mockDirectGrantRoundData: Round = makeDirectGrantRoundData();
 
 describe("View Round", () => {
   beforeEach(() => {
@@ -102,239 +99,235 @@ describe("View Round", () => {
     });
   });
 
-  it("empty test", () => {
-    expect(true).toBe(true);
+  it("when edit is clicked, it enables the imputs for editing and shows the update round button and cancel button", () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
+        )
+      )
+    );
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const editButton = await screen.findByTestId("edit-round-button");
+      expect(editButton).toBeInTheDocument();
+      fireEvent.click(editButton);
+      const cancelButton = await screen.findByTestId("cancel-button");
+      expect(cancelButton).toBeInTheDocument();
+      const updateRoundButton = await screen.findByTestId(
+        "update-round-button"
+      );
+      expect(updateRoundButton).toBeInTheDocument();
+    });
   });
 
-  // it("when edit is clicked, it enables the imputs for editing and shows the update round button and cancel button", () => {
-  //   render(
-  //     wrapWithBulkUpdateGrantApplicationContext(
-  //       wrapWithReadProgramContext(
-  //         wrapWithRoundContext(<ViewRoundPage />, {
-  //           data: [mockRoundData],
-  //           fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-  //         }),
-  //         { programs: [] }
-  //       )
-  //     )
-  //   );
-  //   act(async () => {
-  //     const roundSettingsTab = await screen.findByTestId("round-settings");
-  //     expect(roundSettingsTab).toBeInTheDocument();
-  //     fireEvent.click(roundSettingsTab);
-  //     const editButton = await screen.findByTestId("edit-round-button");
-  //     expect(editButton).toBeInTheDocument();
-  //     fireEvent.click(editButton);
-  //     const cancelButton = await screen.findByTestId("cancel-button");
-  //     expect(cancelButton).toBeInTheDocument();
-  //     const updateRoundButton = await screen.findByTestId(
-  //       "update-round-button"
-  //     );
-  //     expect(updateRoundButton).toBeInTheDocument();
-  //   });
-  // });
+  it("when cancel is clicked, it disables the imputs for editing and hides the update round button and cancel button", async () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
+        )
+      )
+    );
 
-  // it("when cancel is clicked, it disables the imputs for editing and hides the update round button and cancel button", async () => {
-  //   render(
-  //     wrapWithBulkUpdateGrantApplicationContext(
-  //       wrapWithReadProgramContext(
-  //         wrapWithRoundContext(<ViewRoundPage />, {
-  //           data: [mockRoundData],
-  //           fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-  //         }),
-  //         { programs: [] }
-  //       )
-  //     )
-  //   );
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const editButton = await screen.findByTestId("edit-round-button");
+      expect(editButton).toBeInTheDocument();
+      fireEvent.click(editButton);
+      const cancelButton = await screen.findByTestId("cancel-button");
+      expect(cancelButton).toBeInTheDocument();
+      const updateRoundButton = await screen.findByTestId(
+        "update-round-button"
+      );
+      expect(updateRoundButton).toBeInTheDocument();
+      fireEvent.click(cancelButton);
+      expect(cancelButton).not.toBeInTheDocument();
+      expect(updateRoundButton).not.toBeInTheDocument();
+    });
+  });
 
-  //   act(async () => {
-  //     const roundSettingsTab = await screen.findByTestId("round-settings");
-  //     expect(roundSettingsTab).toBeInTheDocument();
-  //     fireEvent.click(roundSettingsTab);
-  //     const editButton = await screen.findByTestId("edit-round-button");
-  //     expect(editButton).toBeInTheDocument();
-  //     fireEvent.click(editButton);
-  //     const cancelButton = await screen.findByTestId("cancel-button");
-  //     expect(cancelButton).toBeInTheDocument();
-  //     const updateRoundButton = await screen.findByTestId(
-  //       "update-round-button"
-  //     );
-  //     expect(updateRoundButton).toBeInTheDocument();
-  //     fireEvent.click(cancelButton);
-  //     expect(cancelButton).not.toBeInTheDocument();
-  //     expect(updateRoundButton).not.toBeInTheDocument();
-  //   });
-  // });
+  it("when update round is clicked, it updates the round name", async () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
+        )
+      )
+    );
 
-  // it("when update round is clicked, it updates the round name", async () => {
-  //   render(
-  //     wrapWithBulkUpdateGrantApplicationContext(
-  //       wrapWithReadProgramContext(
-  //         wrapWithRoundContext(<ViewRoundPage />, {
-  //           data: [mockRoundData],
-  //           fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-  //         }),
-  //         { programs: [] }
-  //       )
-  //     )
-  //   );
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const editButton = await screen.findByTestId("edit-round-button");
+      expect(editButton).toBeInTheDocument();
+      fireEvent.click(editButton);
+      const cancelButton = await screen.findByTestId("cancel-button");
+      expect(cancelButton).toBeInTheDocument();
+      const updateRoundButton = await screen.findByTestId(
+        "update-round-button"
+      );
+      expect(updateRoundButton).toBeInTheDocument();
 
-  //   act(async () => {
-  //     const roundSettingsTab = await screen.findByTestId("round-settings");
-  //     expect(roundSettingsTab).toBeInTheDocument();
-  //     fireEvent.click(roundSettingsTab);
-  //     const editButton = await screen.findByTestId("edit-round-button");
-  //     expect(editButton).toBeInTheDocument();
-  //     fireEvent.click(editButton);
-  //     const cancelButton = await screen.findByTestId("cancel-button");
-  //     expect(cancelButton).toBeInTheDocument();
-  //     const updateRoundButton = await screen.findByTestId(
-  //       "update-round-button"
-  //     );
-  //     expect(updateRoundButton).toBeInTheDocument();
+      const roundNameInput = screen.queryByTestId("round-name-input");
+      expect(roundNameInput).toBeInTheDocument();
+      fireEvent.input(roundNameInput!, {
+        target: {
+          value: "new round name",
+        },
+      });
+      expect(roundNameInput).toHaveValue("new round name");
+      fireEvent.click(updateRoundButton);
 
-  //     const roundNameInput = screen.queryByTestId("round-name-input");
-  //     expect(roundNameInput).toBeInTheDocument();
-  //     fireEvent.input(roundNameInput!, {
-  //       target: {
-  //         value: "new round name",
-  //       },
-  //     });
-  //     expect(roundNameInput).toHaveValue("new round name");
-  //     fireEvent.click(updateRoundButton);
+      await waitFor(() => {
+        expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
+      });
+    });
+  });
 
-  //     await waitFor(() => {
-  //       expect(screen.getByTestId("confirm-modal")).toBeInTheDocument();
-  //     });
-  //   });
-  // });
+  it("adds a requirement successfully", async () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
+        )
+      )
+    );
 
-  // it("adds a requirement successfully", async () => {
-  //   render(
-  //     wrapWithBulkUpdateGrantApplicationContext(
-  //       wrapWithReadProgramContext(
-  //         wrapWithRoundContext(<ViewRoundPage />, {
-  //           data: [mockRoundData],
-  //           fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-  //         }),
-  //         { programs: [] }
-  //       )
-  //     )
-  //   );
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const editButton = await screen.findByTestId("edit-round-button");
+      expect(editButton).toBeInTheDocument();
+      fireEvent.click(editButton);
+    });
+  });
 
-  //   act(async () => {
-  //     const roundSettingsTab = await screen.findByTestId("round-settings");
-  //     expect(roundSettingsTab).toBeInTheDocument();
-  //     fireEvent.click(roundSettingsTab);
-  //     const editButton = await screen.findByTestId("edit-round-button");
-  //     expect(editButton).toBeInTheDocument();
-  //     fireEvent.click(editButton);
-  //   });
-  // });
+  it("removes a requirement successfully", async () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
+        )
+      )
+    );
 
-  // it("removes a requirement successfully", async () => {
-  //   render(
-  //     wrapWithBulkUpdateGrantApplicationContext(
-  //       wrapWithReadProgramContext(
-  //         wrapWithRoundContext(<ViewRoundPage />, {
-  //           data: [mockRoundData],
-  //           fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-  //         }),
-  //         { programs: [] }
-  //       )
-  //     )
-  //   );
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const editButton = await screen.findByTestId("edit-round-button");
+      expect(editButton).toBeInTheDocument();
+      fireEvent.click(editButton);
+    });
+  });
 
-  //   act(async () => {
-  //     const roundSettingsTab = await screen.findByTestId("round-settings");
-  //     expect(roundSettingsTab).toBeInTheDocument();
-  //     fireEvent.click(roundSettingsTab);
-  //     const editButton = await screen.findByTestId("edit-round-button");
-  //     expect(editButton).toBeInTheDocument();
-  //     fireEvent.click(editButton);
-  //   });
-  // });
+  it("round and application periods tab for quadratic funding round settings", async () => {
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
+        )
+      )
+    );
 
-  // it("round and application periods tab for quadratic funding round settings", async () => {
-  //   render(
-  //     wrapWithBulkUpdateGrantApplicationContext(
-  //       wrapWithReadProgramContext(
-  //         wrapWithRoundContext(<ViewRoundPage />, {
-  //           data: [mockRoundData],
-  //           fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-  //         }),
-  //         { programs: [] }
-  //       )
-  //     )
-  //   );
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const periodTab = await screen.findAllByText(
+        "Round & Application Period"
+      );
+      expect(periodTab.length).toBe(1);
+    });
+  });
 
-  //   act(async () => {
-  //     const roundSettingsTab = await screen.findByTestId("round-settings");
-  //     expect(roundSettingsTab).toBeInTheDocument();
-  //     fireEvent.click(roundSettingsTab);
-  //     const periodTab = await screen.findAllByText(
-  //       "Round & Application Period"
-  //     );
-  //     expect(periodTab.length).toBe(1);
-  //   });
-  // });
+  it("round period tab for direct grant round settings", async () => {
+    (useParams as jest.Mock).mockImplementation(() => {
+      return {
+        id: mockDirectGrantRoundData.id,
+      };
+    });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockDirectGrantRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
+        )
+      )
+    );
 
-  // it("round period tab for direct grant round settings", async () => {
-  //   (useParams as jest.Mock).mockImplementation(() => {
-  //     return {
-  //       id: mockDirectGrantRoundData.id,
-  //     };
-  //   });
-  //   render(
-  //     wrapWithBulkUpdateGrantApplicationContext(
-  //       wrapWithReadProgramContext(
-  //         wrapWithRoundContext(<ViewRoundPage />, {
-  //           data: [mockDirectGrantRoundData],
-  //           fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-  //         }),
-  //         { programs: [] }
-  //       )
-  //     )
-  //   );
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const periodTab = await screen.findAllByText("Round Period");
+      expect(periodTab.length).toBe(1);
+    });
+  });
 
-  //   act(async () => {
-  //     const roundSettingsTab = await screen.findByTestId("round-settings");
-  //     expect(roundSettingsTab).toBeInTheDocument();
-  //     fireEvent.click(roundSettingsTab);
-  //     const periodTab = await screen.findAllByText("Round Period");
-  //     expect(periodTab.length).toBe(1);
-  //   });
-  // });
+  it("round period tab for direct grant round settings does not displays application period inputs", async () => {
+    (useParams as jest.Mock).mockImplementation(() => {
+      return {
+        id: mockDirectGrantRoundData.id,
+      };
+    });
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockDirectGrantRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
+        )
+      )
+    );
 
-  // it("round period tab for direct grant round settings does not displays application period inputs", async () => {
-  //   (useParams as jest.Mock).mockImplementation(() => {
-  //     return {
-  //       id: mockDirectGrantRoundData.id,
-  //     };
-  //   });
-  //   render(
-  //     wrapWithBulkUpdateGrantApplicationContext(
-  //       wrapWithReadProgramContext(
-  //         wrapWithRoundContext(<ViewRoundPage />, {
-  //           data: [mockDirectGrantRoundData],
-  //           fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-  //         }),
-  //         { programs: [] }
-  //       )
-  //     )
-  //   );
-
-  //   act(async () => {
-  //     const roundSettingsTab = await screen.findByTestId("round-settings");
-  //     expect(roundSettingsTab).toBeInTheDocument();
-  //     fireEvent.click(roundSettingsTab);
-  //     const periodTab = await screen.findAllByText("Round Period");
-  //     expect(periodTab.length).toBe(1);
-  //     fireEvent.click(periodTab[0]);
-  //     const applicationPeriodInput = await screen.findAllByText("Application");
-  //     expect(applicationPeriodInput.length).toBe(0);
-  //   });
-  // });
+    act(async () => {
+      const roundSettingsTab = await screen.findByTestId("round-settings");
+      expect(roundSettingsTab).toBeInTheDocument();
+      fireEvent.click(roundSettingsTab);
+      const periodTab = await screen.findAllByText("Round Period");
+      expect(periodTab.length).toBe(1);
+      fireEvent.click(periodTab[0]);
+      const applicationPeriodInput = await screen.findAllByText("Application");
+      expect(applicationPeriodInput.length).toBe(0);
+    });
+  });
 
   it("validates that requirement(s) are not left blank", async () => {
     // todo: implement
@@ -344,7 +337,7 @@ describe("View Round", () => {
     // todo: implement
   });
 
-  it("validates when a date has passed, you can still select a date in the future", async () => {
+  it("validates when a date has passed, you can still select a data in the future", async () => {
     // todo: implement
   });
 

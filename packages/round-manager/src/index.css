@@ -16,60 +16,6 @@
   flex-grow: 1;
 }
 
-@layer components {
-  .gradient-border-qf {
-    position: relative;
-    padding: 0.25rem 0.5rem;
-    border-radius: 1rem;
-    z-index: 0;
-    overflow: hidden;
-  }
-
-  .gradient-border-qf::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 1rem;
-    padding: 2px;
-    background: linear-gradient(180deg, #ADEDE5 0%, #5CC8BB 100%);
-    z-index: -1;
-    -webkit-mask: 
-      linear-gradient(#fff 0 0) content-box, 
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: destination-out;
-            mask-composite: exclude; 
-  }
-
-  .gradient-border-direct {
-    position: relative;
-    padding: 0.25rem 0.5rem;
-    border-radius: 1rem;
-    z-index: 0;
-    overflow: hidden;
-  }
-
-  .gradient-border-direct::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 1rem;
-    padding: 2px;
-    background: linear-gradient(180deg, #FFEFBE 0%, #FFD555 100%);
-    z-index: -1;
-    -webkit-mask: 
-      linear-gradient(#fff 0 0) content-box, 
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: destination-out;
-            mask-composite: exclude; 
-  }
-}
-
 @layer base {
   html {
     @apply text-grey-500;

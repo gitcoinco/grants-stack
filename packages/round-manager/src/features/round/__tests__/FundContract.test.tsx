@@ -1,15 +1,15 @@
-// import { fireEvent, render, screen } from "@testing-library/react";
-// import { useTokenPrice } from "common";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { useTokenPrice } from "common";
 import { useParams } from "react-router-dom";
 import {
   makeRoundData,
-  // wrapWithBulkUpdateGrantApplicationContext,
-  // wrapWithReadProgramContext,
-  // wrapWithRoundContext,
+  wrapWithBulkUpdateGrantApplicationContext,
+  wrapWithReadProgramContext,
+  wrapWithRoundContext,
 } from "../../../test-utils";
-import { Round } from "../../api/types";
-// import ViewRoundPage from "../ViewRoundPage";
-// import { useBalance } from "wagmi";
+import { ProgressStatus, Round } from "../../api/types";
+import ViewRoundPage from "../ViewRoundPage";
+import { useBalance } from "wagmi";
 
 const mockRoundData: Round = makeRoundData();
 jest.mock("wagmi", () => ({
@@ -89,38 +89,34 @@ describe("fund contract tabr", () => {
   });
 
   it("displays fund contract tab", () => {
-    // (useTokenPrice as jest.Mock).mockImplementation(() => ({
-    //   data: "100",
-    //   error: null,
-    //   loading: false,
-    // }));
-    // render(
-    //   wrapWithBulkUpdateGrantApplicationContext(
-    //     wrapWithReadProgramContext(
-    //       wrapWithRoundContext(<ViewRoundPage />, {
-    //         data: [mockRoundData],
-    //         fetchRoundStatus: ProgressStatus.IS_SUCCESS,
-    //       }),
-    //       { programs: [] }
-    //     )
-    //   )
-    // );
-
-    // const fundContractTab = screen.getByTestId("fund-contract");
-    // fireEvent.click(fundContractTab);
-
-    // expect(screen.getByText("Details")).toBeInTheDocument();
-
-    // if (process.env.REACT_APP_ALLO_VERSION === "allo-v1") {
-    //   expect(screen.getByText("Contract Address:")).toBeInTheDocument();
-    //   expect(screen.getByTestId("fund-contract-btn")).toBeInTheDocument();
-    //   expect(screen.getByTestId("view-contract-btn")).toBeInTheDocument();
-    // }
-
-    // expect(screen.getByText("Payout token:")).toBeInTheDocument();
-    // expect(screen.getByText("Matching pool size:")).toBeInTheDocument();
-    // expect(screen.getByText("Protocol fee:")).toBeInTheDocument();
-    // expect(screen.getByText("Round fee:")).toBeInTheDocument();
-    // expect(screen.getByText("Amount funded:")).toBeInTheDocument();
+    (useTokenPrice as jest.Mock).mockImplementation(() => ({
+      data: "100",
+      error: null,
+      loading: false,
+    }));
+    render(
+      wrapWithBulkUpdateGrantApplicationContext(
+        wrapWithReadProgramContext(
+          wrapWithRoundContext(<ViewRoundPage />, {
+            data: [mockRoundData],
+            fetchRoundStatus: ProgressStatus.IS_SUCCESS,
+          }),
+          { programs: [] }
+        )
+      )
+    );
+    const fundContractTab = screen.getByTestId("fund-contract");
+    fireEvent.click(fundContractTab);
+    expect(screen.getByText("Details")).toBeInTheDocument();
+    if (process.env.REACT_APP_ALLO_VERSION === "allo-v1") {
+      expect(screen.getByText("Contract Address:")).toBeInTheDocument();
+      expect(screen.getByTestId("fund-contract-btn")).toBeInTheDocument();
+      expect(screen.getByTestId("view-contract-btn")).toBeInTheDocument();
+    }
+    expect(screen.getByText("Payout token:")).toBeInTheDocument();
+    expect(screen.getByText("Matching pool size:")).toBeInTheDocument();
+    expect(screen.getByText("Protocol fee:")).toBeInTheDocument();
+    expect(screen.getByText("Round fee:")).toBeInTheDocument();
+    expect(screen.getByText("Amount funded:")).toBeInTheDocument();
   });
 });

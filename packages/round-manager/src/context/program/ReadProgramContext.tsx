@@ -1,4 +1,7 @@
-import { Program, ProgressStatus } from "../../features/api/types";
+import {
+  Program,
+  ProgressStatus,
+} from "../../features/api/types";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { getProgramById, listPrograms } from "../../features/api/program";
 import { datadogLogs } from "@datadog/browser-logs";
@@ -11,7 +14,6 @@ export interface ReadProgramState {
   fetchProgramsStatus: ProgressStatus;
   listProgramsError?: Error;
   getProgramByIdError?: Error;
-  chainId?: number;
 }
 
 enum ActionType {
@@ -44,7 +46,7 @@ const fetchProgramsByAddress = async (
   dispatch: Dispatch,
   address: string,
   dataLayer: DataLayer,
-  chainId: number
+  chainId: number,
 ) => {
   datadogLogs.logger.info(`fetchProgramsByAddress: address - ${address}`);
 

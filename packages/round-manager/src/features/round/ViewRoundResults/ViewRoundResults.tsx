@@ -156,26 +156,17 @@ function useRevisedMatchingFunds(
 }
 
 export default function ViewRoundResultsWrapper() {
-  const { chainId, id } = useParams() as { chainId?: string; id: string };
-  const { chain } = useAccount();
+  const { id } = useParams();
 
-  const roundChainId = chainId ? Number(chainId) : chain?.id;
-
-  if (!id || !roundChainId) {
+  if (id === undefined) {
     return <div>Invalid round ID</div>;
   }
 
-  return <ViewRoundResultsWithId chainId={roundChainId} id={id} />;
+  return <ViewRoundResultsWithId id={id} />;
 }
 
-function ViewRoundResultsWithId({
-  chainId,
-  id,
-}: {
-  chainId: number;
-  id: string;
-}) {
-  const round = useRoundById(chainId, id.toLowerCase());
+function ViewRoundResultsWithId({ id }: { id: string }) {
+  const round = useRoundById(id.toLowerCase());
   const applications = useApplicationsByRoundId(id.toLowerCase());
 
   if (

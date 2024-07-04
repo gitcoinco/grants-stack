@@ -9,13 +9,12 @@ import { gql } from "graphql-request";
  * @returns The programs
  */
 export const getProgramsByUserAndTag = gql`
-  query ($userAddress: String!, $chainIds: [Int!]!, $tags: [String!]!) {
+  query ($userAddress: String!, $chainId: Int!, $tags: [String!]!) {
     projects(
-      orderBy: PRIMARY_KEY_DESC
       first: 100
       filter: {
         tags: { contains: $tags }
-        chainId: { in: $chainIds }
+        chainId: { equalTo: $chainId }
         roles: { some: { address: { equalTo: $userAddress } } }
       }
     ) {
@@ -29,20 +28,6 @@ export const getProgramsByUserAndTag = gql`
         address
         role
         createdAtBlock
-      }
-      qfRounds: rounds(
-        filter: {
-          strategyName: {
-            equalTo: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"
-          }
-        }
-      ) {
-        id
-      }
-      dgRounds: rounds(
-        filter: { strategyName: { equalTo: "allov2.DirectGrantsLiteStrategy" } }
-      ) {
-        id
       }
     }
   }
@@ -687,32 +672,10 @@ export const getRoundForManager = gql`
 export const getRoundsForManager = gql`
   query getRoundsForManager($chainId: Int!, $programId: String!) {
     rounds(
-      orderBy: ID_DESC
       first: 1000
       filter: {
         chainId: { equalTo: $chainId }
         projectId: { equalTo: $programId }
-      }
-    ) {
-      ${getRoundForManagerFields}
-    }
-  }
-`;
-
-export const getRoundsForManagerByAddress = gql`
-  query getRoundsForManager($chainIds: [Int!]!, $address: String!) {
-    rounds(
-      orderBy: ID_DESC
-      first: 1000
-      filter: {
-        chainId: {in: $chainIds}, 
-        roles: {
-          some: {
-            address: {
-              equalTo: $address
-            }
-          }
-        }
       }
     ) {
       ${getRoundForManagerFields}
