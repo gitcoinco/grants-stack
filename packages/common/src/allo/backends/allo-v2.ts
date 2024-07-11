@@ -1435,6 +1435,94 @@ export class AlloV2 implements Allo {
       return success(null);
     });
   }
+
+  directAllocation(args: {
+    tokenAddress: Address;
+    poolId: string;
+    amount: bigint;
+    recipient: Address;
+    nonce: bigint;
+    requireTokenApproval?: boolean;
+  }): AlloOperation<
+    Result<null>,
+    {
+      tokenApprovalStatus: Result<TransactionReceipt | null>;
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      if (isNaN(Number(args.poolId))) {
+        return error(new AlloError("Pool ID is not a valid Allo V2 pool ID"));
+      }
+
+      const poolId = BigInt(args.poolId);
+
+      if (args.tokenAddress === zeroAddress || !args.requireTokenApproval) {
+        emit("tokenApprovalStatus", success(null));
+      } else {
+        const approvalTx = await sendTransaction(this.transactionSender, {
+          address: args.tokenAddress,
+          abi: Erc20ABI,
+          functionName: "approve",
+          args: [this.allo.address(), args.amount],
+        });
+
+        if (approvalTx.type === "error") {
+          return approvalTx;
+        }
+
+        try {
+          const receipt = await this.transactionSender.wait(approvalTx.value);
+          emit("tokenApprovalStatus", success(receipt));
+        } catch (err) {
+          const result = new AlloError("Failed to approve token transfer", err);
+          emit("tokenApprovalStatus", error(result));
+          return error(result);
+        }
+      }
+
+      const encodeData = utils.defaultAbiCoder.encode(
+        ["address", "uint256", "address", "uint256"],
+        [args.recipient, args.amount, args.tokenAddress, args.nonce]
+      );
+
+      const tx = await sendTransaction(this.transactionSender, {
+        address: this.allo.address(),
+        abi: AlloAbi,
+        functionName: "allocate",
+        args: [poolId, encodeData],
+        value: args.tokenAddress === zeroAddress ? args.amount : 0n,
+      });
+
+      emit("transaction", tx);
+
+      if (tx.type === "error") {
+        return tx;
+      }
+
+      let receipt: TransactionReceipt;
+
+      try {
+        receipt = await this.transactionSender.wait(tx.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        const result = new AlloError("Failed to fund round", err);
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
+    });
+  }
 }
 
 export function serializeProject(project: ProjectWithMerkleProof) {
