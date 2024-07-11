@@ -12,6 +12,7 @@ import Button, { ButtonVariants } from "../base/Button";
 import PageNotFound from "../base/PageNotFound";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
+import LinkIcon from "../icons/LinkIcon";
 import Details from "./Details";
 
 function Project() {
@@ -89,24 +90,41 @@ function Project() {
                 Project Details
               </h3>
             </Link>
-            {props.id &&
-              props.owners &&
-              props.owners.includes(props.signerAddress!) && (
-                <Link
-                  to={createEditPath()}
-                  className="sm:w-auto mx-w-full ml-0"
+            <div className="flex gap-5">
+              <Link
+                to={`${process.env.REACT_APP_GRANT_EXPLORER}/#/projects/${props.id}`}
+                className="sm:w-auto mx-w-full ml-0"
+                target="_blank"
+              >
+                <Button
+                  variant={ButtonVariants.primary}
+                  styles={["sm:w-auto mx-w-full ml-0"]}
                 >
-                  <Button
-                    variant={ButtonVariants.outline}
-                    styles={["sm:w-auto mx-w-full ml-0"]}
+                  <i className="icon mt-1">
+                    <LinkIcon color={colors["quaternary-text"]} />
+                  </i>
+                  &nbsp; Public Profile
+                </Button>
+              </Link>
+              {props.id &&
+                props.owners &&
+                props.owners.includes(props.signerAddress!) && (
+                  <Link
+                    to={createEditPath()}
+                    className="sm:w-auto mx-w-full ml-0"
                   >
-                    <i className="icon mt-1">
-                      <Pencil color={colors["secondary-text"]} />
-                    </i>
-                    &nbsp; Edit
-                  </Button>
-                </Link>
-              )}
+                    <Button
+                      variant={ButtonVariants.outline}
+                      styles={["sm:w-auto mx-w-full ml-0"]}
+                    >
+                      <i className="icon mt-1">
+                        <Pencil color={colors["secondary-text"]} />
+                      </i>
+                      &nbsp; Edit
+                    </Button>
+                  </Link>
+                )}
+            </div>
           </div>
           <Details
             project={props.currentProject}
