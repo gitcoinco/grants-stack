@@ -12,7 +12,6 @@ import Button, { ButtonVariants } from "../base/Button";
 import PageNotFound from "../base/PageNotFound";
 import Arrow from "../icons/Arrow";
 import Pencil from "../icons/Pencil";
-import LinkIcon from "../icons/LinkIcon";
 import Details from "./Details";
 
 function Project() {
@@ -100,10 +99,7 @@ function Project() {
                   variant={ButtonVariants.primary}
                   styles={["sm:w-auto mx-w-full ml-0"]}
                 >
-                  <i className="icon mt-1">
-                    <LinkIcon color={colors["quaternary-text"]} />
-                  </i>
-                  &nbsp; Public Profile
+                  View Public Profile
                 </Button>
               </Link>
               {props.id &&
