@@ -7,6 +7,7 @@ import {
   DonationVotingMerkleDistributionDirectTransferStrategyAbi,
   DonationVotingMerkleDistributionStrategy,
   DonationVotingMerkleDistributionStrategyTypes,
+  DirectAllocationStrategy,
   Registry,
   RegistryAbi,
   StrategyFactory,
@@ -23,7 +24,7 @@ import {
 } from "data-layer";
 import { Abi, Address, Hex, getAddress, zeroAddress } from "viem";
 import { AnyJson } from "../..";
-import { UpdateRoundParams, MatchingStatsData } from "../../types";
+import { UpdateRoundParams, MatchingStatsData, Allocation } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import {
   Result,
@@ -1483,16 +1484,25 @@ export class AlloV2 implements Allo {
         }
       }
 
-      const encodeData = utils.defaultAbiCoder.encode(
-        ["address", "uint256", "address", "uint256"],
-        [args.recipient, args.amount, args.tokenAddress, args.nonce]
-      );
+      const strategy = new DirectAllocationStrategy({
+        chain: this.chainId,
+        poolId: BigInt(args.poolId),
+      });
+
+      const allocation: Allocation = {
+        profileOwner: args.recipient,
+        amount: BigInt(args.amount.toString()),
+        token: args.tokenAddress,
+        nonce: BigInt(args.nonce.toString()),
+      };
+
+      const txData = strategy.getAllocateData(allocation);
 
       const tx = await sendTransaction(this.transactionSender, {
         address: this.allo.address(),
         abi: AlloAbi,
         functionName: "allocate",
-        args: [poolId, encodeData as Hex],
+        args: [poolId, txData as Hex],
         value: args.tokenAddress === zeroAddress ? args.amount : 0n,
       });
 
