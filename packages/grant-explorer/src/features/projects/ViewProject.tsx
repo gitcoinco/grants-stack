@@ -4,6 +4,7 @@ import {
   getChainById,
   renderToHTML,
   stringToBlobUrl,
+  TToken,
   useParams,
   useValidateCredential,
 } from "common";
@@ -35,6 +36,10 @@ import { useProject, useProjectApplications } from "./hooks/useProject";
 import NotFoundPage from "../common/NotFoundPage";
 import { useCartStorage } from "../../store";
 import { CartProject } from "../api/types";
+import InfoModal from "../common/InfoModal";
+import { Input } from "common/src/styles";
+import { PayoutTokenDropdown } from "../round/ViewCartPage/PayoutTokenDropdown";
+import { useAccount } from "wagmi";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -58,6 +63,8 @@ const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
 
 export default function ViewProject() {
   const [selectedTab, setSelectedTab] = useState(0);
+  const { chainId } = useAccount();
+  const [showDirectAllocationModal, setShowDirectAllocationModal] = useState<boolean>(false);
 
   const { projectId } = useParams();
 
@@ -167,6 +174,13 @@ export default function ViewProject() {
     setSelectedTab(tabIndex);
   };
 
+   
+  // const selectedPayoutToken = getVotingTokenForChain(chainId || 1);
+  // const payoutTokenOptions: TToken[] = getVotingTokenOptions(
+  //   Number(chainId)
+  // ).filter((p) => p.canVote);
+
+
   return (
     <>
       {projectData !== undefined || isProjectDataLoading ? (
@@ -191,7 +205,17 @@ export default function ViewProject() {
             </div>
           </div>
           <div className="md:flex gap-4 flex-row-reverse">
-            <Sidebar projectApplications={projectApplications} />
+            <div className="mb-4">
+              <button
+                type="button"
+                data-testid="direct-allocation-button"
+                className="w-full block m-3 rounded-md bg-indigo-600 py-2 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 disabled:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                onClick={() => setShowDirectAllocationModal(true)}
+              >
+                Donate
+              </button>
+              <Sidebar projectApplications={projectApplications} />
+            </div>
             <div className="flex-1">
               {projectError === undefined ? (
                 <>
@@ -218,6 +242,40 @@ export default function ViewProject() {
                 <p>Couldn't load project data.</p>
               )}
             </div>
+            <InfoModal
+              title="Donate!"
+              body={
+                <div className="flex gap-4">
+                  <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text font-medium">
+                    Amount
+                  </p>
+                  <Input
+                    aria-label={"Donation amount for all projects "}
+                    id={"input-donationamount"}
+                    min="0"
+                    type="number"
+                    value={fixedDonation ?? ""}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setFixedDonation(e.target.value);
+                    }}
+                    className="w-16 lg:w-18"
+                  />
+                  <PayoutTokenDropdown
+                    selectedPayoutToken={selectedPayoutToken}
+                    setSelectedPayoutToken={(token) => {
+                      setVotingTokenForChain(chainId, token);
+                    }}
+                    payoutTokenOptions={payoutTokenOptions}
+                  />
+                </div>
+              }
+              isOpen={showDirectAllocationModal}
+              cancelButtonAction={() => setShowDirectAllocationModal(false)}
+              continueButtonAction={() => setShowDirectAllocationModal(false)}
+              // disableContinueButton={true}
+              continueButtonText={"Donate"}
+              setIsOpen={setShowDirectAllocationModal}
+            />
           </div>
         </DefaultLayout>
       ) : (
