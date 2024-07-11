@@ -1502,7 +1502,7 @@ export class AlloV2 implements Allo {
         address: this.allo.address(),
         abi: AlloAbi,
         functionName: "allocate",
-        args: [poolId, txData as Hex],
+        args: [poolId, txData],
         value: args.tokenAddress === zeroAddress ? args.amount : 0n,
       });
 
