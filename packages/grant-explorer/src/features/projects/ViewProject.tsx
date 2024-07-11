@@ -40,6 +40,7 @@ import InfoModal from "../common/InfoModal";
 import { Input } from "common/src/styles";
 import { PayoutTokenDropdown } from "../round/ViewCartPage/PayoutTokenDropdown";
 import { useAccount } from "wagmi";
+import { getVotingTokenOptions } from "../api/utils";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -64,7 +65,19 @@ const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
 export default function ViewProject() {
   const [selectedTab, setSelectedTab] = useState(0);
   const { chainId } = useAccount();
-  const [showDirectAllocationModal, setShowDirectAllocationModal] = useState<boolean>(false);
+  const [showDirectAllocationModal, setShowDirectAllocationModal] =
+    useState<boolean>(false);
+  const [fixedDonation, setFixedDonation] = useState<string | undefined>(
+    undefined
+  );
+
+  const payoutTokenOptions: TToken[] = getVotingTokenOptions(
+    Number(chainId)
+  ).filter((p) => p.canVote);
+
+  const [payoutToken, setPayoutToken] = useState<TToken | undefined>(
+    payoutTokenOptions[0]
+  );
 
   const { projectId } = useParams();
 
@@ -174,13 +187,6 @@ export default function ViewProject() {
     setSelectedTab(tabIndex);
   };
 
-   
-  // const selectedPayoutToken = getVotingTokenForChain(chainId || 1);
-  // const payoutTokenOptions: TToken[] = getVotingTokenOptions(
-  //   Number(chainId)
-  // ).filter((p) => p.canVote);
-
-
   return (
     <>
       {projectData !== undefined || isProjectDataLoading ? (
@@ -206,15 +212,10 @@ export default function ViewProject() {
           </div>
           <div className="md:flex gap-4 flex-row-reverse">
             <div className="mb-4">
-              <button
-                type="button"
-                data-testid="direct-allocation-button"
-                className="w-full block m-3 rounded-md bg-indigo-600 py-2 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 disabled:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                onClick={() => setShowDirectAllocationModal(true)}
-              >
-                Donate
-              </button>
-              <Sidebar projectApplications={projectApplications} />
+              <Sidebar
+                projectApplications={projectApplications}
+                setShowDirectAllocationModal={setShowDirectAllocationModal}
+              />
             </div>
             <div className="flex-1">
               {projectError === undefined ? (
@@ -261,9 +262,9 @@ export default function ViewProject() {
                     className="w-16 lg:w-18"
                   />
                   <PayoutTokenDropdown
-                    selectedPayoutToken={selectedPayoutToken}
+                    selectedPayoutToken={payoutToken}
                     setSelectedPayoutToken={(token) => {
-                      setVotingTokenForChain(chainId, token);
+                      setPayoutToken(token);
                     }}
                     payoutTokenOptions={payoutTokenOptions}
                   />
@@ -445,6 +446,7 @@ function ProjectLogo({ logoImg }: { logoImg?: string }) {
 
 function Sidebar(props: {
   projectApplications?: ProjectApplicationWithRoundAndProgram[];
+  setShowDirectAllocationModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const activeQFRoundApplications = props.projectApplications?.filter(
     (projectApplication) =>
@@ -456,7 +458,10 @@ function Sidebar(props: {
   return (
     <div className="flex flex-col">
       <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
-        <ProjectStats projectApplications={props.projectApplications} />
+        <ProjectStats
+          projectApplications={props.projectApplications}
+          setShowDirectAllocationModal={props.setShowDirectAllocationModal}
+        />
       </div>
       {activeQFRoundApplications && activeQFRoundApplications?.length > 0 && (
         <h4 className="text-xl font-medium">Active rounds</h4>
@@ -478,6 +483,7 @@ function Sidebar(props: {
 
 export function ProjectStats(props: {
   projectApplications?: ProjectApplicationWithRoundAndProgram[];
+  setShowDirectAllocationModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const totalFundingReceived =
     props.projectApplications
@@ -505,20 +511,32 @@ export function ProjectStats(props: {
   const totalRoundsParticipated = props.projectApplications?.length ?? 0;
 
   return (
-    <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
-      <h4 className="text-2xl">All-time stats</h4>
-      <Stat isLoading={false} value={`$${totalFundingReceived}`}>
-        funding received
-      </Stat>
-      <Stat isLoading={false} value={totalContributions}>
-        contributions
-      </Stat>
-      <Stat isLoading={false} value={totalUniqueDonors}>
-        unique contributors
-      </Stat>
-      <Stat isLoading={false} value={totalRoundsParticipated}>
-        rounds participated
-      </Stat>
+    <div className="flex flex-col">
+      <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
+        <h4 className="text-2xl">All-time stats</h4>
+        <Stat isLoading={false} value={`$${totalFundingReceived}`}>
+          funding received
+        </Stat>
+        <Stat isLoading={false} value={totalContributions}>
+          contributions
+        </Stat>
+        <Stat isLoading={false} value={totalUniqueDonors}>
+          unique contributors
+        </Stat>
+        <Stat isLoading={false} value={totalRoundsParticipated}>
+          rounds participated
+        </Stat>
+      </div>
+      <div className="flex justify-center">
+        <button
+          type="button"
+          data-testid="direct-allocation-button"
+          className="w-[90%] block my-3 mx-1 rounded-3xl bg-indigo-600 py-2 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 disabled:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          onClick={() => props.setShowDirectAllocationModal(true)}
+        >
+          Donate
+        </button>
+      </div>
     </div>
   );
 }
