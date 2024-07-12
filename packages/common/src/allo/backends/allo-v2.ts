@@ -83,6 +83,15 @@ export function getAlloAddress(chainId: number) {
   return allo.address();
 }
 
+export function getDirectAllocationPoolId(chainId: number) {
+  switch (chainId) {
+    case 11155111:
+      return 375;
+    default:
+      return undefined;
+  }
+}
+
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
   private ipfsUploader: IpfsUploader;
