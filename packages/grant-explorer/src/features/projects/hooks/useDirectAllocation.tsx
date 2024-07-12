@@ -31,7 +31,7 @@ export type DirectAllocationParams = {
   fundAmount: number;
   payoutToken: TToken;
   recipient: string;
-  nonce: number;
+  nonce: bigint;
   requireTokenApproval?: boolean;
 };
 
@@ -163,7 +163,6 @@ async function _directAllocation({
       .toBigInt();
 
     const recipientAddress = getAddress(recipient);
-    const projectNonce = BigInt(nonce);
 
     context.setTokenApprovalStatus(ProgressStatus.IN_PROGRESS);
 
@@ -173,7 +172,7 @@ async function _directAllocation({
         tokenAddress: payoutToken.address,
         amount,
         recipient: recipientAddress,
-        nonce: projectNonce,
+        nonce,
         requireTokenApproval,
       })
       .on("tokenApprovalStatus", (tx) => {
