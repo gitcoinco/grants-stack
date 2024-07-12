@@ -26,7 +26,7 @@ import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ProjectBanner } from "../common/ProjectBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
-import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
+import { Box, Button, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import {
   ProjectApplicationWithRoundAndProgram,
   useDataLayer,
@@ -37,7 +37,6 @@ import { useProject, useProjectApplications } from "./hooks/useProject";
 import NotFoundPage from "../common/NotFoundPage";
 import { useCartStorage } from "../../store";
 import { CartProject, ProgressStatus } from "../api/types";
-import InfoModal from "../common/InfoModal";
 import { Input } from "common/src/styles";
 import { PayoutTokenDropdown } from "../round/ViewCartPage/PayoutTokenDropdown";
 import { useAccount } from "wagmi";
@@ -47,6 +46,8 @@ import ProgressModal, { errorModalDelayMs } from "../common/ProgressModal";
 import { useDirectAllocation } from "./hooks/useDirectAllocation";
 import { getDirectAllocationPoolId } from "common/dist/allo/backends/allo-v2";
 import { zeroAddress } from "viem";
+import GenericModal from "../common/GenericModal";
+import { BoltIcon, EyeIcon } from "@heroicons/react/24/outline";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -255,8 +256,16 @@ export default function ViewProject() {
             <div className="mb-4">
               <Sidebar
                 projectApplications={projectApplications}
-                setShowDirectAllocationModal={setShowDirectAllocationModal}
               />
+              <button
+                type="button"
+                data-testid="direct-allocation-button"
+                className="w-full block my-0 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                onClick={() => setShowDirectAllocationModal(true)}
+              >
+                <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
+                Donate
+              </button>
             </div>
             <div className="flex-1">
               {projectError === undefined ? (
@@ -296,42 +305,73 @@ export default function ViewProject() {
   function DirectDonationModals() {
     return (
       <>
-        <InfoModal
-          title="Donate!"
+        <GenericModal
           body={
-            <div className="flex gap-4">
-              <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text font-medium">
-                Amount
-              </p>
-              <Input
-                aria-label={"Donation amount for all projects "}
-                id={"input-donationamount"}
-                min="0"
-                type="number"
-                value={directDonationAmount}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setDirectDonationAmount(e.target.value);
+            <>
+              <div>
+                <p className="mb-4">
+                  <BoltIcon className="w-4 h-4 mb-1 inline-block mr-2" />
+                  Donate now
+                </p>
+              </div>
+
+              <div className="mb-4 flex flex-col lg:flex-row justify-between sm:px-2 px-2 py-4 rounded-md">
+                <div className="flex">
+                  <div className="flex relative overflow-hidden bg-no-repeat bg-cover mt-auto mb-auto">
+                    <img
+                      className="inline-block rounded-full w-10 my-auto mr-2"
+                      src={
+                        projectData?.project.metadata.logoImg
+                          ? `${ipfsGateway}/ipfs/${projectData?.project.metadata.logoImg}`
+                          : DefaultLogoImage
+                      }
+                      alt={"Project Logo"}
+                    />
+                    <p className="font-semibold text-md my-auto text-ellipsis line-clamp-1 max-w-[500px] 2xl:max-w-none">
+                      {projectData?.project?.metadata.title}
+                    </p>
+                  </div>
+               </div>
+                <div className="flex sm:space-x-4 space-x-2 h-16 sm:pl-4 pt-3 justify-center">
+
+                  <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text font-medium">
+                    Amount
+                  </p>
+                  <Input
+                    aria-label={"Donation amount for all projects "}
+                    id={"input-donationamount"}
+                    min="0"
+                    type="number"
+                    value={directDonationAmount}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setDirectDonationAmount(e.target.value);
+                    }}
+                    className="w-16 lg:w-18"
+                  />
+                  <PayoutTokenDropdown
+                    selectedPayoutToken={payoutToken}
+                    setSelectedPayoutToken={(token) => {
+                      setPayoutToken(token);
+                    }}
+                    payoutTokenOptions={payoutTokenOptions}
+                  />
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="w-full font-normal bg-gitcoin-violet-400 text-white focus-visible:outline-indigo-600 py-2 leading-6"
+                onClick={() => {
+                  setShowDirectAllocationModal(false);
+                  setOpenProgressModal(true);
+                  handleDonate();
                 }}
-                className="w-16 lg:w-18"
-              />
-              <PayoutTokenDropdown
-                selectedPayoutToken={payoutToken}
-                setSelectedPayoutToken={(token) => {
-                  setPayoutToken(token);
-                }}
-                payoutTokenOptions={payoutTokenOptions}
-              />
-            </div>
+              >
+                Submit your donation
+              </button>
+            </>
           }
           isOpen={showDirectAllocationModal}
-          cancelButtonAction={() => setShowDirectAllocationModal(false)}
-          continueButtonAction={() => {
-            setShowDirectAllocationModal(false);
-            setOpenProgressModal(true);
-            handleDonate();
-          }}
-          // disableContinueButton={true}
-          continueButtonText={"Donate"}
           setIsOpen={setShowDirectAllocationModal}
         />
         <ProgressModal
@@ -565,7 +605,6 @@ function ProjectLogo({ logoImg }: { logoImg?: string }) {
 
 function Sidebar(props: {
   projectApplications?: ProjectApplicationWithRoundAndProgram[];
-  setShowDirectAllocationModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const activeQFRoundApplications = props.projectApplications?.filter(
     (projectApplication) =>
@@ -579,13 +618,12 @@ function Sidebar(props: {
       <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
         <ProjectStats
           projectApplications={props.projectApplications}
-          setShowDirectAllocationModal={props.setShowDirectAllocationModal}
         />
       </div>
       {activeQFRoundApplications && activeQFRoundApplications?.length > 0 && (
         <h4 className="text-xl font-medium">Active rounds</h4>
       )}
-      <div className="mt-4 max-w-[320px] h-fit mb-6 rounded-3xl ">
+      <div className="mt-4 max-w-[320px] h-fit rounded-3xl ">
         {activeQFRoundApplications?.map((projectApplication) => (
           <ActiveRoundComponent
             key={projectApplication.id}
@@ -602,7 +640,6 @@ function Sidebar(props: {
 
 export function ProjectStats(props: {
   projectApplications?: ProjectApplicationWithRoundAndProgram[];
-  setShowDirectAllocationModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const totalFundingReceived =
     props.projectApplications
@@ -645,16 +682,6 @@ export function ProjectStats(props: {
         <Stat isLoading={false} value={totalRoundsParticipated}>
           rounds participated
         </Stat>
-      </div>
-      <div className="flex justify-center">
-        <button
-          type="button"
-          data-testid="direct-allocation-button"
-          className="w-[90%] block my-3 mx-1 rounded-3xl bg-indigo-600 py-2 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 disabled:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          onClick={() => props.setShowDirectAllocationModal(true)}
-        >
-          Donate
-        </button>
       </div>
     </div>
   );

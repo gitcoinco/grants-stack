@@ -11,7 +11,7 @@ interface InfoModalProps {
 }
 
 export default function InfoModal({
-  title = "Information Title",
+  title = "",
   titleSize = "sm",
   isOpen = false,
   setIsOpen = () => {
