@@ -7,7 +7,6 @@ import {
   DonationVotingMerkleDistributionDirectTransferStrategyAbi,
   DonationVotingMerkleDistributionStrategy,
   DonationVotingMerkleDistributionStrategyTypes,
-  DirectAllocationStrategy,
   Registry,
   RegistryAbi,
   StrategyFactory,
@@ -24,7 +23,7 @@ import {
 } from "data-layer";
 import { Abi, Address, Hex, getAddress, zeroAddress } from "viem";
 import { AnyJson } from "../..";
-import { UpdateRoundParams, MatchingStatsData, Allocation } from "../../types";
+import { UpdateRoundParams, MatchingStatsData } from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import {
   Result,
@@ -1482,7 +1481,6 @@ export class AlloV2 implements Allo {
         if (approvalTx.type === "error") {
           return approvalTx;
         }
-
         try {
           const receipt = await this.transactionSender.wait(approvalTx.value);
           emit("tokenApprovalStatus", success(receipt));
@@ -1493,25 +1491,21 @@ export class AlloV2 implements Allo {
         }
       }
 
-      const strategy = new DirectAllocationStrategy({
-        chain: this.chainId,
-        poolId: BigInt(args.poolId),
-      });
+      let _token = args.tokenAddress;
+      if (_token === zeroAddress) {
+        _token = getAddress(NATIVE);
+      }
 
-      const allocation: Allocation = {
-        profileOwner: args.recipient,
-        amount: BigInt(args.amount.toString()),
-        token: args.tokenAddress,
-        nonce: BigInt(args.nonce.toString()),
-      };
-
-      const txData = strategy.getAllocateData(allocation);
+      const encodeData = utils.defaultAbiCoder.encode(
+        ["address", "uint256", "address", "uint256"],
+        [args.recipient, args.amount, _token, args.nonce]
+      );
 
       const tx = await sendTransaction(this.transactionSender, {
         address: this.allo.address(),
         abi: AlloAbi,
         functionName: "allocate",
-        args: [poolId, txData.data],
+        args: [poolId, encodeData as Hex],
         value: args.tokenAddress === zeroAddress ? args.amount : 0n,
       });
 
