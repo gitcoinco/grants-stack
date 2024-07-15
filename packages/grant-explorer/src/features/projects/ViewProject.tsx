@@ -26,7 +26,7 @@ import { ReactComponent as CartCircleIcon } from "../../assets/icons/cart-circle
 import { ReactComponent as CheckedCircleIcon } from "../../assets/icons/checked-circle.svg";
 import { ProjectBanner } from "../common/ProjectBanner";
 import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
-import { Box, Button, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
+import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import {
   ProjectApplicationWithRoundAndProgram,
   useDataLayer,
@@ -254,13 +254,11 @@ export default function ViewProject() {
           </div>
           <div className="md:flex gap-4 flex-row-reverse">
             <div className="mb-4">
-              <Sidebar
-                projectApplications={projectApplications}
-              />
+              <Sidebar projectApplications={projectApplications} />
               <button
                 type="button"
                 data-testid="direct-allocation-button"
-                className="w-full block my-0 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="w-full block my-0 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold rounded-lg leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 onClick={() => setShowDirectAllocationModal(true)}
               >
                 <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
@@ -331,9 +329,8 @@ export default function ViewProject() {
                       {projectData?.project?.metadata.title}
                     </p>
                   </div>
-               </div>
+                </div>
                 <div className="flex sm:space-x-4 space-x-2 h-16 sm:pl-4 pt-3 justify-center">
-
                   <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text font-medium">
                     Amount
                   </p>
@@ -616,9 +613,7 @@ function Sidebar(props: {
   return (
     <div className="flex flex-col">
       <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
-        <ProjectStats
-          projectApplications={props.projectApplications}
-        />
+        <ProjectStats projectApplications={props.projectApplications} />
       </div>
       {activeQFRoundApplications && activeQFRoundApplications?.length > 0 && (
         <h4 className="text-xl font-medium">Active rounds</h4>
