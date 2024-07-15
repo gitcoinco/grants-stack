@@ -8,6 +8,7 @@ import { DataLayer, v2Project } from "data-layer";
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
+
 vi.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: vi.fn(),
 }));
@@ -20,6 +21,7 @@ vi.mock("common", async () => {
       projectId: "0xdeadbeef-0xdeadbeef",
     })),
     useValidateCredential: vi.fn().mockReturnValue({ isValid: false }),
+    useAllo: vi.fn().mockReturnValue({ data: {} }),
   };
 });
 
