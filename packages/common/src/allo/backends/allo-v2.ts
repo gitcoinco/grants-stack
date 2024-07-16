@@ -1497,39 +1497,23 @@ export class AlloV2 implements Allo {
         _token = getAddress(NATIVE);
       }
 
-
       const strategy = new DirectAllocationStrategy({
         chain: this.chainId,
         poolId: poolId,
       });
-      
-      const txData = strategy.getAllocateData(
-        {
-          profileOwner: args.recipient,
-          amount: BigInt(args.amount.toString()),
-          token: _token,
-          nonce: args.nonce,
-        },
-      );
+
+      const txData = strategy.getAllocateData({
+        profileOwner: args.recipient,
+        amount: BigInt(args.amount.toString()),
+        token: _token,
+        nonce: args.nonce,
+      });
 
       const tx = await sendRawTransaction(this.transactionSender, {
         to: txData.to,
         data: txData.data,
         value: BigInt(txData.value),
       });
-
-      // const encodeData = utils.defaultAbiCoder.encode(
-      //   ["address", "uint256", "address", "uint256"],
-      //   [args.recipient, args.amount, _token, args.nonce]
-      // );
-
-      // const tx = await sendTransaction(this.transactionSender, {
-      //   address: this.allo.address(),
-      //   abi: AlloAbi,
-      //   functionName: "allocate",
-      //   args: [poolId, encodeData as Hex],
-      //   value: args.tokenAddress === zeroAddress ? args.amount : 0n,
-      // });
 
       emit("transaction", tx);
 
