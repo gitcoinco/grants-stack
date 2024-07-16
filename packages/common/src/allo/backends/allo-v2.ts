@@ -85,7 +85,7 @@ export function getAlloAddress(chainId: number) {
 export function getDirectAllocationPoolId(chainId: number) {
   switch (chainId) {
     case 11155111:
-      return 375;
+      return 386;
     default:
       return undefined;
   }
