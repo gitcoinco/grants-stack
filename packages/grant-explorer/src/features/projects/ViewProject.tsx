@@ -48,6 +48,7 @@ import { getDirectAllocationPoolId } from "common/dist/allo/backends/allo-v2";
 import { zeroAddress } from "viem";
 import GenericModal from "../common/GenericModal";
 import { BoltIcon, EyeIcon } from "@heroicons/react/24/outline";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -72,6 +73,8 @@ const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
 export default function ViewProject() {
   const [selectedTab, setSelectedTab] = useState(0);
   const { chainId } = useAccount();
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const [showDirectAllocationModal, setShowDirectAllocationModal] =
     useState<boolean>(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
@@ -113,13 +116,8 @@ export default function ViewProject() {
     dataLayer
   );
 
-  const {
-    directAllocation,
-    tokenApprovalStatus,
-    fundStatus,
-    indexingStatus,
-    txHash,
-  } = useDirectAllocation();
+  const { directAllocation, tokenApprovalStatus, fundStatus, indexingStatus } =
+    useDirectAllocation();
 
   const pastRroundApplications = projectApplications?.filter(
     (projectApplication) =>
@@ -259,7 +257,13 @@ export default function ViewProject() {
                 type="button"
                 data-testid="direct-allocation-button"
                 className="w-full block my-0 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold rounded-lg leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                onClick={() => setShowDirectAllocationModal(true)}
+                onClick={() => {
+                  if (!isConnected) {
+                    openConnectModal?.();
+                    return;
+                  }
+                  setShowDirectAllocationModal(true);
+                }}
               >
                 <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
                 Donate
