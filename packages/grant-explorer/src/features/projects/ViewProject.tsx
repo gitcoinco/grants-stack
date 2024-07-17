@@ -54,6 +54,8 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { getBalance } from "@wagmi/core";
 import { config } from "../../app/wagmi";
 import { ethers } from "ethers";
+import { useNavigate } from "react-router-dom";
+import { Logger } from "ethers/lib/utils";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -83,6 +85,10 @@ export default function ViewProject() {
   const [showDirectAllocationModal, setShowDirectAllocationModal] =
     useState<boolean>(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [errorModalSubHeading, setErrorModalSubHeading] = useState<
+    string | undefined
+  >();
   const [directDonationAmount, setDirectDonationAmount] = useState<string>("");
 
   const payoutTokenOptions: TToken[] = getVotingTokenOptions(
@@ -120,6 +126,7 @@ export default function ViewProject() {
 
   const [hasClickedSubmit, setHasClickedSubmit] = useState(false);
   const [isEmptyInput, setIsEmptyInput] = useState(false);
+  const [transactionReplaced, setTransactionReplaced] = useState(false);
 
   useEffect(() => {
     if (directDonationAmount === "" || Number(directDonationAmount) === 0) {
@@ -133,6 +140,7 @@ export default function ViewProject() {
 
   const dataLayer = useDataLayer();
   const allo = useAllo();
+  const navigate = useNavigate();
 
   const {
     data: projectData,
@@ -156,8 +164,13 @@ export default function ViewProject() {
     dataLayer
   );
 
-  const { directAllocation, tokenApprovalStatus, fundStatus, indexingStatus } =
-    useDirectAllocation();
+  const {
+    directAllocation,
+    tokenApprovalStatus,
+    fundStatus,
+    indexingStatus,
+    txHash,
+  } = useDirectAllocation();
 
   const pastRroundApplications = projectApplications?.filter(
     (projectApplication) =>
@@ -165,6 +178,50 @@ export default function ViewProject() {
   );
 
   const project = projectData?.project;
+
+  useEffect(() => {
+    if (
+      tokenApprovalStatus === ProgressStatus.IS_ERROR ||
+      fundStatus === ProgressStatus.IS_ERROR
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setErrorModalSubHeading(
+          transactionReplaced
+            ? "Transaction cancelled. Please try again."
+            : "There was an error during the funding process. Please try again."
+        );
+        setOpenErrorModal(true);
+      }, errorModalDelayMs);
+    }
+
+    if (indexingStatus === ProgressStatus.IS_ERROR) {
+      setTimeout(() => {
+        // refresh
+        navigate(0);
+      }, 5000);
+    }
+
+    if (
+      tokenApprovalStatus === ProgressStatus.IS_SUCCESS &&
+      fundStatus === ProgressStatus.IS_SUCCESS &&
+      txHash !== ""
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        // refresh
+        navigate(0);
+      }, errorModalDelayMs);
+    }
+  }, [
+    navigate,
+    tokenApprovalStatus,
+    fundStatus,
+    indexingStatus,
+    txHash,
+    transactionReplaced,
+    projectId,
+  ]);
 
   const breadCrumbs = [
     {
@@ -440,12 +497,12 @@ export default function ViewProject() {
           subheading={"Please hold while we donate your funds to the project."}
           steps={progressSteps}
         />
-        {/* <ErrorModal
+        <ErrorModal
           isOpen={openErrorModal}
           setIsOpen={setOpenErrorModal}
-          tryAgainFn={handleSubmitFund}
+          onTryAgain={handleDonate}
           subheading={errorModalSubHeading}
-        /> */}
+        />
       </>
     );
   }
@@ -465,10 +522,6 @@ export default function ViewProject() {
     setOpenProgressModal(true);
 
     try {
-      setTimeout(() => {
-        setOpenProgressModal(true);
-      }, errorModalDelayMs);
-
       let requireTokenApproval = false;
 
       const poolId = getDirectAllocationPoolId(chainId ?? 1)?.toString();
@@ -507,7 +560,11 @@ export default function ViewProject() {
         requireTokenApproval,
       });
     } catch (error) {
-      console.error("handleDonation - project", projectId, error);
+      if (error === Logger.errors.TRANSACTION_REPLACED) {
+        setTransactionReplaced(true);
+      } else {
+        console.error("handleDonation - project", projectId, error);
+      }
     }
   }
 }

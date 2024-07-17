@@ -1480,7 +1480,12 @@ export class AlloV2 implements Allo {
         });
 
         if (approvalTx.type === "error") {
-          return approvalTx;
+          const result = new AlloError(
+            "Failed to approve token transfer",
+            approvalTx.error
+          );
+          emit("tokenApprovalStatus", error(result));
+          return error(result);
         }
         try {
           const receipt = await this.transactionSender.wait(approvalTx.value);
