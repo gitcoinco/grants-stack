@@ -355,6 +355,7 @@ export default function ViewProject() {
                       setPayoutToken(token);
                     }}
                     payoutTokenOptions={payoutTokenOptions}
+                    style="max-h-16"
                   />
                 </div>
               </div>
