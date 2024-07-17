@@ -94,6 +94,7 @@ export default function ViewProject() {
   );
 
   const [tokenBalance, setTokenBalance] = useState<bigint>(BigInt("0"));
+  const directAllocationPoolId = getDirectAllocationPoolId(chainId ?? 1);
 
   useEffect(() => {
     const runner = async () => {
@@ -292,21 +293,23 @@ export default function ViewProject() {
           <div className="md:flex gap-4 flex-row-reverse">
             <div className="mb-4">
               <Sidebar projectApplications={projectApplications} />
-              <button
-                type="button"
-                data-testid="direct-allocation-button"
-                className="w-full block my-0 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold rounded-lg leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                onClick={() => {
-                  if (!isConnected) {
-                    openConnectModal?.();
-                    return;
-                  }
-                  setShowDirectAllocationModal(true);
-                }}
-              >
-                <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
-                Donate
-              </button>
+              {directAllocationPoolId && (
+                <button
+                  type="button"
+                  data-testid="direct-allocation-button"
+                  className="w-full block my-0 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold rounded-lg leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  onClick={() => {
+                    if (!isConnected) {
+                      openConnectModal?.();
+                      return;
+                    }
+                    setShowDirectAllocationModal(true);
+                  }}
+                >
+                  <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
+                  Donate
+                </button>
+              )}
             </div>
             <div className="flex-1">
               {projectError === undefined ? (
