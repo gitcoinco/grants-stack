@@ -492,12 +492,20 @@ export default function ViewApplicationPage() {
     ? getRoundStrategyType(application.payoutStrategy.strategyName)
     : undefined;
 
+  const hasRoundEnded = round ? moment().isAfter(round?.roundEndTime) : false;
+
   const showReviewButton = () =>
     strategyType === "DirectGrants" &&
     application?.status === "PENDING" &&
-    application?.inReview === false;
+    application?.inReview === false && 
+    !hasRoundEnded;
 
   const showApproveReject = () => {
+    console.log("showApproveReject", application?.status, hasRoundEnded);
+    if (hasRoundEnded) {
+      return false;
+    }
+
     if (strategyType !== "DirectGrants") {
       return true;
     }

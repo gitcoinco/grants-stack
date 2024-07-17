@@ -21,6 +21,7 @@ function GrantApplications(props: {
   fetchRoundStatus: ProgressStatus;
   chainId: string;
   roundId: string | undefined;
+  roundHasEnded: boolean;
 }) {
   // Filter applications into pending, approved, rejected & in-review
   const pendingApplications = (props.applications || [])
@@ -148,10 +149,11 @@ function GrantApplications(props: {
                 <Tab.Panels>
                   <Tab.Panel>
                     {props.isDirectRound ? (
-                      <ApplicationsToReview />
+                      <ApplicationsToReview roundHasEnded={props.roundHasEnded} />
                     ) : (
                       <ApplicationsToApproveReject
                         isDirectRound={Boolean(props.isDirectRound)}
+                        roundHasEnded={props.roundHasEnded}
                       />
                     )}
                   </Tab.Panel>
@@ -159,14 +161,15 @@ function GrantApplications(props: {
                     <Tab.Panel>
                       <ApplicationsToApproveReject
                         isDirectRound={Boolean(props.isDirectRound)}
+                        roundHasEnded={props.roundHasEnded}
                       />
                     </Tab.Panel>
                   )}
                   <Tab.Panel>
-                    <ApplicationsApproved />
+                    <ApplicationsApproved roundHasEnded={props.roundHasEnded} />
                   </Tab.Panel>
                   <Tab.Panel>
-                    <ApplicationsRejected />
+                    <ApplicationsRejected roundHasEnded={props.roundHasEnded} />
                   </Tab.Panel>
                 </Tab.Panels>
               </Tab.Group>

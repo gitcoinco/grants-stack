@@ -69,8 +69,6 @@ export default function ViewRoundPage() {
     id.toLowerCase()
   );
 
-  console.log("round", round);
-
   const isRoundFetched =
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
   const { data: applications } = useApplicationsByRoundId(id);
@@ -88,6 +86,8 @@ export default function ViewRoundPage() {
       : true);
   const roundNotFound = fetchRoundStatus === ProgressStatus.IS_ERROR;
 
+  const roundHasEnded = round ? moment().isAfter(round?.roundEndTime) : false;
+
   useEffect(() => {
     if (roundChainId !== chain?.id) {
       switchChain({ connector, chainId: roundChainId as number });
@@ -95,7 +95,6 @@ export default function ViewRoundPage() {
   }, [chain?.id, roundChainId, connector, switchChain]);
 
   const strategyName = round?.payoutStrategy.strategyName;
-  console.log("strategyName", strategyName);
   const badgeColor =
     strategyName === "MERKLE" ? "gradient-border-qf" : "gradient-border-direct";
 
@@ -388,6 +387,7 @@ export default function ViewRoundPage() {
                         fetchRoundStatus={fetchRoundStatus}
                         chainId={`${chain?.id}`}
                         roundId={id}
+                        roundHasEnded={roundHasEnded}
                       />
                     </Tab.Panel>
                     {!isDirectRound(round) && (

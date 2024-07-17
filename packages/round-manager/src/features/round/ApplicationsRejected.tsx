@@ -33,7 +33,9 @@ import ErrorModal from "../common/ErrorModal";
 import { errorModalDelayMs } from "../../constants";
 import { getRoundStrategyType, useAllo } from "common";
 
-export default function ApplicationsRejected() {
+export default function ApplicationsRejected(props: {
+  roundHasEnded: boolean;
+}) {
   const { id } = useParams();
   const allo = useAllo();
 
@@ -175,21 +177,24 @@ export default function ApplicationsRejected() {
 
   return (
     <>
-      {rejectedApplications && rejectedApplications.length > 0 ? (
-        <div className="flex items-center justify-end mb-4">
-          <span className="text-grey-400 text-sm mr-6">
-            Save in gas fees by approving/rejecting multiple applications at
-            once.
-          </span>
-          {bulkSelectRejected ? (
-            <Cancel onClick={() => setBulkSelectRejected(false)} />
-          ) : (
-            <Select onClick={() => setBulkSelectRejected(true)} />
-          )}
-        </div>
-      ) : (
-        <div className="text-center">No Rejected Applications</div>
-      )}
+      {!props.roundHasEnded &&
+      <>
+        {rejectedApplications && rejectedApplications.length > 0 ? (
+          <div className="flex items-center justify-end mb-4">
+            <span className="text-grey-400 text-sm mr-6">
+              Save in gas fees by approving/rejecting multiple applications at
+              once.
+            </span>
+            {bulkSelectRejected ? (
+              <Cancel onClick={() => setBulkSelectRejected(false)} />
+            ) : (
+              <Select onClick={() => setBulkSelectRejected(true)} />
+            )}
+          </div>
+        ) : (
+          <div className="text-center">No Rejected Applications</div>
+        )}
+      </>}
       <CardsContainer>
         {!isLoading &&
           rejectedApplications?.map((application, index) => (

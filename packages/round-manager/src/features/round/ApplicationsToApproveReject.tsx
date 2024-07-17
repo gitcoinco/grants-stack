@@ -72,12 +72,14 @@ export async function exportAndDownloadCSV(
 
 type Props = {
   isDirectRound?: boolean;
+  roundHasEnded: boolean;
 };
 
 // Approve or reject applications received in bulk, both in QF & direct grants
 
 export default function ApplicationsToApproveReject({
   isDirectRound = false,
+  roundHasEnded
 }: Props) {
   const { id } = useParams();
   const { chainId } = useAccount();
@@ -273,7 +275,7 @@ export default function ApplicationsToApproveReject({
             )}
           </Button>
         )}
-        {filteredApplications && filteredApplications.length > 0 && (
+        {!roundHasEnded && filteredApplications && filteredApplications.length > 0 && (
           <div className="flex items-center justify-end ml-auto">
             <span className="text-grey-400 text-sm mr-6">
               Save in gas fees by approving/rejecting multiple applications at
