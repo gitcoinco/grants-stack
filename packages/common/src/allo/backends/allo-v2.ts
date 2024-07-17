@@ -92,6 +92,15 @@ export function getDirectAllocationPoolId(chainId: number) {
   }
 }
 
+export function getDirectAllocationStrategyAddress(chainId: number) {
+  switch (chainId) {
+    case 11155111:
+      return "0xd60BCfa8714949c478d88da51A7450703A32Cf35";
+    default:
+      return undefined;
+  }
+}
+
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
   private ipfsUploader: IpfsUploader;
@@ -1469,6 +1478,17 @@ export class AlloV2 implements Allo {
 
       const poolId = BigInt(args.poolId);
 
+      const strategy = new DirectAllocationStrategy({
+        chain: this.chainId,
+        poolId: poolId,
+      });
+
+      const strategyAddress = getDirectAllocationStrategyAddress(this.chainId);
+
+      if (strategyAddress === undefined) {
+        return error(new AlloError("Direct allocation strategy not found"));
+      }
+
       if (args.tokenAddress === zeroAddress || !args.requireTokenApproval) {
         emit("tokenApprovalStatus", success(null));
       } else {
@@ -1476,7 +1496,7 @@ export class AlloV2 implements Allo {
           address: args.tokenAddress,
           abi: Erc20ABI,
           functionName: "approve",
-          args: [this.allo.address(), args.amount],
+          args: [strategyAddress, args.amount],
         });
 
         if (approvalTx.type === "error") {
@@ -1501,11 +1521,6 @@ export class AlloV2 implements Allo {
       if (_token === zeroAddress) {
         _token = getAddress(NATIVE);
       }
-
-      const strategy = new DirectAllocationStrategy({
-        chain: this.chainId,
-        poolId: poolId,
-      });
 
       const txData = strategy.getAllocateData({
         profileOwner: args.recipient,
