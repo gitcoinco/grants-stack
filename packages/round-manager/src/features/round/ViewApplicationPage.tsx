@@ -346,7 +346,7 @@ export default function ViewApplicationPage() {
               const encryptedString: Blob = await response.blob();
 
               const lit = new Lit({
-                chainId: Number(chainId!),
+                chainId: Number(roundChainId!),
                 contract: roundId.startsWith("0x")
                   ? roundId
                   : round?.payoutStrategy.id ?? "",
