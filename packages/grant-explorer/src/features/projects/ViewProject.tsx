@@ -2,6 +2,7 @@ import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import {
   formatDateWithOrdinal,
   getChainById,
+  NATIVE,
   renderToHTML,
   stringToBlobUrl,
   TToken,
@@ -15,6 +16,7 @@ import React, {
   createElement,
   FunctionComponent,
   PropsWithChildren,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -47,8 +49,11 @@ import { useDirectAllocation } from "./hooks/useDirectAllocation";
 import { getDirectAllocationPoolId } from "common/dist/allo/backends/allo-v2";
 import { zeroAddress } from "viem";
 import GenericModal from "../common/GenericModal";
-import { BoltIcon, EyeIcon } from "@heroicons/react/24/outline";
+import { BoltIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { getBalance } from "@wagmi/core";
+import { config } from "../../app/wagmi";
+import { ethers } from "ethers";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -73,13 +78,12 @@ const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
 export default function ViewProject() {
   const [selectedTab, setSelectedTab] = useState(0);
   const { chainId } = useAccount();
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
   const [showDirectAllocationModal, setShowDirectAllocationModal] =
     useState<boolean>(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
-  const [directDonationAmount, setDirectDonationAmount] =
-    useState<string>("0.0");
+  const [directDonationAmount, setDirectDonationAmount] = useState<string>("");
 
   const payoutTokenOptions: TToken[] = getVotingTokenOptions(
     Number(chainId)
@@ -88,6 +92,41 @@ export default function ViewProject() {
   const [payoutToken, setPayoutToken] = useState<TToken | undefined>(
     payoutTokenOptions[0]
   );
+
+  const [tokenBalance, setTokenBalance] = useState<bigint>(BigInt("0"));
+
+  useEffect(() => {
+    const runner = async () => {
+      const { value } = await getBalance(config, {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        address: address!,
+        token:
+          payoutToken?.address === zeroAddress ||
+          payoutToken?.address.toLowerCase() === NATIVE.toLowerCase()
+            ? undefined
+            : payoutToken?.address,
+        chainId,
+      });
+
+      setTokenBalance(value);
+    };
+    if (address && address !== zeroAddress) runner();
+  }, [payoutToken, chainId, address]);
+
+  const hasEnoughFunds =
+    Number(directDonationAmount) <=
+    Number(ethers.utils.formatUnits(tokenBalance, payoutToken?.decimals ?? 18));
+
+  const [hasClickedSubmit, setHasClickedSubmit] = useState(false);
+  const [isEmptyInput, setIsEmptyInput] = useState(false);
+
+  useEffect(() => {
+    if (directDonationAmount === "" || Number(directDonationAmount) === 0) {
+      setIsEmptyInput(true);
+    } else {
+      setIsEmptyInput(false);
+    }
+  }, [directDonationAmount]);
 
   const { projectId } = useParams();
 
@@ -359,15 +398,32 @@ export default function ViewProject() {
                   />
                 </div>
               </div>
+              {isEmptyInput && hasClickedSubmit && (
+                <p
+                  data-testid="emptyInput"
+                  className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+                >
+                  <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+                  <span>You must enter donation for the project</span>
+                </p>
+              )}
+              {!hasEnoughFunds && (
+                <p
+                  data-testid="hasEnoughFunds"
+                  className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+                >
+                  <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+                  <span>You don't have enough funds</span>
+                </p>
+              )}
 
               <button
                 type="button"
-                className="w-full font-normal bg-gitcoin-violet-400 text-white focus-visible:outline-indigo-600 py-2 leading-6"
+                className="w-full font-normal rounded-lg bg-gitcoin-violet-400 text-white focus-visible:outline-indigo-600 py-2 leading-6"
                 onClick={() => {
-                  setShowDirectAllocationModal(false);
-                  setOpenProgressModal(true);
                   handleDonate();
                 }}
+                disabled={!hasEnoughFunds}
               >
                 Submit your donation
               </button>
@@ -395,10 +451,16 @@ export default function ViewProject() {
     if (
       directDonationAmount === undefined ||
       allo === null ||
-      payoutToken === undefined
+      payoutToken === undefined ||
+      isEmptyInput
     ) {
+      setHasClickedSubmit(true);
       return;
     }
+
+    setShowDirectAllocationModal(false);
+    setOpenProgressModal(true);
+
     try {
       setTimeout(() => {
         setOpenProgressModal(true);
