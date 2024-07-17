@@ -9,9 +9,16 @@ import { DataLayer, v2Project } from "data-layer";
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
 
-vi.mock("@rainbow-me/rainbowkit", () => ({
-  ConnectButton: vi.fn(),
-}));
+vi.mock("@rainbow-me/rainbowkit", async () => {
+  const actual = await vi.importActual<typeof import("@rainbow-me/rainbowkit")>(
+    "@rainbow-me/rainbowkit"
+  );
+  return {
+    ...actual,
+    ConnectButton: vi.fn(),
+    getDefaultConfig: vi.fn().mockReturnValue({}),
+  };
+});
 
 vi.mock("common", async () => {
   const actual = await vi.importActual<typeof import("common")>("common");
