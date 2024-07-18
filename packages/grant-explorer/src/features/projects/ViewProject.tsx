@@ -47,7 +47,7 @@ import ErrorModal from "../common/ErrorModal";
 import ProgressModal, { errorModalDelayMs } from "../common/ProgressModal";
 import { useDirectAllocation } from "./hooks/useDirectAllocation";
 import { getDirectAllocationPoolId } from "common/dist/allo/backends/allo-v2";
-import { zeroAddress } from "viem";
+import { getAddress, zeroAddress } from "viem";
 import GenericModal from "../common/GenericModal";
 import { BoltIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -89,53 +89,16 @@ export default function ViewProject() {
   const [errorModalSubHeading, setErrorModalSubHeading] = useState<
     string | undefined
   >();
-  const [directDonationAmount, setDirectDonationAmount] = useState<string>("");
 
+  const [directDonationAmount, setDirectDonationAmount] = useState<string>("");
   const payoutTokenOptions: TToken[] = getVotingTokenOptions(
     Number(chainId)
   ).filter((p) => p.canVote);
-
   const [payoutToken, setPayoutToken] = useState<TToken | undefined>(
     payoutTokenOptions[0]
   );
-
-  const [tokenBalance, setTokenBalance] = useState<bigint>(BigInt("0"));
   const directAllocationPoolId = getDirectAllocationPoolId(chainId ?? 1);
-
-  useEffect(() => {
-    const runner = async () => {
-      const { value } = await getBalance(config, {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        address: address!,
-        token:
-          payoutToken?.address === zeroAddress ||
-          payoutToken?.address.toLowerCase() === NATIVE.toLowerCase()
-            ? undefined
-            : payoutToken?.address,
-        chainId,
-      });
-
-      setTokenBalance(value);
-    };
-    if (address && address !== zeroAddress) runner();
-  }, [payoutToken, chainId, address]);
-
-  const hasEnoughFunds =
-    Number(directDonationAmount) <=
-    Number(ethers.utils.formatUnits(tokenBalance, payoutToken?.decimals ?? 18));
-
-  const [hasClickedSubmit, setHasClickedSubmit] = useState(false);
-  const [isEmptyInput, setIsEmptyInput] = useState(false);
   const [transactionReplaced, setTransactionReplaced] = useState(false);
-
-  useEffect(() => {
-    if (directDonationAmount === "" || Number(directDonationAmount) === 0) {
-      setIsEmptyInput(true);
-    } else {
-      setIsEmptyInput(false);
-    }
-  }, [directDonationAmount]);
-
   const { projectId } = useParams();
 
   const dataLayer = useDataLayer();
@@ -394,7 +357,7 @@ export default function ViewProject() {
                 <p>Couldn't load project data.</p>
               )}
             </div>
-            <DirectDonationModals />
+            <DonationModals />
           </div>
         </DefaultLayout>
       ) : (
@@ -403,98 +366,26 @@ export default function ViewProject() {
     </>
   );
 
-  function DirectDonationModals() {
+  function DonationModals() {
     return (
       <>
         <GenericModal
           body={
-            <>
-              <div>
-                <p className="mb-4">
-                  <BoltIcon className="w-4 h-4 mb-1 inline-block mr-2" />
-                  Donate now
-                </p>
-              </div>
-
-              <div className="mb-4 flex flex-col lg:flex-row justify-between sm:px-2 px-2 py-4 rounded-md">
-                <div className="flex">
-                  <div className="flex relative overflow-hidden bg-no-repeat bg-cover mt-auto mb-auto">
-                    <img
-                      className="inline-block rounded-full w-10 my-auto mr-2"
-                      src={
-                        projectData?.project.metadata.logoImg
-                          ? `${ipfsGateway}/ipfs/${projectData?.project.metadata.logoImg}`
-                          : DefaultLogoImage
-                      }
-                      alt={"Project Logo"}
-                    />
-                    <p className="font-semibold text-md my-auto text-ellipsis line-clamp-1 max-w-[500px] 2xl:max-w-none">
-                      {projectData?.project?.metadata.title}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex sm:space-x-4 space-x-2 h-16 sm:pl-4 pt-3 justify-center">
-                  <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text font-medium">
-                    Amount
-                  </p>
-                  <Input
-                    aria-label={"Donation amount for all projects "}
-                    id={"input-donationamount"}
-                    min="0"
-                    type="text"
-                    value={directDonationAmount}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const value = e.target.value.replace(",", ".");
-                      if (/^\d*\.?\d*$/.test(value) || value === "") {
-                        setDirectDonationAmount(value);
-                      }
-                    }}
-                    className="w-16 lg:w-18"
-                  />
-                  <PayoutTokenDropdown
-                    selectedPayoutToken={payoutToken}
-                    setSelectedPayoutToken={(token) => {
-                      setPayoutToken(token);
-                    }}
-                    payoutTokenOptions={payoutTokenOptions}
-                    style="max-h-16"
-                  />
-                </div>
-              </div>
-              {isEmptyInput && hasClickedSubmit && (
-                <p
-                  data-testid="emptyInput"
-                  className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
-                >
-                  <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-                  <span>You must enter donation for the project</span>
-                </p>
-              )}
-              {!hasEnoughFunds && (
-                <p
-                  data-testid="hasEnoughFunds"
-                  className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
-                >
-                  <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
-                  <span>You don't have enough funds</span>
-                </p>
-              )}
-
-              <button
-                type="button"
-                className="w-full font-normal rounded-lg bg-gitcoin-violet-400 text-white focus-visible:outline-indigo-600 py-2 leading-6"
-                onClick={() => {
-                  handleDonate();
-                }}
-                disabled={!hasEnoughFunds}
-              >
-                Submit your donation
-              </button>
-            </>
+            <DirectDonationModalComponent
+              chainId={chainId!}
+              address={address!}
+              directDonationAmount={directDonationAmount}
+              setDirectDonationAmount={setDirectDonationAmount}
+              payoutToken={payoutToken}
+              setPayoutToken={setPayoutToken}
+              payoutTokenOptions={payoutTokenOptions}
+              projectData={{ project: project! }}
+              handleDonate={handleDonate}
+            />
           }
           isOpen={showDirectAllocationModal}
           setIsOpen={setShowDirectAllocationModal}
-        />
+        ></GenericModal>
         <ProgressModal
           isOpen={openProgressModal}
           subheading={"Please hold while we donate your funds to the project."}
@@ -514,10 +405,8 @@ export default function ViewProject() {
     if (
       directDonationAmount === undefined ||
       allo === null ||
-      payoutToken === undefined ||
-      isEmptyInput
+      payoutToken === undefined
     ) {
-      setHasClickedSubmit(true);
       return;
     }
 
@@ -570,6 +459,154 @@ export default function ViewProject() {
       }
     }
   }
+}
+
+export function DirectDonationModalComponent(props: {
+  chainId: number;
+  address: string;
+  directDonationAmount: string;
+  setDirectDonationAmount: (value: string) => void;
+  payoutToken: TToken | undefined;
+  setPayoutToken: (token: TToken | undefined) => void;
+  payoutTokenOptions: TToken[];
+  projectData: { project: v2Project };
+  handleDonate: () => void;
+}) {
+  const [tokenBalance, setTokenBalance] = useState<bigint>(BigInt("0"));
+  const [hasEnoughFunds, setHasEnoughFunds] = useState(false);
+
+  useEffect(() => {
+    const runner = async () => {
+      const { value } = await getBalance(config, {
+        address: getAddress(props.address),
+        token:
+          props.payoutToken?.address === zeroAddress ||
+          props.payoutToken?.address.toLowerCase() === NATIVE.toLowerCase()
+            ? undefined
+            : props.payoutToken?.address,
+        chainId: props.chainId,
+      });
+
+      setTokenBalance(value);
+    };
+    if (props.address && props.address !== zeroAddress) runner();
+  }, [props.payoutToken, props.chainId, props.address]);
+
+  useMemo(() => {
+    setHasEnoughFunds(
+      Number(props.directDonationAmount) <=
+        Number(
+          ethers.utils.formatUnits(
+            tokenBalance,
+            props.payoutToken?.decimals ?? 18
+          )
+        )
+    );
+  }, [props.directDonationAmount, tokenBalance, props.payoutToken]);
+
+  const [hasClickedSubmit, setHasClickedSubmit] = useState(false);
+  const [isEmptyInput, setIsEmptyInput] = useState(false);
+
+  useEffect(() => {
+    if (
+      props.directDonationAmount === "" ||
+      Number(props.directDonationAmount) === 0
+    ) {
+      setIsEmptyInput(true);
+    } else {
+      setIsEmptyInput(false);
+    }
+  }, [props.directDonationAmount]);
+
+  return (
+    <>
+      <div>
+        <p className="mb-4">
+          <BoltIcon className="w-4 h-4 mb-1 inline-block mr-2" />
+          Donate now
+        </p>
+      </div>
+
+      <div className="mb-4 flex flex-col lg:flex-row justify-between sm:px-2 px-2 py-4 rounded-md">
+        <div className="flex">
+          <div className="flex relative overflow-hidden bg-no-repeat bg-cover mt-auto mb-auto">
+            <img
+              className="inline-block rounded-full w-10 my-auto mr-2"
+              src={
+                props.projectData?.project.metadata.logoImg
+                  ? `${ipfsGateway}/ipfs/${props.projectData?.project.metadata.logoImg}`
+                  : DefaultLogoImage
+              }
+              alt={"Project Logo"}
+            />
+            <p className="font-semibold text-md my-auto text-ellipsis line-clamp-1 max-w-[500px] 2xl:max-w-none">
+              {props.projectData?.project?.metadata.title}
+            </p>
+          </div>
+        </div>
+        <div className="flex sm:space-x-4 space-x-2 h-16 sm:pl-4 pt-3 justify-center">
+          <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text font-medium">
+            Amount
+          </p>
+          <Input
+            aria-label={"Donation amount for all projects "}
+            id={"input-donationamount"}
+            min="0"
+            type="text"
+            value={props.directDonationAmount}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const value = e.target.value.replace(",", ".");
+              if (/^\d*\.?\d*$/.test(value) || value === "") {
+                props.setDirectDonationAmount(value);
+              }
+            }}
+            className="w-16 lg:w-18"
+          />
+          <PayoutTokenDropdown
+            selectedPayoutToken={props.payoutToken}
+            setSelectedPayoutToken={(token) => {
+              props.setPayoutToken(token);
+            }}
+            payoutTokenOptions={props.payoutTokenOptions}
+            style="max-h-16"
+          />
+        </div>
+      </div>
+      {isEmptyInput && hasClickedSubmit && (
+        <p
+          data-testid="emptyInput"
+          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+        >
+          <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+          <span>You must enter donation for the project</span>
+        </p>
+      )}
+      {!hasEnoughFunds && (
+        <p
+          data-testid="hasEnoughFunds"
+          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+        >
+          <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+          <span>You don't have enough funds</span>
+        </p>
+      )}
+
+      <button
+        type="button"
+        className="w-full font-normal rounded-lg bg-gitcoin-violet-400 text-white focus-visible:outline-indigo-600 py-2 leading-6"
+        onClick={() => {
+          if (isEmptyInput) {
+            setHasClickedSubmit(true);
+            return;
+          }
+          props.handleDonate();
+        }}
+        disabled={!hasEnoughFunds}
+      >
+        Submit your donation
+      </button>
+    </>
+  );
 }
 
 function ProjectDetailsTabs(props: {
