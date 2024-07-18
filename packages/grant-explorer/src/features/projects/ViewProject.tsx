@@ -2,8 +2,11 @@ import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import {
   formatDateWithOrdinal,
   getChainById,
+  NATIVE,
   renderToHTML,
   stringToBlobUrl,
+  TToken,
+  useAllo,
   useParams,
   useValidateCredential,
 } from "common";
@@ -13,6 +16,7 @@ import React, {
   createElement,
   FunctionComponent,
   PropsWithChildren,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -34,7 +38,24 @@ import { DefaultLayout } from "../common/DefaultLayout";
 import { useProject, useProjectApplications } from "./hooks/useProject";
 import NotFoundPage from "../common/NotFoundPage";
 import { useCartStorage } from "../../store";
-import { CartProject } from "../api/types";
+import { CartProject, ProgressStatus } from "../api/types";
+import { Input } from "common/src/styles";
+import { PayoutTokenDropdown } from "../round/ViewCartPage/PayoutTokenDropdown";
+import { useAccount } from "wagmi";
+import { getVotingTokenOptions } from "../api/utils";
+import ErrorModal from "../common/ErrorModal";
+import ProgressModal, { errorModalDelayMs } from "../common/ProgressModal";
+import { useDirectAllocation } from "./hooks/useDirectAllocation";
+import { getDirectAllocationPoolId } from "common/dist/allo/backends/allo-v2";
+import { zeroAddress } from "viem";
+import GenericModal from "../common/GenericModal";
+import { BoltIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { getBalance } from "@wagmi/core";
+import { config } from "../../app/wagmi";
+import { ethers } from "ethers";
+import { useNavigate } from "react-router-dom";
+import { Logger } from "ethers/lib/utils";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -58,10 +79,68 @@ const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
 
 export default function ViewProject() {
   const [selectedTab, setSelectedTab] = useState(0);
+  const { chainId } = useAccount();
+  const { address, isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
+  const [showDirectAllocationModal, setShowDirectAllocationModal] =
+    useState<boolean>(false);
+  const [openProgressModal, setOpenProgressModal] = useState(false);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [errorModalSubHeading, setErrorModalSubHeading] = useState<
+    string | undefined
+  >();
+  const [directDonationAmount, setDirectDonationAmount] = useState<string>("");
+
+  const payoutTokenOptions: TToken[] = getVotingTokenOptions(
+    Number(chainId)
+  ).filter((p) => p.canVote);
+
+  const [payoutToken, setPayoutToken] = useState<TToken | undefined>(
+    payoutTokenOptions[0]
+  );
+
+  const [tokenBalance, setTokenBalance] = useState<bigint>(BigInt("0"));
+  const directAllocationPoolId = getDirectAllocationPoolId(chainId ?? 1);
+
+  useEffect(() => {
+    const runner = async () => {
+      const { value } = await getBalance(config, {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        address: address!,
+        token:
+          payoutToken?.address === zeroAddress ||
+          payoutToken?.address.toLowerCase() === NATIVE.toLowerCase()
+            ? undefined
+            : payoutToken?.address,
+        chainId,
+      });
+
+      setTokenBalance(value);
+    };
+    if (address && address !== zeroAddress) runner();
+  }, [payoutToken, chainId, address]);
+
+  const hasEnoughFunds =
+    Number(directDonationAmount) <=
+    Number(ethers.utils.formatUnits(tokenBalance, payoutToken?.decimals ?? 18));
+
+  const [hasClickedSubmit, setHasClickedSubmit] = useState(false);
+  const [isEmptyInput, setIsEmptyInput] = useState(false);
+  const [transactionReplaced, setTransactionReplaced] = useState(false);
+
+  useEffect(() => {
+    if (directDonationAmount === "" || Number(directDonationAmount) === 0) {
+      setIsEmptyInput(true);
+    } else {
+      setIsEmptyInput(false);
+    }
+  }, [directDonationAmount]);
 
   const { projectId } = useParams();
 
   const dataLayer = useDataLayer();
+  const allo = useAllo();
+  const navigate = useNavigate();
 
   const {
     data: projectData,
@@ -85,12 +164,64 @@ export default function ViewProject() {
     dataLayer
   );
 
+  const {
+    directAllocation,
+    tokenApprovalStatus,
+    fundStatus,
+    indexingStatus,
+    txHash,
+  } = useDirectAllocation();
+
   const pastRroundApplications = projectApplications?.filter(
     (projectApplication) =>
       new Date(projectApplication.round.donationsEndTime) < new Date()
   );
 
   const project = projectData?.project;
+
+  useEffect(() => {
+    if (
+      tokenApprovalStatus === ProgressStatus.IS_ERROR ||
+      fundStatus === ProgressStatus.IS_ERROR
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        setErrorModalSubHeading(
+          transactionReplaced
+            ? "Transaction cancelled. Please try again."
+            : "There was an error during the funding process. Please try again."
+        );
+        setOpenErrorModal(true);
+      }, errorModalDelayMs);
+    }
+
+    if (indexingStatus === ProgressStatus.IS_ERROR) {
+      setTimeout(() => {
+        // refresh
+        navigate(0);
+      }, 5000);
+    }
+
+    if (
+      tokenApprovalStatus === ProgressStatus.IS_SUCCESS &&
+      fundStatus === ProgressStatus.IS_SUCCESS &&
+      txHash !== ""
+    ) {
+      setTimeout(() => {
+        setOpenProgressModal(false);
+        // refresh
+        navigate(0);
+      }, errorModalDelayMs);
+    }
+  }, [
+    navigate,
+    tokenApprovalStatus,
+    fundStatus,
+    indexingStatus,
+    txHash,
+    transactionReplaced,
+    projectId,
+  ]);
 
   const breadCrumbs = [
     {
@@ -106,6 +237,32 @@ export default function ViewProject() {
       path: `/projects/${projectId}`,
     },
   ] as BreadcrumbItem[];
+
+  const progressSteps = [
+    {
+      name: "Token Approval",
+      description: "Approving token transfer.",
+      status: tokenApprovalStatus,
+    },
+    {
+      name: "Donating",
+      description: "Donating to the project.",
+      status: fundStatus,
+    },
+    {
+      name: "Indexing",
+      description: "Indexing the data.",
+      status: indexingStatus,
+    },
+    {
+      name: "Redirecting",
+      description: "Just another moment while we finish things up.",
+      status:
+        indexingStatus === ProgressStatus.IS_SUCCESS
+          ? ProgressStatus.IN_PROGRESS
+          : ProgressStatus.NOT_STARTED,
+    },
+  ];
 
   const {
     metadata: { title, description = "", bannerImg },
@@ -191,7 +348,26 @@ export default function ViewProject() {
             </div>
           </div>
           <div className="md:flex gap-4 flex-row-reverse">
-            <Sidebar projectApplications={projectApplications} />
+            <div className="mb-4">
+              <Sidebar projectApplications={projectApplications} />
+              {directAllocationPoolId && (
+                <button
+                  type="button"
+                  data-testid="direct-allocation-button"
+                  className="w-full block my-0 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold rounded-lg leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  onClick={() => {
+                    if (!isConnected) {
+                      openConnectModal?.();
+                      return;
+                    }
+                    setShowDirectAllocationModal(true);
+                  }}
+                >
+                  <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
+                  Donate
+                </button>
+              )}
+            </div>
             <div className="flex-1">
               {projectError === undefined ? (
                 <>
@@ -218,6 +394,7 @@ export default function ViewProject() {
                 <p>Couldn't load project data.</p>
               )}
             </div>
+            <DirectDonationModals />
           </div>
         </DefaultLayout>
       ) : (
@@ -225,6 +402,174 @@ export default function ViewProject() {
       )}
     </>
   );
+
+  function DirectDonationModals() {
+    return (
+      <>
+        <GenericModal
+          body={
+            <>
+              <div>
+                <p className="mb-4">
+                  <BoltIcon className="w-4 h-4 mb-1 inline-block mr-2" />
+                  Donate now
+                </p>
+              </div>
+
+              <div className="mb-4 flex flex-col lg:flex-row justify-between sm:px-2 px-2 py-4 rounded-md">
+                <div className="flex">
+                  <div className="flex relative overflow-hidden bg-no-repeat bg-cover mt-auto mb-auto">
+                    <img
+                      className="inline-block rounded-full w-10 my-auto mr-2"
+                      src={
+                        projectData?.project.metadata.logoImg
+                          ? `${ipfsGateway}/ipfs/${projectData?.project.metadata.logoImg}`
+                          : DefaultLogoImage
+                      }
+                      alt={"Project Logo"}
+                    />
+                    <p className="font-semibold text-md my-auto text-ellipsis line-clamp-1 max-w-[500px] 2xl:max-w-none">
+                      {projectData?.project?.metadata.title}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex sm:space-x-4 space-x-2 h-16 sm:pl-4 pt-3 justify-center">
+                  <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text font-medium">
+                    Amount
+                  </p>
+                  <Input
+                    aria-label={"Donation amount for all projects "}
+                    id={"input-donationamount"}
+                    min="0"
+                    type="text"
+                    value={directDonationAmount}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const value = e.target.value.replace(",", ".");
+                      if (/^\d*\.?\d*$/.test(value) || value === "") {
+                        setDirectDonationAmount(value);
+                      }
+                    }}
+                    className="w-16 lg:w-18"
+                  />
+                  <PayoutTokenDropdown
+                    selectedPayoutToken={payoutToken}
+                    setSelectedPayoutToken={(token) => {
+                      setPayoutToken(token);
+                    }}
+                    payoutTokenOptions={payoutTokenOptions}
+                    style="max-h-16"
+                  />
+                </div>
+              </div>
+              {isEmptyInput && hasClickedSubmit && (
+                <p
+                  data-testid="emptyInput"
+                  className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+                >
+                  <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+                  <span>You must enter donation for the project</span>
+                </p>
+              )}
+              {!hasEnoughFunds && (
+                <p
+                  data-testid="hasEnoughFunds"
+                  className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+                >
+                  <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
+                  <span>You don't have enough funds</span>
+                </p>
+              )}
+
+              <button
+                type="button"
+                className="w-full font-normal rounded-lg bg-gitcoin-violet-400 text-white focus-visible:outline-indigo-600 py-2 leading-6"
+                onClick={() => {
+                  handleDonate();
+                }}
+                disabled={!hasEnoughFunds}
+              >
+                Submit your donation
+              </button>
+            </>
+          }
+          isOpen={showDirectAllocationModal}
+          setIsOpen={setShowDirectAllocationModal}
+        />
+        <ProgressModal
+          isOpen={openProgressModal}
+          subheading={"Please hold while we donate your funds to the project."}
+          steps={progressSteps}
+        />
+        <ErrorModal
+          isOpen={openErrorModal}
+          setIsOpen={setOpenErrorModal}
+          onTryAgain={handleDonate}
+          subheading={errorModalSubHeading}
+        />
+      </>
+    );
+  }
+
+  async function handleDonate() {
+    if (
+      directDonationAmount === undefined ||
+      allo === null ||
+      payoutToken === undefined ||
+      isEmptyInput
+    ) {
+      setHasClickedSubmit(true);
+      return;
+    }
+
+    setShowDirectAllocationModal(false);
+    setOpenProgressModal(true);
+
+    try {
+      let requireTokenApproval = false;
+
+      const poolId = getDirectAllocationPoolId(chainId ?? 1)?.toString();
+
+      const recipient = project?.roles?.filter(
+        (role) => role.role === "OWNER"
+      )[0].address;
+
+      const nonce = project?.nonce;
+
+      if (
+        poolId === undefined ||
+        recipient === undefined ||
+        nonce === undefined
+      ) {
+        console.error("handleDonation - project", projectId, "missing data");
+        return;
+      }
+
+      if (
+        payoutToken?.address !== undefined &&
+        payoutToken?.address !== zeroAddress
+      ) {
+        requireTokenApproval = true;
+      }
+
+      await directAllocation({
+        allo,
+        poolId,
+        fundAmount: Number(
+          parseFloat(directDonationAmount).toFixed(payoutToken.decimals)
+        ),
+        payoutToken,
+        recipient,
+        nonce,
+        requireTokenApproval,
+      });
+    } catch (error) {
+      if (error === Logger.errors.TRANSACTION_REPLACED) {
+        setTransactionReplaced(true);
+      } else {
+        console.error("handleDonation - project", projectId, error);
+      }
+    }
+  }
 }
 
 function ProjectDetailsTabs(props: {
@@ -403,7 +748,7 @@ function Sidebar(props: {
       {activeQFRoundApplications && activeQFRoundApplications?.length > 0 && (
         <h4 className="text-xl font-medium">Active rounds</h4>
       )}
-      <div className="mt-4 max-w-[320px] h-fit mb-6 rounded-3xl ">
+      <div className="mt-4 max-w-[320px] h-fit rounded-3xl ">
         {activeQFRoundApplications?.map((projectApplication) => (
           <ActiveRoundComponent
             key={projectApplication.id}
@@ -447,20 +792,22 @@ export function ProjectStats(props: {
   const totalRoundsParticipated = props.projectApplications?.length ?? 0;
 
   return (
-    <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
-      <h4 className="text-2xl">All-time stats</h4>
-      <Stat isLoading={false} value={`$${totalFundingReceived}`}>
-        funding received
-      </Stat>
-      <Stat isLoading={false} value={totalContributions}>
-        contributions
-      </Stat>
-      <Stat isLoading={false} value={totalUniqueDonors}>
-        unique contributors
-      </Stat>
-      <Stat isLoading={false} value={totalRoundsParticipated}>
-        rounds participated
-      </Stat>
+    <div className="flex flex-col">
+      <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
+        <h4 className="text-2xl">All-time stats</h4>
+        <Stat isLoading={false} value={`$${totalFundingReceived}`}>
+          funding received
+        </Stat>
+        <Stat isLoading={false} value={totalContributions}>
+          contributions
+        </Stat>
+        <Stat isLoading={false} value={totalUniqueDonors}>
+          unique contributors
+        </Stat>
+        <Stat isLoading={false} value={totalRoundsParticipated}>
+          rounds participated
+        </Stat>
+      </div>
     </div>
   );
 }
