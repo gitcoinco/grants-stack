@@ -441,10 +441,13 @@ export default function ViewProject() {
                     aria-label={"Donation amount for all projects "}
                     id={"input-donationamount"}
                     min="0"
-                    type="number"
+                    type="text"
                     value={directDonationAmount}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setDirectDonationAmount(e.target.value);
+                      const value = e.target.value.replace(",", ".");
+                      if (/^\d*\.?\d*$/.test(value) || value === "") {
+                        setDirectDonationAmount(value);
+                      }
                     }}
                     className="w-16 lg:w-18"
                   />
