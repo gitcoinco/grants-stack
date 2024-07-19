@@ -2,7 +2,6 @@ import {
   AlloAbi,
   Allo as AlloV2Contract,
   CreateProfileArgs,
-  DirectAllocationStrategy,
   DirectGrantsLiteStrategy,
   DirectGrantsLiteStrategyTypes,
   DonationVotingMerkleDistributionDirectTransferStrategyAbi,
@@ -81,24 +80,6 @@ export function getAlloAddress(chainId: number) {
     chain: chainId,
   });
   return allo.address();
-}
-
-export function getDirectAllocationPoolId(chainId: number) {
-  switch (chainId) {
-    case 11155111:
-      return 386;
-    default:
-      return undefined;
-  }
-}
-
-export function getDirectAllocationStrategyAddress(chainId: number) {
-  switch (chainId) {
-    case 11155111:
-      return "0xd60BCfa8714949c478d88da51A7450703A32Cf35";
-    default:
-      return undefined;
-  }
 }
 
 export class AlloV2 implements Allo {
@@ -1440,114 +1421,6 @@ export class AlloV2 implements Allo {
       } catch (err) {
         console.log(err);
         const result = new AlloError("Failed to add pool manager");
-        emit("transactionStatus", error(result));
-        return error(result);
-      }
-
-      await this.waitUntilIndexerSynced({
-        chainId: this.chainId,
-        blockNumber: receipt.blockNumber,
-      });
-
-      emit("indexingStatus", success(null));
-
-      return success(null);
-    });
-  }
-
-  directAllocation(args: {
-    tokenAddress: Address;
-    poolId: string;
-    amount: bigint;
-    recipient: Address;
-    nonce: bigint;
-    requireTokenApproval?: boolean;
-  }): AlloOperation<
-    Result<null>,
-    {
-      tokenApprovalStatus: Result<TransactionReceipt | null>;
-      transaction: Result<Hex>;
-      transactionStatus: Result<TransactionReceipt>;
-      indexingStatus: Result<null>;
-    }
-  > {
-    return new AlloOperation(async ({ emit }) => {
-      if (isNaN(Number(args.poolId))) {
-        return error(new AlloError("Pool ID is not a valid Allo V2 pool ID"));
-      }
-
-      const poolId = BigInt(args.poolId);
-
-      const strategy = new DirectAllocationStrategy({
-        chain: this.chainId,
-        poolId: poolId,
-      });
-
-      const strategyAddress = getDirectAllocationStrategyAddress(this.chainId);
-
-      if (strategyAddress === undefined) {
-        return error(new AlloError("Direct allocation strategy not found"));
-      }
-
-      if (args.tokenAddress === zeroAddress || !args.requireTokenApproval) {
-        emit("tokenApprovalStatus", success(null));
-      } else {
-        const approvalTx = await sendTransaction(this.transactionSender, {
-          address: args.tokenAddress,
-          abi: Erc20ABI,
-          functionName: "approve",
-          args: [strategyAddress, args.amount],
-        });
-
-        if (approvalTx.type === "error") {
-          const result = new AlloError(
-            "Failed to approve token transfer",
-            approvalTx.error
-          );
-          emit("tokenApprovalStatus", error(result));
-          return error(result);
-        }
-        try {
-          const receipt = await this.transactionSender.wait(approvalTx.value);
-          emit("tokenApprovalStatus", success(receipt));
-        } catch (err) {
-          const result = new AlloError("Failed to approve token transfer", err);
-          emit("tokenApprovalStatus", error(result));
-          return error(result);
-        }
-      }
-
-      let _token = args.tokenAddress;
-      if (_token === zeroAddress) {
-        _token = getAddress(NATIVE);
-      }
-
-      const txData = strategy.getAllocateData({
-        profileOwner: args.recipient,
-        amount: BigInt(args.amount.toString()),
-        token: _token,
-        nonce: args.nonce,
-      });
-
-      const tx = await sendRawTransaction(this.transactionSender, {
-        to: txData.to,
-        data: txData.data,
-        value: BigInt(txData.value),
-      });
-
-      emit("transaction", tx);
-
-      if (tx.type === "error") {
-        return tx;
-      }
-
-      let receipt: TransactionReceipt;
-
-      try {
-        receipt = await this.transactionSender.wait(tx.value);
-        emit("transactionStatus", success(receipt));
-      } catch (err) {
-        const result = new AlloError("Failed to fund round", err);
         emit("transactionStatus", error(result));
         return error(result);
       }
