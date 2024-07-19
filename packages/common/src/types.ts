@@ -94,10 +94,3 @@ export type InputType =
 export type DeepRequired<T> = {
   [K in keyof T]: Required<DeepRequired<T[K]>>;
 };
-
-export type Allocation = {
-  profileOwner: `0x${string}`;
-  amount: bigint;
-  token: `0x${string}`;
-  nonce: bigint;
-};

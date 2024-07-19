@@ -244,23 +244,6 @@ export interface Allo {
       indexingStatus: Result<null>;
     }
   >;
-
-  directAllocation: (args: {
-    tokenAddress: Address;
-    poolId: string;
-    amount: bigint;
-    recipient: Address;
-    nonce: bigint;
-    requireTokenApproval?: boolean;
-  }) => AlloOperation<
-    Result<null>,
-    {
-      tokenApprovalStatus: Result<TransactionReceipt | null>;
-      transaction: Result<Hex>;
-      transactionStatus: Result<TransactionReceipt>;
-      indexingStatus: Result<null>;
-    }
-  >;
 }
 
 export { AlloOperation };
