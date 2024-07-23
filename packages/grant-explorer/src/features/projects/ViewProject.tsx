@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import {
   formatDateWithOrdinal,
@@ -47,7 +48,7 @@ import ErrorModal from "../common/ErrorModal";
 import ProgressModal, { errorModalDelayMs } from "../common/ProgressModal";
 import { useDirectAllocation } from "./hooks/useDirectAllocation";
 import { getDirectAllocationPoolId } from "common/dist/allo/backends/allo-v2";
-import { getAddress, zeroAddress } from "viem";
+import { Address, getAddress, zeroAddress } from "viem";
 import GenericModal from "../common/GenericModal";
 import { BoltIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -97,6 +98,9 @@ export default function ViewProject() {
   const [payoutToken, setPayoutToken] = useState<TToken | undefined>(
     payoutTokenOptions[0]
   );
+  const [tokenBalances, setTokenBalances] = useState<
+    { token: Address; balance: bigint }[]
+  >([]);
   const directAllocationPoolId = getDirectAllocationPoolId(chainId ?? 1);
   const [transactionReplaced, setTransactionReplaced] = useState(false);
   const { projectId } = useParams();
@@ -134,6 +138,31 @@ export default function ViewProject() {
     indexingStatus,
     txHash,
   } = useDirectAllocation();
+
+  useMemo(() => {
+    if (!address) return;
+    const runner = async () => {
+      const balances = await Promise.all(
+        payoutTokenOptions.map(async (token) => {
+          const { value } = await getBalance(config, {
+            address: getAddress(address),
+            token:
+              token.address === zeroAddress ||
+              token.address.toLowerCase() === NATIVE.toLowerCase()
+                ? undefined
+                : token.address,
+            chainId: chainId,
+          });
+          return { token: token.address, balance: value };
+        })
+      );
+
+      setTokenBalances(balances);
+    };
+
+    if (address && address !== zeroAddress) runner();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId, address]);
 
   const pastRroundApplications = projectApplications?.filter(
     (projectApplication) =>
@@ -379,6 +408,7 @@ export default function ViewProject() {
               payoutToken={payoutToken}
               setPayoutToken={setPayoutToken}
               payoutTokenOptions={payoutTokenOptions}
+              tokenBalances={tokenBalances}
               projectData={{ project: project! }}
               handleDonate={handleDonate}
             />
@@ -469,40 +499,27 @@ export function DirectDonationModalComponent(props: {
   payoutToken: TToken | undefined;
   setPayoutToken: (token: TToken | undefined) => void;
   payoutTokenOptions: TToken[];
+  tokenBalances: { token: Address; balance: bigint }[];
   projectData: { project: v2Project };
   handleDonate: () => void;
 }) {
-  const [tokenBalance, setTokenBalance] = useState<bigint>(BigInt("0"));
   const [hasEnoughFunds, setHasEnoughFunds] = useState(false);
-
-  useEffect(() => {
-    const runner = async () => {
-      const { value } = await getBalance(config, {
-        address: getAddress(props.address),
-        token:
-          props.payoutToken?.address === zeroAddress ||
-          props.payoutToken?.address.toLowerCase() === NATIVE.toLowerCase()
-            ? undefined
-            : props.payoutToken?.address,
-        chainId: props.chainId,
-      });
-
-      setTokenBalance(value);
-    };
-    if (props.address && props.address !== zeroAddress) runner();
-  }, [props.payoutToken, props.chainId, props.address]);
 
   useMemo(() => {
     setHasEnoughFunds(
       Number(props.directDonationAmount) <=
         Number(
           ethers.utils.formatUnits(
-            tokenBalance,
+            props.tokenBalances.find(
+              (balance) =>
+                balance.token.toLowerCase() ===
+                (props.payoutToken?.address ?? "").toLowerCase()
+            )?.balance ?? 0n,
             props.payoutToken?.decimals ?? 18
           )
         )
     );
-  }, [props.directDonationAmount, tokenBalance, props.payoutToken]);
+  }, [props.directDonationAmount, props.tokenBalances, props.payoutToken]);
 
   const [hasClickedSubmit, setHasClickedSubmit] = useState(false);
   const [isEmptyInput, setIsEmptyInput] = useState(false);
