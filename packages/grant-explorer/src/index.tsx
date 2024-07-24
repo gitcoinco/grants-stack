@@ -35,6 +35,7 @@ import AlloWrapper from "./features/api/AlloWrapper";
 import { PostHogProvider } from "posthog-js/react";
 import ViewProject from "./features/projects/ViewProject";
 import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
+import { DirectAllocationProvider } from "./features/projects/hooks/useDirectAllocation";
 
 initSentry();
 initDatadog();
@@ -68,67 +69,72 @@ root.render(
         <QueryClientProvider client={queryClient}>
           <RainbowKitProvider>
             <ChakraProvider>
-              <AlloWrapper>
-                <RoundProvider>
-                  <DataLayerProvider client={dataLayer}>
-                    <HashRouter>
-                      <Routes>
-                        {/* Protected Routes */}
-                        <Route element={<Auth />} />
+              <DirectAllocationProvider>
+                <AlloWrapper>
+                  <RoundProvider>
+                    <DataLayerProvider client={dataLayer}>
+                      <HashRouter>
+                        <Routes>
+                          {/* Protected Routes */}
+                          <Route element={<Auth />} />
 
-                        {/* Default Route */}
-                        <Route path="/" element={<LandingPage />} />
+                          {/* Default Route */}
+                          <Route path="/" element={<LandingPage />} />
 
-                        <Route path="/rounds" element={<ExploreRoundsPage />} />
+                          <Route
+                            path="/rounds"
+                            element={<ExploreRoundsPage />}
+                          />
 
-                        {/* Round Routes */}
-                        <Route
-                          path="/round/:chainId/:roundId"
-                          element={<ViewRound />}
-                        />
-                        <Route
-                          path="/round/:chainId/:roundId/:applicationId"
-                          element={<ViewProjectDetails />}
-                        />
+                          {/* Round Routes */}
+                          <Route
+                            path="/round/:chainId/:roundId"
+                            element={<ViewRound />}
+                          />
+                          <Route
+                            path="/round/:chainId/:roundId/:applicationId"
+                            element={<ViewProjectDetails />}
+                          />
 
-                        {/* Project Routes */}
+                          {/* Project Routes */}
 
-                        <Route
-                          path="/projects"
-                          element={<ExploreProjectsPage />}
-                        />
+                          <Route
+                            path="/projects"
+                            element={<ExploreProjectsPage />}
+                          />
 
-                        <Route
-                          path="/projects/:projectId"
-                          element={<ViewProject />}
-                        />
+                          <Route
+                            path="/projects/:projectId"
+                            element={<ViewProject />}
+                          />
 
-                        <Route path="/cart" element={<ViewCart />} />
+                          <Route path="/cart" element={<ViewCart />} />
 
-                        <Route path="/thankyou" element={<ThankYou />} />
+                          <Route path="/thankyou" element={<ThankYou />} />
 
-                        <Route
-                          path="/contributors/:address"
-                          element={<ViewContributionHistoryPage />}
-                        />
+                          <Route
+                            path="/contributors/:address"
+                            element={<ViewContributionHistoryPage />}
+                          />
 
-                        {/* Access Denied */}
-                        <Route
-                          path="/access-denied"
-                          element={<AccessDenied />}
-                        />
-                        <Route
-                          path="/collections/:collectionCid"
-                          element={<ExploreApplicationsPage />}
-                        />
+                          {/* Access Denied */}
+                          <Route
+                            path="/access-denied"
+                            element={<AccessDenied />}
+                          />
+                          <Route
+                            path="/collections/:collectionCid"
+                            element={<ExploreApplicationsPage />}
+                          />
 
-                        {/* 404 */}
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </HashRouter>
-                  </DataLayerProvider>
-                </RoundProvider>
-              </AlloWrapper>
+                          {/* 404 */}
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </HashRouter>
+                    </DataLayerProvider>
+                  </RoundProvider>
+                </AlloWrapper>
+              </DirectAllocationProvider>
             </ChakraProvider>
           </RainbowKitProvider>
         </QueryClientProvider>
