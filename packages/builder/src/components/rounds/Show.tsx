@@ -148,10 +148,10 @@ function ShowRound() {
     const isDirectRound: boolean =
       roundState?.round?.payoutStrategy === RoundCategory.Direct;
 
-    const roundStartTime = !isDirectRound
+    const roundStartTime = isDirectRound
       ? roundState?.round?.applicationsStartTime
       : roundState?.round?.roundStartTime;
-    const roundEndTime = !isDirectRound
+    const roundEndTime = isDirectRound
       ? roundState?.round?.applicationsEndTime
       : roundState?.round?.roundEndTime;
 
