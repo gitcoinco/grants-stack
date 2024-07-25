@@ -87,6 +87,26 @@ export function getDirectAllocationPoolId(chainId: number) {
   switch (chainId) {
     case 11155111:
       return 386;
+    case 10:
+      return 58;
+    case 42161:
+      return 390;
+    case 42220:
+      return 12;
+    case 8453:
+      return 36;
+    case 43114:
+      return 15;
+    case 534353:
+      return 22;
+    case 250:
+      return 4;
+    case 1:
+      return 11;
+    case 808:
+      return 8;
+    case 42:
+      return 3;
     default:
       return undefined;
   }
@@ -96,6 +116,26 @@ export function getDirectAllocationStrategyAddress(chainId: number) {
   switch (chainId) {
     case 11155111:
       return "0xd60BCfa8714949c478d88da51A7450703A32Cf35";
+    case 10:
+      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
+    case 42161:
+      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
+    case 42220:
+      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
+    case 8453:
+      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
+    case 43114:
+      return "0x86b4329E7CB8674b015477C81356420D79c71A53";
+    case 534353:
+      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
+    case 250:
+      return "0x1E18cdce56B3754c4Dca34CB3a7439C24E8363de";
+    case 1:
+      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
+    case 808:
+      return "0x1cfa7A687cd18b99D255bFc25930d3a0b05EB00F";
+    case 42:
+      return "0xeB6325d9daCD1E46A20C02F46E41d4CAE45C0980";
     default:
       return undefined;
   }
