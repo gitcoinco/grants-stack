@@ -107,6 +107,8 @@ export function getDirectAllocationPoolId(chainId: number) {
       return 8;
     case 42:
       return 3;
+    case 1088:
+      return 1;
     default:
       return undefined;
   }
@@ -136,6 +138,8 @@ export function getDirectAllocationStrategyAddress(chainId: number) {
       return "0x1cfa7A687cd18b99D255bFc25930d3a0b05EB00F";
     case 42:
       return "0xeB6325d9daCD1E46A20C02F46E41d4CAE45C0980";
+    case 1088:
+      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
     default:
       return undefined;
   }
