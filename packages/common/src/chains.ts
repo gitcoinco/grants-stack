@@ -14,6 +14,7 @@ const rpcUrls: { [key: number]: string | undefined } = {
   300: "https://zksync-sepolia.g.alchemy.com/v2/",
   324: "https://zksync-mainnet.g.alchemy.com/v2/",
   // 4201: "", // lukso test
+  1088: "https://metis-mainnet.g.alchemy.com/v2/",
   8453: "https://base-mainnet.g.alchemy.com/v2/",
   42161: "https://arb-mainnet.g.alchemy.com/v2/",
   42220: "https://celo-mainnet.infura.io/v3/", // celo
