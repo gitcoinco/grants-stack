@@ -57,6 +57,8 @@ import { config } from "../../app/wagmi";
 import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
 import { Logger } from "ethers/lib/utils";
+import SwitchNetworkModal from "../common/SwitchNetworkModal";
+import { set } from "lodash";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -85,11 +87,13 @@ export default function ViewProject() {
   const { openConnectModal } = useConnectModal();
   const [showDirectAllocationModal, setShowDirectAllocationModal] =
     useState<boolean>(false);
+  const [showSwitchNetworkModal, setShowSwitchNetworkModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorModalSubHeading, setErrorModalSubHeading] = useState<
     string | undefined
   >();
+  const [hasNetworkSwitched, setHasNetworkSwitched] = useState(false);
 
   const [directDonationAmount, setDirectDonationAmount] = useState<string>("");
   const payoutTokenOptions: TToken[] = getVotingTokenOptions(
@@ -313,6 +317,22 @@ export default function ViewProject() {
     ]
   );
 
+  const onSwitchNetwork = () => {
+    if (switchChain && project?.chainId) {
+      switchChain({ chainId: project?.chainId });
+      setHasNetworkSwitched(true);
+    }
+  };
+
+  useEffect(() => {
+    if (hasNetworkSwitched) {
+      if (chainId === project?.chainId) {
+        setShowSwitchNetworkModal(false);
+        setShowDirectAllocationModal(true);
+      }
+    }
+  }, [chainId, project?.chainId, hasNetworkSwitched]);
+
   const handleTabChange = (tabIndex: number) => {
     setSelectedTab(tabIndex);
   };
@@ -358,11 +378,8 @@ export default function ViewProject() {
                       return;
                     }
                     if (chainId !== project?.chainId) {
-                      if (switchChain) {
-                        switchChain({ chainId: project?.chainId });
-                      }
-                    }
-                    if (chainId === project?.chainId) {
+                      setShowSwitchNetworkModal(true);
+                    } else {
                       setShowDirectAllocationModal(true);
                     }
                   }}
@@ -410,6 +427,13 @@ export default function ViewProject() {
   function DonationModals() {
     return (
       <>
+        <SwitchNetworkModal
+          networkName={getChainById(project?.chainId ?? 1)?.name ?? ""}
+          onSwitchNetwork={onSwitchNetwork}
+          action="donate to this project"
+          isOpen={showSwitchNetworkModal}
+          setIsOpen={setShowSwitchNetworkModal}
+        />
         <GenericModal
           body={
             <DirectDonationModalComponent
