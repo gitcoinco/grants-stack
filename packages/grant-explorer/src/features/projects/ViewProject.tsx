@@ -42,7 +42,7 @@ import { useCartStorage } from "../../store";
 import { CartProject, ProgressStatus } from "../api/types";
 import { Input } from "common/src/styles";
 import { PayoutTokenDropdown } from "../round/ViewCartPage/PayoutTokenDropdown";
-import { useAccount } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { getVotingTokenOptions } from "../api/utils";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal, { errorModalDelayMs } from "../common/ProgressModal";
@@ -108,6 +108,7 @@ export default function ViewProject() {
   const dataLayer = useDataLayer();
   const allo = useAllo();
   const navigate = useNavigate();
+  const { switchChain } = useSwitchChain();
 
   const {
     data: projectData,
@@ -352,7 +353,18 @@ export default function ViewProject() {
                       openConnectModal?.();
                       return;
                     }
-                    setShowDirectAllocationModal(true);
+                    if (project?.chainId === undefined) {
+                      console.error("project chainId is undefined");
+                      return;
+                    }
+                    if (chainId !== project?.chainId) {
+                      if (switchChain) {
+                        switchChain({ chainId: project?.chainId });
+                      }
+                    }
+                    if (chainId === project?.chainId) {
+                      setShowDirectAllocationModal(true);
+                    }
                   }}
                 >
                   <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
