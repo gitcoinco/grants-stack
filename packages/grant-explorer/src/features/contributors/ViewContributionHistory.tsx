@@ -17,7 +17,7 @@ import {
 } from "common";
 import { Contribution } from "data-layer";
 import { normalize } from "viem/ens";
-import { DirectDonationsTable } from "./DirectDonationTable";
+import { DirectDonationsTable } from "./DirectDonationsTable";
 
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")

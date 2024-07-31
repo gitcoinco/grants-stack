@@ -60,17 +60,11 @@ function TableHeader() {
 
 function Table(props: { contributions: Contribution[] }) {
   return (
-    <div className="bg-grey-75 rounded-lg p-2 py-1">
-      <div className="mt-4 overflow-hidden">
+    <div className="rounded-lg p-2 py-1">
+      <div className="overflow-hidden">
         <div className="mx-auto">
           <div>
             <table className="w-full text-left">
-              <thead className="font-sans text-lg">
-                <tr>
-                  <th>Project</th>
-                  <th>Donation</th>
-                </tr>
-              </thead>
               <tbody>
                 {props.contributions.length > 0 &&
                   props.contributions
@@ -105,13 +99,7 @@ function Table(props: { contributions: Contribution[] }) {
                                 <Link
                                   className={`underline inline-block lg:pr-2 lg:max-w-[300px] max-w-[75px] 2xl:max-w-fit truncate`}
                                   title={contribution.projectId.trim()}
-                                  to={`/round/${
-                                    contribution.chainId
-                                  }/${contribution.roundId
-                                    .toString()
-                                    .toLowerCase()}/${
-                                    contribution.applicationId
-                                  }`}
+                                  to={`/projects/${contribution.projectId}`}
                                   target="_blank"
                                 >
                                   {contribution.projectId.trim()}
