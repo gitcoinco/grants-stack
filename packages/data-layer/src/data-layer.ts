@@ -792,9 +792,17 @@ export class DataLayer {
     );
 
     return response.donations.filter((donation) => {
-      return (
-        donation.application !== null && donation.application?.project !== null
-      );
+      if (donation.round.strategyName !== "allov2.DirectAllocationStrategy") {
+        return (
+          donation.application !== null &&
+          donation.application?.project !== null
+        );
+      } else {
+        return (
+          // DirectAllocationStrategy donations are not linked to applications
+          donation.application === null
+        );
+      }
     });
   }
 

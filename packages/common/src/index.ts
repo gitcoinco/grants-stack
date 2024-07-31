@@ -347,6 +347,7 @@ export type RoundPayoutTypeNew =
   | "allov2.MicroGrantsGovStrategy"
   | "allov2.DirectGrantsSimpleStrategy"
   | "allov2.DirectGrantsLiteStrategy"
+  | "allov2.DirectAllocationStrategy"
   | ""; // This is to handle the cases where the strategyName is not set in a round, mostly spam rounds
 
 export type RoundStrategyType = "QuadraticFunding" | "DirectGrants";

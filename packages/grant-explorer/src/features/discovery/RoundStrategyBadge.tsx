@@ -22,6 +22,7 @@ const colorOptions = {
   ["allov2.MicroGrantsGovStrategy"]: "yellow",
   ["allov2.DirectGrantsSimpleStrategy"]: "yellow",
   ["allov2.DirectGrantsLiteStrategy"]: "yellow",
+  ["allov2.DirectAllocationStrategy"]: "yellow",
   [""]: "grey",
 } as const;
 

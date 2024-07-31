@@ -58,7 +58,6 @@ import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
 import { Logger } from "ethers/lib/utils";
 import SwitchNetworkModal from "../common/SwitchNetworkModal";
-import { set } from "lodash";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (

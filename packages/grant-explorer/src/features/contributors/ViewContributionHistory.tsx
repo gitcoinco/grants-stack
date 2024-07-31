@@ -17,6 +17,7 @@ import {
 } from "common";
 import { Contribution } from "data-layer";
 import { normalize } from "viem/ens";
+import { DirectDonationsTable } from "./DirectDonationTable";
 
 const DonationHistoryBanner = lazy(
   () => import("../../assets/DonationHistoryBanner")
@@ -55,6 +56,7 @@ function ViewContributionHistoryFetcher(props: {
     props.chainIds,
     props.address
   );
+  console.log("contributions", contributionHistory);
 
   const { data: ensName } = useEnsName({
     /* If props.address is an ENS name, don't pass in anything, as we already have the ens name*/
@@ -124,7 +126,6 @@ export function ViewContributionHistory(props: {
       const projects: string[] = [];
 
       props.contributions.data.forEach((contribution) => {
-
         const token = getTokenByChainIdAndAddress(
           contribution.chainId,
           contribution.tokenAddress as Hex
@@ -154,7 +155,10 @@ export function ViewContributionHistory(props: {
               new Date(contribution.round.donationsEndTime)
             )
           ) * 1000;
-        return formattedRoundEndTime >= now;
+        return (
+          formattedRoundEndTime >= now &&
+          contribution.round.strategyName !== "allov2.DirectAllocationStrategy"
+        );
       }
     );
     if (filteredRoundDonations.length === 0) {
@@ -174,7 +178,25 @@ export function ViewContributionHistory(props: {
               new Date(contribution.round.donationsEndTime)
             )
           ) * 1000;
-        return formattedRoundEndTime < now;
+        return (
+          formattedRoundEndTime < now &&
+          contribution.round.strategyName !== "allov2.DirectAllocationStrategy"
+        );
+      }
+    );
+    if (filteredRoundDonations.length === 0) {
+      return [];
+    }
+
+    return filteredRoundDonations;
+  }, [props.contributions]);
+
+  const directAllocationDonations = useMemo(() => {
+    const filteredRoundDonations = props.contributions.data.filter(
+      (contribution) => {
+        return (
+          contribution.round.strategyName === "allov2.DirectAllocationStrategy"
+        );
       }
     );
     if (filteredRoundDonations.length === 0) {
@@ -253,6 +275,10 @@ export function ViewContributionHistory(props: {
           </div>
         </div>
         <div className="text-2xl my-6">Donation History</div>
+        <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
+          Direct Donations
+        </div>
+        <DirectDonationsTable contributions={directAllocationDonations} />
         <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
           Active Rounds
         </div>
