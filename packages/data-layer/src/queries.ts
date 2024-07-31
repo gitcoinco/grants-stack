@@ -801,6 +801,7 @@ export const getDonationsByDonorAddress = gql`
         roundMetadata
         donationsStartTime
         donationsEndTime
+        strategyName
       }
       application {
         project: canonicalProject {
