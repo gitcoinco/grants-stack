@@ -5,6 +5,7 @@ import { getChainById, getTokenByChainIdAndAddress } from "common";
 import { Hex, formatUnits } from "viem";
 import { Contribution } from "data-layer";
 import moment from "moment";
+import { TransactionButton } from "./TransactionButton";
 
 export function DirectDonationsTable(props: { contributions: Contribution[] }) {
   return (
@@ -91,8 +92,8 @@ function Table(props: { contributions: Contribution[] }) {
                       }
 
                       return (
-                        <tr key={contribution.id} className="">
-                          <td className="py-4 pr-2 w-2/5">
+                        <tr key={contribution.id} className="border-b">
+                          <td className="py-4 lg:px-2 w-2/5">
                             <div className="flex items-center">
                               <div className="flex flex-col sm:flex-row">
                                 {/* Link to the project */}
@@ -112,13 +113,21 @@ function Table(props: { contributions: Contribution[] }) {
                             </div>
                           </td>
                           {/* Display donations */}
-                          <td className="py-4 truncate lg:pr-16">
+                          <td className="py-4 truncate w-2/5 lg:pl-2">
                             <span className="font-bold">
                               {formattedAmount}{" "}
                             </span>
                             <span className="text-grey-400">
                               / ${contribution.amountInUsd.toFixed(2)}
                             </span>
+                          </td>
+                          <td className="truncate w-1/5 lg:pl-32">
+                            <div>
+                              <TransactionButton
+                                chainId={contribution.chainId}
+                                txHash={contribution.transactionHash}
+                              />
+                            </div>
                           </td>
                         </tr>
                       );

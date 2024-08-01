@@ -276,10 +276,6 @@ export function ViewContributionHistory(props: {
         </div>
         <div className="text-2xl my-6">Donation History</div>
         <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
-          Direct Donations
-        </div>
-        <DirectDonationsTable contributions={directAllocationDonations} />
-        <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
           Active Rounds
         </div>
         <DonationsTable
@@ -293,6 +289,10 @@ export function ViewContributionHistory(props: {
           contributions={pastRoundDonations}
           activeRound={false}
         />
+        <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
+          Direct Donations
+        </div>
+        <DirectDonationsTable contributions={directAllocationDonations} />
       </main>
       <div className="mt-24 mb-11 h-11">
         <Footer />
