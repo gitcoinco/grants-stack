@@ -19,7 +19,7 @@ export default function StatCard({
       p={3}
       className={`${
         bg ? `bg-${bg}` : ""
-      } border-grey-100 mx-2 mt-2 sm:table-row md:table-cell`}
+      } border-grey-100 mx-2 sm:table-row md:table-cell`}
       borderWidth={border ? "1px" : "0px"}
       borderRadius="md"
       minWidth="193px"
