@@ -15,6 +15,7 @@ export function ProjectCard(props: { project: v2Project }): JSX.Element {
         })}
         data-track-event="project-card"
       >
+        <h1>Hello</h1>
         <CardHeader className="relative">
           <ProjectBanner
             bannerImgCid={project.metadata?.bannerImg ?? null}
