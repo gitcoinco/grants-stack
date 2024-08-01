@@ -59,16 +59,20 @@ export default function RoundStats() {
       let totalDirectDonations = 0;
       let totalDirectDonationCount = 0;
 
-      const directDonations: BaseDonorValues[] =
-        await dataLayer.getDirectDonationsByProjectId({
-          projectId: props.projectID,
-          chainIds: allChains.map((chain) => chain.id),
-        });
+      try {
+        const directDonations: BaseDonorValues[] =
+          await dataLayer.getDirectDonationsByProjectId({
+            projectId: props.projectID,
+            chainIds: allChains.map((chain) => chain.id),
+          });
 
-      directDonations.forEach((donation) => {
-        totalDirectDonations += donation.totalAmountDonatedInUsd;
-        totalDirectDonationCount += donation.totalDonationsCount;
-      });
+        directDonations.forEach((donation) => {
+          totalDirectDonations += donation.totalAmountDonatedInUsd;
+          totalDirectDonationCount += donation.totalDonationsCount;
+        });
+      } catch (e) {
+        console.error("Error fetching direct donations", e);
+      }
 
       if (props.stats?.length > 0) {
         props.stats.forEach((stat) => {
@@ -117,20 +121,24 @@ export default function RoundStats() {
     container: any,
     pt: boolean,
     key: string,
-    spaceBetween?: boolean
+    shortRow?: boolean
   ) => (
     <div
       key={key}
       className={`grid ${
-        spaceBetween ? "md:grid-cols-8" : "md:grid-cols-7"
+        shortRow ? "md:grid-cols-8" : "md:grid-cols-7"
       } sm:grid-cols-1 border-b border-gitcoin-grey-100 pb-10 ${pt && "pt-10"}`}
     >
-      <div className={`${spaceBetween ? "md:col-span-2" : "md:col-span-1"}`}>
+      <div
+        className={`${
+          shortRow ? "md:col-span-2" : "md:col-span-1"
+        } flex items-center justify-start`}
+      >
         {description}
       </div>
       <div
         className={`${
-          spaceBetween ? "md:col-span-5" : "md:col-span-6"
+          shortRow ? "md:col-span-5" : "md:col-span-6"
         } sm:col-span-1 md:flex space-between`}
       >
         {container}
@@ -182,7 +190,7 @@ export default function RoundStats() {
             heading="Total Direct Donations"
             value={`$${allTimeStats.totalDirectDonations.toFixed(2)}`}
             bg="gitcoin-violet-100"
-            tooltip="The number of contributions this project has received."
+            tooltip="The amount of contributions this project has received as direct donations."
           />
           <StatCard
             heading="No. of Contributions"
