@@ -211,8 +211,8 @@ export type v2Project = {
    * The linked chains to the canonical project
    */
   linkedChains?: number[];
-  qfRounds? : string[];
-  dgRounds? : string[];
+  qfRounds?: string[];
+  dgRounds?: string[];
 };
 
 /**
@@ -257,6 +257,12 @@ export type RoundForExplorer = Omit<RoundGetRound, "applications"> & {
   uniqueDonorsCount?: number;
 };
 
+export type BaseDonorValues = {
+  totalAmountDonatedInUsd: number;
+  totalDonationsCount: number;
+  uniqueDonorsCount: number;
+};
+
 /**
  * The project application type for v2
  *
@@ -269,11 +275,8 @@ export type ProjectApplication = {
   status: ApplicationStatus;
   metadataCid: string;
   metadata: ProjectApplicationMetadata;
-  totalDonationsCount: number;
-  totalAmountDonatedInUsd: number;
-  uniqueDonorsCount: number;
   distributionTransaction: string | null;
-};
+} & BaseDonorValues;
 
 export type ProjectApplicationForManager = ProjectApplication & {
   anchorAddress: Address;

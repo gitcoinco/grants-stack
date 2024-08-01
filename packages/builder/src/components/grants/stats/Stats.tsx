@@ -1,4 +1,5 @@
 import { Spinner } from "@chakra-ui/react";
+import { BaseDonorValues, useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -6,6 +7,7 @@ import { RootState } from "../../../reducers";
 import { ProjectStats } from "../../../reducers/projects";
 import RoundDetailsCard from "./RoundDetailsCard";
 import StatCard from "./StatCard";
+import { allChains } from "../../../utils/wagmi";
 
 export const slugify = (input: string): string =>
   input
@@ -19,9 +21,12 @@ export default function RoundStats() {
   const NAText = "N/A";
 
   const params = useParams();
+  const dataLayer = useDataLayer();
   const [details, setDetails] = useState<any>([]);
   const [allTimeStats, setAllTimeStats] = useState<any>({
     allTimeReceived: 0,
+    totalCrowdFunding: 0,
+    totalDirectDonations: 0,
     allTimeContributions: 0,
     roundsLength: 0,
   });
@@ -41,57 +46,93 @@ export default function RoundStats() {
   });
 
   useEffect(() => {
-    const detailsTmp: any[] = [];
-    let allTime = {
-      allTimeReceived: 0,
-      allTimeContributions: 0,
-      roundsLength: 0,
-    };
+    const fetch = async () => {
+      const detailsTmp: any[] = [];
+      let allTime = {
+        allTimeReceived: 0,
+        totalCrowdFunding: 0,
+        totalDirectDonations: 0,
+        allTimeContributions: 0,
+        roundsLength: 0,
+      };
 
-    if (props.stats?.length > 0) {
-      props.stats.forEach((stat) => {
-        allTime = {
-          allTimeReceived:
-            allTime.allTimeReceived + (stat.success ? stat.fundingReceived : 0),
-          allTimeContributions:
-            allTime.allTimeContributions +
-            (stat.success ? stat.totalContributions : 0),
-          roundsLength: props.stats.length,
-        };
+      let totalDirectDonations = 0;
+      let totalDirectDonationCount = 0;
 
-        const newStat = { ...stat };
-        if (newStat.uniqueContributors > 0 || newStat.totalContributions > 0) {
-          if (newStat.fundingReceived === 0) newStat.fundingReceived = NA;
-          if (newStat.avgContribution === 0) newStat.avgContribution = NA;
-        }
+      const directDonations: BaseDonorValues[] =
+        await dataLayer.getDirectDonationsByProjectId({
+          projectId: props.projectID,
+          chainIds: allChains.map((chain) => chain.id),
+        });
 
-        if (props.rounds[stat.roundId]?.round?.programName) {
-          detailsTmp.push({
-            round: props.rounds[stat.roundId].round,
-            stats: { ...newStat },
-          });
-        }
+      directDonations.forEach((donation) => {
+        totalDirectDonations += donation.totalAmountDonatedInUsd;
+        totalDirectDonationCount += donation.totalDonationsCount;
       });
-    }
 
-    setAllTimeStats(allTime);
-    setDetails(detailsTmp);
-  }, [props.stats, props.rounds]);
+      if (props.stats?.length > 0) {
+        props.stats.forEach((stat) => {
+          allTime = {
+            ...allTime,
+            totalCrowdFunding:
+              allTime.totalCrowdFunding +
+              (stat.success ? stat.fundingReceived : 0),
+            allTimeContributions:
+              allTime.allTimeContributions +
+              (stat.success ? stat.totalContributions : 0),
+            roundsLength: props.stats.length,
+          };
+
+          const newStat = { ...stat };
+          if (
+            newStat.uniqueContributors > 0 ||
+            newStat.totalContributions > 0
+          ) {
+            if (newStat.fundingReceived === 0) newStat.fundingReceived = NA;
+            if (newStat.avgContribution === 0) newStat.avgContribution = NA;
+          }
+
+          if (props.rounds[stat.roundId]?.round?.programName) {
+            detailsTmp.push({
+              round: props.rounds[stat.roundId].round,
+              stats: { ...newStat },
+            });
+          }
+        });
+      }
+
+      allTime.totalDirectDonations = totalDirectDonations;
+      allTime.allTimeReceived =
+        allTime.totalCrowdFunding + totalDirectDonations;
+      allTime.allTimeContributions += totalDirectDonationCount;
+
+      setAllTimeStats(allTime);
+      setDetails(detailsTmp);
+    };
+    if (props.projectID) fetch();
+  }, [props.stats, props.rounds, props.projectID, dataLayer]);
 
   const section = (
     description: any,
     container: any,
     pt: boolean,
-    key: string
+    key: string,
+    spaceBetween?: boolean
   ) => (
     <div
       key={key}
-      className={`grid md:grid-cols-7 sm:grid-cols-1 border-b border-gitcoin-grey-100 pb-10 ${
-        pt && "pt-10"
-      }`}
+      className={`grid ${
+        spaceBetween ? "md:grid-cols-8" : "md:grid-cols-7"
+      } sm:grid-cols-1 border-b border-gitcoin-grey-100 pb-10 ${pt && "pt-10"}`}
     >
-      <div className="md:col-span-2">{description}</div>
-      <div className="md:col-span-4 sm:col-span-1 md:flex space-between">
+      <div className={`${spaceBetween ? "md:col-span-2" : "md:col-span-1"}`}>
+        {description}
+      </div>
+      <div
+        className={`${
+          spaceBetween ? "md:col-span-5" : "md:col-span-6"
+        } sm:col-span-1 md:flex space-between`}
+      >
         {container}
       </div>
       <div className="md:col-span-1 sm:col-span-1" />
@@ -130,6 +171,18 @@ export default function RoundStats() {
             value={`$${allTimeStats.allTimeReceived.toFixed(2)}`}
             bg="gitcoin-violet-100"
             tooltip="The estimated funding received by this project. This number is not final and may change based on updated data."
+          />
+          <StatCard
+            heading="Est. Crowdfunding Received"
+            value={`$${allTimeStats.totalCrowdFunding.toFixed(2)}`}
+            bg="gitcoin-violet-100"
+            tooltip="The number of rounds this project has participated in."
+          />
+          <StatCard
+            heading="Total Direct Donations"
+            value={`$${allTimeStats.totalDirectDonations.toFixed(2)}`}
+            bg="gitcoin-violet-100"
+            tooltip="The number of contributions this project has received."
           />
           <StatCard
             heading="No. of Contributions"
@@ -193,7 +246,8 @@ export default function RoundStats() {
             />
           </>,
           true,
-          `details-${index}`
+          `details-${index}`,
+          true
         )
       )}
     </>

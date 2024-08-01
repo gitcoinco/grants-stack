@@ -26,6 +26,7 @@ import {
   ExpandedApplicationRef,
   RoundApplicationPayout,
   ProjectApplicationWithRoundAndProgram,
+  BaseDonorValues,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -56,6 +57,7 @@ import {
   getPaginatedProjects,
   getProjectsBySearchTerm,
   getRoundsForManagerByAddress,
+  getDirectDonationsByProjectId,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 
@@ -958,5 +960,20 @@ export class DataLayer {
     id: string,
   ): Promise<SearchBasedProjectCategory | null> {
     return await categories.getSearchBasedCategoryById(id);
+  }
+
+  async getDirectDonationsByProjectId({
+    projectId,
+    chainIds,
+  }: {
+    projectId: string;
+    chainIds: number[];
+  }): Promise<BaseDonorValues[]> {
+    const response: { rounds: BaseDonorValues[] } = await request(
+      this.gsIndexerEndpoint,
+      getDirectDonationsByProjectId,
+      { projectId, chainIds },
+    );
+    return response.rounds;
   }
 }
