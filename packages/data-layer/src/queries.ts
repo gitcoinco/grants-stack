@@ -450,6 +450,7 @@ export const getPaginatedProjects = gql`
   query getPaginatedProjects($first: Int!, $offset: Int!) {
     projects(
       filter: {
+        metadata: { isNull: false }
         tags: { equalTo: "allo-v2" }
         not: { tags: { contains: "program" } }
         chainId: {
@@ -493,6 +494,7 @@ export const getProjectsBySearchTerm = gql`
     searchProjects(
       searchTerm: $searchTerm
       filter: {
+        metadata: {isNull: false }
         tags: { equalTo: "allo-v2" }
         not: { tags: { contains: "program" } }
         chainId: {
@@ -607,7 +609,11 @@ export const getRoundByIdAndChainId = gql`
   query getRoundByIdAndChainId($roundId: String!, $chainId: Int!) {
     rounds(
       first: 1
-      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+      filter: { 
+        id: { equalTo: $roundId },
+        chainId: { equalTo: $chainId },
+        roundMetadata: { isNull: false }
+      }
     ) {
       id
       chainId
@@ -677,7 +683,11 @@ export const getRoundForManager = gql`
   query getRoundForManager($roundId: String!, $chainId: Int!) {
     rounds(
       first: 1
-      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+      filter: { 
+        id: { equalTo: $roundId },
+        chainId: { equalTo: $chainId },
+        roundMetadata: { isNull: false }
+      }
     ) {
       ${getRoundForManagerFields}
     }
@@ -692,6 +702,7 @@ export const getRoundsForManager = gql`
       filter: {
         chainId: { equalTo: $chainId }
         projectId: { equalTo: $programId }
+        roundMetadata: { isNull: false }
       }
     ) {
       ${getRoundForManagerFields}
@@ -705,6 +716,7 @@ export const getRoundsForManagerByAddress = gql`
       orderBy: ID_DESC
       first: 1000
       filter: {
+        roundMetadata: { isNull: false },
         chainId: {in: $chainIds}, 
         roles: {
           some: {
@@ -724,7 +736,11 @@ export const getRoundForExplorer = gql`
   query getRoundForExplorer($roundId: String!, $chainId: Int!) {
     rounds(
       first: 1
-      filter: { id: { equalTo: $roundId }, chainId: { equalTo: $chainId } }
+      filter: { 
+        id: { equalTo: $roundId },
+        chainId: { equalTo: $chainId },
+        roundMetadata: { isNull: false }
+      }
     ) {
       id
       chainId
