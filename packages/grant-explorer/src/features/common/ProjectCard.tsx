@@ -17,7 +17,7 @@ export function ProjectCard(props: { project: v2Project }): JSX.Element {
       >
         <CardHeader className="relative">
           <ProjectBanner
-            bannerImgCid={project.metadata.bannerImg ?? null}
+            bannerImgCid={project.metadata?.bannerImg ?? null}
             classNameOverride={
               "bg-black h-[120px] w-full object-cover rounded-t"
             }
