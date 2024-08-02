@@ -5,6 +5,7 @@ import { formatDateWithOrdinal } from "common";
 import { useProject } from "../hooks/useProject";
 import { beforeEach, expect, Mock } from "vitest";
 import { DataLayer, v2Project } from "data-layer";
+import { mock } from "@wagmi/core";
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
@@ -39,6 +40,7 @@ vi.mock("wagmi", async () => {
     useSigner: () => ({
       data: {},
     }),
+    useSwitchChain: vi.fn().mockReturnValue({ data: "" }),
     useEnsName: vi.fn().mockReturnValue({ data: "" }),
     useAccount: vi.fn().mockReturnValue({ data: "mockedAccount" }),
   };

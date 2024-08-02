@@ -42,7 +42,7 @@ import { useCartStorage } from "../../store";
 import { CartProject, ProgressStatus } from "../api/types";
 import { Input } from "common/src/styles";
 import { PayoutTokenDropdown } from "../round/ViewCartPage/PayoutTokenDropdown";
-import { useAccount } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { getVotingTokenOptions } from "../api/utils";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal, { errorModalDelayMs } from "../common/ProgressModal";
@@ -57,6 +57,7 @@ import { config } from "../../app/wagmi";
 import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
 import { Logger } from "ethers/lib/utils";
+import SwitchNetworkModal from "../common/SwitchNetworkModal";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -85,11 +86,13 @@ export default function ViewProject() {
   const { openConnectModal } = useConnectModal();
   const [showDirectAllocationModal, setShowDirectAllocationModal] =
     useState<boolean>(false);
+  const [showSwitchNetworkModal, setShowSwitchNetworkModal] = useState(false);
   const [openProgressModal, setOpenProgressModal] = useState(false);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [errorModalSubHeading, setErrorModalSubHeading] = useState<
     string | undefined
   >();
+  const [hasNetworkSwitched, setHasNetworkSwitched] = useState(false);
 
   const [directDonationAmount, setDirectDonationAmount] = useState<string>("");
   const payoutTokenOptions: TToken[] = getVotingTokenOptions(
@@ -108,6 +111,7 @@ export default function ViewProject() {
   const dataLayer = useDataLayer();
   const allo = useAllo();
   const navigate = useNavigate();
+  const { switchChain } = useSwitchChain();
 
   const {
     data: projectData,
@@ -312,6 +316,22 @@ export default function ViewProject() {
     ]
   );
 
+  const onSwitchNetwork = () => {
+    if (switchChain && project?.chainId) {
+      switchChain({ chainId: project?.chainId });
+      setHasNetworkSwitched(true);
+    }
+  };
+
+  useEffect(() => {
+    if (hasNetworkSwitched) {
+      if (chainId === project?.chainId) {
+        setShowSwitchNetworkModal(false);
+        setShowDirectAllocationModal(true);
+      }
+    }
+  }, [chainId, project?.chainId, hasNetworkSwitched]);
+
   const handleTabChange = (tabIndex: number) => {
     setSelectedTab(tabIndex);
   };
@@ -352,7 +372,15 @@ export default function ViewProject() {
                       openConnectModal?.();
                       return;
                     }
-                    setShowDirectAllocationModal(true);
+                    if (project?.chainId === undefined) {
+                      console.error("project chainId is undefined");
+                      return;
+                    }
+                    if (chainId !== project?.chainId) {
+                      setShowSwitchNetworkModal(true);
+                    } else {
+                      setShowDirectAllocationModal(true);
+                    }
                   }}
                 >
                   <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
@@ -398,6 +426,13 @@ export default function ViewProject() {
   function DonationModals() {
     return (
       <>
+        <SwitchNetworkModal
+          networkName={getChainById(project?.chainId ?? 1)?.name ?? ""}
+          onSwitchNetwork={onSwitchNetwork}
+          action="donate to this project"
+          isOpen={showSwitchNetworkModal}
+          setIsOpen={setShowSwitchNetworkModal}
+        />
         <GenericModal
           body={
             <DirectDonationModalComponent

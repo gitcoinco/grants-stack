@@ -38,6 +38,7 @@ const mockContributions: Contribution[] = [
       },
       donationsStartTime: faker.date.past().toISOString(),
       donationsEndTime: faker.date.future().toISOString(),
+      strategyName: "",
     },
     application: {
       project: {
@@ -71,6 +72,7 @@ const mockContributions: Contribution[] = [
       },
       donationsStartTime: faker.date.past().toISOString(),
       donationsEndTime: faker.date.past().toISOString(),
+      strategyName: "",
     },
     application: {
       project: {

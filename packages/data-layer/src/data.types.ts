@@ -7,6 +7,7 @@ export type RoundPayoutType =
   | "allov2.DirectGrantsSimpleStrategy"
   | "allov2.DirectGrantsLiteStrategy"
   | "allov2.DonationVotingMerkleDistributionDirectTransferStrategy"
+  | "allov2.DirectAllocationStrategy"
   | ""; // This is to handle the cases where the strategyName is not set in a round, mostly spam rounds
 export type RoundVisibilityType = "public" | "private";
 
@@ -772,6 +773,7 @@ export type Contribution = {
     roundMetadata: RoundMetadata;
     donationsStartTime: string;
     donationsEndTime: string;
+    strategyName: RoundPayoutType;
   };
   application: {
     project: {
