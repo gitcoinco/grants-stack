@@ -4,7 +4,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 /**
  * Initialize datadog at a global level
  *  - Datadog Real User Monitoring (RUM) : https://www.npmjs.com/package/@datadog/browser-rum
- *  - Datadog Brower Logs : https://www.npmjs.com/package/@datadog/browser-logs
+ *  - Datadog Browser Logs : https://www.npmjs.com/package/@datadog/browser-logs
  */
 export const initDatadog = () => {
   // Init datadog-rum
