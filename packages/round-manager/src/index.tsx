@@ -33,6 +33,7 @@ import { initSentry } from "./sentry";
 import { PostHogProvider } from "posthog-js/react";
 import { UpdateRoundProvider } from "./context/round/UpdateRoundContext";
 import { UpdateRolesProvider } from "./context/round/UpdateRolesContext";
+import { UpdateRolesProvider as UpdateRolesProviderProgram } from "./context/program/UpdateRolesContext";
 import AlloWrapper from "./features/api/AlloWrapper";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import { getConfig } from "common/src/config";
@@ -74,7 +75,9 @@ const viewRoundPage = (
           <ReclaimFundsProvider>
             <UpdateRoundProvider>
               <UpdateRolesProvider>
-                <ViewRoundPage />
+                <UpdateRolesProviderProgram>
+                  <ViewRoundPage />
+                </UpdateRolesProviderProgram>
               </UpdateRolesProvider>
             </UpdateRoundProvider>
           </ReclaimFundsProvider>
