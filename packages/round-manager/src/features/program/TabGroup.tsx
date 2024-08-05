@@ -13,6 +13,7 @@ import { Link, useParams } from "react-router-dom";
 import { RoundCard } from "../round/RoundCard";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useProgramById } from "../../context/program/ReadProgramContext";
+import { ViewManageProgram } from "./ViewManageProgram";
 import { useRounds } from "../../context/round/RoundContext";
 import { ProgressStatus, Round } from "../api/types";
 import { Transition, Dialog } from "@headlessui/react";
@@ -21,6 +22,7 @@ import { useAccount } from "wagmi";
 const tabs = [
   { name: "Quadratic funding", current: true },
   { name: "Direct grants", current: false },
+  { name: "Settings", current: false},
 ];
 
 export const TabGroup = () => {
@@ -31,7 +33,7 @@ export const TabGroup = () => {
     chainId?: string;
     id: string;
   };
-  const { chain } = useAccount();
+  const { chain, address } = useAccount();
   const programChainId = chainId ? Number(chainId) : chain?.id;
   const { program: programToRender } = useProgramById(programId);
   const { data: rounds, fetchRoundStatus } = useRounds(
@@ -314,13 +316,13 @@ export const TabGroup = () => {
                     aria-current={tab.name === currentTab ? "page" : undefined}
                   >
                     <span>{tab.name}</span>
-                    <span
-                      className={`py-1 px-2 mx-2 bg-${tab.name === "Quadratic funding" ? "green" : "yellow"}-100 rounded-full text-xs font-mono`}
-                    >
-                      {tab.name === "Quadratic funding"
-                        ? qfRounds.length
-                        : dgRounds.length}
-                    </span>
+                    {["Quadratic funding", "Direct grants"].includes(tab.name) &&
+                      <span
+                        className={`py-1 px-2 mx-2 bg-${tab.name === "Quadratic funding" ? "green" : "yellow"}-100 rounded-full text-xs font-mono`}
+                      >
+                        {tab.name === "Quadratic funding" ? qfRounds.length : dgRounds.length}
+                      </span>
+                    }
                   </span>
                 ))}
               </div>
@@ -356,6 +358,9 @@ export const TabGroup = () => {
               {/* Content for Direct grants */}
               <div className="md:mb-8">{dgRoundItems}</div>
             </div>
+          )}
+          { currentTab === "Settings" && (
+            <ViewManageProgram program={programToRender!} userAddress={address || "0x"} />
           )}
         </div>
       </div>
