@@ -591,7 +591,7 @@ export function DirectDonationModalComponent(props: {
               }
               alt={"Project Logo"}
             />
-            <p className="font-semibold text-md my-auto text-ellipsis line-clamp-1 max-w-[500px] 2xl:max-w-none">
+            <p className="font-semibold text-md my-auto text-ellipsis line-clamp-1 max-w-[100px]">
               {props.projectData?.project?.metadata.title}
             </p>
           </div>
