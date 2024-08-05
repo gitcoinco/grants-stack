@@ -245,6 +245,19 @@ export interface Allo {
     }
   >;
 
+  manageProfileMembers: (args: {
+    profileId: Hex;
+    members: Address[];
+    addOrRemove: "add" | "remove";
+  }) => AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  >;
+
   directAllocation: (args: {
     tokenAddress: Address;
     poolId: string;

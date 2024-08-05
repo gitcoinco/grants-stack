@@ -1505,6 +1505,64 @@ export class AlloV2 implements Allo {
     });
   }
 
+  manageProfileMembers(args: {
+    profileId: Hex;
+    members: Address[];
+    addOrRemove: "add" | "remove";
+  }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const txData =
+        args.addOrRemove === "add"
+          ? this.registry.addMembers({
+              profileId: args.profileId,
+              members: args.members,
+            })
+          : this.registry.removeMembers({
+              profileId: args.profileId,
+              members: args.members,
+            });
+
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: txData.to,
+        data: txData.data,
+        value: BigInt(txData.value),
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return error(txResult.error);
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        console.log(err);
+        const result = new AlloError(`Failed to ${args.addOrRemove} profile members`);
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
+    });
+  }
+
   directAllocation(args: {
     tokenAddress: Address;
     poolId: string;
