@@ -220,7 +220,7 @@ export function ViewManageProgram(props: {
                 <td className="w-1/4 px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                   {item.role === "OWNER" ? "Owner" : "Member"}
                 </td>
-                {item.role !== "OWNER" && (
+                {isOwner && item.role !== "OWNER" ? (
                   <td>
                     <XIcon
                       className="text-red-100 w-6 cursor-pointer"
@@ -231,7 +231,8 @@ export function ViewManageProgram(props: {
                       }}
                     />
                   </td>
-                )}
+                ) : 
+                <td className="bg-white"></td>}
               </tr>
             ))}
           </tbody>
@@ -274,7 +275,7 @@ function AddressRow(props: { address: string }) {
   });
 
   return (
-    <td className="w-2/4 py-4 px-2 whitespace-nowrap text-sm text-gray-400">
+    <td className="w-2/4 py-4 pl-4 whitespace-nowrap text-sm text-gray-400">
       {ensName || props.address}
     </td>
   );

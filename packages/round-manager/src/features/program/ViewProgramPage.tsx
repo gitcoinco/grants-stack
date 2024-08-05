@@ -1,9 +1,8 @@
-import { ChevronRightIcon, UserIcon } from "@heroicons/react/solid";
+import { ChevronRightIcon } from "@heroicons/react/solid";
 import { Link, useParams } from "react-router-dom";
 import { datadogLogs } from "@datadog/browser-logs";
 import Footer from "common/src/components/Footer";
 import { useEffect, useState } from "react";
-import { abbreviateAddress } from "../api/utils";
 import AccessDenied from "../common/AccessDenied";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
