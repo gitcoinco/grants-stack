@@ -19,7 +19,7 @@
     "@allo-team/allo-v2-sdk": "^1.0.78",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
-    "@gitcoin/gitcoin-chain-data": "^1.0.26",
+    "@gitcoin/gitcoin-chain-data": "^1.0.27",
     "@gitcoinco/passport-sdk-types": "^0.2.0",
     "@openzeppelin/merkle-tree": "^1.0.2",
     "@rainbow-me/rainbowkit": "2.1.2",

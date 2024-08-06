@@ -13,7 +13,7 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
 }));
 jest.mock("wagmi", () => ({
   useAccount: () => ({
-    chainId: 1,
+    chainId: 10,
   }),
 }));
 jest.mock("../../../constants", () => ({
