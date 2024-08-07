@@ -46,7 +46,7 @@ export function ExploreProjectsPage(): JSX.Element {
 
   function onSearchSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSearchQuery(searchInput);
+    setSearchQuery(`'${searchInput}'`);
   }
 
   return (
