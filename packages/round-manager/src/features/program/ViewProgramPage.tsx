@@ -1,9 +1,8 @@
-import { ChevronRightIcon, UserIcon } from "@heroicons/react/solid";
+import { ChevronRightIcon } from "@heroicons/react/solid";
 import { Link, useParams } from "react-router-dom";
 import { datadogLogs } from "@datadog/browser-logs";
 import Footer from "common/src/components/Footer";
 import { useEffect, useState } from "react";
-import { abbreviateAddress } from "../api/utils";
 import AccessDenied from "../common/AccessDenied";
 import Navbar from "../common/Navbar";
 import NotFoundPage from "../common/NotFoundPage";
@@ -39,27 +38,6 @@ export default function ViewProgram() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const operatorWallets: JSX.Element = (
-    <div className="flex flex-row flex-wrap items-center">
-      {programToRender?.operatorWallets.map((operatorWallet, index) => (
-        <div
-          className="bg-white text-grey-400 pb-2 pr-5"
-          data-testid="program-operator-wallet"
-          key={index}
-        >
-          <UserIcon className="inline h-4 w-4 text-grey-400 mr-1 mb-1" />
-          <span className="text-sm text-grey-400 font-mono" key={index}>
-            {abbreviateAddress(operatorWallet)}
-          </span>
-        </div>
-      )) || (
-        <p className="text-grey-400 text-sm pb-2 pr-5">
-          Fetching operator wallets...
-        </p>
-      )}
-    </div>
-  );
-
   return fetchProgramsStatus !== ProgressStatus.IS_SUCCESS ? (
     <Spinner text="We're fetching your Program." />
   ) : (
@@ -69,7 +47,7 @@ export default function ViewProgram() {
       {programExists && hasAccess && (
         <>
           <Navbar programCta={true} />
-          <div className="flex-grow flex flex-col items-center">
+          <div className="bg-[#F3F3F5] flex-grow flex flex-col items-center">
             <header className="w-full bg-white pl-2 py-6">
               <div className="w-full max-w-screen-2xl mx-auto px-8">
                 <div className="flex flex-row items-center text-grey-400 font-normal text-sm font-sans">
@@ -99,7 +77,6 @@ export default function ViewProgram() {
                     {programToRender?.metadata?.name || "Program Details"}
                   </h1>
                 </div>
-                {operatorWallets}
               </div>
             </header>
             <div className="w-full max-w-screen-2xl px-8 flex-grow">
