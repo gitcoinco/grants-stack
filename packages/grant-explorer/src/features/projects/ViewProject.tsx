@@ -362,32 +362,16 @@ export default function ViewProject() {
           </div>
           <div className="md:flex gap-4 flex-row-reverse">
             <div className="mb-4">
-              <Sidebar projectApplications={projectApplications} />
-              {directAllocationPoolId && (
-                <button
-                  type="button"
-                  data-testid="direct-allocation-button"
-                  className="w-full block my-4 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold rounded-lg leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  onClick={() => {
-                    if (!isConnected) {
-                      openConnectModal?.();
-                      return;
-                    }
-                    if (project?.chainId === undefined) {
-                      console.error("project chainId is undefined");
-                      return;
-                    }
-                    if (chainId !== project?.chainId) {
-                      setShowSwitchNetworkModal(true);
-                    } else {
-                      setShowDirectAllocationModal(true);
-                    }
-                  }}
-                >
-                  <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
-                  Donate
-                </button>
-              )}
+              <Sidebar
+                projectApplications={projectApplications}
+                directAllocationPoolId={directAllocationPoolId}
+                isConnected={isConnected}
+                chainId={Number(chainId)}
+                project={project}
+                setShowSwitchNetworkModal={setShowSwitchNetworkModal}
+                setShowDirectAllocationModal={setShowDirectAllocationModal}
+                openConnectModal={openConnectModal}
+              />
             </div>
             <div className="flex-1">
               {projectError === undefined ? (
@@ -827,6 +811,13 @@ function ProjectLogo({ logoImg }: { logoImg?: string }) {
 
 function Sidebar(props: {
   projectApplications?: ProjectApplicationWithRoundAndProgram[];
+  directAllocationPoolId: number | undefined;
+  isConnected: boolean;
+  chainId: number;
+  project?: v2Project;
+  setShowSwitchNetworkModal: (value: boolean) => void;
+  setShowDirectAllocationModal: (value: boolean) => void;
+  openConnectModal?: () => void;
 }) {
   const activeQFRoundApplications = props.projectApplications?.filter(
     (projectApplication) =>
@@ -840,8 +831,40 @@ function Sidebar(props: {
       <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
         <ProjectStats projectApplications={props.projectApplications} />
       </div>
+      {props.directAllocationPoolId && (
+        <button
+          type="button"
+          data-testid="direct-allocation-button"
+          className="w-full block mb-8 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold rounded-lg leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          onClick={() => {
+            if (!props.isConnected) {
+              props.openConnectModal?.();
+              return;
+            }
+            if (props.project?.chainId === undefined) {
+              console.error("project chainId is undefined");
+              return;
+            }
+            if (props.chainId !== props.project?.chainId) {
+              props.setShowSwitchNetworkModal(true);
+            } else {
+              props.setShowDirectAllocationModal(true);
+            }
+          }}
+        >
+          <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
+          Donate
+        </button>
+      )}
       {activeQFRoundApplications && activeQFRoundApplications?.length > 0 && (
-        <h4 className="text-xl font-medium">Active rounds</h4>
+        <>
+          <h4 className="text-xl font-medium">Active rounds</h4>
+          <p className="text-md mt-2 text-gray-500 max-w-[320px]">
+            The project is currently participating in the below active rounds.
+            Donating to the project in these rounds will help it receive
+            matching funds.
+          </p>
+        </>
       )}
       <div className="mt-4 max-w-[320px] h-fit rounded-3xl ">
         {activeQFRoundApplications?.map((projectApplication) => (
@@ -1018,7 +1041,7 @@ export function ActiveRoundComponent(props: {
     projectMetadata: props.projectApplication.metadata.application.project,
     grantApplicationFormAnswers: [],
     status: props.projectApplication.status,
-    applicationIndex: 0,
+    applicationIndex: Number(props.projectApplication.id),
     roundId: props.projectApplication.roundId,
     chainId: props.projectApplication.chainId,
     amount: "0",
