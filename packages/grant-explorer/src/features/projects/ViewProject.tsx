@@ -50,7 +50,8 @@ import { useDirectAllocation } from "./hooks/useDirectAllocation";
 import { getDirectAllocationPoolId } from "common/dist/allo/backends/allo-v2";
 import { Address, getAddress, zeroAddress } from "viem";
 import GenericModal from "../common/GenericModal";
-import { BoltIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { BoltIcon } from "@heroicons/react/24/solid";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { getBalance } from "@wagmi/core";
 import { config } from "../../app/wagmi";
@@ -366,7 +367,7 @@ export default function ViewProject() {
                 <button
                   type="button"
                   data-testid="direct-allocation-button"
-                  className="w-full block my-0 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold rounded-lg leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  className="w-full block my-4 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold rounded-lg leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   onClick={() => {
                     if (!isConnected) {
                       openConnectModal?.();
@@ -573,9 +574,14 @@ export function DirectDonationModalComponent(props: {
   return (
     <>
       <div>
-        <p className="mb-4">
+        <p className="mb-4 text-lg font-bold">
           <BoltIcon className="w-4 h-4 mb-1 inline-block mr-2" />
-          Donate now
+          Direct Donation
+        </p>
+        <p className="mb-2">
+          This is a direct donation to the project. Please note that as the
+          donation is outside of a quadratic funding round it doesn't receive
+          any matching funds.
         </p>
       </div>
 
