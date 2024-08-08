@@ -269,7 +269,7 @@ export default function ViewProject() {
         name: "Overview",
         content: (
           <>
-            <h3 className="text-3xl mt-8 mb-4 font-modern-era-medium text-blue-800">
+            <h3 className="mt-8 mb-4 text-3xl text-blue-800 font-modern-era-medium">
               About
             </h3>
             {project ? (
@@ -288,7 +288,7 @@ export default function ViewProject() {
           <>
             {isProjectApplicationsLoading && <SkeletonText />}
             {projectApplicationsError && (
-              <p className="ml-4 mt-8">Couldn't load project data.</p>
+              <p className="mt-8 ml-4">Couldn't load project data.</p>
             )}
             {pastRroundApplications && pastRroundApplications?.length > 0 && (
               <>
@@ -301,7 +301,7 @@ export default function ViewProject() {
               </>
             )}
             {pastRroundApplications && pastRroundApplications?.length === 0 && (
-              <p className="ml-4 mt-8">No past rounds found.</p>
+              <p className="mt-8 ml-4">No past rounds found.</p>
             )}
           </>
         ),
@@ -359,14 +359,14 @@ export default function ViewProject() {
               </div>
             </div>
           </div>
-          <div className="md:flex gap-4 flex-row-reverse">
+          <div className="flex-row-reverse gap-4 md:flex">
             <div className="mb-4">
               <Sidebar projectApplications={projectApplications} />
               {directAllocationPoolId && (
                 <button
                   type="button"
                   data-testid="direct-allocation-button"
-                  className="w-full block my-0 mx-1 bg-gitcoin-violet-100 py-2 text-center text-sm font-semibold rounded-lg leading-6 text-gitcoin-violet-400 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  className="block w-full py-2 mx-1 my-0 text-sm font-semibold leading-6 text-center rounded-lg shadow-sm bg-gitcoin-violet-100 text-gitcoin-violet-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                   onClick={() => {
                     if (!isConnected) {
                       openConnectModal?.();
@@ -383,7 +383,7 @@ export default function ViewProject() {
                     }
                   }}
                 >
-                  <BoltIcon className="w-4 h-4 inline-block mr-1 mb-1" />
+                  <BoltIcon className="inline-block w-4 h-4 mb-1 mr-1" />
                   Donate
                 </button>
               )}
@@ -396,7 +396,7 @@ export default function ViewProject() {
                       projectData !== undefined && projectError === undefined
                     }
                   >
-                    <h1 className="text-4xl font-modern-era-medium tracking-tight text-grey-500">
+                    <h1 className="text-4xl tracking-tight font-modern-era-medium text-grey-500">
                       {title}
                     </h1>
                   </Skeleton>
@@ -574,16 +574,16 @@ export function DirectDonationModalComponent(props: {
     <>
       <div>
         <p className="mb-4">
-          <BoltIcon className="w-4 h-4 mb-1 inline-block mr-2" />
+          <BoltIcon className="inline-block w-4 h-4 mb-1 mr-2" />
           Donate now
         </p>
       </div>
 
-      <div className="mb-4 flex flex-col lg:flex-row justify-between sm:px-2 px-2 py-4 rounded-md">
+      <div className="flex flex-col justify-between px-2 py-4 mb-4 rounded-md lg:flex-row sm:px-2">
         <div className="flex">
-          <div className="flex relative overflow-hidden bg-no-repeat bg-cover mt-auto mb-auto">
+          <div className="relative flex mt-auto mb-auto overflow-hidden bg-no-repeat bg-cover">
             <img
-              className="inline-block rounded-full w-10 my-auto mr-2"
+              className="inline-block w-10 my-auto mr-2 rounded-full"
               src={
                 props.projectData?.project.metadata.logoImg
                   ? `${ipfsGateway}/ipfs/${props.projectData?.project.metadata.logoImg}`
@@ -596,8 +596,8 @@ export function DirectDonationModalComponent(props: {
             </p>
           </div>
         </div>
-        <div className="flex sm:space-x-4 space-x-2 h-16 sm:pl-4 pt-3 justify-center">
-          <p className="mt-4 md:mt-3 text-xs md:text-sm amount-text font-medium">
+        <div className="flex justify-center h-16 pt-3 space-x-2 sm:space-x-4 sm:pl-4">
+          <p className="mt-4 text-xs font-medium md:mt-3 md:text-sm amount-text">
             Amount
           </p>
           <Input
@@ -627,7 +627,7 @@ export function DirectDonationModalComponent(props: {
       {isEmptyInput && hasClickedSubmit && (
         <p
           data-testid="emptyInput"
-          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+          className="flex justify-center py-2 my-4 text-sm text-pink-500 rounded-md bg-red-50"
         >
           <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
           <span>You must enter donation for the project</span>
@@ -636,7 +636,7 @@ export function DirectDonationModalComponent(props: {
       {!hasEnoughFunds && (
         <p
           data-testid="hasEnoughFunds"
-          className="rounded-md bg-red-50 py-2 text-pink-500 flex justify-center my-4 text-sm"
+          className="flex justify-center py-2 my-4 text-sm text-pink-500 rounded-md bg-red-50"
         >
           <InformationCircleIcon className="w-4 h-4 mr-1 mt-0.5" />
           <span>You don't have enough funds</span>
@@ -645,7 +645,7 @@ export function DirectDonationModalComponent(props: {
 
       <button
         type="button"
-        className="w-full font-normal rounded-lg bg-gitcoin-violet-400 text-white focus-visible:outline-indigo-600 py-2 leading-6"
+        className="w-full py-2 font-normal leading-6 text-white rounded-lg bg-gitcoin-violet-400 focus-visible:outline-indigo-600"
         onClick={() => {
           if (isEmptyInput) {
             setHasClickedSubmit(true);
@@ -786,7 +786,7 @@ function ProjectLink({
 
 function VerifiedBadge() {
   return (
-    <span className="bg-teal-100 flex gap-2 rounded-full px-2 text-xs items-center font-modern-era-medium text-teal-500">
+    <span className="flex items-center gap-2 px-2 text-xs text-teal-500 bg-teal-100 rounded-full font-modern-era-medium">
       <ShieldCheckIcon className="w-4 h-4" />
       Verified
     </span>
@@ -799,7 +799,7 @@ function Detail(props: { text: string; testID: string }) {
       dangerouslySetInnerHTML={{
         __html: renderToHTML(props.text.replace(/\n/g, "\n\n")),
       }}
-      className="text-blue-800 text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600 max-w-full"
+      className="max-w-full prose text-blue-800 text-md prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
       data-testid={props.testID}
     />
   );
@@ -882,7 +882,7 @@ export function ProjectStats(props: {
 
   return (
     <div className="flex flex-col">
-      <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
+      <div className="flex flex-col flex-auto gap-4 p-3 text-blue-800 rounded-3xl md:p-4">
         <h4 className="text-2xl">All-time stats</h4>
         <Stat isLoading={false} value={`$${totalFundingReceived}`}>
           funding received
@@ -950,14 +950,14 @@ export function RoundListItem({
       : "Quadratic funding";
 
   return (
-    <div className="w-full my-8 flex flex-col md:flex-row justify-between items-center text-sm px-2 border-b border-gray-400">
-      <div className="flex md:flex-auto my-2 md:w-24 truncate mr-4">
-        <span className="text-black-400 font-semibold">
+    <div className="flex flex-col items-center justify-between w-full px-2 my-8 text-sm border-b border-gray-400 md:flex-row">
+      <div className="flex my-2 mr-4 truncate md:flex-auto md:w-24">
+        <span className="font-semibold text-black-400">
           {projectApplication.round.project.name}
         </span>
       </div>
-      <div className="flex md:flex-auto my-2 md:w-24 truncate mr-4">
-        <span className="text-black-400 font-semibold">
+      <div className="flex my-2 mr-4 truncate md:flex-auto md:w-24">
+        <span className="font-semibold text-black-400">
           {projectApplication.round.roundMetadata.name}
         </span>
       </div>
@@ -976,7 +976,7 @@ export function RoundListItem({
         <span
           className={`flex justify-center ${roundType === "Quadratic funding" ? "bg-green-100" : "bg-yellow-100"} items-center text-md rounded-full p-2 font-medium`}
         >
-          <span className="text-black font-medium">{roundType}</span>
+          <span className="font-medium text-black">{roundType}</span>
         </span>
       </div>
     </div>
@@ -1012,7 +1012,7 @@ export function ActiveRoundComponent(props: {
     projectMetadata: props.projectApplication.metadata.application.project,
     grantApplicationFormAnswers: [],
     status: props.projectApplication.status,
-    applicationIndex: 0,
+    applicationIndex: Number(props.projectApplication.id),
     roundId: props.projectApplication.roundId,
     chainId: props.projectApplication.chainId,
     amount: "0",
@@ -1024,10 +1024,10 @@ export function ActiveRoundComponent(props: {
   );
 
   return (
-    <div className="p-4 bg-gray-50 rounded-3xl flex flex-col space-y-4">
-      <div className="flex justify-between items-center">
+    <div className="flex flex-col p-4 space-y-4 bg-gray-50 rounded-3xl">
+      <div className="flex items-center justify-between">
         <div>
-          <div className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="mb-2 text-lg font-semibold text-gray-900">
             {roundName}
           </div>
           <div className="text-gray-500mb-4">
@@ -1035,7 +1035,7 @@ export function ActiveRoundComponent(props: {
           </div>
         </div>
         <img
-          className="mt-2 ml-2 inline-block h-9 w-9"
+          className="inline-block mt-2 ml-2 h-9 w-9"
           src={stringToBlobUrl(roundChain.icon)}
           alt={"Chain Logo"}
         />
@@ -1044,21 +1044,21 @@ export function ActiveRoundComponent(props: {
         <a
           href={roundLink}
           target="_blank"
-          className="flex justify-center bg-green-100 text-black-500 rounded-xl px-4 py-2 w-3/4"
+          className="flex justify-center w-3/4 px-4 py-2 bg-green-100 text-black-500 rounded-xl"
         >
           View round
         </a>
         {isProjectInCart ? (
           <div
             onClick={() => props.removeFromCart(cartProject)}
-            className="flex text-black-500 w-1/4 justify-center cursor-pointer"
+            className="flex justify-center w-1/4 cursor-pointer text-black-500"
           >
             <CheckedCircleIcon className="w-10" />
           </div>
         ) : (
           <div
             onClick={() => props.addToCart(cartProject)}
-            className="flex text-black-500 w-1/4 justify-center cursor-pointer"
+            className="flex justify-center w-1/4 cursor-pointer text-black-500"
           >
             <CartCircleIcon className="w-10" />
           </div>
