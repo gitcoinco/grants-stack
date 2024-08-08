@@ -47,7 +47,7 @@ export default function ViewProgram() {
       {programExists && hasAccess && (
         <>
           <Navbar programCta={true} />
-          <div className="flex-grow flex flex-col items-center">
+          <div className="bg-[#F3F3F5] flex-grow flex flex-col items-center">
             <header className="w-full bg-white pl-2 py-6">
               <div className="w-full max-w-screen-2xl mx-auto px-8">
                 <div className="flex flex-row items-center text-grey-400 font-normal text-sm font-sans">

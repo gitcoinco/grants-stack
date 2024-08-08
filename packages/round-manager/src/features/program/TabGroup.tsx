@@ -2,7 +2,7 @@
 
 import { Fragment, useState, Key } from "react";
 import { classNames, getStatusStyle, prettyDates3 } from "../common/Utils";
-import { RefreshIcon, PlusIcon, PlusSmIcon } from "@heroicons/react/solid";
+import { PlusIcon, PlusSmIcon } from "@heroicons/react/solid";
 import Close from "../../assets/close.svg";
 import DirectGrants from "../../assets/direct-grants.svg";
 import QuadraticFundingSVG from "../../assets/quadratic-funding.svg";
@@ -147,10 +147,6 @@ export const TabGroup = () => {
     <div className="bg-[#F3F3F5] p-8 rounded">
       <div className="px-12 ml-10 mr-10">
         <div className="flex px-12 ml-10 mr-10 justify-center flex-col text-center">
-          <RefreshIcon
-            className="h-12 w-12 mt-8 mx-auto bg-white rounded-full p-3"
-            aria-hidden="true"
-          ></RefreshIcon>
           <h2 className="text-2xl my-4 pt-8">My Rounds</h2>
           <p
             className="text-grey-400 text-sm mb-8"
@@ -367,7 +363,9 @@ export const TabGroup = () => {
       {isRoundsFetched &&
         rounds.length === 0 &&
         programToRender?.tags?.includes(getAlloVersion()) &&
-        noRoundsGroup}
+        currentTab !== "Settings" &&
+        noRoundsGroup
+      }
       <Transition.Root show={isModalOpen} as={Fragment}>
         <Dialog
           as="div"

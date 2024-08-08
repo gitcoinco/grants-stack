@@ -84,20 +84,7 @@ export function ViewManageProgram(props: {
       name: "Updating",
       description: `Updating the team members for the profile`,
       status: contractUpdatingStatus,
-    },
-    {
-      name: "Indexing",
-      description: "Indexing the data.",
-      status: indexingStatus,
-    },
-    {
-      name: "Redirecting",
-      description: "Just another moment while we finish things up.",
-      status:
-        indexingStatus === ProgressStatus.IS_SUCCESS
-          ? ProgressStatus.IN_PROGRESS
-          : ProgressStatus.NOT_STARTED,
-    },
+    }
   ];
 
   const handleUpdateTeam = async () => {
@@ -131,19 +118,6 @@ export function ViewManageProgram(props: {
   return (
     <div>
       <p className="font-bold text-lg mt-2 mb-2">Manage Team</p>
-      <div className="flex flex-row items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-400 mb-2">
-            {isOwner
-              ? "Add or remove members to your team. "
-              : "View who is on your team."}
-          </p>
-          <p className="text-sm text-gray-400 mb-2">
-            Owners and members have the same privileges, but only owners can
-            add or remove members.
-          </p>
-        </div>
-      </div>
       <div className="overflow-x-auto">
         {isOwner && (
           <div className="my-4 w-100 max-w-[32rem]">
