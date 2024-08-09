@@ -91,8 +91,8 @@ export default function ImageCrop({
               setCompletedCrop(c);
             }}
             aspect={dimensions.width / dimensions.height}
-            maxHeight={dimensions.height}
-            maxWidth={dimensions.width}
+            maxHeight={undefined}
+            maxWidth={undefined}
           >
             <img
               ref={imgRef}
