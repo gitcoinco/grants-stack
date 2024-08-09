@@ -13,14 +13,14 @@ const graphQLClient = new GraphQLClient(osoUrl, {
 let hasFetched = false;
 
 interface IOSOId {
-  artifacts_by_project: {
+  projects_v1: {
     project_id: Hex;
   };
 }
 
 export interface IOSOStats {
-  code_metrics_by_project: {
-    contributors: number;
+  code_metrics_by_project_v1: {
+    contributor_count: number;
     first_commit_date: number;
   };
   events_monthly_to_project: [
@@ -53,8 +53,8 @@ export interface IOSOStats {
 
 export function useOSO(projectGithub?: string) {
   const emptyReturn: IOSOStats = {
-    code_metrics_by_project: {
-      contributors: 0,
+    code_metrics_by_project_v1: {
+      contributor_count: 0,
       first_commit_date: 0,
     },
     events_monthly_to_project: [
@@ -90,7 +90,7 @@ export function useOSO(projectGithub?: string) {
     if (osoApiKey === "")
       throw new Error("OpenSourceObserver API key not set.");
     const queryId = gql`{
-      artifacts_by_project(where: {artifact_name: {_ilike: "%${projectRegistryGithub}/%"}}
+      projects_v1(where: {display_name: {_ilike: "${projectRegistryGithub}"}}
         distinct_on: project_id
       ) {
         project_id
@@ -101,22 +101,22 @@ export function useOSO(projectGithub?: string) {
       hasFetched = true;
       const idData: IOSOId = await graphQLClient.request<IOSOId>(queryId);
 
-      if (!Array.isArray(idData.artifacts_by_project)) {
+      if (!Array.isArray(idData.projects_v1)) {
         setStats(emptyReturn);
         return;
       }
 
       const parsedId: IOSOId = {
-        artifacts_by_project: idData.artifacts_by_project[0],
+        projects_v1: idData.projects_v1[0],
       };
 
       const queryStats = gql`{
-        code_metrics_by_project(where: {project_id: {_eq: "${parsedId.artifacts_by_project.project_id}"}}) {
-          contributors
+        code_metrics_by_project_v1(where: {project_id: {_eq: "${parsedId.projects_v1.project_id}"}}) {
+          contributor_count
           first_commit_date
         }
         events_monthly_to_project(
-          where: {project_id: {_eq: "${parsedId.artifacts_by_project.project_id}"}, event_type: {_eq: "COMMIT_CODE"}}
+          where: {project_id: {_eq: "${parsedId.projects_v1.project_id}"}, event_type: {_eq: "COMMIT_CODE"}}
           limit: 6
           order_by: {bucket_month: desc}
         ) {
@@ -128,20 +128,20 @@ export function useOSO(projectGithub?: string) {
       const items: IOSOStats =
         await graphQLClient.request<IOSOStats>(queryStats);
 
-      if (!Array.isArray(items.code_metrics_by_project)) {
+      if (!Array.isArray(items.code_metrics_by_project_v1)) {
         setStats(emptyReturn);
         return;
       }
 
       if (items.events_monthly_to_project.length === 6) {
         const parsedItems: IOSOStats = {
-          code_metrics_by_project: items.code_metrics_by_project[0],
+          code_metrics_by_project_v1: items.code_metrics_by_project_v1[0],
           events_monthly_to_project: items.events_monthly_to_project,
         };
         setStats(parsedItems);
       } else {
         const parsedItems: IOSOStats = {
-          code_metrics_by_project: items.code_metrics_by_project[0],
+          code_metrics_by_project_v1: items.code_metrics_by_project_v1[0],
           events_monthly_to_project: emptyReturn.events_monthly_to_project,
         };
         setStats(parsedItems);
