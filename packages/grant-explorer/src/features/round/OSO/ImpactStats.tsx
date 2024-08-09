@@ -8,7 +8,7 @@ import { formatTimeAgo } from "../../common/utils/utils";
 export const StatList = ({ stats }: { stats: IOSOStats | null }) => {
   if (stats === null) return;
   return (
-    stats.code_metrics_by_project.contributors > 0 ? (
+    stats.code_metrics_by_project.contributor_count > 0 ? (
       <React.Fragment>
         <h4 className="text-3xl mt-5 ml-4" >Impact stats</h4>
         <Flex gap={2} flexDir={{base: 'column', md: 'row'}} py={6} px={3} >
@@ -32,7 +32,7 @@ export const StatList = ({ stats }: { stats: IOSOStats | null }) => {
         >
           <Stat
             isLoading={false}
-            value={`${stats.code_metrics_by_project.contributors}`}
+            value={`${stats.code_metrics_by_project.contributor_count}`}
           >
             Unique code contributors
           </Stat>
