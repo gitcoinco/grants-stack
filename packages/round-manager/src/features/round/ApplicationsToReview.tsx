@@ -42,7 +42,9 @@ import { useAccount } from "wagmi";
 
 // Move applications received in direct grants to In Review
 
-export default function ApplicationsToReview() {
+export default function ApplicationsToReview(props: {
+  roundHasEnded: boolean;
+}) {
   const { id } = useParams();
   const { chainId } = useAccount();
 
@@ -239,7 +241,7 @@ export default function ApplicationsToReview() {
             )}
           </Button>
         )}
-        {filteredApplications && filteredApplications.length > 0 && (
+        {!props.roundHasEnded && filteredApplications && filteredApplications.length > 0 && (
           <div className="flex items-center justify-end ml-auto">
             <span className="text-grey-400 text-sm mr-6">
               Save in gas fees by moving multiple applications to "In Review"
