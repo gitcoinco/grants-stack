@@ -380,8 +380,8 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@gitcoin/gitcoin-chain-data':
-        specifier: ^1.0.30
-        version: 1.0.30(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
+        specifier: ^1.0.32
+        version: 1.0.32(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
       '@gitcoinco/passport-sdk-types':
         specifier: ^0.2.0
         version: 0.2.0
@@ -3319,8 +3319,8 @@ packages:
   '@foundry-rs/easy-foundryup@0.1.3':
     resolution: {integrity: sha512-Funb4hrSBeikKCmccFT/d3Ud5o92tlIZHTJeMCVk5b54/+CHZHr4g7MmtvO5xrGhxrOebQ0L+ojIj+VixgW7ug==}
 
-  '@gitcoin/gitcoin-chain-data@1.0.30':
-    resolution: {integrity: sha512-Bg9ZlrPXCZyTY1TNrfyZZaser+GbS4elIzq/2MOwIG1pjTIrOSUJ+OqI+3ND75W+MO/9hxCfO+iE5KwMZGNOBQ==}
+  '@gitcoin/gitcoin-chain-data@1.0.32':
+    resolution: {integrity: sha512-0YMlKIFxFHC6/BZ4zQL5GEiE0pp12M78V0Om7n2ymmqPLCmGL0wHFxeIwfAAVD6DYYhZ2HEePFXCJutjZ4Oadw==}
     engines: {node: '>=16.15.0', npm: '>=8.5.5'}
     peerDependencies:
       typescript: ^5.0.0
@@ -18181,7 +18181,7 @@ snapshots:
       command-exists: 1.2.9
       ts-interface-checker: 0.1.13
 
-  '@gitcoin/gitcoin-chain-data@1.0.30(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)':
+  '@gitcoin/gitcoin-chain-data@1.0.32(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)':
     dependencies:
       typescript: 5.4.5
       viem: 2.13.10(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@5.0.10)(zod@3.23.8)
