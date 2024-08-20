@@ -180,7 +180,7 @@ export const useCheckoutStore = create<CheckoutState>()(
               client: walletClient,
             });
             nonce = await erc20Contract.read.nonces([owner]);
-            const tokenName = await erc20Contract.read.name();
+            let tokenName = await erc20Contract.read.name();
             if (getPermitType(token, chainId) === "dai") {
               sig = await signPermitDai({
                 walletClient: walletClient,
@@ -194,6 +194,13 @@ export const useCheckoutStore = create<CheckoutState>()(
                 permitVersion: token.permitVersion ?? "1",
               });
             } else {
+              // cUSD is a special case where the token symbol is used for permit instead of the name
+              if (
+                chainId === 42220 &&
+                token.address.toLowerCase() ===
+                  "0x765de816845861e75a25fca122bb6898b8b1282a".toLowerCase()
+              )
+                tokenName = "cUSD";
               sig = await signPermit2612({
                 walletClient: walletClient,
                 value: totalDonationPerChain[chainId],
