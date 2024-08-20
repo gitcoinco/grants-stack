@@ -117,35 +117,28 @@ export function getDirectAllocationPoolId(chainId: number) {
 }
 
 export function getDirectAllocationStrategyAddress(chainId: number) {
+  // This should be the strategy address, once the pool is created
   switch (chainId) {
     case 11155111:
       return "0xd60BCfa8714949c478d88da51A7450703A32Cf35";
     case 10:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
+      return "0x91ad709fe04e214ef53218572d8d8690a8b4fdd0";
     case 42161:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
+      return "0x91ad709fe04e214ef53218572d8d8690a8b4fdd0";
     case 42220:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    case 8453:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    case 43114:
-      return "0x86b4329E7CB8674b015477C81356420D79c71A53";
-    case 534353:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    case 534352:
       return "0x9da0a7978b7bd826e06800427cbf1ec1200393e3";
+    case 8453:
+      return "0xef78f18f49dea8b8a5caa41633bb50b0666d40f1";
+    case 43114:
+      return "0xcdf62dd1f9f9f412485dba39b491af9e09d81652";
     case 250:
-      return "0x1E18cdce56B3754c4Dca34CB3a7439C24E8363de";
+      return "0xf4ad959b0eceab17648cb964c3a1feadba8a5053";
     case 1:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    case 808:
-      return "0x1cfa7A687cd18b99D255bFc25930d3a0b05EB00F";
-    case 1329:
-      return "0x7836f59bd6dc1d87a45df8b9a74eefcdf25bc8a9";
+      return "0xef78f18f49dea8b8a5caa41633bb50b0666d40f1";
     case 42:
-      return "0xeB6325d9daCD1E46A20C02F46E41d4CAE45C0980";
+      return "0x471168a823d909fd3ffa5641757d9bb83ba5e35c";
     case 1088:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
+      return "0xef78f18f49dea8b8a5caa41633bb50b0666d40f1";
     default:
       return undefined;
   }
@@ -1547,7 +1540,9 @@ export class AlloV2 implements Allo {
         emit("transactionStatus", success(receipt));
       } catch (err) {
         console.log(err);
-        const result = new AlloError(`Failed to ${args.addOrRemove} profile members`);
+        const result = new AlloError(
+          `Failed to ${args.addOrRemove} profile members`
+        );
         emit("transactionStatus", error(result));
         return error(result);
       }
