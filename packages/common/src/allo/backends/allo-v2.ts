@@ -83,67 +83,6 @@ export function getAlloAddress(chainId: number) {
   return allo.address();
 }
 
-export function getDirectAllocationPoolId(chainId: number) {
-  switch (chainId) {
-    case 11155111:
-      return 386;
-    case 10:
-      return 58;
-    case 42161:
-      return 390;
-    case 42220:
-      return 12;
-    case 8453:
-      return 36;
-    case 43114:
-      return 15;
-    case 534352:
-    case 534353:
-      return 22;
-    case 250:
-      return 4;
-    case 1:
-      return 11;
-    case 1329:
-    case 808:
-      return 8;
-    case 42:
-      return 3;
-    case 1088:
-      return 1;
-    default:
-      return undefined;
-  }
-}
-
-export function getDirectAllocationStrategyAddress(chainId: number) {
-  // This should be the strategy address, once the pool is created
-  switch (chainId) {
-    case 11155111:
-      return "0xd60BCfa8714949c478d88da51A7450703A32Cf35";
-    case 10:
-      return "0x91ad709fe04e214ef53218572d8d8690a8b4fdd0";
-    case 42161:
-      return "0x91ad709fe04e214ef53218572d8d8690a8b4fdd0";
-    case 42220:
-      return "0x9da0a7978b7bd826e06800427cbf1ec1200393e3";
-    case 8453:
-      return "0xef78f18f49dea8b8a5caa41633bb50b0666d40f1";
-    case 43114:
-      return "0xcdf62dd1f9f9f412485dba39b491af9e09d81652";
-    case 250:
-      return "0xf4ad959b0eceab17648cb964c3a1feadba8a5053";
-    case 1:
-      return "0xef78f18f49dea8b8a5caa41633bb50b0666d40f1";
-    case 42:
-      return "0x471168a823d909fd3ffa5641757d9bb83ba5e35c";
-    case 1088:
-      return "0xef78f18f49dea8b8a5caa41633bb50b0666d40f1";
-    default:
-      return undefined;
-  }
-}
-
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
   private ipfsUploader: IpfsUploader;
@@ -1586,7 +1525,8 @@ export class AlloV2 implements Allo {
         poolId: poolId,
       });
 
-      const strategyAddress = getDirectAllocationStrategyAddress(this.chainId);
+      const strategyAddress = getChainById(this.chainId).contracts
+        .directAllocationStrategyAddress;
 
       if (strategyAddress === undefined) {
         return error(new AlloError("Direct allocation strategy not found"));

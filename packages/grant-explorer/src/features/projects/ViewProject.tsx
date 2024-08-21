@@ -47,7 +47,6 @@ import { getVotingTokenOptions } from "../api/utils";
 import ErrorModal from "../common/ErrorModal";
 import ProgressModal, { errorModalDelayMs } from "../common/ProgressModal";
 import { useDirectAllocation } from "./hooks/useDirectAllocation";
-import { getDirectAllocationPoolId } from "common/dist/allo/backends/allo-v2";
 import { Address, getAddress, zeroAddress } from "viem";
 import GenericModal from "../common/GenericModal";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
@@ -105,7 +104,8 @@ export default function ViewProject() {
   const [tokenBalances, setTokenBalances] = useState<
     { token: Address; balance: bigint }[]
   >([]);
-  const directAllocationPoolId = getDirectAllocationPoolId(chainId ?? 1);
+  const directAllocationPoolId = getChainById(chainId ?? 1).contracts
+    .directAllocationPoolId;
   const [transactionReplaced, setTransactionReplaced] = useState(false);
   const { projectId } = useParams();
 
@@ -455,7 +455,8 @@ export default function ViewProject() {
     if (
       directDonationAmount === undefined ||
       allo === null ||
-      payoutToken === undefined
+      payoutToken === undefined ||
+      directAllocationPoolId === undefined
     ) {
       return;
     }
@@ -466,7 +467,7 @@ export default function ViewProject() {
     try {
       let requireTokenApproval = false;
 
-      const poolId = getDirectAllocationPoolId(chainId ?? 1)?.toString();
+      const poolId = directAllocationPoolId.toString();
 
       const recipient = project?.roles?.filter(
         (role) => role.role === "OWNER"
