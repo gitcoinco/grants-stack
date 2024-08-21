@@ -8,7 +8,7 @@ import {
   UploadIcon,
 } from "@heroicons/react/solid";
 import { useDropzone } from "react-dropzone";
-import { classNames, isGG20Round, getPayoutTokens, TToken } from "common";
+import { classNames, getPayoutTokens, TToken } from "common";
 import { Button } from "common/src/styles";
 import { useDebugMode, useRoundMatchingFunds } from "../../../hooks";
 import {
@@ -384,9 +384,8 @@ function ViewRoundResults({
 
   const disableRoundSaturationControls = Math.round(roundSaturation) >= 100;
 
-  const sybilDefense = isGG20Round(round.id, chain.id)
-    ? "passport-mbds"
-    : round.roundMetadata?.quadraticFundingConfig?.sybilDefense;
+  const sybilDefense =
+    round.roundMetadata?.quadraticFundingConfig?.sybilDefense;
 
   const isCustomResults =
     (sybilDefense === "passport-mbds" && isRecommendedDistribution) ||
