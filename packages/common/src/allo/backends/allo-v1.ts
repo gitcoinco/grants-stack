@@ -1311,6 +1311,25 @@ export class AlloV1 implements Allo {
     });
   }
 
+  manageProfileMembers(args: {
+    profileId: Hex;
+    members: Address[];
+    addOrRemove: "add" | "remove";
+  }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async () => {
+      const result = new AlloError(`Unsupported on v1 ${args}`);
+      return error(result);
+    });
+  }
+
+
   directAllocation(args: {
     tokenAddress: Address;
     poolId: string;

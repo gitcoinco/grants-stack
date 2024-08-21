@@ -1,5 +1,4 @@
 import { useAccount } from "wagmi";
-import { GrantApplication } from "../../features/api/types";
 import { useDataLayer } from "data-layer";
 import useSWR from "swr";
 import { convertApplications } from "../api/utils";

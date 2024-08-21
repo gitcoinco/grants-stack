@@ -83,74 +83,6 @@ export function getAlloAddress(chainId: number) {
   return allo.address();
 }
 
-export function getDirectAllocationPoolId(chainId: number) {
-  switch (chainId) {
-    case 11155111:
-      return 386;
-    case 10:
-      return 58;
-    case 42161:
-      return 390;
-    case 42220:
-      return 12;
-    case 8453:
-      return 36;
-    case 43114:
-      return 15;
-    case 534352:
-    case 534353:
-      return 22;
-    case 250:
-      return 4;
-    case 1:
-      return 11;
-    case 1329:
-    case 808:
-      return 8;
-    case 42:
-      return 3;
-    case 1088:
-      return 1;
-    default:
-      return undefined;
-  }
-}
-
-export function getDirectAllocationStrategyAddress(chainId: number) {
-  switch (chainId) {
-    case 11155111:
-      return "0xd60BCfa8714949c478d88da51A7450703A32Cf35";
-    case 10:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    case 42161:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    case 42220:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    case 8453:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    case 43114:
-      return "0x86b4329E7CB8674b015477C81356420D79c71A53";
-    case 534353:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    case 534352:
-      return "0x9da0a7978b7bd826e06800427cbf1ec1200393e3";
-    case 250:
-      return "0x1E18cdce56B3754c4Dca34CB3a7439C24E8363de";
-    case 1:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    case 808:
-      return "0x1cfa7A687cd18b99D255bFc25930d3a0b05EB00F";
-    case 1329:
-      return "0x7836f59bd6dc1d87a45df8b9a74eefcdf25bc8a9";
-    case 42:
-      return "0xeB6325d9daCD1E46A20C02F46E41d4CAE45C0980";
-    case 1088:
-      return "0x56662F9c0174cD6ae14b214fC52Bd6Eb6B6eA602";
-    default:
-      return undefined;
-  }
-}
-
 export class AlloV2 implements Allo {
   private transactionSender: TransactionSender;
   private ipfsUploader: IpfsUploader;
@@ -1505,6 +1437,66 @@ export class AlloV2 implements Allo {
     });
   }
 
+  manageProfileMembers(args: {
+    profileId: Hex;
+    members: Address[];
+    addOrRemove: "add" | "remove";
+  }): AlloOperation<
+    Result<null>,
+    {
+      transaction: Result<Hex>;
+      transactionStatus: Result<TransactionReceipt>;
+      indexingStatus: Result<null>;
+    }
+  > {
+    return new AlloOperation(async ({ emit }) => {
+      const txData =
+        args.addOrRemove === "add"
+          ? this.registry.addMembers({
+              profileId: args.profileId,
+              members: args.members,
+            })
+          : this.registry.removeMembers({
+              profileId: args.profileId,
+              members: args.members,
+            });
+
+      const txResult = await sendRawTransaction(this.transactionSender, {
+        to: txData.to,
+        data: txData.data,
+        value: BigInt(txData.value),
+      });
+
+      emit("transaction", txResult);
+
+      if (txResult.type === "error") {
+        return error(txResult.error);
+      }
+
+      let receipt: TransactionReceipt;
+      try {
+        receipt = await this.transactionSender.wait(txResult.value);
+        emit("transactionStatus", success(receipt));
+      } catch (err) {
+        console.log(err);
+        const result = new AlloError(
+          `Failed to ${args.addOrRemove} profile members`
+        );
+        emit("transactionStatus", error(result));
+        return error(result);
+      }
+
+      await this.waitUntilIndexerSynced({
+        chainId: this.chainId,
+        blockNumber: receipt.blockNumber,
+      });
+
+      emit("indexingStatus", success(null));
+
+      return success(null);
+    });
+  }
+
   directAllocation(args: {
     tokenAddress: Address;
     poolId: string;
@@ -1533,7 +1525,8 @@ export class AlloV2 implements Allo {
         poolId: poolId,
       });
 
-      const strategyAddress = getDirectAllocationStrategyAddress(this.chainId);
+      const strategyAddress = getChainById(this.chainId).contracts
+        .directAllocationStrategyAddress;
 
       if (strategyAddress === undefined) {
         return error(new AlloError("Direct allocation strategy not found"));

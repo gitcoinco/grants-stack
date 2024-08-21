@@ -1,7 +1,7 @@
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
 import { Link } from "react-router-dom";
-import { getChainById, getTokenByChainIdAndAddress } from "common";
+import { getTokenByChainIdAndAddress } from "common";
 import { Hex, formatUnits } from "viem";
 import { Contribution } from "data-layer";
 import moment from "moment";

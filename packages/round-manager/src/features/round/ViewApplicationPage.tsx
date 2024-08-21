@@ -66,7 +66,6 @@ import { useDebugMode } from "../../hooks";
 import { getPayoutRoundDescription } from "../common/Utils";
 import moment from "moment";
 import ApplicationDirectPayout from "./ApplicationDirectPayout";
-import { useApplicationsByRoundId } from "../common/useApplicationsByRoundId";
 import { useAccount } from "wagmi";
 import { ViewGrantsExplorerButton } from "../common/ViewGrantsExplorerButton";
 import { useDataLayer } from "data-layer";

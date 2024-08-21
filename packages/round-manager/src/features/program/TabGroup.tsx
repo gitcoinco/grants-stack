@@ -2,7 +2,7 @@
 
 import { Fragment, useState, Key } from "react";
 import { classNames, getStatusStyle, prettyDates3 } from "../common/Utils";
-import { RefreshIcon, PlusIcon, PlusSmIcon } from "@heroicons/react/solid";
+import { PlusIcon, PlusSmIcon } from "@heroicons/react/solid";
 import Close from "../../assets/close.svg";
 import DirectGrants from "../../assets/direct-grants.svg";
 import QuadraticFundingSVG from "../../assets/quadratic-funding.svg";
@@ -13,6 +13,7 @@ import { Link, useParams } from "react-router-dom";
 import { RoundCard } from "../round/RoundCard";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useProgramById } from "../../context/program/ReadProgramContext";
+import { ViewManageProgram } from "./ViewManageProgram";
 import { useRounds } from "../../context/round/RoundContext";
 import { ProgressStatus, Round } from "../api/types";
 import { Transition, Dialog } from "@headlessui/react";
@@ -21,6 +22,7 @@ import { useAccount } from "wagmi";
 const tabs = [
   { name: "Quadratic funding", current: true },
   { name: "Direct grants", current: false },
+  { name: "Settings", current: false},
 ];
 
 export const TabGroup = () => {
@@ -31,7 +33,7 @@ export const TabGroup = () => {
     chainId?: string;
     id: string;
   };
-  const { chain } = useAccount();
+  const { chain, address } = useAccount();
   const programChainId = chainId ? Number(chainId) : chain?.id;
   const { program: programToRender } = useProgramById(programId);
   const { data: rounds, fetchRoundStatus } = useRounds(
@@ -145,10 +147,6 @@ export const TabGroup = () => {
     <div className="bg-[#F3F3F5] p-8 rounded">
       <div className="px-12 ml-10 mr-10">
         <div className="flex px-12 ml-10 mr-10 justify-center flex-col text-center">
-          <RefreshIcon
-            className="h-12 w-12 mt-8 mx-auto bg-white rounded-full p-3"
-            aria-hidden="true"
-          ></RefreshIcon>
           <h2 className="text-2xl my-4 pt-8">My Rounds</h2>
           <p
             className="text-grey-400 text-sm mb-8"
@@ -314,13 +312,13 @@ export const TabGroup = () => {
                     aria-current={tab.name === currentTab ? "page" : undefined}
                   >
                     <span>{tab.name}</span>
-                    <span
-                      className={`py-1 px-2 mx-2 bg-${tab.name === "Quadratic funding" ? "green" : "yellow"}-100 rounded-full text-xs font-mono`}
-                    >
-                      {tab.name === "Quadratic funding"
-                        ? qfRounds.length
-                        : dgRounds.length}
-                    </span>
+                    {["Quadratic funding", "Direct grants"].includes(tab.name) &&
+                      <span
+                        className={`py-1 px-2 mx-2 bg-${tab.name === "Quadratic funding" ? "green" : "yellow"}-100 rounded-full text-xs font-mono`}
+                      >
+                        {tab.name === "Quadratic funding" ? qfRounds.length : dgRounds.length}
+                      </span>
+                    }
                   </span>
                 ))}
               </div>
@@ -357,12 +355,17 @@ export const TabGroup = () => {
               <div className="md:mb-8">{dgRoundItems}</div>
             </div>
           )}
+          { currentTab === "Settings" && (
+            <ViewManageProgram program={programToRender!} userAddress={address || "0x"} />
+          )}
         </div>
       </div>
       {isRoundsFetched &&
         rounds.length === 0 &&
         programToRender?.tags?.includes(getAlloVersion()) &&
-        noRoundsGroup}
+        currentTab !== "Settings" &&
+        noRoundsGroup
+      }
       <Transition.Root show={isModalOpen} as={Fragment}>
         <Dialog
           as="div"
