@@ -461,7 +461,7 @@ export default function FundContract(props: {
           <p className="text-sm">{props.round.roundFeePercentage ?? 0}%</p>
         </div>
         <hr className="mt-6 mb-6" />
-        {!props.round.payoutStrategy.isReadyForPayout ? (
+        {true ? (
           <>
             <div className="flex flex-row justify-start mt-6">
               <p className="text-sm w-1/3">Amount funded:</p>
