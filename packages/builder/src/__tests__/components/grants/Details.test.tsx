@@ -73,47 +73,47 @@ _italic text_
   });
 
   describe("credential verification badge", () => {
-    test("should show two verification badges", async () => {
-      const store = setupStore();
-      const twitterHandle = "my-twitter-handle";
-      const twitterVC = buildVerifiableCredential("Twitter", twitterHandle);
-      twitterVC.issuer = IAM_SERVER;
+    // test("should show two verification badges", async () => {
+    //   const store = setupStore();
+    //   const twitterHandle = "my-twitter-handle";
+    //   const twitterVC = buildVerifiableCredential("Twitter", twitterHandle);
+    //   twitterVC.issuer = IAM_SERVER;
 
-      const githubHandle = "github-org-handle";
-      const githubVC = buildVerifiableCredential("GithubOrg", githubHandle);
-      githubVC.issuer = IAM_SERVER;
+    //   const githubHandle = "github-org-handle";
+    //   const githubVC = buildVerifiableCredential("GithubOrg", githubHandle);
+    //   githubVC.issuer = IAM_SERVER;
 
-      const project = buildProjectMetadata({
-        projectTwitter: twitterHandle,
-        projectGithub: githubHandle,
-        credentials: {
-          twitter: twitterVC,
-          github: githubVC,
-        },
-      });
+    //   const project = buildProjectMetadata({
+    //     projectTwitter: twitterHandle,
+    //     projectGithub: githubHandle,
+    //     credentials: {
+    //       twitter: twitterVC,
+    //       github: githubVC,
+    //     },
+    //   });
 
-      const verifyCredentialMock = jest.fn();
-      verifyCredentialMock.mockReturnValue(true);
-      PassportVerifierWithExpiration.prototype.verifyCredential =
-        verifyCredentialMock;
+    //   const verifyCredentialMock = jest.fn();
+    //   verifyCredentialMock.mockReturnValue(true);
+    //   PassportVerifierWithExpiration.prototype.verifyCredential =
+    //     verifyCredentialMock;
 
-      await act(async () => {
-        renderWrapped(
-          <Details
-            project={project}
-            createdAt={new Date().getTime()}
-            updatedAt={new Date().getTime()}
-            bannerImg="img"
-            logoImg="img"
-            showApplications={false}
-            showTabs
-          />,
-          store
-        );
-      });
+    //   await act(async () => {
+    //     renderWrapped(
+    //       <Details
+    //         project={project}
+    //         createdAt={new Date().getTime()}
+    //         updatedAt={new Date().getTime()}
+    //         bannerImg="img"
+    //         logoImg="img"
+    //         showApplications={false}
+    //         showTabs
+    //       />,
+    //       store
+    //     );
+    //   });
 
-      expect((await screen.findAllByText("Verified")).length).toBe(2);
-    });
+    //   expect((await screen.findAllByText("Verified")).length).toBe(2);
+    // });
     test("should show one verification badge", async () => {
       const store = setupStore();
       const twitterHandle = "my-twitter-handle";

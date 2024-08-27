@@ -99,7 +99,6 @@
     "uuid": "^9.0.1",
     "verify-env": "workspace:*",
     "viem": "2.13.10",
-    "wagmi": "2.10.2",
     "web-vitals": "^2.1.0",
     "yup": "^0.32.11",
     "zustand": "^4.4.0"

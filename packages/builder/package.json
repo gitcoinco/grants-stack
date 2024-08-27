@@ -87,7 +87,6 @@
     "url": "^0.11.0",
     "verify-env": "workspace:*",
     "viem": "^2.13.10",
-    "wagmi": "2.10.2",
     "web-vitals": "^2.1.4",
     "yup": "^0.32.11",
     "zod": "^3.22.4"
