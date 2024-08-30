@@ -2,8 +2,10 @@ import {
   RoundApplicationAnswers,
   RoundApplicationMetadata,
 } from "data-layer/dist/roundApplication.types";
+import { isLitUnavailable } from "common";
 import Lit from "../services/lit";
 import { Project, RoundApplication } from "../types";
+import { global } from "../global";
 
 export default class RoundApplicationBuilder {
   enableEncryption: boolean;
@@ -98,7 +100,7 @@ export default class RoundApplicationBuilder {
           let answer;
           // eslint-disable-next-line
           let encryptedAnswer;
-          if (question.encrypted) {
+          if (question.encrypted && !isLitUnavailable(global.chainID!)) {
             // eslint-disable-next-line
             encryptedAnswer = await this.encryptAnswer(
               (formInputs[question.id] as string) ?? ""
