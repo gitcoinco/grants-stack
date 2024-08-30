@@ -132,7 +132,7 @@ export const fetchGrantData =
         alloVersion: config.allo.version,
       });
 
-      if (!result?.project) {
+      if (!result?.project || !result?.project.metadata.title) {
         return;
       }
 

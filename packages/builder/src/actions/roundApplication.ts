@@ -330,6 +330,7 @@ export const submitApplication =
 
       deterministicApplication = objectToDeterministicJSON(application as any);
     } catch (error) {
+      console.error("error building round application", error);
       dispatchAndLogApplicationError(
         dispatch,
         roundId,
