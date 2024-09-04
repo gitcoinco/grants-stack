@@ -65,6 +65,19 @@ export const formatTimeUTC = (ts: number) => {
   return date.toUTCString().replace("GMT", "UTC");
 };
 
+export const formatTimeLocal = (ts: number) => {
+  const date = new Date(ts * 1000);
+  return date.toLocaleString("en-US", {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+  });
+};
+
 export const formatDateFromString = (ts: string) =>
   new Date(ts).toLocaleDateString();
 

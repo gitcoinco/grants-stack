@@ -6,6 +6,7 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSwitchChain } from "wagmi";
 import { useAlloVersion } from "common/src/components/AlloVersionSwitcher";
+import { getTimezoneName } from "common/src/index";
 import { AlloVersion } from "data-layer/dist/data-layer.types";
 import { loadAllChainsProjects } from "../../actions/projects";
 import { loadRound, unloadRounds } from "../../actions/rounds";
@@ -17,7 +18,7 @@ import { ApplicationModalStatus } from "../../reducers/roundApplication";
 import { Status } from "../../reducers/rounds";
 import { grantsPath, newGrantPath, roundApplicationPath } from "../../routes";
 import { Round } from "../../types";
-import { formatTimeUTC, isInfinite } from "../../utils/components";
+import { formatTimeLocal, isInfinite } from "../../utils/components";
 import Button, { ButtonVariants } from "../base/Button";
 import ErrorModal from "../base/ErrorModal";
 import LoadingSpinner from "../base/LoadingSpinner";
@@ -81,7 +82,9 @@ function ApplyButton(props: ApplyButtonProps) {
         </Button>
         <div className="text-center flex flex-1 flex-col mt-6 text-secondary-text">
           <span>The application period for this round will start on</span>
-          <span>{formatTimeUTC(round.applicationsStartTime)}</span>
+          <span>
+            {formatTimeLocal(round.applicationsStartTime)} {getTimezoneName()}
+          </span>
         </div>
       </>
     );
@@ -194,11 +197,12 @@ function ShowRound() {
   const renderApplicationDate = () =>
     roundData && (
       <>
-        {formatTimeUTC(roundData.applicationsStartTime)} -{" "}
+        {formatTimeLocal(roundData.applicationsStartTime)} {getTimezoneName()} -{" "}
         {isInfinite(roundData.applicationsEndTime) ||
         !roundData.applicationsEndTime
           ? "No End Date"
-          : formatTimeUTC(roundData.applicationsEndTime)}
+          : formatTimeLocal(roundData.applicationsEndTime)}{" "}
+        {getTimezoneName()}
       </>
     );
 
@@ -206,17 +210,19 @@ function ShowRound() {
     roundData &&
     (props.isDirectRound ? (
       <>
-        {formatTimeUTC(props.roundStartTime as number)} -{" "}
+        {formatTimeLocal(props.roundStartTime as number)} {getTimezoneName()} -{" "}
         {isInfinite(props.roundEndTime as number) || !props.roundEndTime
           ? "No End Date"
-          : formatTimeUTC(props.roundEndTime)}
+          : formatTimeLocal(props.roundEndTime)}{" "}
+        {getTimezoneName()}
       </>
     ) : (
       <>
-        {formatTimeUTC(Number(props.roundStartTime))} -{" "}
+        {formatTimeLocal(Number(props.roundStartTime))} {getTimezoneName()} -{" "}
         {isInfinite(Number(props.roundEndTime)) || !props.roundEndTime
           ? "No End Date"
-          : formatTimeUTC(props.roundEndTime)}
+          : formatTimeLocal(props.roundEndTime)}{" "}
+        {getTimezoneName()}
       </>
     ));
 
