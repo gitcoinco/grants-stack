@@ -1,6 +1,6 @@
 import ExploreProjects from "@/features/projects/components/ExploreProjects";
-import ExploreRounds from "@/features/rounds/components/ExploreRounds";
 import { DiscoverRounds, RoundsQuery } from "@allo-team/kit";
+import ExploreRounds from "../components/ExploreRounds";
 
 interface Params {
   chainId: string;
