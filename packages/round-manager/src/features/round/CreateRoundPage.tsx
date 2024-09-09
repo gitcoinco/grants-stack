@@ -55,7 +55,6 @@ export default function CreateRound() {
   return (
     <div>
       <div className="bg-[#F3F3F5]">
-        <ManagerNavbar />
         <div className="pb-10 container mx-auto px-4 pt-8 mt-[3%]">
           <header className="mt-[3%]">
             <div className="flow-root mt-[5%]">
@@ -80,7 +79,6 @@ export default function CreateRound() {
             />
           </main>
         </div>
-        <Footer />
       </div>
     </div>
   );

@@ -12,15 +12,9 @@ function LandingPage() {
 
   return (
     <div className="bg-grey-50 flex flex-col items-center min-h-screen">
-      <div className="w-full bg-grey-50">
-        <ManagerNavbar />
-      </div>
       <div className="w-full max-w-screen-2xl mx-auto px-8 mt-[3%]">
         <ProgramListPage />
         <RoundListPage />
-      </div>
-      <div className="w-full max-w-screen-2xl mx-auto px-8 flex justify-end mt-auto">
-        <Footer />
       </div>
     </div>
   );

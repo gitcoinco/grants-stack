@@ -38,6 +38,7 @@ import AlloWrapper from "./features/api/AlloWrapper";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import { getConfig } from "common/src/config";
 import { initPosthog } from "./posthog";
+import Layout from "./features/common/Layout";
 
 // Initialize sentry
 initSentry();
@@ -129,53 +130,58 @@ root.render(
             <AlloWrapper>
               <DataLayerProvider client={dataLayerConfig}>
                 <HashRouter>
-                  <Routes>
-                    {/* Protected Routes */}
-                    <Route element={<Auth />}>
-                      {/* Default Route */}
-                      <Route path="/" element={landing} />
+                  <Layout>
+                    <Routes>
+                      {/* Protected Routes */}
+                      <Route element={<Auth />}>
+                        {/* Default Route */}
+                        <Route path="/" element={landing} />
 
-                      {/* Round Routes */}
-                      <Route
-                        path="/round/create"
-                        element={
-                          <ReadProgramProvider>
-                            <CreateRound />
-                          </ReadProgramProvider>
-                        }
-                      />
-                      <Route path="/round/:id" element={viewRoundPage} />
-                      <Route
-                        path="/chain/:chainId/round/:id"
-                        element={viewRoundPage}
-                      />
-                      <Route
-                        path="/chain/:chainId/round/:roundId/application/:id"
-                        element={viewApplication}
-                      />
-                      <Route
-                        path="/round/:roundId/application/:id"
-                        element={viewApplication}
-                      />
+                        {/* Round Routes */}
+                        <Route
+                          path="/round/create"
+                          element={
+                            <ReadProgramProvider>
+                              <CreateRound />
+                            </ReadProgramProvider>
+                          }
+                        />
+                        <Route path="/round/:id" element={viewRoundPage} />
+                        <Route
+                          path="/chain/:chainId/round/:id"
+                          element={viewRoundPage}
+                        />
+                        <Route
+                          path="/chain/:chainId/round/:roundId/application/:id"
+                          element={viewApplication}
+                        />
+                        <Route
+                          path="/round/:roundId/application/:id"
+                          element={viewApplication}
+                        />
 
-                      {/* Program Routes */}
-                      <Route
-                        path="/program/create"
-                        element={<CreateProgram />}
-                      />
-                      <Route
-                        path="/chain/:chainId/program/:id"
-                        element={viewProgram}
-                      />
-                      <Route path="/program/:id" element={viewProgram} />
+                        {/* Program Routes */}
+                        <Route
+                          path="/program/create"
+                          element={<CreateProgram />}
+                        />
+                        <Route
+                          path="/chain/:chainId/program/:id"
+                          element={viewProgram}
+                        />
+                        <Route path="/program/:id" element={viewProgram} />
 
-                      {/* Access Denied */}
-                      <Route path="/access-denied" element={<AccessDenied />} />
+                        {/* Access Denied */}
+                        <Route
+                          path="/access-denied"
+                          element={<AccessDenied />}
+                        />
 
-                      {/* 404 */}
-                      <Route path="*" element={<NotFound />} />
-                    </Route>
-                  </Routes>
+                        {/* 404 */}
+                        <Route path="*" element={<NotFound />} />
+                      </Route>
+                    </Routes>
+                  </Layout>
                 </HashRouter>
               </DataLayerProvider>
             </AlloWrapper>

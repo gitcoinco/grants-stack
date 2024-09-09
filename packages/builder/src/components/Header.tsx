@@ -2,14 +2,6 @@ import { Button } from "@chakra-ui/react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { ExclamationCircleIcon } from "@heroicons/react/20/solid";
-import { getAlloVersion } from "common/src/config";
-import {
-  AlloVersionSwitcher,
-  useAlloVersion,
-} from "common/src/components/AlloVersionSwitcher";
-import { LitNetwork } from "@lit-protocol/constants";
-import { LitNodeClient } from "@lit-protocol/lit-node-client";
 import { grantsPath, newGrantPath } from "../routes";
 import CustomerSupport from "./base/CustomerSupport";
 import colors from "../styles/colors";
@@ -17,31 +9,8 @@ import Hamburger from "./icons/Hamburger";
 import Plus from "./icons/Plus";
 import { GitcoinLogo, BuilderLogo } from "../assets";
 
-export default function Header({
-  alloVersionSwitcherVisible = true,
-}: {
-  alloVersionSwitcherVisible?: boolean;
-}) {
+export default function Header() {
   const [navbarOpen, setNavbarOpen] = useState(false);
-  const { switchToVersion } = useAlloVersion();
-  const version = getAlloVersion();
-  const connectToLit = async () => {
-    try {
-      // More information about the available Lit Networks: https://developer.litprotocol.com/category/networks
-      const litNodeClient = new LitNodeClient({
-        litNetwork: LitNetwork.Datil,
-        debug: false,
-      });
-
-      console.log("Connecting to Lit Network...");
-      console.log("Lit Network:", litNodeClient);
-
-      await litNodeClient.connect();
-      console.log("Connected to Lit Network");
-    } catch (error) {
-      console.error("Failed to connect to Lit Network:", error);
-    }
-  };
 
   return (
     <div className="mb-3">
@@ -77,15 +46,6 @@ export default function Header({
             id="example-navbar-danger"
           >
             <div className="flex flex-col lg:flex-row list-none lg:ml-auto items-center">
-              <Button
-                onClick={async () => {
-                  await connectToLit();
-                }}
-              >
-                Connect to Lit
-              </Button>
-            </div>
-            <div className="flex flex-col lg:flex-row list-none lg:ml-auto items-center">
               <Link
                 to={newGrantPath()}
                 data-track-event="project-create-topnav-next"
@@ -97,38 +57,12 @@ export default function Header({
                   New Project
                 </Button>
               </Link>
-              {alloVersionSwitcherVisible && (
-                <AlloVersionSwitcher color="black" />
-              )}
               <ConnectButton />
               <CustomerSupport />
             </div>
           </div>
         </div>
       </header>
-      {version === "allo-v1" &&
-        (window.location.hash === "#/projects" ||
-          window.location.hash === "#/projects/new") && (
-          <div className="bg-black p-4 text-center font-medium flex flex-col items-center justify-center text-white">
-            <div>
-              <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
-              You are currently on Allo v1. To switch to the most current
-              version of Builder,&nbsp;
-              <button
-                type="button"
-                className="underline"
-                aria-label="Switch to Allo v2"
-                onClick={(e) => {
-                  e.preventDefault();
-                  switchToVersion("allo-v2");
-                }}
-              >
-                switch to Allo v2.
-              </button>
-              &nbsp;
-            </div>
-          </div>
-        )}
     </div>
   );
 }

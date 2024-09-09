@@ -186,7 +186,6 @@ export default function CreateProgram() {
 
   return (
     <div className="bg-[#F3F3F5]">
-      <ManagerNavbar />
       <div className="container mx-auto h-max px-4 pt-8 mt-[3%]">
         <header>
           <div className="flow-root">
@@ -341,7 +340,6 @@ export default function CreateProgram() {
           />
         </main>
       </div>
-      <Footer />
     </div>
   );
 }

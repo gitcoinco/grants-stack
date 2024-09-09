@@ -9,7 +9,7 @@ import colors from "../styles/colors";
 import { AlertContainer } from "./base/Alert";
 import Toast from "./base/Toast";
 import Landing from "./grants/Landing";
-import Header from "./BuilderNavbar";
+import BuilderNavbar from "./BuilderNavbar";
 import Globe from "./icons/Globe";
 
 interface Props {
@@ -54,7 +54,7 @@ function Layout(ownProps: Props) {
 
   return (
     <div className="flex flex-col min-h-screen relative">
-      <Header />
+      <BuilderNavbar />
       <main className="container mx-auto dark:bg-primary-background grow relative">
         {props.web3Error === undefined && children}
         {props.web3Error && <p>{props.web3Error}</p>}

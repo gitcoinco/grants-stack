@@ -105,7 +105,6 @@ export default function ViewRoundPage() {
       {!hasAccess && <AccessDenied />}
       {round && hasAccess && (
         <>
-          <ManagerNavbar />
           <div className="flex flex-col items-center bg-gray-50 mt-[3%]">
             <header className="w-full bg-grey-50">
               <div className="w-full max-w-screen-2xl mx-auto px-8 py-6">
@@ -436,9 +435,6 @@ export default function ViewRoundPage() {
                   </Tab.Panels>
                 </div>
               </Tab.Group>
-              <div className="w-full">
-                <Footer />
-              </div>
             </main>
           </div>
         </>

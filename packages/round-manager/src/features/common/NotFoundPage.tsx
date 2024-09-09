@@ -11,7 +11,6 @@ export default function NotFoundPage() {
 
   return (
     <>
-      <ManagerNavbar />
       <main>
         <div className="flex pt-8">
           <div className="m-auto text-center mt-5">
@@ -43,7 +42,6 @@ export default function NotFoundPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

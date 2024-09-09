@@ -46,7 +46,6 @@ export default function ViewProgram() {
       {!hasAccess && <AccessDenied />}
       {programExists && hasAccess && (
         <>
-          <ManagerNavbar />
           <div className="bg-[#F3F3F5] flex-grow flex flex-col items-center mt-[3%]">
             <header className="w-full bg-white pl-2 py-6">
               <div className="w-full max-w-screen-2xl mx-auto px-8">
@@ -89,9 +88,6 @@ export default function ViewProgram() {
                 </div>
               </main>
             </div>
-          </div>
-          <div className="w-full max-w-screen-2xl mx-auto px-8">
-            <Footer />
           </div>
         </>
       )}

@@ -1,5 +1,6 @@
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
+import { ReactComponent as GrantsExplorerLogoMobile } from "../../assets/explorer-logo-mobile.svg";
 import Navbar from "common/src/components/Navbar";
 import { useCartStorage } from "../../store";
 import { useAccount } from "wagmi";
@@ -41,17 +42,63 @@ export default function ExplorerNavbar() {
   }
   rightElements.push(<NavbarCart cart={store.projects} />);
 
+  const classNames = [
+    "blurred fixed w-full z-20 shadow-[0_4px_24px_0px_rgba(0,0,0,0.08)] ",
+    "container mx-auto px-4 sm:px-6 lg:px-20 flex flex-wrap items-center justify-between",
+    "flex justify-between h-16",
+  ];
   return (
     <Navbar
-      ConnectWalletItem={<ConnectButton />}
-      logo={
-        <div className="flex gap-3 items-center">
-          <GitcoinLogo />
-          <GrantsExplorerLogo />
+      classNames={classNames}
+      ConnectWalletItem={
+        <div className="flex flex-row items-center gap-6 font-mono font-medium">
+          {
+            <div>
+              <div
+                data-testid="connect-wallet-button"
+                id="connect-wallet-button"
+              >
+                <ConnectButton
+                  showBalance={false}
+                  accountStatus={{
+                    smallScreen: "avatar",
+                    largeScreen: "full",
+                  }}
+                  chainStatus={{ smallScreen: "icon" }}
+                />
+              </div>
+            </div>
+          }
+          {address && (
+            <div>
+              <Link
+                to={`/contributors/${address}`}
+                className="flex-shrink-0 flex items-center ph-no-capture"
+                data-testid={"contributions-link"}
+              >
+                <UserCircleIcon className="h-8 w-8 ph-no-capture" />
+              </Link>
+            </div>
+          )}
+          <NavbarCart cart={store.projects} />
         </div>
       }
-      menuItems={[]}
-      extraRightElements={[rightElements]}
+      logo={
+        <div className="flex">
+          <Link
+            to={"/"}
+            className="flex-shrink-0 flex items-center"
+            data-testid={"home-link"}
+          >
+            <div className="flex gap-1 lg:gap-3 items-center">
+              <GitcoinLogo className="" />
+              <div className="border-grey-400 border-2 h-4 border-r ml-[2px]" />
+              <GrantsExplorerLogo className="hidden lg:block" />
+              <GrantsExplorerLogoMobile className="lg:hidden" />
+            </div>
+          </Link>
+        </div>
+      }
     />
   );
 }
