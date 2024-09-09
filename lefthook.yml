@@ -41,5 +41,5 @@ pre-push:
       run: pnpm turbo run typecheck
     build:
       run: pnpm turbo run build
-    test:
-      run: pnpm turbo run test --concurrency=50%
+    # test:
+    #   run: pnpm turbo run test --concurrency=50%

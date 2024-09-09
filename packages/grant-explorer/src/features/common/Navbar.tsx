@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { UserCircleIcon } from "@heroicons/react/20/solid";
 import { useEffect } from "react";
 
-export default function ExplorerNavbar(props: { customBackground: string }) {
+export default function ExplorerNavbar() {
   /** This part keeps the store in sync between tabs */
   const store = useCartStorage();
 
