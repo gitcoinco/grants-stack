@@ -9,7 +9,7 @@ import colors from "../styles/colors";
 import { AlertContainer } from "./base/Alert";
 import Toast from "./base/Toast";
 import Landing from "./grants/Landing";
-import Header from "./Header";
+import Header from "./BuilderNavbar";
 import Globe from "./icons/Globe";
 
 interface Props {

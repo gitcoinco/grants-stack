@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Navbar from "./Navbar";
+import ManagerNavbar from "./ManagerNavbar";
 import Footer from "common/src/components/Footer";
 import { Button } from "common/src/styles";
 import { ReactComponent as NotFoundBanner } from "../../assets/404.svg";
@@ -11,7 +11,7 @@ export default function NotFoundPage() {
 
   return (
     <>
-      <Navbar />
+      <ManagerNavbar />
       <main>
         <div className="flex pt-8">
           <div className="m-auto text-center mt-5">

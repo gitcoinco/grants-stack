@@ -7,7 +7,7 @@ import "react-datetime/css/react-datetime.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useProgramById } from "../../context/program/ReadProgramContext";
 import { FormWizard } from "../common/FormWizard";
-import Navbar from "../common/Navbar";
+import ManagerNavbar from "../common/ManagerNavbar";
 import ApplicationEligibilityForm from "./ApplicationEligibilityForm";
 import QuadraticFundingForm from "./QuadraticFundingForm";
 import { RoundApplicationForm } from "./RoundApplicationForm";
@@ -53,12 +53,12 @@ export default function CreateRound() {
   const navigate = useNavigate();
 
   return (
-    <>
-      <Navbar />
+    <div>
       <div className="bg-[#F3F3F5]">
-        <div className="pb-10 container mx-auto px-4 pt-8">
-          <header>
-            <div className="flow-root">
+        <ManagerNavbar />
+        <div className="pb-10 container mx-auto px-4 pt-8 mt-[3%]">
+          <header className="mt-[3%]">
+            <div className="flow-root mt-[5%]">
               <h1 className="float-left text-[32px] mb-7">
                 Create a&nbsp;
                 {roundCategoryParam == "direct"
@@ -82,6 +82,6 @@ export default function CreateRound() {
         </div>
         <Footer />
       </div>
-    </>
+    </div>
   );
 }

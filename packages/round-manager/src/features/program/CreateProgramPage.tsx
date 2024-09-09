@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/solid";
 
 import { Button, Input } from "common/src/styles";
-import Navbar from "../common/Navbar";
+import ManagerNavbar from "../common/ManagerNavbar";
 import Footer from "common/src/components/Footer";
 import ProgressModal from "../common/ProgressModal";
 import { datadogLogs } from "@datadog/browser-logs";
@@ -186,8 +186,8 @@ export default function CreateProgram() {
 
   return (
     <div className="bg-[#F3F3F5]">
-      <Navbar />
-      <div className="container mx-auto h-max px-4 pt-8">
+      <ManagerNavbar />
+      <div className="container mx-auto h-max px-4 pt-8 mt-[3%]">
         <header>
           <div className="flow-root">
             <h1 className="float-left text-[32px] mb-7">

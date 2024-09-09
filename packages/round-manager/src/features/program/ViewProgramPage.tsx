@@ -4,7 +4,7 @@ import { datadogLogs } from "@datadog/browser-logs";
 import Footer from "common/src/components/Footer";
 import { useEffect, useState } from "react";
 import AccessDenied from "../common/AccessDenied";
-import Navbar from "../common/Navbar";
+import ManagerNavbar from "../common/ManagerNavbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { useProgramById } from "../../context/program/ReadProgramContext";
 import { useRounds } from "../../context/round/RoundContext";
@@ -46,8 +46,8 @@ export default function ViewProgram() {
       {!hasAccess && <AccessDenied />}
       {programExists && hasAccess && (
         <>
-          <Navbar programCta={true} />
-          <div className="bg-[#F3F3F5] flex-grow flex flex-col items-center">
+          <ManagerNavbar />
+          <div className="bg-[#F3F3F5] flex-grow flex flex-col items-center mt-[3%]">
             <header className="w-full bg-white pl-2 py-6">
               <div className="w-full max-w-screen-2xl mx-auto px-8">
                 <div className="flex flex-row items-center text-grey-400 font-normal text-sm font-sans">

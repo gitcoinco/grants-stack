@@ -39,7 +39,7 @@ export function ViewContributionHistoryPage() {
 
   return (
     <>
-      <Navbar showWalletInteraction={true} />
+      <Navbar />
       <ViewContributionHistoryFetcher
         address={ensResolvedAddress ?? params.address}
         chainIds={chainIds}

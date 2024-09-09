@@ -20,7 +20,7 @@ import { ProgressStatus, Round } from "../api/types";
 import AccessDenied from "../common/AccessDenied";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
 import Footer from "common/src/components/Footer";
-import Navbar from "../common/Navbar";
+import ManagerNavbar from "../common/ManagerNavbar";
 import NotFoundPage from "../common/NotFoundPage";
 import {
   getPayoutRoundDescription,
@@ -105,8 +105,8 @@ export default function ViewRoundPage() {
       {!hasAccess && <AccessDenied />}
       {round && hasAccess && (
         <>
-          <Navbar />
-          <div className="flex flex-col items-center bg-gray-50">
+          <ManagerNavbar />
+          <div className="flex flex-col items-center bg-gray-50 mt-[3%]">
             <header className="w-full bg-grey-50">
               <div className="w-full max-w-screen-2xl mx-auto px-8 py-6">
                 {/* Breadcrumb */}

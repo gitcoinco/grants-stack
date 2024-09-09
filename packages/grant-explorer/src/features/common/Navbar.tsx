@@ -1,27 +1,14 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
 import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
-import { ReactComponent as GrantsExplorerLogoMobile } from "../../assets/explorer-logo-mobile.svg";
-import NavbarCart from "./NavbarCart";
-import { UserCircleIcon } from "@heroicons/react/24/outline";
-import { useEffect } from "react";
-import { useAccount } from "wagmi";
+import Navbar from "common/src/components/Navbar";
 import { useCartStorage } from "../../store";
+import { useAccount } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Link } from "react-router-dom";
-import { getAlloVersion } from "common/src/config";
-import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
-// Note: we use this during a GG round, disabling until then.
-// import ExploreRoundsDropdown, {
-//   ExploreRoundsDropdownProps,
-// } from "./ExploreRoundsDropdown";
+import { UserCircleIcon } from "@heroicons/react/20/solid";
+import { useEffect } from "react";
 
-export interface NavbarProps {
-  customBackground?: string;
-  showWalletInteraction?: boolean;
-  showAlloVersionBanner?: boolean;
-}
-
-export default function Navbar(props: NavbarProps) {
+export default function ExplorerNavbar() {
   /** This part keeps the store in sync between tabs */
   const store = useCartStorage();
 
@@ -37,112 +24,102 @@ export default function Navbar(props: NavbarProps) {
       window.removeEventListener("focus", updateStore);
     };
   }, []);
-  /** end of part that keeps the store in sync between tabs */
+  const { address } = useAccount();
 
-  const showWalletInteraction = props.showWalletInteraction ?? true;
-  const { address: walletAddress } = useAccount();
-  const alloVersion = getAlloVersion();
+  const rightElements = [];
 
-  // Note: we use this during a GG round, disabling until then.
-  // todo: update this list with GG21 featured rounds.
-  // const rounds: ExploreRoundsDropdownProps[] = [
-  // example:
-  //   {
-  //     chainId: 42161,
-  //     roundId: "26",
-  //     name: "WEB3 Infrastructure",
-  //     link: "/round/42161/26",
-  //   },
-  // ];
+  if (address) {
+    rightElements.push(
+      <Link
+        to={`/contributors/${address}`}
+        className="flex-shrink-0 flex items-center ph-no-capture"
+        data-testid={"contributions-link"}
+      >
+        <UserCircleIcon className="h-8 w-8 ph-no-capture" />
+      </Link>
+    );
+  }
+  rightElements.push(<NavbarCart cart={store.projects} />);
 
   return (
-    <nav
-      className={`blurred fixed w-full z-20 shadow-[0_4px_24px_0px_rgba(0,0,0,0.08)] ${props.customBackground}`}
+    <Navbar
+      ConnectWalletItem={<ConnectButton />}
+      logo={
+        <div className="flex gap-3 items-center">
+          <GitcoinLogo />
+          <GrantsExplorerLogo />
+        </div>
+      }
+      menuItems={[]}
+      extraRightElements={[rightElements]}
+    />
+  );
+}
+
+import { Project } from "data-layer";
+import tw from "tailwind-styled-components";
+
+function NavbarCart(props: { cart: Project[] }) {
+  const projectCount = props.cart.length;
+
+  return (
+    <div
+      data-testid="navbar-cart"
+      className="relative flex-row"
+      onClick={() => {
+        const url = "#/cart";
+        window.open(url, "_blank");
+      }}
     >
-      <div className="mx-auto px-4 sm:px-6 lg:px-20 max-w-screen-2xl">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <Link
-              to={"/"}
-              className="flex-shrink-0 flex items-center"
-              data-testid={"home-link"}
-            >
-              <div className="flex gap-1 lg:gap-3 items-center">
-                <GitcoinLogo className="" />
-                <div className="border-grey-400 border-2 h-4 border-r ml-[2px]" />
-                <GrantsExplorerLogo className="hidden lg:block" />
-                <GrantsExplorerLogoMobile className="lg:hidden" />
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-row items-center gap-6 font-mono font-medium">
-            {/* {rounds && <ExploreRoundsDropdown rounds={rounds} />} */}
-            {showWalletInteraction && (
-              <div>
-                <div
-                  data-testid="connect-wallet-button"
-                  id="connect-wallet-button"
-                >
-                  <ConnectButton
-                    showBalance={false}
-                    accountStatus={{
-                      smallScreen: "avatar",
-                      largeScreen: "full",
-                    }}
-                    chainStatus={{ smallScreen: "icon" }}
-                  />
-                </div>
-              </div>
-            )}
-            {walletAddress && (
-              <div>
-                <Link
-                  to={`/contributors/${walletAddress}`}
-                  className="flex-shrink-0 flex items-center ph-no-capture"
-                  data-testid={"contributions-link"}
-                >
-                  <UserCircleIcon className="h-8 w-8 ph-no-capture" />
-                </Link>
-              </div>
-            )}
-            <NavbarCart cart={store.projects} />
-          </div>
-        </div>
-      </div>
-      {props.showAlloVersionBanner && (
-        <div className="bg-white/40 backdrop-blur-sm p-4 text-center w-full font-medium flex flex-col items-center justify-center text-black">
-          <div>
-            <ExclamationCircleIcon className="h-5 w-5 inline-block mr-2" />
-            {alloVersion === "allo-v2" ? (
-              <>
-                Rounds launched before the 25th of March appear on Allo v1.
-                Check out those rounds{" "}
-                <a
-                  className="underline"
-                  target="_blank"
-                  href="https://explorer-v1.gitcoin.co"
-                >
-                  here
-                </a>
-                !
-              </>
-            ) : (
-              <>
-                Rounds launched after the 24th of March appear on Allo v2. Check
-                out those rounds{" "}
-                <a
-                  className="underline"
-                  target="_blank"
-                  href="https://explorer.gitcoin.co"
-                >
-                  here
-                </a>
-                !
-              </>
-            )}
-          </div>
-        </div>
+      <QuickViewIcon count={projectCount} />
+    </div>
+  );
+}
+
+function QuickViewIcon(props: { count: number }) {
+  const Badge = tw.div`
+      inline-flex
+      absolute
+      justify-center
+      items-center
+      h-4
+      text-xs
+      text-black
+      bg-blue-100
+      rounded-full
+      -top-1.5
+      ${() => (props.count >= 100 ? "-right-2.5" : "-right-1.5")}
+      ${() => (props.count >= 100 ? "w-6" : "w-4")}
+    `;
+
+  return (
+    <div className="cursor-pointer">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M1 1H3L3.4 3M5 11H15L19 3H3.4M5 11L3.4 3M5 11L2.70711 13.2929C2.07714 13.9229 2.52331 15 3.41421 15H15M15 15C13.8954 15 13 15.8954 13 17C13 18.1046 13.8954 19 15 19C16.1046 19 17 18.1046 17 17C17 15.8954 16.1046 15 15 15ZM7 17C7 18.1046 6.10457 19 5 19C3.89543 19 3 18.1046 3 17C3 15.8954 3.89543 15 5 15C6.10457 15 7 15.8954 7 17Z"
+          stroke="#0E0333"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+
+      {props.count > 0 && (
+        <Badge
+          style={{
+            fontSize: "0.5rem",
+            paddingBottom: 1,
+          }}
+        >
+          {props.count}
+        </Badge>
       )}
-    </nav>
+    </div>
   );
 }

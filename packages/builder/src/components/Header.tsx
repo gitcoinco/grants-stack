@@ -8,6 +8,8 @@ import {
   AlloVersionSwitcher,
   useAlloVersion,
 } from "common/src/components/AlloVersionSwitcher";
+import { LitNetwork } from "@lit-protocol/constants";
+import { LitNodeClient } from "@lit-protocol/lit-node-client";
 import { grantsPath, newGrantPath } from "../routes";
 import CustomerSupport from "./base/CustomerSupport";
 import colors from "../styles/colors";
@@ -23,6 +25,23 @@ export default function Header({
   const [navbarOpen, setNavbarOpen] = useState(false);
   const { switchToVersion } = useAlloVersion();
   const version = getAlloVersion();
+  const connectToLit = async () => {
+    try {
+      // More information about the available Lit Networks: https://developer.litprotocol.com/category/networks
+      const litNodeClient = new LitNodeClient({
+        litNetwork: LitNetwork.Datil,
+        debug: false,
+      });
+
+      console.log("Connecting to Lit Network...");
+      console.log("Lit Network:", litNodeClient);
+
+      await litNodeClient.connect();
+      console.log("Connected to Lit Network");
+    } catch (error) {
+      console.error("Failed to connect to Lit Network:", error);
+    }
+  };
 
   return (
     <div className="mb-3">
@@ -57,6 +76,15 @@ export default function Header({
             }`}
             id="example-navbar-danger"
           >
+            <div className="flex flex-col lg:flex-row list-none lg:ml-auto items-center">
+              <Button
+                onClick={async () => {
+                  await connectToLit();
+                }}
+              >
+                Connect to Lit
+              </Button>
+            </div>
             <div className="flex flex-col lg:flex-row list-none lg:ml-auto items-center">
               <Link
                 to={newGrantPath()}

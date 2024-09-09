@@ -1,6 +1,6 @@
 import { ComponentProps } from "react";
 import Footer from "common/src/components/Footer";
-import Navbar from "./Navbar";
+import ExplorerNavbar from "./Navbar";
 import { classNames } from "common";
 
 type LayoutProps = {
@@ -14,7 +14,7 @@ export function DefaultLayout({
 }: LayoutProps) {
   return (
     <main className={"font-sans min-h-screen text-grey-500"}>
-      <Navbar showWalletInteraction={showWalletInteraction} />
+      <ExplorerNavbar />
       <div className="container pt-16 relative z-10 mx-auto px-4 sm:px-6 lg:px-20 max-w-screen-2xl">
         {children}
       </div>
@@ -35,10 +35,7 @@ export function GradientLayout({
         "font-sans min-h-screen bg-gradient-to-b from-[#D3EDFE] to-[#FFD9CD]"
       }
     >
-      <Navbar
-        showWalletInteraction={showWalletInteraction}
-        showAlloVersionBanner={showAlloVersionBanner}
-      />
+      <ExplorerNavbar />
       <div
         className={classNames(
           "container mx-auto max-w-screen-2xl relative z-10 px-4 sm:px-6 lg:px-20",
