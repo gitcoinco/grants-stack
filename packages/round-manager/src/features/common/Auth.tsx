@@ -1,8 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { Spinner } from "./Spinner";
-import Footer from "common/src/components/Footer";
-import Navbar from "./Navbar";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ReactComponent as LandingBanner } from "../../assets/landing/banner.svg";
 
@@ -26,7 +24,6 @@ export default function Auth() {
   return !isConnected ? (
     <div className="flex flex-col min-h-screen">
       <LandingBanner className="absolute inset-0 w-full h-full object-cover z-[-1]" />
-      <Navbar programCta={false} />
       <main className="flex-grow pt-4 container mx-auto">
         {isConnecting ? (
           <Spinner text="Logging you in..." />
@@ -44,11 +41,6 @@ export default function Auth() {
           </div>
         )}
       </main>
-      <div className="w-full bg-transparent">
-        <div className="container mx-auto">
-          <Footer />
-        </div>
-      </div>
     </div>
   ) : (
     <Outlet context={data} />

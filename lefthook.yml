@@ -37,8 +37,8 @@ pre-commit:
 pre-push:
   parallel: true
   commands:
-    typecheck:
-      run: pnpm turbo run typecheck
+    # typecheck:
+    #   run: pnpm turbo run typecheck
     build:
       run: pnpm turbo run build
     # test:

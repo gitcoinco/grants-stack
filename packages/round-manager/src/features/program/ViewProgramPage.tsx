@@ -1,10 +1,8 @@
 import { ChevronRightIcon } from "@heroicons/react/solid";
 import { Link, useParams } from "react-router-dom";
 import { datadogLogs } from "@datadog/browser-logs";
-import Footer from "common/src/components/Footer";
 import { useEffect, useState } from "react";
 import AccessDenied from "../common/AccessDenied";
-import ManagerNavbar from "../common/ManagerNavbar";
 import NotFoundPage from "../common/NotFoundPage";
 import { useProgramById } from "../../context/program/ReadProgramContext";
 import { useRounds } from "../../context/round/RoundContext";

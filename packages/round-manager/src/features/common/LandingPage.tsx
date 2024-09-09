@@ -1,10 +1,6 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { usePrograms } from "../../context/program/ReadProgramContext";
-import { ProgressStatus } from "../api/types";
-import ManagerNavbar from "./ManagerNavbar";
 import ProgramListPage from "../program/ProgramListPage";
 import RoundListPage from "../round/RoundListPage";
-import Footer from "common/src/components/Footer";
 
 function LandingPage() {
   datadogLogs.logger.info("====> Route: /");

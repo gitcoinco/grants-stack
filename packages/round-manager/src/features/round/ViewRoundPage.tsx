@@ -19,8 +19,6 @@ import { useDebugMode } from "../../hooks";
 import { ProgressStatus, Round } from "../api/types";
 import AccessDenied from "../common/AccessDenied";
 import CopyToClipboardButton from "../common/CopyToClipboardButton";
-import Footer from "common/src/components/Footer";
-import ManagerNavbar from "../common/ManagerNavbar";
 import NotFoundPage from "../common/NotFoundPage";
 import {
   getPayoutRoundDescription,

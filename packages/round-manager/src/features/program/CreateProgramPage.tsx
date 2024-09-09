@@ -8,8 +8,6 @@ import {
 } from "@heroicons/react/solid";
 
 import { Button, Input } from "common/src/styles";
-import ManagerNavbar from "../common/ManagerNavbar";
-import Footer from "common/src/components/Footer";
 import ProgressModal from "../common/ProgressModal";
 import { datadogLogs } from "@datadog/browser-logs";
 import ErrorModal from "../common/ErrorModal";

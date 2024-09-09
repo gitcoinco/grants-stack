@@ -17,13 +17,11 @@ import {
   useParams,
 } from "react-router-dom";
 import ConfirmationModal from "../common/ConfirmationModal";
-import Navbar from "../common/Navbar";
 import { Button } from "common/src/styles";
 import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
 import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
 import CheckmarkWhite from "../../assets/checkmark-white.svg";
 import Rejected from "../../assets/rejected.svg";
-import Footer from "common/src/components/Footer";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useBulkUpdateGrantApplications } from "../../context/application/BulkUpdateGrantApplicationContext";
 import ProgressModal from "../common/ProgressModal";
@@ -170,7 +168,7 @@ export default function ViewApplicationPage() {
     };
 
     if (roundChainId) fetchApplications();
-  }, [roundChainId, roundId]);
+  }, [roundChainId, roundId, id, dataLayer]);
 
   useEffect(() => {
     if (contractUpdatingStatus === ProgressStatus.IS_ERROR) {
@@ -334,7 +332,10 @@ export default function ViewApplicationPage() {
 
       if (application?.answers && application.answers.length > 0) {
         for (let _answerBlock of application.answers) {
-          if (_answerBlock.encryptedAnswer && !isLitUnavailable(round.chainId!)) {
+          if (
+            _answerBlock.encryptedAnswer &&
+            !isLitUnavailable(round.chainId!)
+          ) {
             try {
               const encryptedAnswer = _answerBlock.encryptedAnswer;
               const base64EncryptedString = [
@@ -349,7 +350,7 @@ export default function ViewApplicationPage() {
                 chainId: Number(roundChainId!),
                 contract: roundId.startsWith("0x")
                   ? roundId
-                  : round?.payoutStrategy.id ?? "",
+                  : (round?.payoutStrategy.id ?? ""),
               });
 
               const decryptedString = await lit.decryptString(
@@ -516,7 +517,6 @@ export default function ViewApplicationPage() {
       {application && applicationExists && !hasAccess && <AccessDenied />}
       {application && applicationExists && hasAccess && (
         <>
-          <Navbar />
           <header className="border-b bg-grey-150 px-3 md:px-20 py-6">
             <div className="text-grey-400 font-semibold text-sm flex flex-row items-center gap-3">
               <Link to={`/`}>
@@ -816,7 +816,7 @@ export default function ViewApplicationPage() {
                   answerBlocks?.map((block: AnswerBlock) => {
                     const answerText = Array.isArray(block.answer)
                       ? block.answer.join(", ")
-                      : block.answer ?? "";
+                      : (block.answer ?? "");
 
                     return (
                       <div key={block.questionId} className="pb-5">
@@ -883,7 +883,6 @@ export default function ViewApplicationPage() {
                 tryAgainFn={handleReview}
               />
             </main>
-            <Footer />
           </div>
         </>
       )}
