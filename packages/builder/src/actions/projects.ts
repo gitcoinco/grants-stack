@@ -187,7 +187,7 @@ export const loadProjects =
 
       if (projects && withMetaData) {
         projects.forEach((project) => {
-          if (project.metadata.title) {
+          if (project.metadata && project.metadata.title) {
             dispatch<any>(transformAndDispatchProject(project.id, project));
           }
         });
