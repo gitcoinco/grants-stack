@@ -55,7 +55,18 @@ export async function roundApplicationsToCSV(
   });
 
   const decryptedData: Record<string, string>[] = [];
-  const columns = new Set();
+  const columns = new Set([
+    "id",
+    "projectId",
+    "status",
+    "title",
+    "payoutAddress",
+    "signature",
+    "website",
+    "projectTwitter",
+    "projectGithub",
+    "userGithub"
+  ]);
 
 
   for (const application of applications) {
