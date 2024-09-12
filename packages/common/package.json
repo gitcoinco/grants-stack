@@ -16,7 +16,7 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@allo-team/allo-v2-sdk": "^1.0.78",
+    "@allo-team/allo-v2-sdk": "^1.0.79",
     "@ethersproject/abstract-signer": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@gitcoin/gitcoin-chain-data": "^1.0.40",
