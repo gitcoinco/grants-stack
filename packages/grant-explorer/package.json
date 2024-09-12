@@ -33,6 +33,7 @@
     ]
   },
   "dependencies": {
+    "@0xsquid/widget": "^1.7.17",
     "@chakra-ui/react": "^2.1.2",
     "@craco/craco": "^7.1.0",
     "@datadog/browser-logs": "^4.19.0",

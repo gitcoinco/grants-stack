@@ -14,7 +14,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
 import { getClassForPassportColor } from "../../api/passport";
 import useSWR from "swr";
-import { groupBy, uniqBy } from "lodash-es";
+import { groupBy, set, uniqBy } from "lodash-es";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
@@ -33,11 +33,13 @@ import { isPresent } from "ts-is-present";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 import { config } from "../../../app/wagmi";
+import GenericModal from "../../common/GenericModal";
+import SquidWidget from "./SquidWidget";
 
 export function SummaryContainer() {
   const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
-  const { address, isConnected, connector } = useAccount();
+  const { address, isConnected, connector, chainId } = useAccount();
   const {
     projects,
     getVotingTokenForChain,
@@ -60,6 +62,9 @@ export function SummaryContainer() {
     () => Object.keys(projectsByChain).map(Number),
     [projectsByChain]
   );
+
+  const [openSwapModel, setOpenSwapModal] = useState<boolean>(false);
+
 
   /** How much of the voting token for a chain does the address have*/
   // todo: introduce a multicall here
@@ -428,6 +433,7 @@ export function SummaryContainer() {
 
   return (
     <div className="block font-semibold sticky top-20">
+
       <div className="px-4 pt-6 pb-4 rounded-t-3xl bg-grey-50 border border-grey-50">
         <h2 className="text-2xl border-b-2 pb-2 font-bold">Summary</h2>
         <div
@@ -518,6 +524,27 @@ export function SummaryContainer() {
             : "Submit your donation!"
           : "Connect wallet to continue"}
       </Button>
+
+      <GenericModal
+        body={
+          <SquidWidget
+            initialFromChainId={chainId}
+            initialToChainId={chainIds[0]}
+            fromTokenAddress="0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+            toTokenAddress={getVotingTokenForChain(chainIds[0]).address}
+           />
+        }
+        isOpen={openSwapModel}
+        setIsOpen={setOpenSwapModal}
+      />
+
+      <button
+        type="button"
+        className="w-full font-normal rounded-lg bg-gitcoin-violet-400 text-white focus-visible:outline-indigo-600 py-2 leading-6"
+        onClick={() => setOpenSwapModal(true)}
+      >
+        Swap
+      </button>
       <PayoutModals />
     </div>
   );
