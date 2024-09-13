@@ -1,5 +1,6 @@
 import { DataLayer } from "data-layer";
 import useSWR from "swr";
+import { zeroAddress } from "viem";
 
 export function usePayouts(args: {
   chainId: number;
@@ -35,7 +36,7 @@ export function usePayouts(args: {
         result.applications[0]
           .applicationsPayoutsByChainIdAndRoundIdAndApplicationId;
 
-      const mappedPayouts = payouts.map((payout) => {
+      let mappedPayouts = payouts.map((payout) => {
         return {
           applicationIndex: Number(result.applications[0].id),
           amount: payout.amount,
@@ -44,6 +45,12 @@ export function usePayouts(args: {
           tokenAddress: payout.tokenAddress,
         };
       });
+
+      if (!args.roundId.startsWith("0x")) {
+        mappedPayouts = mappedPayouts.filter(
+          (p) => p.tokenAddress !== zeroAddress
+        );
+      }
 
       return mappedPayouts;
     }
