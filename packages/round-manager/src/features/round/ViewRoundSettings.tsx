@@ -2087,8 +2087,7 @@ function Funding(props: {
                       ?.matchingCap !== true
                   }
                   checked={
-                    !props.editedRound?.roundMetadata?.quadraticFundingConfig
-                      ?.matchingCap ?? false
+                    !props.editedRound?.roundMetadata?.quadraticFundingConfig?.matchingCap
                   }
                   onChange={(e) => {
                     props.resetField(
