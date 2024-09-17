@@ -27,6 +27,7 @@ import {
   RoundApplicationPayout,
   ProjectApplicationWithRoundAndProgram,
   BaseDonorValues,
+  DirectDonationValues,
 } from "./data.types";
 import {
   ApplicationSummary,
@@ -976,12 +977,16 @@ export class DataLayer {
   }: {
     projectId: string;
     chainIds: number[];
-  }): Promise<BaseDonorValues[]> {
-    const response: { rounds: BaseDonorValues[] } = await request(
+  }): Promise<DirectDonationValues[]> {
+    const response: { rounds: { donations: DirectDonationValues[] }[] }  = await request(
       this.gsIndexerEndpoint,
       getDirectDonationsByProjectId,
-      { projectId, chainIds },
+      { projectId, chainIds }
     );
-    return response.rounds;
-  }
+  
+    // Flatten the donations from all rounds into a single array
+    const allDonations = response.rounds.flatMap(round => round.donations);
+  
+    return allDonations;
+  }  
 }
