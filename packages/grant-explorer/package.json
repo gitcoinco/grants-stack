@@ -107,7 +107,6 @@
     "stream-http": "^3.2.0",
     "swr": "^2.0.0",
     "ts-is-present": "^1.2.2",
-    "typescript": "^5.1.6",
     "url": "^0.11.0",
     "util": "^0.12.4",
     "verify-env": "workspace:*",
@@ -147,12 +146,13 @@
     "tailwind-styled-components": "^2.1.7",
     "tailwindcss": "^3.0.24",
     "ts-unused-exports": "^10.0.1",
+    "typescript": "^5.6.2",
     "vite": "^4.4.9",
     "vitest": "^0.34.2",
     "vitest-fetch-mock": "^0.2.2"
   },
   "engines": {
-    "node": ">=18",
+    "node": ">=20.1.0",
     "npm": ">=8.5.5"
   },
   "volta": {
