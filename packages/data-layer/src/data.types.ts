@@ -264,6 +264,12 @@ export type BaseDonorValues = {
   uniqueDonorsCount: number;
 };
 
+export type DirectDonationValues = {
+  amount: number;
+  donorAddress: string;
+  amountInUsd: number;
+};
+
 /**
  * The project application type for v2
  *

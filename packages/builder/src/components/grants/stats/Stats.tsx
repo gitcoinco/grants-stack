@@ -1,5 +1,5 @@
 import { Spinner } from "@chakra-ui/react";
-import { BaseDonorValues, useDataLayer } from "data-layer";
+import { DirectDonationValues, useDataLayer } from "data-layer";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -60,15 +60,17 @@ export default function RoundStats() {
       let totalDirectDonationCount = 0;
 
       try {
-        const directDonations: BaseDonorValues[] =
+        const directDonations: DirectDonationValues[] =
           await dataLayer.getDirectDonationsByProjectId({
             projectId: props.projectID,
             chainIds: allChains.map((chain) => chain.id),
           });
 
+        console.log("directDonations", directDonations);
+        totalDirectDonationCount = directDonations.length;
+
         directDonations.forEach((donation) => {
-          totalDirectDonations += donation.totalAmountDonatedInUsd;
-          totalDirectDonationCount += donation.totalDonationsCount;
+          totalDirectDonations += donation.amountInUsd;
         });
       } catch (e) {
         console.error("Error fetching direct donations", e);
