@@ -1,4 +1,5 @@
 import { DiscoverRounds } from "@allo-team/kit";
+import "@allo-team/kit/styles.css";
 import { useAccount } from "wagmi";
 
 export default function ViewRounds() {
