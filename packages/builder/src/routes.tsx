@@ -7,6 +7,7 @@ export const slugs = {
   round: `/chains/:chainId/rounds/:roundId`,
   roundApplication: `/chains/:chainId/rounds/:roundId/apply`,
   roundApplicationView: `/chains/:chainId/rounds/:roundId/view/:ipfsHash`,
+  alloKitUserRoundsViewPath: `/user/rounds`,
 };
 
 export const rootPath = () => slugs.root;
@@ -45,3 +46,5 @@ export const roundApplicationViewPath = (
   roundId: string,
   ipfsHash: string
 ) => `/chains/${chainId}/rounds/${roundId}/view/${ipfsHash}`;
+
+export const alloKitUserRoundsViewPath = () => `/user/rounds`;

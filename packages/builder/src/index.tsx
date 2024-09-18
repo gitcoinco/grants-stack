@@ -13,6 +13,7 @@ import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { Navigate, Route, Routes } from "react-router";
 import { WagmiProvider } from "wagmi";
+import { AlloKitProviders } from "./providers";
 import AlloWrapper from "./utils/AlloWrapper";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Layout from "./components/Layout";
@@ -33,6 +34,7 @@ import initDatadog from "./utils/datadog";
 import queryClient, { config } from "./utils/wagmi";
 import initTagmanager from "./tagmanager";
 import { initPosthog } from "./utils/posthog";
+import ViewRounds from "./components/rounds/ViewRounds";
 
 const dataLayerConfig = new DataLayer({
   search: {
@@ -109,50 +111,59 @@ if (pathname && pathname !== window.location.pathname) {
 root.render(
   <ErrorBoundary>
     <PostHogProvider client={posthog}>
-      <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
-            <ChakraProvider resetCSS={false}>
-              <Provider store={store}>
-                <AlloWrapper>
-                  <DataLayerProvider client={dataLayerConfig}>
-                    <ReduxRouter history={history} store={store}>
-                      <Layout>
-                        <Routes>
-                          <Route
-                            path={slugs.root}
-                            element={<Navigate to={slugs.grants} />}
-                          />
-                          <Route
-                            path={slugs.grants}
-                            element={<ProjectsList />}
-                          />
-                          <Route path={slugs.project} element={<Project />} />
-                          <Route
-                            path={slugs.newGrant}
-                            element={<NewProject />}
-                          />
-                          <Route path={slugs.edit} element={<EditProject />} />
-                          <Route path={slugs.round} element={<RoundShow />} />
-                          <Route
-                            path={slugs.roundApplication}
-                            element={<RoundApply />}
-                          />
-                          <Route
-                            path={slugs.roundApplicationView}
-                            element={<ViewApplication />}
-                          />
-                          <Route path="*" element={<PageNotFound />} />
-                        </Routes>
-                      </Layout>
-                    </ReduxRouter>
-                  </DataLayerProvider>
-                </AlloWrapper>
-              </Provider>
-            </ChakraProvider>
-          </RainbowKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
+      <AlloKitProviders>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider>
+              <ChakraProvider resetCSS={false}>
+                <Provider store={store}>
+                  <AlloWrapper>
+                    <DataLayerProvider client={dataLayerConfig}>
+                      <ReduxRouter history={history} store={store}>
+                        <Layout>
+                          <Routes>
+                            <Route
+                              path={slugs.root}
+                              element={<Navigate to={slugs.grants} />}
+                            />
+                            <Route
+                              path={slugs.grants}
+                              element={<ProjectsList />}
+                            />
+                            <Route path={slugs.project} element={<Project />} />
+                            <Route
+                              path={slugs.newGrant}
+                              element={<NewProject />}
+                            />
+                            <Route
+                              path={slugs.edit}
+                              element={<EditProject />}
+                            />
+                            <Route path={slugs.round} element={<RoundShow />} />
+                            <Route
+                              path={slugs.roundApplication}
+                              element={<RoundApply />}
+                            />
+                            <Route
+                              path={slugs.roundApplicationView}
+                              element={<ViewApplication />}
+                            />
+                            <Route
+                              path={slugs.alloKitUserRoundsViewPath}
+                              element={<ViewRounds />}
+                            />
+                            <Route path="*" element={<PageNotFound />} />
+                          </Routes>
+                        </Layout>
+                      </ReduxRouter>
+                    </DataLayerProvider>
+                  </AlloWrapper>
+                </Provider>
+              </ChakraProvider>
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </AlloKitProviders>
     </PostHogProvider>
   </ErrorBoundary>
 );
