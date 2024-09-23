@@ -33,6 +33,7 @@
     ]
   },
   "dependencies": {
+    "@allo-team/kit": "^0.1.12",
     "@chakra-ui/react": "^2.1.2",
     "@craco/craco": "^7.1.0",
     "@datadog/browser-logs": "^4.19.0",
