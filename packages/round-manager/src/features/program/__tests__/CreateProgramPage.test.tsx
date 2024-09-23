@@ -12,7 +12,8 @@ import { MemoryRouter } from "react-router-dom";
 import { zeroAddress } from "viem";
 import { errorModalDelayMs } from "../../../constants";
 import CreateProgramPage from "../CreateProgramPage";
-import wagmi, { Config, UseAccountReturnType } from "wagmi";
+import { type Config, type UseAccountReturnType } from "wagmi";
+import * as wagmi from "wagmi";
 
 jest.mock("../../api/ipfs");
 jest.mock("../../common/Auth");
@@ -49,9 +50,7 @@ jest.mock("wagmi", () => ({
 }));
 
 describe("<CreateProgramPage />", () => {
-  beforeEach(() => {
-
-  });
+  beforeEach(() => {});
 
   it("shows program chain tooltip", async () => {
     renderWithContext(<CreateProgramPage />);

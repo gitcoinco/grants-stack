@@ -4,7 +4,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { ethers } from "ethers";
 import { act } from "react-dom/test-utils";
 import { useParams } from "react-router-dom";
-import wagmi, { UseBalanceReturnType } from "wagmi";
+import { type UseBalanceReturnType } from "wagmi";
+import * as wagmi from "wagmi";
 import {
   makeRoundData,
   wrapWithBulkUpdateGrantApplicationContext,

@@ -7,7 +7,6 @@ import {
   renderWithContext,
 } from "../../../test-utils";
 import Navbar from "../Navbar";
-import type wagmi from "wagmi";
 import type rrd from "react-router-dom";
 const userAddress = faker.finance.ethereumAddress();
 
@@ -17,7 +16,7 @@ const mockAccount = {
 };
 
 vi.mock("wagmi", async () => {
-  const actual = await vi.importActual<typeof wagmi>("wagmi");
+  const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
   return {
     ...actual,
     useAccount: () => mockAccount,
