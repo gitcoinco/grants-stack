@@ -1,14 +1,11 @@
 import "./browserPatches";
 
 import { getConfig } from "common/src/config";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { ExploreApplicationsPage } from "./features/discovery/ExploreApplicationsPage";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import { ResolvedRegister, WagmiProvider } from "wagmi";
 import queryClient, { config } from "./app/wagmi";
 import { RoundProvider } from "./context/RoundContext";
 import { initDatadog } from "./datadog";
@@ -36,6 +33,7 @@ import { PostHogProvider } from "posthog-js/react";
 import ViewProject from "./features/projects/ViewProject";
 import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
 import { DirectAllocationProvider } from "./features/projects/hooks/useDirectAllocation";
+import { ApiProvider, Web3Provider } from "@allo-team/kit";
 
 initSentry();
 initDatadog();
@@ -65,80 +63,75 @@ const dataLayer = new DataLayer({
 root.render(
   <React.StrictMode>
     <PostHogProvider client={posthog}>
-      <WagmiProvider config={config as ResolvedRegister["config"]}>
-        <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
-            <ChakraProvider>
-              <DirectAllocationProvider>
-                <AlloWrapper>
-                  <RoundProvider>
-                    <DataLayerProvider client={dataLayer}>
-                      <HashRouter>
-                        <Routes>
-                          {/* Protected Routes */}
-                          <Route element={<Auth />} />
+      <ApiProvider queryClient={queryClient}>
+        <Web3Provider config={config}>
+          <ChakraProvider>
+            <DirectAllocationProvider>
+              <AlloWrapper>
+                <RoundProvider>
+                  <DataLayerProvider client={dataLayer}>
+                    <HashRouter>
+                      <Routes>
+                        {/* Protected Routes */}
+                        <Route element={<Auth />} />
 
-                          {/* Default Route */}
-                          <Route path="/" element={<LandingPage />} />
+                        {/* Default Route */}
+                        <Route path="/" element={<LandingPage />} />
 
-                          <Route
-                            path="/rounds"
-                            element={<ExploreRoundsPage />}
-                          />
+                        <Route path="/rounds" element={<ExploreRoundsPage />} />
 
-                          {/* Round Routes */}
-                          <Route
-                            path="/round/:chainId/:roundId"
-                            element={<ViewRound />}
-                          />
-                          <Route
-                            path="/round/:chainId/:roundId/:applicationId"
-                            element={<ViewProjectDetails />}
-                          />
+                        {/* Round Routes */}
+                        <Route
+                          path="/round/:chainId/:roundId"
+                          element={<ViewRound />}
+                        />
+                        <Route
+                          path="/round/:chainId/:roundId/:applicationId"
+                          element={<ViewProjectDetails />}
+                        />
 
-                          {/* Project Routes */}
+                        {/* Project Routes */}
 
-                          <Route
-                            path="/projects"
-                            element={<ExploreProjectsPage />}
-                          />
+                        <Route
+                          path="/projects"
+                          element={<ExploreProjectsPage />}
+                        />
 
-                          <Route
-                            path="/projects/:projectId"
-                            element={<ViewProject />}
-                          />
+                        <Route
+                          path="/projects/:projectId"
+                          element={<ViewProject />}
+                        />
 
-                          <Route path="/cart" element={<ViewCart />} />
+                        <Route path="/cart" element={<ViewCart />} />
 
-                          <Route path="/thankyou" element={<ThankYou />} />
+                        <Route path="/thankyou" element={<ThankYou />} />
 
-                          <Route
-                            path="/contributors/:address"
-                            element={<ViewContributionHistoryPage />}
-                          />
+                        <Route
+                          path="/contributors/:address"
+                          element={<ViewContributionHistoryPage />}
+                        />
 
-                          {/* Access Denied */}
-                          <Route
-                            path="/access-denied"
-                            element={<AccessDenied />}
-                          />
-                          <Route
-                            path="/collections/:collectionCid"
-                            element={<ExploreApplicationsPage />}
-                          />
+                        {/* Access Denied */}
+                        <Route
+                          path="/access-denied"
+                          element={<AccessDenied />}
+                        />
+                        <Route
+                          path="/collections/:collectionCid"
+                          element={<ExploreApplicationsPage />}
+                        />
 
-                          {/* 404 */}
-                          <Route path="*" element={<NotFound />} />
-                        </Routes>
-                      </HashRouter>
-                    </DataLayerProvider>
-                  </RoundProvider>
-                </AlloWrapper>
-              </DirectAllocationProvider>
-            </ChakraProvider>
-          </RainbowKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
+                        {/* 404 */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </HashRouter>
+                  </DataLayerProvider>
+                </RoundProvider>
+              </AlloWrapper>
+            </DirectAllocationProvider>
+          </ChakraProvider>
+        </Web3Provider>
+      </ApiProvider>
     </PostHogProvider>
   </React.StrictMode>
 );
