@@ -1,12 +1,12 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { ReactComponent as GitcoinLogo } from "../../assets/gitcoinlogo-black.svg";
-import { ReactComponent as GrantsExplorerLogo } from "../../assets/topbar-logos-black.svg";
-import { ReactComponent as GrantsExplorerLogoMobile } from "../../assets/explorer-logo-mobile.svg";
+import { ReactComponent as GitcoinLogo } from "../../../assets/gitcoinlogo-black.svg";
+import { ReactComponent as GrantsExplorerLogo } from "../../../assets/topbar-logos-black.svg";
+import { ReactComponent as GrantsExplorerLogoMobile } from "../../../assets/explorer-logo-mobile.svg";
 import NavbarCart from "./NavbarCart";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useCartStorage } from "../../store";
+import { useCartStorage } from "../../../store";
 import { Link } from "react-router-dom";
 import { getAlloVersion } from "common/src/config";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";

@@ -1,5 +1,5 @@
 import { render, fireEvent, screen } from "@testing-library/react";
-import NavbarCart from "../NavbarCart";
+import NavbarCart from "../Navbar/NavbarCart";
 import { makeApprovedProjectData } from "../../../test-utils";
 import { beforeEach } from "vitest"; // replace with the correct path to your NavbarCart component
 
