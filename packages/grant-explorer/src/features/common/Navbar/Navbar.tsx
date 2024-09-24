@@ -1,9 +1,9 @@
-import { ReactComponent as GitcoinLogo } from "../../../assets/gitcoinlogo-black.svg";
-import { ReactComponent as GrantsExplorerLogo } from "../../../assets/topbar-logos-black.svg";
-import { ReactComponent as GrantsExplorerLogoMobile } from "../../../assets/explorer-logo-mobile.svg";
+import { ReactComponent as GitcoinLogo } from "@/assets/gitcoinlogo-black.svg";
+import { ReactComponent as GrantsExplorerLogo } from "@/assets/topbar-logos-black.svg";
+import { ReactComponent as GrantsExplorerLogoMobile } from "@/assets/explorer-logo-mobile.svg";
 import NavbarCart from "./NavbarCart";
 import { useEffect } from "react";
-import { useCartStorage } from "../../../store";
+import { useCartStorage } from "@/store";
 import { Link } from "react-router-dom";
 import ContributionHistoryLink from "./ContributionHistoryLink";
 import AlloVersionBanner from "./AlloVersionBanner";
