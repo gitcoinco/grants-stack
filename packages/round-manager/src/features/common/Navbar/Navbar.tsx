@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dark.svg";
-import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo.svg";
+import { ReactComponent as ManagerLogoDark } from "@/assets/manager-logo-dark.svg";
+import { ReactComponent as GitcoinLogoDark } from "@/assets/gitcoin-logo.svg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { NavbarProps } from "./types";
+import { NavbarProps } from "../types";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function Navbar({ programCta: programCta = true }: NavbarProps) {
