@@ -16,9 +16,11 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "types": ["@testing-library/jest-dom", "jest", "node"],
-    "incremental": true
+    "incremental": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
-  "include": [
-    "src",
-  ]
+  "include": ["src"]
 }

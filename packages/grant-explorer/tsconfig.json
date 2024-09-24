@@ -17,7 +17,11 @@
     "jsx": "react-jsx",
     "sourceMap": true,
     "types": ["vitest/globals", "@testing-library/jest-dom"],
-    "incremental": true
+    "incremental": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": ["src"]
 }

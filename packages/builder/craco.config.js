@@ -52,6 +52,9 @@ module.exports = {
         ],
       },
       resolve: {
+        alias: {
+          "@": path.resolve(__dirname, "src"),
+        },
         fallback: {
           crypto: require.resolve("crypto-browserify"),
           buffer: require.resolve("buffer"),
