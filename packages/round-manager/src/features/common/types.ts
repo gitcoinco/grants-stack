@@ -30,10 +30,6 @@ export type Step = {
   status: ProgressStatus;
 };
 
-export interface NavbarProps {
-  programCta?: boolean;
-}
-
 export interface ProgressModalProps {
   isOpen: boolean;
   steps: Step[];
