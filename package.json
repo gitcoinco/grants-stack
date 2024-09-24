@@ -23,6 +23,7 @@
     "start:explorer": "pnpm --filter grant-explorer run start",
     "typecheck:explorer": "turbo run typecheck --filter=grant-explorer",
     "lint:explorer": "turbo run lint:ci --filter=grant-explorer",
+    "build:builder": "pnpm --filter builder run build",
     "start:builder": "pnpm --filter builder run start",
     "lint:builder": "turbo run lint:ci --filter=builder",
     "test:builder": "pnpm test --filter=builder",
