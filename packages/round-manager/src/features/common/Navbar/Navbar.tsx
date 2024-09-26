@@ -1,50 +1,37 @@
-import { Link } from "react-router-dom";
-import { ReactComponent as ManagerLogoDark } from "../../assets/manager-logo-dark.svg";
-import { ReactComponent as GitcoinLogoDark } from "../../assets/gitcoin-logo.svg";
+import { ReactComponent as ManagerLogo } from "../../../assets/manager-logo-dark.svg";
+import { ReactComponent as ManagerLogoMobile } from "../../../assets/manager-logo-mobile.svg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { NavbarGeneric } from "common/src/components";
 
 export interface NavbarProps {
   programCta?: boolean;
+  className?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function Navbar({ programCta: programCta = true }: NavbarProps) {
+export default function Navbar({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  programCta = true,
+  className = "bg-white",
+}: NavbarProps) {
   return (
-    <>
-      <nav className="bg-white drop-shadow-md z-10 w-full">
-        <div className="mx-auto px-6 text-white max-w-screen-2xl">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <Link
-                to="/"
-                className="flex-shrink-0 flex items-center"
-                data-testid={"home-link"}
-              >
-                <GitcoinLogoDark className="block h-8 w-auto" />
-                <div className="hidden lg:block md:block">
-                  <span className="mx-6 text-black">|</span>
-                  <ManagerLogoDark className="lg:inline-block md:inline-block" />
-                </div>
-              </Link>
-            </div>
-            <div className="flex items-center gap-4">
-              <div
-                data-testid="connect-wallet-button"
-                id="connect-wallet-button"
-              >
-                <ConnectButton
-                  showBalance={false}
-                  accountStatus={{
-                    smallScreen: "avatar",
-                    largeScreen: "full",
-                  }}
-                  label="Log in"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
-    </>
+    <NavbarGeneric className={className}>
+      <NavbarGeneric.Logo to="/">
+        <ManagerLogo className="h-8 w-auto hidden lg:block" />
+        <ManagerLogoMobile className="h-8 w-auto lg:hidden" />
+      </NavbarGeneric.Logo>
+      <NavbarGeneric.Actions>
+        <NavbarGeneric.ConnectButton>
+          <ConnectButton
+            showBalance={false}
+            accountStatus={{
+              smallScreen: "avatar",
+              largeScreen: "full",
+            }}
+            chainStatus={{ smallScreen: "icon" }}
+            label="Log in"
+          />
+        </NavbarGeneric.ConnectButton>
+      </NavbarGeneric.Actions>
+    </NavbarGeneric>
   );
 }
