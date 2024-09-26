@@ -7,7 +7,6 @@ import {
   renderWithContext,
 } from "../../../test-utils";
 import Navbar from "../Navbar";
-import type wagmi from "wagmi";
 import type rrd from "react-router-dom";
 const userAddress = faker.finance.ethereumAddress();
 
@@ -17,7 +16,7 @@ const mockAccount = {
 };
 
 vi.mock("wagmi", async () => {
-  const actual = await vi.importActual<typeof wagmi>("wagmi");
+  const actual = await vi.importActual<typeof import("wagmi")>("wagmi");
   return {
     ...actual,
     useAccount: () => mockAccount,
@@ -58,17 +57,17 @@ vi.mock("react-router-dom", async () => {
 
 describe("<Navbar>", () => {
   it("SHOULD display home-link", () => {
-    renderWithContext(<Navbar customBackground="" />);
-    expect(screen.getByTestId("home-link")).toBeInTheDocument();
+    renderWithContext(<Navbar className="" />);
+    expect(screen.getByTestId("navbar-logo")).toBeInTheDocument();
   });
 
   it("SHOULD display connect wallet button", () => {
-    renderWithContext(<Navbar customBackground="" />);
+    renderWithContext(<Navbar className="" />);
     expect(screen.getByTestId("connect-wallet-button")).toBeInTheDocument();
   });
 
   it("SHOULD display cart if round has not ended", () => {
-    renderWithContext(<Navbar customBackground="" />);
+    renderWithContext(<Navbar className="" />);
     expect(screen.getByTestId("navbar-cart")).toBeInTheDocument();
   });
 });
