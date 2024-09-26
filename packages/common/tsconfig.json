@@ -1,10 +1,24 @@
 {
-  "extends": "../../tsconfig.json",
+  "include": ["src/*"],
   "compilerOptions": {
+    "target": "es2020",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "outDir": "dist",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
     "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
     "declarationMap": true,
+    "sourceMap": true,
     "declaration": true,
-    "outDir": "dist"
+    "incremental": true
   },
-  "include": ["src/*"]
 }
