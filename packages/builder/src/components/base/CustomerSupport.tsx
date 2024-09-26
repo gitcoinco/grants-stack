@@ -77,16 +77,18 @@ function CustomerSupport() {
       <Button
         colorScheme="black"
         variant="ghost"
-        className="flex items-center justify-center flex-row mt-2 ml-2 mb-2 border shadow-[0px_0px_2px_0px_rgba(0,0,0,0.1)] cs-button"
+        className={`flex items-center justify-center gap-2 border shadow-[0px_0px_2px_0px_rgba(0,0,0,0.1)] ${
+          open ? "border-black" : ""
+        } cs-button`}
         onClick={toggleMenu}
       >
-        <div className="fill-current w-6 h-6 mr-2">
+        <div className="fill-current size-6">
           <QuestionMarkCircleIcon />
         </div>
-        <span className="text-lg">Help</span>
+        <span className="hidden sm:block text-lg">Help</span>
       </Button>
       {open && (
-        <div className="w-72 flex flex-col absolute right-0 rounded bg-white shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)] py-4 px-4 z-20">
+        <div className="mt-3 w-72 flex flex-col absolute right-0 rounded bg-white shadow-[0px_0px_10px_0px_rgba(0,0,0,0.1)] py-4 px-4 z-20">
           {menuItems.map(({ Icon, title, subTitle, link }) => (
             <a
               target="_blank"
