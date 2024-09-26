@@ -2,43 +2,11 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, usePublicClient } from "wagmi";
-import { Link } from "react-router-dom";
 import { RootState } from "../../reducers";
-import {
-  LandingBackground,
-  BuilderLogo,
-  GitcoinLogo,
-  GitcoinLogoText,
-} from "../../assets";
-import { grantsPath } from "../../routes";
+import { LandingBackground, GitcoinLogoText } from "../../assets";
 import { initializeWeb3 } from "../../actions/web3";
 import { getEthersSigner } from "../../utils/wagmi";
-
-function LandingHeader() {
-  return (
-    <header
-      className="flex items-center justify-between px-4 sm:px-2 z-10 text-primary-text w-full border-0 sm:border-b mx-auto h-1/8"
-      style={{
-        boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-      }}
-    >
-      <div className="w-full mx-auto flex flex-wrap items-center justify-between">
-        <div className="w-full relative flex justify-between pl-4 ml-20">
-          <Link to={grantsPath()}>
-            <div className="flex">
-              <img className="py-4 mr-4" alt="Gitcoin Logo" src={GitcoinLogo} />
-              <span className="border border-gitcoin-separator my-[1.35rem] mr-4" />
-              <img className="py-4" alt="Builder Logo" src={BuilderLogo} />
-            </div>
-          </Link>
-          <div className="flex items-center mr-20">
-            <ConnectButton />
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-}
+import Header from "../Header";
 
 function Landing() {
   const dispatch = useDispatch();
@@ -63,7 +31,7 @@ function Landing() {
 
   return (
     <div className="flex flex-col absolute h-full w-full">
-      <LandingHeader />
+      <Header showHelpButton={false} showNewProjectButton={false} />
       <section className="flex flex-col md:flex-row">
         <div className="flex flex-1 flex-col justify-center container px-8 md:px-10 md:pl-4 ml-20">
           <div>
