@@ -6,6 +6,7 @@ import { NavbarActions } from "./NavbarActions";
 import { NavbarLogo } from "./NavbarLogo";
 import { NavbarProvider } from "./NavbarContext";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NavbarSubComponent = React.ComponentType<any> & {
   displayName?: string;
   navbarSection?: "main" | "banner";
@@ -13,6 +14,7 @@ type NavbarSubComponent = React.ComponentType<any> & {
 
 function isNavbarSubComponent(
   child: React.ReactNode
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): child is ReactElement<any, NavbarSubComponent> {
   return (
     React.isValidElement(child) &&
