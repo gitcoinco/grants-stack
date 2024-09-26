@@ -69,7 +69,7 @@ export default function LinkManager({ linkProps }: { linkProps: LinkProps }) {
         </Button>
       ) : null}
       {/* Applications link is todo: Andrea PR */}
-      {linkProps.displayType === RoundDisplayType.Current ?? null}
+      {linkProps.displayType === RoundDisplayType.Current || null}
       {linkProps.displayType === RoundDisplayType.Past ? (
         <Button
           disabled={!linkProps.enableStats}
