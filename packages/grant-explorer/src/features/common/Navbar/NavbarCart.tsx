@@ -1,8 +1,33 @@
-import { Project } from "data-layer";
+import { CartProject } from "../../api/types";
+import { useCartStorage } from "../../../store";
+import { useEffect } from "react";
 import tw from "tailwind-styled-components";
 
-export default function NavbarCart(props: { cart: Project[] }) {
-  const projectCount = props.cart.length;
+export default function NavbarCart() {
+  /** This part keeps the store in sync between tabs */
+  const store = useCartStorage();
+
+  const projects = store.projects;
+
+  const updateStore = () => {
+    useCartStorage.persist.rehydrate();
+  };
+
+  useEffect(() => {
+    document.addEventListener("visibilitychange", updateStore);
+    window.addEventListener("focus", updateStore);
+    return () => {
+      document.removeEventListener("visibilitychange", updateStore);
+      window.removeEventListener("focus", updateStore);
+    };
+  }, []);
+  /** end of part that keeps the store in sync between tabs */
+
+  return <NavbarCartButton cart={projects} />;
+}
+
+export function NavbarCartButton({ cart }: { cart: CartProject[] }) {
+  const projectCount = cart.length;
 
   return (
     <div
