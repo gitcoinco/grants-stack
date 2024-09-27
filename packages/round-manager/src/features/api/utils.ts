@@ -258,7 +258,7 @@ export const convertApplications = (
       if (application.metadata === null) {
         return [];
       }
-      
+
       return [
         {
           id: application.id,
