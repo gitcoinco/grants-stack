@@ -12,18 +12,13 @@ export function DirectDonationsTable(props: { contributions: Contribution[] }) {
     <>
       <TableHeader />
       <Table contributions={props.contributions} />
-      {props.contributions.length === 0 && (
-        <div className="text-md mt-2 mb-12">
-          Direct donations made to projects will appear here.
-        </div>
-      )}
     </>
   );
 }
 
 function TableHeader() {
   return (
-    <table className="w-full text-left mx-4">
+    <table className="w-full text-left">
       <thead className="font-sans text-lg">
         <tr>
           <th className="w-2/5">Project</th>
@@ -52,7 +47,7 @@ function TableHeader() {
               </div>
             </div>
           </th>
-          <th className="w-1/5 pl-8">Transaction Information</th>
+          <th className="text-right mr-10 w-1/5 pl-8">Transaction</th>
         </tr>
       </thead>
     </table>
@@ -61,7 +56,7 @@ function TableHeader() {
 
 function Table(props: { contributions: Contribution[] }) {
   return (
-    <div className="rounded-lg p-2 py-1">
+    <div className="rounded-lg py-1">
       <div className="overflow-hidden">
         <div className="mx-auto">
           <div>
@@ -92,29 +87,31 @@ function Table(props: { contributions: Contribution[] }) {
                       }
 
                       return (
-                        <tr key={contribution.id} className="border-b">
-                          <td className="py-4 lg:px-2 w-2/5">
+                        <tr key={contribution.id}>
+                          <td className="py-4 w-2/5">
                             <div className="flex items-center">
                               <div className="flex flex-col sm:flex-row">
                                 {/* Link to the project */}
                                 <Link
                                   className={`underline inline-block lg:pr-2 lg:max-w-[300px] max-w-[75px] 2xl:max-w-fit truncate`}
-                                  title={contribution.projectId.trim()}
+                                  title={contribution.projectId}
                                   to={`/projects/${contribution.projectId}`}
                                   target="_blank"
                                 >
-                                  {contribution.projectId.trim()}
+                                  {contribution.application?.project?.name ??
+                                    `Project Id: ${contribution.projectId.slice(0, 6) + "..." + contribution.projectId.slice(-6)}`
+                                  }
                                 </Link>
                               </div>
                             </div>
                             {/* Display contribution timestamp */}
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-500 mt-1">
                               {timeAgo(Number(contribution.timestamp))}
                             </div>
                           </td>
                           {/* Display donations */}
                           <td className="py-4 truncate w-2/5 lg:pl-2">
-                            <span className="font-bold">
+                            <span>
                               {formattedAmount}{" "}
                             </span>
                             <span className="text-grey-400">

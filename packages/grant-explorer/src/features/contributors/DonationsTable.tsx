@@ -21,17 +21,18 @@ export function DonationsTable(props: {
 }) {
   return (
     <>
-      <TableHeader />
-      <RoundsTableWithAccordian
-        activeRound={props.activeRound}
-        contributions={props.contributions}
-      />
-      {props.contributions.length === 0 && (
-        <div className="text-md mt-2 mb-12">
-          {props.activeRound
-            ? "Donations made during active rounds will appear here."
-            : "Donations made during past rounds will appear here."}
+      {props.contributions.length === 0 ? (
+        <div className="text-md text-center my-6">
+          No Donations found
         </div>
+      ) : (
+        <>
+          <TableHeader />
+          <RoundsTableWithAccordian
+            activeRound={props.activeRound}
+            contributions={props.contributions}
+          />
+        </>
       )}
     </>
   );
@@ -118,7 +119,7 @@ function RoundsTableWithAccordian(props: {
 
 function TableHeader() {
   return (
-    <table className="w-full text-left mx-4">
+    <table className="w-full text-left">
       <thead className="font-sans text-lg">
         <tr>
           <th className="w-2/5">Round</th>
@@ -147,7 +148,7 @@ function TableHeader() {
               </div>
             </div>
           </th>
-          <th className="w-1/5 pl-8">Transaction Information</th>
+          <th className="w-1/5 pl-8">Transaction</th>
         </tr>
       </thead>
     </table>
@@ -219,7 +220,7 @@ function InnerTable(props: {
                               </div>
                             </div>
                             {/* Display contribution timestamp */}
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-500 mt-1">
                               {timeAgo(Number(contribution.timestamp))}
                             </div>
                           </td>
@@ -311,7 +312,7 @@ function Table(props: {
               </div>
             </div>
             {/* Display contribution timestamp */}
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500 mt-1">
               {timeAgo(Number(lastUpdated))}
             </div>
           </td>
