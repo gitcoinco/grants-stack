@@ -11,11 +11,13 @@ type ChainConfirmationModalBodyProps = {
   totalDonationsPerChain: { [chain: number]: bigint };
   chainIdsBeingCheckedOut: number[];
   setChainIdsBeingCheckedOut: React.Dispatch<React.SetStateAction<number[]>>;
+  canChainCheckout: Record<number, boolean>;
 };
 
 export function ChainConfirmationModalBody({
   projectsByChain,
   totalDonationsPerChain,
+  canChainCheckout,
   chainIdsBeingCheckedOut,
   setChainIdsBeingCheckedOut,
 }: ChainConfirmationModalBodyProps) {

@@ -176,7 +176,7 @@ export default function ViewCart() {
             {projects.length === 0 ? (
               <>
                 <EmptyCart />
-                <SummaryContainer />
+                <SummaryContainer balances={balances} />
               </>
             ) : (
               <div className={"grid sm:grid-cols-3 gap-5 w-full"}>

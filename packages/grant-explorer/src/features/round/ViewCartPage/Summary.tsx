@@ -2,17 +2,22 @@ import { useTokenPrice, TToken, stringToBlobUrl, getChainById } from "common";
 import { formatUnits, zeroAddress } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import { ChainBalances } from "../../api/types";
 
 type SummaryProps = {
   totalDonation: bigint;
   selectedPayoutToken: TToken;
   chainId: number;
+  balances: ChainBalances;
+  setCanChainCheckout: (data: Record<number, boolean>) => void;
 };
 
 export function Summary({
   selectedPayoutToken,
   totalDonation,
   chainId,
+  setCanChainCheckout,
+  balances,
 }: SummaryProps) {
   const { data: payoutTokenPrice } = useTokenPrice(
     selectedPayoutToken.redstoneTokenId
@@ -22,17 +27,12 @@ export function Summary({
     Number(formatUnits(totalDonation, selectedPayoutToken.decimals)) *
       Number(payoutTokenPrice);
 
-  const { address } = useAccount();
+  const balance = balances?.[zeroAddress.toLowerCase()]
+    ? balances[selectedPayoutToken.address.toLowerCase()].formattedAmount
+    : 0;
 
-  const { data: balance } = useBalance({
-    address,
-    token:
-      selectedPayoutToken.address === zeroAddress
-        ? undefined
-        : selectedPayoutToken.address,
-    chainId,
-  });
-  const insufficientFunds = balance ? totalDonation > balance.value : false;
+  const insufficientFunds = balance ? totalDonation > balance : false;
+  setCanChainCheckout({ [chainId]: !insufficientFunds });
 
   const chain = getChainById(chainId);
 

@@ -32,7 +32,7 @@ import { isPresent } from "ts-is-present";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 
-export function SummaryContainer(props: { balances?: BalanceMap }) {
+export function SummaryContainer(props: { balances: BalanceMap }) {
   const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
   const { address, isConnected, connector, chainId } = useAccount();
@@ -44,6 +44,9 @@ export function SummaryContainer(props: { balances?: BalanceMap }) {
   } = useCartStorage();
   const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
   const dataLayer = useDataLayer();
+  const [canChainCheckout, setCanChainCheckout] = useState<
+    Record<number, boolean>
+  >({});
 
   const { openConnectModal } = useConnectModal();
 
@@ -51,17 +54,6 @@ export function SummaryContainer(props: { balances?: BalanceMap }) {
     () => groupBy(projects, "chainId"),
     [projects]
   );
-
-  console.log("projectsByChain", projectsByChain);
-
-  /*  This needs to be a useMemo to prevent an infinite loop in the below useEffect */
-  /* TODO: can we remove the useMemo without causing an infinite loop? */
-  const chainIds = useMemo(
-    () => Object.keys(projectsByChain).map(Number),
-    [projectsByChain]
-  );
-
-  const [openSwapModel, setOpenSwapModal] = useState<boolean>(false);
 
   const totalDonationsPerChain = useMemo(() => {
     return Object.fromEntries(
@@ -83,24 +75,6 @@ export function SummaryContainer(props: { balances?: BalanceMap }) {
     /* NB: we want to update the totalDonationsPerChain value based on chainToVotingToken */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getVotingTokenForChain, chainToVotingToken, projectsByChain]);
-
-  const enoughFundsToDonatePerChain = useMemo(() => {
-    return Object.fromEntries(
-      chainIds.map((chainId) => {
-        const balancesOfChainId = props.balances?.[Number(chainId)];
-        const balanceOfVotingToken =
-          balancesOfChainId?.[
-            getVotingTokenForChain(chainId).address.toLowerCase()
-          ];
-        const balanceOfToken =
-          balanceOfVotingToken?.formattedAmount ?? undefined;
-        if (balanceOfToken === undefined) {
-          return [chainId, true];
-        }
-        return [chainId, balanceOfToken >= totalDonationsPerChain[chainId]];
-      })
-    );
-  }, [chainIds, props.balances, totalDonationsPerChain]);
 
   const { data: rounds } = useSWR(projects, async (projects) => {
     const uniqueProjects = uniqBy(projects, (p) => `${p.chainId}-${p.roundId}`);
@@ -149,16 +123,6 @@ export function SummaryContainer(props: { balances?: BalanceMap }) {
   const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
     number[]
   >(Object.keys(projectsByChain).map(Number));
-
-  /** Keep the chains to be checked out in sync with the projects in the cart */
-  useEffect(() => {
-    const chainIdsFromProjects = Object.keys(projectsByChain).map(Number);
-    setChainIdsBeingCheckedOut(
-      chainIdsFromProjects.filter(
-        (chainId) => enoughFundsToDonatePerChain[chainId]
-      )
-    );
-  }, [enoughFundsToDonatePerChain, projectsByChain]);
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
@@ -241,6 +205,7 @@ export function SummaryContainer(props: { balances?: BalanceMap }) {
               totalDonationsPerChain={totalDonationsPerChain}
               chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
               setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
+              canChainCheckout={canChainCheckout}
             />
           }
           isOpen={openChainConfirmationModal}
@@ -437,6 +402,8 @@ export function SummaryContainer(props: { balances?: BalanceMap }) {
                 parseChainId(chainId)
               )}
               totalDonation={totalDonationsPerChain[chainId]}
+              setCanChainCheckout={setCanChainCheckout}
+              balances={props.balances[chainId]}
             />
           ))}
           {totalDonationAcrossChainsInUSD &&
