@@ -14,9 +14,7 @@ export default function CopyToClipboardButton(props: CopyToClipboardType) {
   return (
     <Button
       type="button"
-      className={`inline-flex bg-[#FFD9CD] text-black w-30 justify-center font-mono ${
-        active && "animate-[peachTransition_20s_ease-in]"
-      } ${props.styles}`}
+      className={`inline-flex text-black w-30 justify-center text-sm font-semibold bg-white border border-grey-100 ${props.styles}`}
       onClick={async () => {
         setActive(true);
         setTimeout(() => setActive(false), 1000);
@@ -24,8 +22,10 @@ export default function CopyToClipboardButton(props: CopyToClipboardType) {
         await navigator.clipboard.writeText(props.textToCopy);
       }}
     >
-      <LinkIcon className={props.iconStyle} aria-hidden="true" />
-      {active ? "Link Copied" : "Share Profile"}
+      <LinkIcon className={`mt-1 ${props.iconStyle}`} aria-hidden="true" />
+      <span className="ml-1">
+        {active ? "Link Copied" : "Share Profile"}
+      </span>
     </Button>
   );
 }

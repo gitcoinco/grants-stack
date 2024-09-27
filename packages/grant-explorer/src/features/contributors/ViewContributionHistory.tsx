@@ -28,7 +28,6 @@ export function ViewContributionHistoryPage() {
   const chainIds = getChains().map((chain) => chain.id);
 
   const { data: ensResolvedAddress } = useEnsAddress({
-    /* If params.address is actually an address, don't resolve the ens address for it*/
     name: isAddress(params.address ?? "") ? undefined : params.address,
     chainId: 1,
   });
@@ -92,7 +91,7 @@ function ViewContributionHistoryFetcher(props: {
   } else if (contributionHistory.type === "error") {
     console.error("Error", contributionHistory);
     return (
-      <ViewContributionHistoryWithoutDonations
+      <ViewNoHistory
         address={props.address}
         addressLogo={addressLogo}
         breadCrumbs={breadCrumbs}
@@ -144,66 +143,40 @@ export function ViewContributionHistory(props: {
       return [totalDonations, totalUniqueContributions, projects.length];
     }, [props.contributions]);
 
-  const activeRoundDonations = useMemo(() => {
+  const filteredDonations = useMemo(() => {
     const now = Date.now();
-
-    const filteredRoundDonations = props.contributions.data.filter(
-      (contribution) => {
+  
+    const getFilteredDonations = (type: string) => {
+      return props.contributions.data.filter((contribution) => {
         const formattedRoundEndTime =
           Number(
-            dateToEthereumTimestamp(
-              new Date(contribution.round.donationsEndTime)
-            )
+            dateToEthereumTimestamp(new Date(contribution.round.donationsEndTime))
           ) * 1000;
-        return (
-          formattedRoundEndTime >= now &&
-          contribution.round.strategyName !== "allov2.DirectAllocationStrategy"
-        );
-      }
-    );
-    if (filteredRoundDonations.length === 0) {
-      return [];
-    }
-    return filteredRoundDonations;
-  }, [props.contributions]);
-
-  const pastRoundDonations = useMemo(() => {
-    const now = Date.now();
-
-    const filteredRoundDonations = props.contributions.data.filter(
-      (contribution) => {
-        const formattedRoundEndTime =
-          Number(
-            dateToEthereumTimestamp(
-              new Date(contribution.round.donationsEndTime)
-            )
-          ) * 1000;
-        return (
-          formattedRoundEndTime < now &&
-          contribution.round.strategyName !== "allov2.DirectAllocationStrategy"
-        );
-      }
-    );
-    if (filteredRoundDonations.length === 0) {
-      return [];
-    }
-
-    return filteredRoundDonations;
-  }, [props.contributions]);
-
-  const directAllocationDonations = useMemo(() => {
-    const filteredRoundDonations = props.contributions.data.filter(
-      (contribution) => {
-        return (
-          contribution.round.strategyName === "allov2.DirectAllocationStrategy"
-        );
-      }
-    );
-    if (filteredRoundDonations.length === 0) {
-      return [];
-    }
-
-    return filteredRoundDonations;
+  
+        switch (type) {
+          case "active":
+            return (
+              formattedRoundEndTime >= now &&
+              contribution.round.strategyName !== "allov2.DirectAllocationStrategy"
+            );
+          case "past":
+            return (
+              formattedRoundEndTime < now &&
+              contribution.round.strategyName !== "allov2.DirectAllocationStrategy"
+            );
+          case "direct":
+            return contribution.round.strategyName === "allov2.DirectAllocationStrategy";
+          default:
+            return false;
+        }
+      });
+    };
+  
+    return {
+      activeRoundDonations: getFilteredDonations("active"),
+      pastRoundDonations: getFilteredDonations("past"),
+      directAllocationDonations: getFilteredDonations("direct"),
+    };
   }, [props.contributions]);
 
   return (
@@ -212,10 +185,10 @@ export function ViewContributionHistory(props: {
         <Breadcrumb items={props.breadCrumbs} />
       </div>
       <main>
-        <div className="border-b pb-2 mb-4 flex flex-row items-center justify-between">
+        <div className="pb-2 flex flex-row items-center justify-between">
           <div className="flex flex-row items-center">
             <img
-              className="w-10 h-10 rounded-full mr-4 mt-2"
+              className="w-10 h-10 rounded-full mr-4 my-auto"
               src={props.addressLogo}
               alt="Address Logo"
             />
@@ -229,28 +202,14 @@ export function ViewContributionHistory(props: {
             </div>
           </div>
           <div className="flex justify-between items-center">
-            {/* todo: removed until site is stable */}
-            {/* <Button
-              className="shadow-sm inline-flex border-gray-300 border-2 bg-gradient-to-br from-[#f6d7caff] via-[#bddce8ff] to-[#ebdfa5ff] font-medium py-2 px-4 rounded-md hover:bg-gradient-to-tr text-black w-30 mr-6"
-              onClick={() =>
-                window.open(
-                  `https://gg-your-impact.streamlit.app/?address=${props.address}`,
-                  "_blank"
-                )
-              }
-            >
-              <span className="font-mono text-black text-opacity-100">
-                Your Gitcoin Grants Impact
-              </span>
-            </Button> */}
             <CopyToClipboardButton
               textToCopy={`${currentOrigin}/#/contributors/${props.address}`}
-              iconStyle="h-4 w-4 mr-1 mt-1 shadow-sm"
+              iconStyle="w-3.5 mr-1 mt-1 shadow-sm"
             />
           </div>
         </div>
-        <div className="mt-8 mb-2 font-sans italic">
-          * Please note that your recent transactions may take a short while to
+        <div className="text-sm text-gray-500 mb-4">
+          Please note that your recent transactions may take a short while to
           reflect in your donation history, as processing times may vary.
         </div>
         <div className="text-2xl my-6 font-sans">Donation Impact</div>
@@ -274,25 +233,31 @@ export function ViewContributionHistory(props: {
             />
           </div>
         </div>
-        <div className="text-2xl my-6">Donation History</div>
-        <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
+        <div className="text-2xl mt-6 mb-10">Donation History</div>
+        <div className="border-black mb-2 px-1 py-1 text-black text-lg border-b font-semibold">
           Active Rounds
         </div>
         <DonationsTable
-          contributions={activeRoundDonations}
+          contributions={filteredDonations.activeRoundDonations}
           activeRound={true}
         />
-        <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
+        <div className="border-black mb-2 px-1 py-1 text-black text-lg border-b font-semibold">
           Past Rounds
         </div>
         <DonationsTable
-          contributions={pastRoundDonations}
+          contributions={filteredDonations.pastRoundDonations}
           activeRound={false}
         />
-        <div className="text-lg bg-grey-75 text-black rounded-2xl pl-4 px-1 py-1 mb-2 font-semibold">
-          Direct Donations
-        </div>
-        <DirectDonationsTable contributions={directAllocationDonations} />
+        {/* Direct Allocation */}
+        {filteredDonations.directAllocationDonations.length > 0 && (
+          <>
+            <div className="border-black mb-2 px-1 py-1 text-black text-lg border-b font-semibold">
+              Direct Donations
+            </div>
+            <DirectDonationsTable contributions={filteredDonations.directAllocationDonations} />
+          </>
+        )
+      }
       </main>
       <div className="mt-24 mb-11 h-11">
         <Footer />
@@ -301,7 +266,7 @@ export function ViewContributionHistory(props: {
   );
 }
 
-export function ViewContributionHistoryWithoutDonations(props: {
+export function ViewNoHistory(props: {
   address: string;
   addressLogo: string;
   ensName?: string;
