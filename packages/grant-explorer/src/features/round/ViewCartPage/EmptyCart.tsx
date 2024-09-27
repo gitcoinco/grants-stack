@@ -26,6 +26,7 @@ export function EmptyCart() {
               }
             }}
             payoutTokenOptions={[]}
+            balanceWarning={false}
           />
           <Button
             type="button"

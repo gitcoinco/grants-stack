@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 
+export type SwapParams = {
+  initialFromChainId: number;
+  initialToChainId: number;
+  // amount: string;
+  fromTokenAddress: string;
+  toTokenAddress: string;
+};
+
 const SquidWidget = ({
   integratorId = 'squid-swap-widget',
   companyName = 'Gitcoin',

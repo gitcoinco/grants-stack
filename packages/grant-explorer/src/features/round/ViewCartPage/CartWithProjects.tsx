@@ -9,18 +9,36 @@ import { RoundInCart } from "./RoundInCart";
 import { useTokenPrice, TToken, stringToBlobUrl, getChainById } from "common";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
+import { ChainBalances } from "../../api/types";
+import {
+  ArrowRightIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/24/solid";
+import { SwapParams } from "./SquidWidget";
+import { useAccount } from "wagmi";
 
 type Props = {
   cart: GroupedCartProjectsByRoundId;
   chainId: number;
+  balances: ChainBalances;
+  handleSwap: (params: SwapParams) => void;
 };
 
-export function CartWithProjects({ cart, chainId }: Props) {
+export function CartWithProjects({
+  cart,
+  chainId,
+  balances,
+  handleSwap,
+}: Props) {
+  const { address, chainId: connectedChain } = useAccount();
   const chain = getChainById(chainId);
   const cartByRound = Object.values(cart);
-
+  const totalDonationAmount = cartByRound.reduce(
+    (acc, curr) =>
+      acc + curr.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0),
+    0
+  );
   const store = useCartStorage();
-
   const [fixedDonation, setFixedDonation] = useState("");
 
   const { getVotingTokenForChain, setVotingTokenForChain } = useCartStorage();
@@ -28,6 +46,9 @@ export function CartWithProjects({ cart, chainId }: Props) {
   const payoutTokenOptions: TToken[] = getVotingTokenOptions(
     Number(chainId)
   ).filter((p) => p.canVote);
+  const payoutTokenBalance = balances
+    ? balances[selectedPayoutToken.address.toLowerCase()].formattedAmount
+    : 0;
 
   const { data, error, loading } = useTokenPrice(
     selectedPayoutToken.redstoneTokenId
@@ -76,7 +97,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setFixedDonation(e.target.value);
               }}
-              className="w-16 lg:w-18"
+              className="w-16 lg:w-18 max-h-10"
             />
             <PayoutTokenDropdown
               selectedPayoutToken={selectedPayoutToken}
@@ -84,6 +105,8 @@ export function CartWithProjects({ cart, chainId }: Props) {
                 setVotingTokenForChain(chainId, token);
               }}
               payoutTokenOptions={payoutTokenOptions}
+              balances={balances}
+              balanceWarning={payoutTokenBalance < totalDonationAmount}
             />
           </div>
           <div className="flex flex-row">
@@ -101,6 +124,36 @@ export function CartWithProjects({ cart, chainId }: Props) {
           </div>
         </div>
       </div>
+      {totalDonationAmount > 0 && totalDonationAmount > payoutTokenBalance && (
+        <div className="flex flex-row justify-between my-4">
+          <div className="rounded-md bg-red-50 py-2 text-pink-500 flex items-center text-sm p-5">
+            <ExclamationCircleIcon className="w-8 h-8 mr-4 text-left" />
+            <span className="p-2 pr-4">
+              You do not have enough funds in your wallet to complete this
+              donation. Please bridge funds to this network in order to submit
+              your donation.
+            </span>
+            <div
+              onClick={() =>
+                handleSwap({
+                  initialFromChainId:
+                    !connectedChain || connectedChain === chainId
+                      ? 1
+                      : connectedChain,
+                  initialToChainId: chainId,
+                  fromTokenAddress:
+                    "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+                  toTokenAddress: selectedPayoutToken.address,
+                })
+              }
+              className="flex items-center text-sm decoration-1 w-full sm:w-40 justify-end cursor-pointer"
+            >
+              Bridge Funds
+              <ArrowRightIcon className="h-4 w-4 ml-2" />
+            </div>
+          </div>
+        </div>
+      )}
       {cartByRound.map((roundcart, key) => (
         <div key={key}>
           <RoundInCart

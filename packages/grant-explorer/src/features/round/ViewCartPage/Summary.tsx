@@ -38,7 +38,9 @@ export function Summary({
 
   return (
     <div>
-      <div className="flex flex-row justify-between mt-2 mb-5">
+      <div
+        className={`flex flex-row justify-between mt-2 ${!insufficientFunds && "mb-5"}`}
+      >
         <div className="flex flex-col">
           <p className="mb-2">Your contribution on</p>
           <p>
@@ -71,10 +73,12 @@ export function Summary({
       {insufficientFunds && (
         <p
           data-testid="insufficientBalance"
-          className="rounded-md bg-red-50 font-medium p-2 text-pink-500 flex justify-start items-center mt-2 mb-6 text-sm"
+          className="rounded-md font-normal text-pink-500 flex justify-start items-center mt-2 mb-5 text-xs"
         >
-          <InformationCircleIcon className="w-4 h-4 mr-1" />
-          <span>Insufficient funds to donate on this network</span>
+          <span>
+            {`Insufficient funds in your wallet. Please bridge funds over to 
+            ${getChainById(chainId).prettyName}.`}
+          </span>
         </p>
       )}
     </div>

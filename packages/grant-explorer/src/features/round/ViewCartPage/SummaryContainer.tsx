@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
 import ChainConfirmationModal from "../../common/ConfirmationModal";
 import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
-import { ProgressStatus } from "../../api/types";
+import { BalanceMap, ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
 import { useAccount, useWalletClient } from "wagmi";
@@ -14,7 +14,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
 import { getClassForPassportColor } from "../../api/passport";
 import useSWR from "swr";
-import { groupBy, set, uniqBy } from "lodash-es";
+import { groupBy, uniqBy } from "lodash-es";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
@@ -28,15 +28,11 @@ import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
 import { useDataLayer } from "data-layer";
-import { getBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
-import { config } from "../../../app/wagmi";
-import GenericModal from "../../common/GenericModal";
-import SquidWidget from "./SquidWidget";
 
-export function SummaryContainer() {
+export function SummaryContainer(props: { balances?: BalanceMap }) {
   const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
   const { address, isConnected, connector, chainId } = useAccount();
@@ -56,6 +52,8 @@ export function SummaryContainer() {
     [projects]
   );
 
+  console.log("projectsByChain", projectsByChain);
+
   /*  This needs to be a useMemo to prevent an infinite loop in the below useEffect */
   /* TODO: can we remove the useMemo without causing an infinite loop? */
   const chainIds = useMemo(
@@ -64,39 +62,6 @@ export function SummaryContainer() {
   );
 
   const [openSwapModel, setOpenSwapModal] = useState<boolean>(false);
-
-
-  /** How much of the voting token for a chain does the address have*/
-  // todo: introduce a multicall here
-  const [tokenBalancesPerChain, setTokenBalancesPerChain] = useState<
-    Map<number, bigint>
-  >(new Map());
-  useEffect(() => {
-    const runner = async () => {
-      const newMap = new Map(tokenBalancesPerChain);
-
-      for (const chainId of chainIds) {
-        const votingToken = getVotingTokenForChain(chainId);
-        try {
-          const { value } = await getBalance(config, {
-            address: address!,
-            token:
-              votingToken.address === zeroAddress ||
-              votingToken.address.toLowerCase() === NATIVE.toLowerCase()
-                ? undefined
-                : votingToken.address,
-            chainId,
-          });
-          newMap.set(chainId, value);
-        } catch (e) {
-          console.error(`Error fetching balance for chain ${chainId}`, e);
-        }
-      }
-      setTokenBalancesPerChain(newMap);
-    };
-    if (address && address !== zeroAddress) runner();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
 
   const totalDonationsPerChain = useMemo(() => {
     return Object.fromEntries(
@@ -122,14 +87,20 @@ export function SummaryContainer() {
   const enoughFundsToDonatePerChain = useMemo(() => {
     return Object.fromEntries(
       chainIds.map((chainId) => {
-        const balanceOfToken = tokenBalancesPerChain.get(chainId);
+        const balancesOfChainId = props.balances?.[Number(chainId)];
+        const balanceOfVotingToken =
+          balancesOfChainId?.[
+            getVotingTokenForChain(chainId).address.toLowerCase()
+          ];
+        const balanceOfToken =
+          balanceOfVotingToken?.formattedAmount ?? undefined;
         if (balanceOfToken === undefined) {
           return [chainId, true];
         }
-        return [chainId, balanceOfToken > totalDonationsPerChain[chainId]];
+        return [chainId, balanceOfToken >= totalDonationsPerChain[chainId]];
       })
     );
-  }, [chainIds, tokenBalancesPerChain, totalDonationsPerChain]);
+  }, [chainIds, props.balances, totalDonationsPerChain]);
 
   const { data: rounds } = useSWR(projects, async (projects) => {
     const uniqueProjects = uniqBy(projects, (p) => `${p.chainId}-${p.roundId}`);
@@ -257,6 +228,7 @@ export function SummaryContainer() {
   }
 
   function PayoutModals() {
+    console.log("chainIdsBeingCheckedOut", chainIdsBeingCheckedOut);
     return (
       <>
         <ChainConfirmationModal
@@ -372,6 +344,8 @@ export function SummaryContainer() {
     totalDonationAcrossChainsInUSDData ?? []
   ).reduce((acc, curr) => acc + curr, 0);
 
+  console.log("totalDonationAcrossChainsInUSD", totalDonationAcrossChainsInUSD);
+
   /* Matching estimates are calculated per-round */
   const matchingEstimateParamsPerRound =
     rounds?.map((round) => {
@@ -416,11 +390,6 @@ export function SummaryContainer() {
   const matchingEstimates = data?.length && data.length > 0 ? data : undefined;
   const estimate = matchingEstimatesToText(matchingEstimates);
 
-  /** Special case where none of the chains to be checked out have enough funds */
-  const notEnoughFunds = Object.values(enoughFundsToDonatePerChain).every(
-    (value) => !value
-  );
-
   /** If there are no projects, render nothing */
   if (projects.length === 0) {
     return null;
@@ -433,7 +402,6 @@ export function SummaryContainer() {
 
   return (
     <div className="block font-semibold sticky top-20">
-
       <div className="px-4 pt-6 pb-4 rounded-t-3xl bg-grey-50 border border-grey-50">
         <h2 className="text-2xl border-b-2 pb-2 font-bold">Summary</h2>
         <div
@@ -498,7 +466,7 @@ export function SummaryContainer() {
         // $variant="solid"
         data-testid="handle-confirmation"
         type="button"
-        disabled={notEnoughFunds}
+        disabled={totalDonationAcrossChainsInUSD === 0}
         onClick={() => {
           /* If wallet is not connected, display Rainbowkit modal */
           if (!isConnected) {
@@ -514,37 +482,10 @@ export function SummaryContainer() {
 
           handleConfirmation();
         }}
-        className={`${
-          notEnoughFunds && "border-t"
-        } items-center text-sm rounded-b-3xl w-full bg-blue-100 text-black py-5 text-normal font-mono`}
+        className={`items-center text-sm rounded-b-3xl w-full bg-blue-100 text-black py-5 text-normal font-mono`}
       >
-        {isConnected
-          ? notEnoughFunds
-            ? "Not enough funds to donate"
-            : "Submit your donation!"
-          : "Connect wallet to continue"}
+        {isConnected ? "Submit your donation!" : "Connect wallet to continue"}
       </Button>
-
-      <GenericModal
-        body={
-          <SquidWidget
-            initialFromChainId={chainId}
-            initialToChainId={chainIds[0]}
-            fromTokenAddress="0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-            toTokenAddress={getVotingTokenForChain(chainIds[0]).address}
-           />
-        }
-        isOpen={openSwapModel}
-        setIsOpen={setOpenSwapModal}
-      />
-
-      <button
-        type="button"
-        className="w-full font-normal rounded-lg bg-gitcoin-violet-400 text-white focus-visible:outline-indigo-600 py-2 leading-6"
-        onClick={() => setOpenSwapModal(true)}
-      >
-        Swap
-      </button>
       <PayoutModals />
     </div>
   );
