@@ -2,7 +2,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
 import { Link } from "react-router-dom";
 import { TransactionButton } from "./TransactionButton";
-import { getChainById, getTokenByChainIdAndAddress, stringToBlobUrl } from "common";
+import { getChainById, getTokenByChainIdAndAddress, getTxBlockExplorerLink, stringToBlobUrl } from "common";
 import { Hex, formatUnits } from "viem";
 import { Contribution } from "data-layer";
 import {
@@ -14,24 +14,62 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import moment from "moment";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
 export function DonationsTable(props: {
   contributions: Contribution[];
   activeRound: boolean;
 }) {
+
+  console.log("CONTRIBUTIONS", props.contributions);
+  
+  function groupByTransactionHash(contributions: Contribution[]): Record<string, Contribution[]> {
+    return contributions.reduce((grouped: Record<string, Contribution[]>, donation: Contribution) => {
+      const { transactionHash } = donation;
+      if (!grouped[transactionHash]) {
+        grouped[transactionHash] = [];
+      }
+      grouped[transactionHash].push(donation);
+      return grouped;
+    }, {});
+  }
+
+  const groupedContributionsByTxHash = groupByTransactionHash(props.contributions);
+  
+  console.log("groupedContributionsByTxHash", groupedContributionsByTxHash);
+
   return (
     <>
       {props.contributions.length === 0 ? (
-        <div className="text-md text-center my-6">
+        <div className="text-md text-center my-12">
           No Donations found
         </div>
       ) : (
         <>
-          <TableHeader />
-          <RoundsTableWithAccordian
-            activeRound={props.activeRound}
-            contributions={props.contributions}
-          />
+          {Object.keys(groupedContributionsByTxHash).map((txHash) => (
+            <div key={txHash}>
+
+              <div className="bg-grey-75 rounded-lg px-3 py-4">
+                <h1 className="font-medium font-mono text-xl">
+                  <a
+                    target={"_blank"}
+                    href={getTxBlockExplorerLink(
+                      groupedContributionsByTxHash[txHash][0].chainId,
+                      txHash
+                    )}
+                  >
+                    Transaction #{txHash.slice(0, 5) + ".." + txHash.slice(-5)}
+                    <ArrowTopRightOnSquareIcon className="mb-1 h-5 inline ml-2" />
+                </a>
+                </h1>
+              </div>
+              <TableHeader />
+              <RoundsTableWithAccordian
+                activeRound={props.activeRound}
+                contributions={groupedContributionsByTxHash[txHash]}
+              />
+            </div>
+          ))}
         </>
       )}
     </>
@@ -42,79 +80,67 @@ function RoundsTableWithAccordian(props: {
   contributions: Contribution[];
   activeRound: boolean;
 }) {
-  const nestedContributionsForRound = props.contributions.reduce(
-    (acc: Record<string, Contribution[]>, contribution) => {
-      const roundId = contribution.roundId;
 
-      if (!acc[roundId]) {
-        acc[roundId] = [];
-      }
-      acc[roundId].push(contribution);
-      return acc;
-    },
-    {}
-  );
+  const contributions = props.contributions;
 
   const [defaultIndex, setDefaultIndex] = useState<
     number | number[] | undefined
   >(undefined);
 
-  for (const key in nestedContributionsForRound) {
-    return (
-      <div className="pb-8">
-        {Object.entries(nestedContributionsForRound).map(
-          ([_roundId, contributionsForRound], _index) => {
-            const sortedContributions = contributionsForRound
-              .flat()
-              .sort(
-                (a, b) =>
-                  (Number(b.timestamp) || Number.MAX_SAFE_INTEGER) -
-                  (Number(a.timestamp) || Number.MAX_SAFE_INTEGER)
-              );
+  return (
+    <div className="pb-8">
+      {Object.entries(contributions).map(([txnHash, contributionsForTx]) => {
+        const sortedContributions = contributions
+          .sort(
+            (a, b) => b.amountInUsd - a.amountInUsd // Sort by amountInUsd in descending order
+          );
 
-            return (
-              <Accordion
-                className="w-full"
-                allowMultiple={true}
-                defaultIndex={defaultIndex}
-                onChange={(index) => {
-                  setDefaultIndex(index);
-                }}
-              >
-                <AccordionItem
-                  key={key}
-                  isDisabled={sortedContributions.length === 0}
+        console.log("=============")
+        console.log("txnHash", txnHash)
+        console.log("SORTED CONTRIBUTIONS", sortedContributions)
+        
+
+        return (
+          <Accordion
+            key={txnHash}
+            className="w-full"
+            allowMultiple={true}
+            defaultIndex={defaultIndex}
+            onChange={(index) => {
+              setDefaultIndex(index);
+            }}
+          >
+            <AccordionItem
+              isDisabled={sortedContributions.length === 0}
+            >
+              <h2>
+                <AccordionButton
+                  _expanded={{
+                    bg: "white",
+                    color: "black",
+                  }}
+                  _hover={{ bg: "white", color: "black" }}
+                  _disabled={{ bg: "white", color: "black" }}
                 >
-                  <h2>
-                    <AccordionButton
-                      _expanded={{
-                        bg: "white",
-                        color: "black",
-                      }}
-                      _hover={{ bg: "white", color: "black" }}
-                      _disabled={{ bg: "white", color: "black" }}
-                    >
-                      <Table
-                        activeRound={props.activeRound}
-                        contributions={sortedContributions}
-                      />
-                      <AccordionIcon />
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4}>
-                    <InnerTable
-                      activeRound={props.activeRound}
-                      contributions={sortedContributions}
-                    />
-                  </AccordionPanel>
-                </AccordionItem>
-              </Accordion>
-            );
-          }
-        )}
-      </div>
-    );
-  }
+                  <Table
+                    activeRound={props.activeRound}
+                    contributions={sortedContributions}
+                  />
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4}>
+                <InnerTable
+                  activeRound={props.activeRound}
+                  contributions={sortedContributions}
+                />
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+        );
+      })}
+    </div>
+  );
 }
 
 function TableHeader() {
@@ -122,8 +148,8 @@ function TableHeader() {
     <table className="w-full text-left">
       <thead className="font-sans text-lg">
         <tr>
-          <th className="w-2/5">Round</th>
-          <th className="w-2/5">
+          <th className="w-2/5 font-medium">Round</th>
+          <th className="w-2/5 font-medium">
             <div className="flex flex-row items-center lg:pr-16">
               <div className="py-4">Total Donation</div>
               <div className="py-4">
@@ -131,7 +157,7 @@ function TableHeader() {
                   data-tip
                   data-background-color="#0E0333"
                   data-for="donation-tooltip"
-                  className="inline h-4 w-4 ml-2 mr-3"
+                  className="inline h-5 w-5 ml-2 mb-1"
                   data-testid={"donation-tooltip"}
                 />
                 <ReactTooltip
@@ -148,7 +174,7 @@ function TableHeader() {
               </div>
             </div>
           </th>
-          <th className="w-1/5 pl-8">Transaction</th>
+          <th></th>
         </tr>
       </thead>
     </table>
@@ -249,6 +275,7 @@ function Table(props: {
   contributions: Contribution[];
   activeRound: boolean;
 }) {
+
   const roundInfo = props.contributions[0];
   const chainId = roundInfo.chainId;
   const chain = getChainById(chainId);
@@ -285,6 +312,8 @@ function Table(props: {
     }
   });
 
+  const txnHash = sortedContributions[0].transactionHash;
+
   return (
     <table className="w-full text-left font-sans">
       <tbody>
@@ -295,7 +324,7 @@ function Table(props: {
                 <div className="flex items-center">
                   {/* Network Icon */}
                   <img
-                    className="w-4 h-4 mr-2"
+                    className="w-4 h-4 mr-1"
                     src={chainLogo}
                     alt="Round Chain Logo"
                   />
@@ -322,14 +351,6 @@ function Table(props: {
             <span className="text-grey-400">
               / ${totalContributionAmountInUsd.toFixed(2)}
             </span>
-          </td>
-          <td className="truncate w-1/5 pl-48">
-            <div>
-              <TransactionButton
-                chainId={sortedContributions[0].chainId}
-                txHash={sortedContributions[0].transactionHash}
-              />
-            </div>
           </td>
         </tr>
       </tbody>
