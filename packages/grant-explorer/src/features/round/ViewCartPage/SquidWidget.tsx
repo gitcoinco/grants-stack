@@ -97,16 +97,18 @@ const SquidWidget = ({
   };
 
   return (
-    <div style={{ position: 'relative', width: '500', height: '684px' }}>
+    <div style={{ position: "relative", width: "500", height: "684px" }}>
       {loading && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          fontSize: '18px',
-          color: '#333',
-        }}>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            fontSize: "18px",
+            color: "#333",
+          }}
+        >
           Loading...
         </div>
       )}
@@ -116,7 +118,7 @@ const SquidWidget = ({
         height="684"
         src={iframeUrl}
         onLoad={handleIframeLoad}
-        style={{ display: loading ? 'none' : 'block' }} // Hide iframe until loaded
+        style={{ display: loading ? "none" : "block" }} // Hide iframe until loaded
       />
     </div>
   );

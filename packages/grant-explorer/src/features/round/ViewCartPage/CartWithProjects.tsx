@@ -118,16 +118,16 @@ export function CartWithProjects({
       </div>
       {totalAmount > 0 && !enoughBalance && (
         <div className="flex flex-row justify-between my-4">
-          <div className="rounded-md bg-red-50 py-2 text-pink-500 flex items-center text-sm p-5">
+          <div className="rounded-md bg-red-50 py-2 text-pink-500 flex items-center text-sm p-5 w-full justify-between">
             <ExclamationCircleIcon className="w-8 h-8 mr-4 text-left" />
-            <span className="p-2 pr-4">
+            <span className="p-2 pr-4 flex-1">
               You do not have enough funds in your wallet to complete this
               donation. Please bridge funds to this network in order to submit
               your donation.
             </span>
             <div
               onClick={() => handleSwap()}
-              className="flex items-center text-sm decoration-1 w-full sm:w-40 justify-end cursor-pointer"
+              className="flex items-center text-sm decoration-1 cursor-pointer"
             >
               Bridge Funds
               <ArrowRightIcon className="h-4 w-4 ml-2" />
