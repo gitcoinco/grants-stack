@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
 import ChainConfirmationModal from "../../common/ConfirmationModal";
 import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
-import { BalanceMap, ProgressStatus } from "../../api/types";
+import { ProgressStatus } from "../../api/types";
 import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
 import { useAccount, useWalletClient } from "wagmi";
@@ -32,21 +32,20 @@ import { isPresent } from "ts-is-present";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
 
-export function SummaryContainer(props: { balances: BalanceMap }) {
+export function SummaryContainer(props: {
+  enoughBalanceByChainId: Record<number, boolean>;
+  totalAmountByChainId: Record<number, number>;
+}) {
   const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
-  const { address, isConnected, connector, chainId } = useAccount();
+  const { address, isConnected, connector } = useAccount();
   const {
     projects,
     getVotingTokenForChain,
-    chainToVotingToken,
     remove: removeProjectFromCart,
   } = useCartStorage();
   const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
   const dataLayer = useDataLayer();
-  const [canChainCheckout, setCanChainCheckout] = useState<
-    Record<number, boolean>
-  >({});
 
   const { openConnectModal } = useConnectModal();
 
@@ -54,27 +53,6 @@ export function SummaryContainer(props: { balances: BalanceMap }) {
     () => groupBy(projects, "chainId"),
     [projects]
   );
-
-  const totalDonationsPerChain = useMemo(() => {
-    return Object.fromEntries(
-      Object.entries(projectsByChain).map(([key, value]) => [
-        parseChainId(key),
-        value
-          .map((project) => project.amount)
-          .reduce(
-            (acc, amount) =>
-              acc +
-              parseUnits(
-                amount ? amount : "0",
-                getVotingTokenForChain(parseChainId(key)).decimals
-              ),
-            0n
-          ),
-      ])
-    );
-    /* NB: we want to update the totalDonationsPerChain value based on chainToVotingToken */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getVotingTokenForChain, chainToVotingToken, projectsByChain]);
 
   const { data: rounds } = useSWR(projects, async (projects) => {
     const uniqueProjects = uniqBy(projects, (p) => `${p.chainId}-${p.roundId}`);
@@ -192,7 +170,6 @@ export function SummaryContainer(props: { balances: BalanceMap }) {
   }
 
   function PayoutModals() {
-    console.log("chainIdsBeingCheckedOut", chainIdsBeingCheckedOut);
     return (
       <>
         <ChainConfirmationModal
@@ -202,10 +179,9 @@ export function SummaryContainer(props: { balances: BalanceMap }) {
           body={
             <ChainConfirmationModalBody
               projectsByChain={projectsByChain}
-              totalDonationsPerChain={totalDonationsPerChain}
+              totalDonationsPerChain={props.totalAmountByChainId}
               chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
               setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
-              canChainCheckout={canChainCheckout}
             />
           }
           isOpen={openChainConfirmationModal}
@@ -284,17 +260,17 @@ export function SummaryContainer(props: { balances: BalanceMap }) {
   const passportTextClass = getClassForPassportColor("black");
 
   const { data: totalDonationAcrossChainsInUSDData } = useSWR(
-    totalDonationsPerChain,
-    (totalDonationsPerChain) => {
+    props.totalAmountByChainId,
+    (totalAmountByChainId) => {
       return Promise.all(
-        Object.keys(totalDonationsPerChain).map((chainId) =>
+        Object.keys(totalAmountByChainId).map((chainId) =>
           getTokenPrice(
             getVotingTokenForChain(parseChainId(chainId)).redstoneTokenId
           ).then((price) => {
             return (
               Number(
                 formatUnits(
-                  totalDonationsPerChain[chainId],
+                  BigInt(totalAmountByChainId[Number(chainId)]),
                   getVotingTokenForChain(parseChainId(chainId)).decimals
                 )
               ) * Number(price)
@@ -308,8 +284,6 @@ export function SummaryContainer(props: { balances: BalanceMap }) {
   const totalDonationAcrossChainsInUSD = (
     totalDonationAcrossChainsInUSDData ?? []
   ).reduce((acc, curr) => acc + curr, 0);
-
-  console.log("totalDonationAcrossChainsInUSD", totalDonationAcrossChainsInUSD);
 
   /* Matching estimates are calculated per-round */
   const matchingEstimateParamsPerRound =
@@ -398,12 +372,9 @@ export function SummaryContainer(props: { balances: BalanceMap }) {
             <Summary
               key={chainId}
               chainId={parseChainId(chainId)}
-              selectedPayoutToken={getVotingTokenForChain(
-                parseChainId(chainId)
-              )}
-              totalDonation={totalDonationsPerChain[chainId]}
-              setCanChainCheckout={setCanChainCheckout}
-              balances={props.balances[chainId]}
+              selectedPayoutToken={getVotingTokenForChain(Number(chainId))}
+              enoughBalance={props.enoughBalanceByChainId[Number(chainId)]}
+              totalDonation={props.totalAmountByChainId[Number(chainId)]}
             />
           ))}
           {totalDonationAcrossChainsInUSD &&

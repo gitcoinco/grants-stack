@@ -9,50 +9,45 @@ import { RoundInCart } from "./RoundInCart";
 import { useTokenPrice, TToken, stringToBlobUrl, getChainById } from "common";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
-import { ChainBalances } from "../../api/types";
 import {
   ArrowRightIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/solid";
 import { SwapParams } from "./SquidWidget";
 import { useAccount } from "wagmi";
+import { ChainBalances } from "../../api/types";
 
 type Props = {
   cart: GroupedCartProjectsByRoundId;
   chainId: number;
+  totalAmount: number;
   balances: ChainBalances;
+  payoutToken: TToken;
+  enoughBalance: boolean;
   handleSwap: (params: SwapParams) => void;
 };
 
 export function CartWithProjects({
   cart,
   chainId,
+  totalAmount,
   balances,
+  payoutToken,
+  enoughBalance,
   handleSwap,
 }: Props) {
-  const { address, chainId: connectedChain } = useAccount();
+  const { chainId: connectedChain } = useAccount();
   const chain = getChainById(chainId);
   const cartByRound = Object.values(cart);
-  const totalDonationAmount = cartByRound.reduce(
-    (acc, curr) =>
-      acc + curr.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0),
-    0
-  );
   const store = useCartStorage();
   const [fixedDonation, setFixedDonation] = useState("");
 
-  const { getVotingTokenForChain, setVotingTokenForChain } = useCartStorage();
-  const selectedPayoutToken = getVotingTokenForChain(chainId);
+  const { setVotingTokenForChain } = useCartStorage();
   const payoutTokenOptions: TToken[] = getVotingTokenOptions(
     Number(chainId)
   ).filter((p) => p.canVote);
-  const payoutTokenBalance = balances
-    ? balances[selectedPayoutToken.address.toLowerCase()].formattedAmount
-    : 0;
 
-  const { data, error, loading } = useTokenPrice(
-    selectedPayoutToken.redstoneTokenId
-  );
+  const { data, error, loading } = useTokenPrice(payoutToken.redstoneTokenId);
   const payoutTokenPrice = !loading && !error ? Number(data) : null;
 
   // get number of projects in cartByRound
@@ -64,7 +59,7 @@ export function CartWithProjects({
     setVotingTokenForChain(
       chainId,
       getVotingTokenOptions(chainId).find(
-        (token) => token.address === selectedPayoutToken.address
+        (token) => token.address === payoutToken.address
       ) ?? getVotingTokenOptions(chainId)[0]
     );
     /* We only want this to happen on first render */
@@ -100,13 +95,13 @@ export function CartWithProjects({
               className="w-16 lg:w-18 max-h-10"
             />
             <PayoutTokenDropdown
-              selectedPayoutToken={selectedPayoutToken}
+              selectedPayoutToken={payoutToken}
               setSelectedPayoutToken={(token) => {
                 setVotingTokenForChain(chainId, token);
               }}
               payoutTokenOptions={payoutTokenOptions}
               balances={balances}
-              balanceWarning={payoutTokenBalance < totalDonationAmount}
+              balanceWarning={!enoughBalance}
             />
           </div>
           <div className="flex flex-row">
@@ -124,7 +119,7 @@ export function CartWithProjects({
           </div>
         </div>
       </div>
-      {totalDonationAmount > 0 && totalDonationAmount > payoutTokenBalance && (
+      {totalAmount > 0 && !enoughBalance && (
         <div className="flex flex-row justify-between my-4">
           <div className="rounded-md bg-red-50 py-2 text-pink-500 flex items-center text-sm p-5">
             <ExclamationCircleIcon className="w-8 h-8 mr-4 text-left" />
@@ -143,7 +138,7 @@ export function CartWithProjects({
                   initialToChainId: chainId,
                   fromTokenAddress:
                     "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-                  toTokenAddress: selectedPayoutToken.address,
+                  toTokenAddress: payoutToken.address,
                 })
               }
               className="flex items-center text-sm decoration-1 w-full sm:w-40 justify-end cursor-pointer"
@@ -160,7 +155,7 @@ export function CartWithProjects({
             key={key}
             roundCart={roundcart}
             handleRemoveProjectFromCart={store.remove}
-            selectedPayoutToken={selectedPayoutToken}
+            selectedPayoutToken={payoutToken}
             payoutTokenPrice={payoutTokenPrice ?? 0}
           />
         </div>

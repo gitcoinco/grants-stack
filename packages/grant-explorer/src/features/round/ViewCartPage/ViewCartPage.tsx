@@ -21,9 +21,15 @@ import GenericModal from "../../common/GenericModal";
 import SquidWidget, { SwapParams } from "./SquidWidget";
 
 export default function ViewCart() {
-  const { projects, setCart } = useCartStorage();
+  const { projects, setCart, getVotingTokenForChain } = useCartStorage();
   const { address } = useAccount();
   const [balances, setBalances] = useState<BalanceMap>({});
+  const [totalAmountByChainId, setTotalAmountByChainId] = useState<
+    Record<number, number>
+  >({});
+  const [enoughBalanceByChainId, setEnoughBalanceByChainId] = useState<
+    Record<number, boolean>
+  >({});
 
   const dataLayer = useDataLayer();
   const groupedCartProjects = groupProjectsInCart(projects);
@@ -79,6 +85,23 @@ export default function ViewCart() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const totalAmountByChainId = Object.keys(groupedCartProjects).reduce(
+      (acc, chainId) => {
+        const amount = Object.values(
+          groupedCartProjects[Number(chainId)]
+        ).reduce(
+          (acc, curr) =>
+            acc +
+            curr.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0),
+          0
+        );
+        return { ...acc, [Number(chainId)]: amount };
+      },
+      {}
+    );
+    setTotalAmountByChainId(totalAmountByChainId);
+  }, [projects]);
   // reduce the number of re-renders by memoizing the chainIds
   const memoizedChainIds = useMemo(() => chainIds, [JSON.stringify(chainIds)]);
 
@@ -142,7 +165,6 @@ export default function ViewCart() {
         map[chainId] = balanceMap;
         return map;
       }, {} as BalanceMap);
-
       setBalances(newBalances);
     };
 
@@ -151,6 +173,27 @@ export default function ViewCart() {
       fetchBalances();
     }
   }, [memoizedChainIds, address, config]);
+
+  useEffect(() => {
+    if (
+      Object.keys(balances).length > 0 &&
+      Object.keys(totalAmountByChainId).length > 0
+    ) {
+      const enoughBalanceByChainId = Object.keys(totalAmountByChainId).reduce(
+        (acc, chainId) => {
+          const totalAmount = totalAmountByChainId[Number(chainId)];
+          const balance =
+            balances[Number(chainId)][
+              getVotingTokenForChain(Number(chainId)).address.toLowerCase()
+            ].formattedAmount;
+          acc[Number(chainId)] = balance >= totalAmount;
+          return acc;
+        },
+        {} as { [chainId: number]: boolean }
+      );
+      setEnoughBalanceByChainId(enoughBalanceByChainId);
+    }
+  }, [balances, totalAmountByChainId]);
 
   const breadCrumbs: BreadcrumbItem[] = [
     {
@@ -176,7 +219,7 @@ export default function ViewCart() {
             {projects.length === 0 ? (
               <>
                 <EmptyCart />
-                <SummaryContainer balances={balances} />
+                {/* <SummaryContainer balances={balances} /> */}
               </>
             ) : (
               <div className={"grid sm:grid-cols-3 gap-5 w-full"}>
@@ -187,13 +230,19 @@ export default function ViewCart() {
                         cart={groupedCartProjects[Number(chainId)]}
                         chainId={Number(chainId) as number}
                         balances={balances[chainId]}
+                        totalAmount={totalAmountByChainId[Number(chainId)]}
+                        enoughBalance={enoughBalanceByChainId[Number(chainId)]}
+                        payoutToken={getVotingTokenForChain(Number(chainId))}
                         handleSwap={handleSwap}
                       />
                     </div>
                   ))}
                 </div>
                 <div className="sm:col-span-1 order-1 sm:order-2">
-                  <SummaryContainer balances={balances} />
+                  <SummaryContainer
+                    enoughBalanceByChainId={enoughBalanceByChainId}
+                    totalAmountByChainId={totalAmountByChainId}
+                  />
                 </div>
               </div>
             )}

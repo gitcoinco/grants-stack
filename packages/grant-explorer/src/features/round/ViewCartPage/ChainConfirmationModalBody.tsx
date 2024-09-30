@@ -2,22 +2,19 @@ import React from "react";
 import { CartProject } from "../../api/types";
 import { TToken, getChainById, stringToBlobUrl } from "common";
 import { useCartStorage } from "../../../store";
-import { formatUnits } from "viem";
 import { parseChainId } from "common/src/chains";
 import { Checkbox } from "@chakra-ui/react";
 
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
-  totalDonationsPerChain: { [chain: number]: bigint };
+  totalDonationsPerChain: { [chain: number]: number };
   chainIdsBeingCheckedOut: number[];
   setChainIdsBeingCheckedOut: React.Dispatch<React.SetStateAction<number[]>>;
-  canChainCheckout: Record<number, boolean>;
 };
 
 export function ChainConfirmationModalBody({
   projectsByChain,
   totalDonationsPerChain,
-  canChainCheckout,
   chainIdsBeingCheckedOut,
   setChainIdsBeingCheckedOut,
 }: ChainConfirmationModalBodyProps) {
@@ -38,6 +35,8 @@ export function ChainConfirmationModalBody({
   const getVotingTokenForChain = useCartStorage(
     (state) => state.getVotingTokenForChain
   );
+
+  console.log("chainIdsBeingCheckedOut", chainIdsBeingCheckedOut);
 
   return (
     <>
@@ -68,7 +67,7 @@ export function ChainConfirmationModalBody({
 }
 
 type ChainSummaryProps = {
-  totalDonation: bigint;
+  totalDonation: number;
   selectedPayoutToken: TToken;
   chainId: number;
   checked: boolean;
@@ -86,7 +85,6 @@ export function ChainSummary({
   onChange,
   isLastItem,
 }: ChainSummaryProps) {
-
   const chain = getChainById(chainId);
 
   return (
@@ -120,7 +118,7 @@ export function ChainSummary({
       </p>
       <p className="ml-7 mt-2">
         <span data-testid={"totalDonation"} className="mr-2">
-          {formatUnits(totalDonation, selectedPayoutToken.decimals)}
+          {totalDonation}
         </span>
         <span data-testid={"chainSummaryPayoutToken"}>
           {selectedPayoutToken.code} to be contributed

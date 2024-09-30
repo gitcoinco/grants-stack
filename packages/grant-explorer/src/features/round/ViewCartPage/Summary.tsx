@@ -1,45 +1,31 @@
 import { useTokenPrice, TToken, stringToBlobUrl, getChainById } from "common";
-import { formatUnits, zeroAddress } from "viem";
-import { useAccount, useBalance } from "wagmi";
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import { ChainBalances } from "../../api/types";
+import { formatUnits } from "viem";
 
 type SummaryProps = {
-  totalDonation: bigint;
+  totalDonation: number;
   selectedPayoutToken: TToken;
   chainId: number;
-  balances: ChainBalances;
-  setCanChainCheckout: (data: Record<number, boolean>) => void;
+  enoughBalance: boolean;
 };
 
 export function Summary({
   selectedPayoutToken,
   totalDonation,
   chainId,
-  setCanChainCheckout,
-  balances,
+  enoughBalance,
 }: SummaryProps) {
   const { data: payoutTokenPrice } = useTokenPrice(
     selectedPayoutToken.redstoneTokenId
   );
   const totalDonationInUSD =
-    payoutTokenPrice &&
-    Number(formatUnits(totalDonation, selectedPayoutToken.decimals)) *
-      Number(payoutTokenPrice);
-
-  const balance = balances?.[zeroAddress.toLowerCase()]
-    ? balances[selectedPayoutToken.address.toLowerCase()].formattedAmount
-    : 0;
-
-  const insufficientFunds = balance ? totalDonation > balance : false;
-  setCanChainCheckout({ [chainId]: !insufficientFunds });
+    payoutTokenPrice && totalDonation * Number(payoutTokenPrice);
 
   const chain = getChainById(chainId);
 
   return (
     <div>
       <div
-        className={`flex flex-row justify-between mt-2 ${!insufficientFunds && "mb-5"}`}
+        className={`flex flex-row justify-between mt-2 ${enoughBalance && "mb-5"}`}
       >
         <div className="flex flex-col">
           <p className="mb-2">Your contribution on</p>
@@ -55,7 +41,7 @@ export function Summary({
         <div className="flex flex-col">
           <p className="text-right">
             <span data-testid={"totalDonation"} className="mr-2">
-              {formatUnits(totalDonation, selectedPayoutToken.decimals)}
+              {totalDonation}
             </span>
             <span data-testid={"summaryPayoutToken"}>
               {selectedPayoutToken.code}
@@ -70,7 +56,7 @@ export function Summary({
           )}
         </div>
       </div>
-      {insufficientFunds && (
+      {!enoughBalance && (
         <p
           data-testid="insufficientBalance"
           className="rounded-md font-normal text-pink-500 flex justify-start items-center mt-2 mb-5 text-xs"
