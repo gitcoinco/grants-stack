@@ -289,9 +289,16 @@ export function SummaryContainer(props: {
     }
   );
 
+  console.log(
+    "totalDonationAcrossChainsInUSDData",
+    totalDonationAcrossChainsInUSDData
+  );
+
   const totalDonationAcrossChainsInUSD = (
     totalDonationAcrossChainsInUSDData ?? []
   ).reduce((acc, curr) => acc + curr, 0);
+
+  console.log("totalDonationAcrossChainsInUSD", totalDonationAcrossChainsInUSD);
 
   /* Matching estimates are calculated per-round */
   const matchingEstimateParamsPerRound =
