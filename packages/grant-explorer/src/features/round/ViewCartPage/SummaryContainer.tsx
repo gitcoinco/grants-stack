@@ -275,30 +275,16 @@ export function SummaryContainer(props: {
           getTokenPrice(
             getVotingTokenForChain(parseChainId(chainId)).redstoneTokenId
           ).then((price) => {
-            return (
-              Number(
-                formatUnits(
-                  BigInt(totalAmountByChainId[Number(chainId)]),
-                  getVotingTokenForChain(parseChainId(chainId)).decimals
-                )
-              ) * Number(price)
-            );
+            return totalAmountByChainId[Number(chainId)] * Number(price);
           })
         )
       );
     }
   );
 
-  console.log(
-    "totalDonationAcrossChainsInUSDData",
-    totalDonationAcrossChainsInUSDData
-  );
-
   const totalDonationAcrossChainsInUSD = (
     totalDonationAcrossChainsInUSDData ?? []
   ).reduce((acc, curr) => acc + curr, 0);
-
-  console.log("totalDonationAcrossChainsInUSD", totalDonationAcrossChainsInUSD);
 
   /* Matching estimates are calculated per-round */
   const matchingEstimateParamsPerRound =
