@@ -612,7 +612,6 @@ export function DirectDonationModalComponent(props: {
             }}
             payoutTokenOptions={props.payoutTokenOptions}
             style="max-h-16"
-            // todo: update this if needed
             balanceWarning={false}
           />
         </div>
