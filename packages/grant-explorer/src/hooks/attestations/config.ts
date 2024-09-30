@@ -1,208 +1,137 @@
-// hooks/useAtest.ts
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import { EAS__factory } from "@ethereum-attestation-service/eas-contracts";
+import { Hex } from "viem";
+
+type EASConfig = {
+  eas: Hex;
+  schemaRegistry: Hex;
+  version?: string;
+};
 
 export interface Signature {
-  r: `0x${string}`;
-  s: `0x${string}`;
+  r: Hex;
+  s: Hex;
   v: bigint;
 }
 
-/**
- * Custom hook to attest data to the EAS contract.
- *
- * @param {string} easAddress - The address of the EAS contract.
- */
-export const useAttest = (easAddress: string) => {
-  const { chainId, address } = useAccount();
-
-  const { data: walletClient } = useWalletClient();
-  const publicClient = usePublicClient();
-
-  // TODO: Update the ABI to match the actual ABI of the EAS contract
-  // Use the abi by checking legacy contract version like in here https://github.com/ethereum-attestation-service/eas-sdk/blob/master/src/legacy/version.ts
-
-  const abi = EAS__factory.abi;
-
-  return useMutation({
-    mutationFn: async (data: {
-      message: {
-        schema: `0x${string}`;
-        recipient: `0x${string}`;
-        expirationTime: bigint;
-        revocable: boolean;
-        refUID: `0x${string}`;
-        data: `0x${string}`;
-        attester: `0x${string}`;
-      };
-      signature: Signature;
-    }): Promise<string> => {
-      try {
-        if (
-          !chainId ||
-          !address ||
-          !walletClient ||
-          !easAddress ||
-          !data ||
-          !publicClient
-        ) {
-          throw new Error("Data missing for attestation");
-        }
-
-        console.log("Attesting data:", data);
-
-        const args = {
-          schema:
-            "0xcc6c5d91ac6fbcbfed2100e677a8baf0ee28966a661af106f717ff41d2859ab3",
-          data: {
-            recipient: data.message.recipient,
-            expirationTime: BigInt(0),
-            revocable: data.message.revocable,
-            refUID: data.message.refUID,
-            data: data.message.data,
-            value: BigInt(0),
-          },
-          signature: {
-            v: data.signature.v,
-            r: data.signature.r,
-            s: data.signature.s,
-          },
-          deadline: BigInt("0"),
-          attester: getAddress(data.message.attester),
-        };
-
-        console.log("Attesting args:", args);
-
-        const contractCallArgs = {
-          address: getAddress(easAddress),
-          abi: abi2,
-          functionName: "attestByDelegation",
-          args: [args],
-          value: BigInt(0),
-        } as EstimateContractGasParameters | SimulateContractParameters;
-
-        const { request } =
-          await publicClient.simulateContract(contractCallArgs);
-
-        const hash = await walletClient.writeContract(request);
-        await publicClient.waitForTransactionReceipt({
-          hash,
-          confirmations: 1,
-        });
-        return hash;
-      } catch (error) {
-        // try {
-        //   handleTransactionError(error as Error);
-        // } catch (error) {
-        //   console.error("CATCHED Attestation Error:", error);
-        // }
-        console.error("CATCHED Attestation Error:", error);
-        return "error";
-      }
-    },
-
-    onError: (error: Error) => {
-      try {
-        handleTransactionError(error);
-      } catch (error) {
-        console.error("CATCHED Attestation Error:", error);
-      }
-    },
-    onSuccess: (receipt: string) => {
-      console.log("Attestation successful! Transaction Hash:", receipt);
-    },
-  });
-};
-
-import { getAddress } from "ethers/lib/utils";
-import {
-  EstimateContractGasParameters,
-  SimulateContractParameters,
-} from "viem/actions";
-
-/**
- * Custom hook to fetch attestation data based on a transaction hash.
- *
- * @param {string} transactionHash - The hash of the transaction to fetch attestation data for.
- */
-export const useGetAttestationData = (transactionHash: string) => {
-  return useQuery({
-    queryKey: ["attestation"],
-    queryFn: async () => {
-      if (!transactionHash) {
-        throw new Error("Transaction hash is required");
-      }
-
-      try {
-        const response = await fetch(
-          `http://localhost:3000/api/getAttestation`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ transactionHash }),
-          }
-        );
-
-        const data = await response.json();
-        console.log("Response Data:", data);
-        return data;
-      } catch (error) {
-        console.error("Error fetching attestation data:", error);
-        // Rethrow the error so that react-query can handle it
-        throw error;
-      }
-    },
-  });
-};
-
-import {
-  BaseError,
-  ContractFunctionRevertedError,
-  InsufficientFundsError,
-  UserRejectedRequestError,
-} from "viem";
-
-export function handleTransactionError(error: Error) {
-  if (error instanceof BaseError) {
-    const revertError = error.walk(
-      (err) => err instanceof ContractFunctionRevertedError
-    );
-    if (revertError instanceof ContractFunctionRevertedError) {
-      const errorName = revertError.data?.errorName ?? "Unknown Error";
-      console.log("errorName", errorName);
-      throw { reason: errorName, data: { message: errorName } };
-    }
-
-    const isInsufficientFundsError =
-      error.walk((e) => e instanceof InsufficientFundsError) instanceof
-      InsufficientFundsError;
-    if (isInsufficientFundsError) {
-      throw {
-        reason: "Insufficient Funds",
-        data: { message: "Insufficient Funds" },
-      };
-    }
-    const isUserRejectedRequestError =
-      error.walk((e) => e instanceof UserRejectedRequestError) instanceof
-      UserRejectedRequestError;
-    if (isUserRejectedRequestError) {
-      throw {
-        reason: "User Rejected Request",
-        data: { message: "User Rejected Request" },
-      };
-    }
-  }
-  // unknown error
-  throw {
-    reason: "Transaction Failed",
-    data: { message: String("unknown reason") },
-  };
+export enum ProgressStatus {
+  IS_SUCCESS = "IS_SUCCESS",
+  IN_PROGRESS = "IN_PROGRESS",
+  NOT_STARTED = "NOT_STARTED",
+  IS_ERROR = "IS_ERROR",
+  SWITCH_CHAIN = "SWITCH_CHAIN",
 }
 
-export const abi2 = [
+export interface AttestInput {
+  message: {
+    schema: Hex;
+    recipient: Hex;
+    expirationTime: bigint;
+    revocable: boolean;
+    refUID: Hex;
+    data: Hex;
+    attester: Hex;
+  };
+  signature: Signature;
+}
+
+type EASConfigByNetwork = Record<number, EASConfig>;
+
+export const easConfig: EASConfigByNetwork = {
+  /* ----------- Mainnets ---------- */
+
+  // Mainnet
+  1: {
+    eas: "0xA1207F3BBa224E2c9c3c6D5aF63D0eb1582Ce587",
+    schemaRegistry: "0xA7b39296258348C78294F95B872b282326A97BDF",
+
+    version: "v0.26",
+  },
+  // Optimism
+  10: {
+    eas: "0x4200000000000000000000000000000000000021",
+    schemaRegistry: "0x4200000000000000000000000000000000000020",
+
+    version: "v1.0.1",
+  },
+  // BASE Mainnet
+  8453: {
+    eas: "0x4200000000000000000000000000000000000021",
+    schemaRegistry: "0x4200000000000000000000000000000000000020",
+
+    version: "v1.0.1",
+  },
+  // Arbitrum One
+  42161: {
+    eas: "0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458",
+    schemaRegistry: "0xA310da9c5B885E7fb3fbA9D66E9Ba6Df512b78eB",
+
+    version: "v0.26",
+  },
+  // Polygon Mainnet
+  137: {
+    eas: "0x5E634ef5355f45A855d02D66eCD687b1502AF790",
+    schemaRegistry: "0x7876EEF51A891E737AF8ba5A5E0f0Fd29073D5a7",
+
+    version: "v1.3.0",
+  },
+
+  // Scroll
+  534352: {
+    eas: "0xC47300428b6AD2c7D03BB76D05A176058b47E6B0",
+    schemaRegistry: "0xD2CDF46556543316e7D34e8eDc4624e2bB95e3B6",
+
+    version: "v1.3.0",
+  },
+  // Celo Mainnet
+  42220: {
+    eas: "0x72E1d8ccf5299fb36fEfD8CC4394B8ef7e98Af92",
+    schemaRegistry: "0x5ece93bE4BDCF293Ed61FA78698B594F2135AF34",
+
+    version: "v1.3.0",
+  },
+
+  // Blast
+  81457: {
+    eas: "0x4200000000000000000000000000000000000021",
+    schemaRegistry: "0x5ece93bE4BDCF293Ed61FA78698B594F2135AF34",
+    version: "v1.3.0",
+  },
+
+  // Linea
+  81458: {
+    eas: "0xaEF4103A04090071165F78D45D83A0C0782c2B2a",
+    schemaRegistry: "0x55D26f9ae0203EF95494AE4C170eD35f4Cf77797",
+    version: "v1.2.0",
+  },
+
+  /* ----------- Testnets ---------- */
+
+  // Sepolia
+  11155111: {
+    eas: "0xC2679fBD37d54388Ce493F1DB75320D236e1815e",
+    schemaRegistry: "0x0a7E2Ff54e76B8E6659aedc9103FB21c038050D0",
+    version: "v0.26",
+  },
+  // Optimism Sepolia
+  11155420: {
+    eas: "0x4200000000000000000000000000000000000021",
+    schemaRegistry: "0x4200000000000000000000000000000000000020",
+    version: "v1.0.2",
+  },
+};
+
+export const schemaByNetwork = {
+  // 1: "",
+  // 10: "",
+  // 42161: "",
+  // 137: "",
+  // 534352: "",
+  // 42220: "",
+  11155111:
+    "0xcc6c5d91ac6fbcbfed2100e677a8baf0ee28966a661af106f717ff41d2859ab3",
+  // 11155420: "",
+};
+
+export const legacyABI = [
   {
     inputs: [
       {
@@ -1300,3 +1229,19 @@ export const abi2 = [
     type: "function",
   },
 ] as const;
+
+export const VERSION_ABI = [
+  {
+    inputs: [],
+    name: "VERSION",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];
