@@ -11,15 +11,23 @@ export const useGetAttestationData = (transactionHashes: string[]) => {
         throw new Error("TransactionHashes are required");
       }
 
+      const hashesToUse = [
+        "0x3e12de5018a441e56e460556f3583fa47eeabc4d547f2733457516dacd045186",
+      ];
+      const chainIdToUse = 11155111;
       try {
         const response = await fetch(
-          `http://localhost:3001/api/getAttestation`,
+          `https://gitcoin-server-api.vercel.app/api/getAttestation`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ transactionHashes }),
+            // Update the body to match real data
+            body: JSON.stringify({
+              transactionHashes: hashesToUse,
+              chainId: chainIdToUse,
+            }),
             mode: "cors",
           }
         );
