@@ -13,8 +13,6 @@ import {
   ArrowRightIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/solid";
-import { SwapParams } from "./SquidWidget";
-import { useAccount } from "wagmi";
 import { ChainBalances } from "../../api/types";
 
 type Props = {
@@ -24,7 +22,7 @@ type Props = {
   balances: ChainBalances;
   payoutToken: TToken;
   enoughBalance: boolean;
-  handleSwap: (params: SwapParams) => void;
+  handleSwap: () => void;
 };
 
 export function CartWithProjects({
@@ -36,7 +34,6 @@ export function CartWithProjects({
   enoughBalance,
   handleSwap,
 }: Props) {
-  const { chainId: connectedChain } = useAccount();
   const chain = getChainById(chainId);
   const cartByRound = Object.values(cart);
   const store = useCartStorage();
@@ -129,18 +126,7 @@ export function CartWithProjects({
               your donation.
             </span>
             <div
-              onClick={() =>
-                handleSwap({
-                  initialFromChainId:
-                    !connectedChain || connectedChain === chainId
-                      ? 1
-                      : connectedChain,
-                  initialToChainId: chainId,
-                  fromTokenAddress:
-                    "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-                  toTokenAddress: payoutToken.address,
-                })
-              }
+              onClick={() => handleSwap()}
               className="flex items-center text-sm decoration-1 w-full sm:w-40 justify-end cursor-pointer"
             >
               Bridge Funds

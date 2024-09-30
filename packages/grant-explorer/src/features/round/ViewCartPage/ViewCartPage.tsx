@@ -22,7 +22,7 @@ import SquidWidget, { SwapParams } from "./SquidWidget";
 
 export default function ViewCart() {
   const { projects, setCart, getVotingTokenForChain } = useCartStorage();
-  const { address } = useAccount();
+  const { address, chainId: connectedChain } = useAccount();
   const [balances, setBalances] = useState<BalanceMap>({});
   const [totalAmountByChainId, setTotalAmountByChainId] = useState<
     Record<number, number>
@@ -206,6 +206,17 @@ export default function ViewCart() {
     },
   ];
 
+  const swap = (_chainId: number | string) => {
+    const chainId = Number(_chainId);
+    handleSwap({
+      initialFromChainId:
+        !connectedChain || connectedChain === chainId ? 1 : connectedChain,
+      initialToChainId: chainId,
+      fromTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      toTokenAddress: getVotingTokenForChain(chainId).address,
+    });
+  };
+
   return (
     <>
       <Navbar />
@@ -219,7 +230,11 @@ export default function ViewCart() {
             {projects.length === 0 ? (
               <>
                 <EmptyCart />
-                {/* <SummaryContainer balances={balances} /> */}
+                <SummaryContainer
+                  enoughBalanceByChainId={enoughBalanceByChainId}
+                  totalAmountByChainId={totalAmountByChainId}
+                  handleSwap={swap}
+                />
               </>
             ) : (
               <div className={"grid sm:grid-cols-3 gap-5 w-full"}>
@@ -233,7 +248,7 @@ export default function ViewCart() {
                         totalAmount={totalAmountByChainId[Number(chainId)]}
                         enoughBalance={enoughBalanceByChainId[Number(chainId)]}
                         payoutToken={getVotingTokenForChain(Number(chainId))}
-                        handleSwap={handleSwap}
+                        handleSwap={() => swap(chainId)}
                       />
                     </div>
                   ))}
@@ -242,6 +257,7 @@ export default function ViewCart() {
                   <SummaryContainer
                     enoughBalanceByChainId={enoughBalanceByChainId}
                     totalAmountByChainId={totalAmountByChainId}
+                    handleSwap={swap}
                   />
                 </div>
               </div>

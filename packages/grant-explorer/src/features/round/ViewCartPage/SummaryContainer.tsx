@@ -31,10 +31,12 @@ import { useDataLayer } from "data-layer";
 import { isPresent } from "ts-is-present";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
+import { SwapParams } from "./SquidWidget";
 
 export function SummaryContainer(props: {
   enoughBalanceByChainId: Record<number, boolean>;
   totalAmountByChainId: Record<number, number>;
+  handleSwap: (chainId: number) => void;
 }) {
   const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
@@ -182,6 +184,8 @@ export function SummaryContainer(props: {
               totalDonationsPerChain={props.totalAmountByChainId}
               chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
               setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
+              enoughBalanceByChainId={props.enoughBalanceByChainId}
+              handleSwap={props.handleSwap}
             />
           }
           isOpen={openChainConfirmationModal}
@@ -193,7 +197,9 @@ export function SummaryContainer(props: {
           subheading={"Please hold while we submit your donation."}
           body={
             <MRCProgressModalBody
-              chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
+              chainIdsBeingCheckedOut={chainIdsBeingCheckedOut.filter(
+                (chainId) => props.enoughBalanceByChainId[chainId] === true
+              )}
               tryAgainFn={handleSubmitDonation}
               setIsOpen={setOpenMRCProgressModal}
             />
@@ -244,10 +250,12 @@ export function SummaryContainer(props: {
       }, modalDelayMs);
 
       await checkout(
-        chainIdsBeingCheckedOut.map((chainId) => ({
-          chainId,
-          permitDeadline: currentPermitDeadline,
-        })),
+        chainIdsBeingCheckedOut
+          .filter((chainId) => props.enoughBalanceByChainId[chainId] === true)
+          .map((chainId) => ({
+            chainId,
+            permitDeadline: currentPermitDeadline,
+          })),
         walletClient,
         connector,
         dataLayer
