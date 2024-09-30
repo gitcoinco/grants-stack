@@ -119,7 +119,7 @@ export function CartWithProjects({
       {totalAmount > 0 && !enoughBalance && (
         <div className="flex flex-row justify-between my-4">
           <div className="rounded-md bg-red-50 py-2 text-pink-500 flex items-center text-sm p-5 w-full justify-between">
-            <ExclamationCircleIcon className="w-8 h-8 mr-4 text-left" />
+            <ExclamationCircleIcon className="w-6 h-6 text-left" />
             <span className="p-2 pr-4 flex-1">
               You do not have enough funds in your wallet to complete this
               donation. Please bridge funds to this network in order to submit
