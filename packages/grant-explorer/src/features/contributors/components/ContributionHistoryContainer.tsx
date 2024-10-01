@@ -4,6 +4,7 @@ import { isAddress } from "viem";
 import { ContributionHistory } from "./ContributionHistory";
 
 import { useContributionHistory } from "../hooks/useContributionHistory";
+import { ContributionHistoryError } from "./ContributionHistoryError";
 
 export function ContributionHistoryContainer(props: {
   address: string;
@@ -25,15 +26,19 @@ export function ContributionHistoryContainer(props: {
 
   if (isLoading) {
     return <div>Loading...</div>;
-  } else {
-    if (isError) console.error("Error", error);
-
+  }
+  if (isError) {
+    console.error("Error", error);
     return (
-      <ContributionHistory
-        contributionsData={data}
-        address={props.address}
-        ensName={ensName}
-      />
+      <ContributionHistoryError address={props.address} ensName={ensName} />
     );
   }
+
+  return (
+    <ContributionHistory
+      contributionsData={data}
+      address={props.address}
+      ensName={ensName}
+    />
+  );
 }

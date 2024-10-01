@@ -19,18 +19,12 @@ export function ContributionHistory({
   return (
     <main>
       <ContributorProfile address={address} ensName={ensName} />
-      {contributionsData ? (
-        <>
-          <div className="text-sm text-gray-500 mb-4">
-            Please note that your recent transactions may take a short while to
-            reflect in your donation history, as processing times may vary.
-          </div>
-          <DonationImpactCards totals={totals} />
-          <DonationHistoryTables contributionsData={contributionsData} />
-        </>
-      ) : (
-        <UnknownOrNoContributions address={address} ensName={ensName} />
-      )}
+      <div className="text-sm text-gray-500 mb-4">
+        Please note that your recent transactions may take a short while to
+        reflect in your donation history, as processing times may vary.
+      </div>
+      <DonationImpactCards totals={totals} />
+      <DonationHistoryTables contributionsData={contributionsData} />
     </main>
   );
 }

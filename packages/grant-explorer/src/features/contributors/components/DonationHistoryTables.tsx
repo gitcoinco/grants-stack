@@ -5,15 +5,15 @@ import { ContributionsData } from "../types";
 export function DonationHistoryTables({
   contributionsData,
 }: {
-  contributionsData: ContributionsData;
+  contributionsData?: ContributionsData;
 }) {
   const {
     contributionsByStatusAndHashAndRoundId,
     contributionsToDirectGrants,
-  } = contributionsData;
+  } = contributionsData ?? {};
 
-  const activeRoundDonations = contributionsByStatusAndHashAndRoundId.active;
-  const pastRoundDonations = contributionsByStatusAndHashAndRoundId.past;
+  const activeRoundDonations = contributionsByStatusAndHashAndRoundId?.active;
+  const pastRoundDonations = contributionsByStatusAndHashAndRoundId?.past;
   const directAllocationDonations = contributionsToDirectGrants;
 
   const directAllocationDonationsArray = directAllocationDonations
