@@ -153,7 +153,6 @@ describe("<CreateProgramPage />", () => {
   });
 
   it("displays wrong network when connected to unsupported network", async () => {
-    // Overwriting the mock for this specific test
     jest.spyOn(wagmi, "useAccount").mockReturnValue({
       chainId: 9999,
       address: "0x0000000000000000000000000000000000000000",
