@@ -14,7 +14,7 @@ export function PayoutTokenButton(props: {
   const { token, balance } = props;
   return (
     <Listbox.Button
-      className="relative w-[250px] md:w-[250px] cursor-default rounded-md border h-10 border-gray-300 bg-white py-2 pl-3 md:pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs md:text-sm"
+      className="relative w-[250px] md:w-[250px] cursor-default rounded-md border h-10 border-gray-300 bg-white py-2 pl-3 xl:pr-10 text-left shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs md:text-sm"
       data-testid="payout-token-select"
     >
       <span className="flex items-center">
