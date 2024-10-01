@@ -1,10 +1,12 @@
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
 import { Link } from "react-router-dom";
-import { getTokenByChainIdAndAddress } from "common";
 import { Hex, formatUnits } from "viem";
-import { Contribution } from "data-layer";
 import moment from "moment";
+
+import { getTokenByChainIdAndAddress } from "common";
+import { Contribution } from "data-layer";
+
 import { TransactionButton } from "./TransactionButton";
 
 export function DirectDonationsTable(props: { contributions: Contribution[] }) {
@@ -99,8 +101,7 @@ function Table(props: { contributions: Contribution[] }) {
                                   target="_blank"
                                 >
                                   {contribution.application?.project?.name ??
-                                    `Project Id: ${contribution.projectId.slice(0, 6) + "..." + contribution.projectId.slice(-6)}`
-                                  }
+                                    `Project Id: ${contribution.projectId.slice(0, 6) + "..." + contribution.projectId.slice(-6)}`}
                                 </Link>
                               </div>
                             </div>
@@ -111,9 +112,7 @@ function Table(props: { contributions: Contribution[] }) {
                           </td>
                           {/* Display donations */}
                           <td className="py-4 truncate w-2/5 lg:pl-2">
-                            <span>
-                              {formattedAmount}{" "}
-                            </span>
+                            <span>{formattedAmount} </span>
                             <span className="text-grey-400">
                               / ${contribution.amountInUsd.toFixed(2)}
                             </span>

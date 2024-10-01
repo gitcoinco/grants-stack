@@ -24,7 +24,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import AccessDenied from "./features/common/AccessDenied";
 import Auth from "./features/common/Auth";
 import NotFound from "./features/common/NotFoundPage";
-import { ViewContributionHistoryPage } from "./features/contributors/ViewContributionHistory";
+import { ViewContributionHistoryPage } from "./features/contributors";
 import ExploreRoundsPage from "./features/discovery/ExploreRoundsPage";
 import LandingPage from "./features/discovery/LandingPage";
 import ThankYou from "./features/round/ThankYou";

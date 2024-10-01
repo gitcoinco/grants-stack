@@ -1,6 +1,7 @@
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+
 import { Button } from "common/src/styles";
 import { getTxBlockExplorerLink } from "common";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 export function TransactionButton(props: { chainId: number; txHash: string }) {
   return (
