@@ -13,37 +13,6 @@ import preview_alt5 from "../../assets/preview_alt_5.svg";
 import React from "react";
 import { Button } from "common/src/styles";
 
-export const MintYourImpactShadowBg = () => {
-  return (
-    <svg
-      width="800"
-      height="790"
-      viewBox="0 0 800 790"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="absolute my-auto mx-auto"
-    >
-      <path
-        d="M0 400C0 175 175 0 375 0H450C650 0 800 175 800 400V790H0V400Z"
-        fill="url(#paint0_linear_314_8370)"
-      />
-      <defs>
-        <linearGradient
-          id="paint0_linear_314_8370"
-          x1="400"
-          y1="0"
-          x2="400"
-          y2="790"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#EBEBEB" />
-          <stop offset="1" stopColor="#F1F1F1" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-};
-
 type Project = {
   rank: number;
   name: string;
@@ -71,7 +40,7 @@ export const AttestationFrame = ({
     <div className="flex flex-col items-center">
       <div
         className="relative rounded-3xl overflow-hidden"
-        id="print"
+        id="attestation-impact-frame"
         style={{
           backgroundImage: `url(${selectedBackground})`,
           backgroundSize: "cover",
@@ -218,7 +187,6 @@ export const PreviewFrame = ({
     <div className="flex flex-col items-center">
       <div
         className="flex flex-col w-auto items-center relative rounded-3xl"
-        id="print"
         style={{
           backgroundImage: `url(${previewBackground})`,
           backgroundSize: "cover",

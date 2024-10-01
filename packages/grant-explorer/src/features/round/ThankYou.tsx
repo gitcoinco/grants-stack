@@ -10,11 +10,10 @@ import { useRoundById } from "../../context/RoundContext";
 import image from "../../assets/gitcoinlogo-black.svg";
 import alt1 from "../../assets/alt1.svg";
 import { useWindowSize } from "react-use";
-// import html2canvas from "html2canvas-pro";
+import html2canvas from "html2canvas-pro";
 import { ShareButtons, ThankYouSectionButtons } from "../common/ShareButtons";
 import {
   AttestationFrame,
-  MintYourImpactShadowBg,
   PreviewFrame,
 } from "../common/MintYourImpactComponents";
 import MintAttestationProgressModal from "../common/MintAttestationProgressModal"; // Adjust the import path as needed
@@ -62,6 +61,10 @@ export default function ThankYou() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    window.scrollTo(0, 100);
+  }, []);
+
   /** Fetch round data for tweet */
   const checkedOutProjects = useCheckoutStore((state) =>
     state.getCheckedOutProjects()
@@ -106,6 +109,39 @@ export default function ThankYou() {
 
   const flex = width <= 1280;
 
+  const handleGetAttestationPreview = async () => {
+    const element = document.getElementById("attestation-impact-frame");
+    if (element) {
+      const canvas = await html2canvas(element);
+      const data = canvas.toDataURL("image/png");
+      console.log(data);
+      return data;
+    }
+  };
+
+  // Mock data TODO: replace with real data Store the last
+  // attestation data based on the last created checkout transactions
+  const projectsData = [
+    {
+      rank: 1,
+      name: "Saving forests around the world",
+      round: "Climate Round",
+      image: image,
+    },
+    {
+      rank: 2,
+      name: "Funding schools in Mexico",
+      round: "Education Round",
+      image: image,
+    },
+    {
+      rank: 3,
+      name: "Accessible software for everyone",
+      round: "OSS Round",
+      image: image,
+    },
+  ];
+
   return (
     <>
       <Navbar />
@@ -130,26 +166,24 @@ export default function ThankYou() {
               <div className="w-full my-[5%] lg:w-1/2  ">
                 <div className="flex flex-col items-center justify-center">
                   {/* Main content */}
-                  <div
-                    className={`flex flex-col items-center text-center float-right ${flex && "bg-white"}`}
-                  >
-                    {!flex && <MintYourImpactShadowBg />}
-
-                    <div className="relative z-10 text-center mt-[15%]">
-                      <h1 className="text-5xl mb-2 font-modern-era-bold ">
-                        Mint your Impact
-                      </h1>
-                      <p className="mt-1 text-lg  font-modern-era-regular">
-                        Create a unique onchain collectible that
-                      </p>
-                      <p className="mb-2 text-lg font-modern-era-regular ">
-                        shows off your donations from this round!
-                      </p>
+                  <div className="w-full max-w-[800px] min-h-svh overflow-hidden bg-gradient-to-b from-[#EBEBEB] to-transparent rounded-t-[400px] flex flex-col items-center justify-center pt-20 px-4 mx-auto">
+                    <div className="flex flex-col items-center">
+                      <div className="relative z-10 text-center">
+                        <h1 className="text-5xl mb-2 font-modern-era-bold">
+                          Mint your Impact
+                        </h1>
+                        <p className="mt-1 text-lg font-modern-era-regular">
+                          Create a unique onchain collectible that
+                        </p>
+                        <p className="mb-2 text-lg font-modern-era-regular">
+                          shows off your donations from this round!
+                        </p>
+                      </div>
+                      <PreviewFrame
+                        handleSelectBackground={handleSelectBackground}
+                        mint={mint}
+                      />
                     </div>
-                    <PreviewFrame
-                      handleSelectBackground={handleSelectBackground}
-                      mint={mint}
-                    />
                   </div>
                 </div>
               </div>
@@ -169,26 +203,7 @@ export default function ThankYou() {
                     </div>
                     <AttestationFrame
                       selectedBackground={selectedBackground}
-                      projects={[
-                        {
-                          rank: 1,
-                          name: "Saving forests around the world",
-                          round: "Climate Round",
-                          image: image,
-                        },
-                        {
-                          rank: 2,
-                          name: "Funding schools in Mexico",
-                          round: "Education Round",
-                          image: image,
-                        },
-                        {
-                          rank: 3,
-                          name: "Accessible software for everyone",
-                          round: "OSS Round",
-                          image: image,
-                        },
-                      ]}
+                      projects={projectsData}
                       checkedOutChains={6}
                       projectsFunded={20}
                       roundsSupported={5}
@@ -211,7 +226,32 @@ export default function ThankYou() {
           onClose={mint}
           heading="Mint your impact"
           subheading="Your unique donation graphic will be generated after you mint."
-          body={<MintProgressModalBody handleToggleModal={handleToggleModal} />}
+          body={
+            <MintProgressModalBody
+              handleToggleModal={handleToggleModal}
+              handleGetAttestationPreview={handleGetAttestationPreview}
+            />
+          }
+        />
+      </div>
+      <div
+        id="hidden-attestation-frame"
+        style={{
+          position: "absolute",
+          top: "-9999px",
+          left: "-9999px",
+          width: "0",
+          height: "0",
+          overflow: "hidden",
+        }}
+      >
+        <AttestationFrame
+          selectedBackground={selectedBackground}
+          projects={projectsData}
+          checkedOutChains={6}
+          projectsFunded={20}
+          roundsSupported={5}
+          topRound={"OSS Round"}
         />
       </div>
     </>

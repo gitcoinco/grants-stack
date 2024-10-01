@@ -13,6 +13,7 @@ import { useGetAttestationData } from "../../hooks/attestations/useGetAttestatio
 
 type MintProgressModalBodyProps = {
   handleToggleModal: () => void;
+  handleGetAttestationPreview: () => Promise<string | undefined>;
 };
 
 function formatAmount(amount: bigint | undefined) {
@@ -22,6 +23,7 @@ function formatAmount(amount: bigint | undefined) {
 
 export function MintProgressModalBody({
   handleToggleModal,
+  handleGetAttestationPreview,
 }: MintProgressModalBodyProps) {
   // Update the chainId to the correct production chainId
   const chainId = 11155111;
@@ -29,7 +31,10 @@ export function MintProgressModalBody({
   const attestationFee = BigInt(0.001 * 10 ** 18);
   const { address } = useAccount();
 
-  const { data, isLoading } = useGetAttestationData(["0x1234567890"]);
+  const { data, isLoading } = useGetAttestationData(
+    ["0x1234567890"],
+    handleGetAttestationPreview
+  );
 
   const { handleAttest, handleSwitchChain, status, GasEstimation } =
     useEASAttestation(chainId, handleToggleModal, data);

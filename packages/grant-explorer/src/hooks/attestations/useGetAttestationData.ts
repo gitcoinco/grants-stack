@@ -3,12 +3,22 @@ import { useQuery } from "@tanstack/react-query";
 /**
  * Hook to fetch attestation data based on a transaction hash.
  */
-export const useGetAttestationData = (transactionHashes: string[]) => {
+export const useGetAttestationData = (
+  transactionHashes: string[],
+  getFile: () => Promise<string | undefined>
+) => {
   return useQuery({
     queryKey: ["attestation", transactionHashes],
     queryFn: async () => {
       if (!transactionHashes) {
         throw new Error("TransactionHashes are required");
+      }
+
+      const image = await getFile();
+      console.log(image);
+
+      if (!image) {
+        throw new Error("Image is required");
       }
 
       const hashesToUse = [
@@ -27,6 +37,7 @@ export const useGetAttestationData = (transactionHashes: string[]) => {
             body: JSON.stringify({
               transactionHashes: hashesToUse,
               chainId: chainIdToUse,
+              base64Image: image,
             }),
             mode: "cors",
           }
