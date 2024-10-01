@@ -39,18 +39,21 @@ jest.mock("common", () => ({
 }));
 
 jest.mock("wagmi", () => ({
-  useAccount: () => ({
-    chainId: 10,
-    address: "0x0000000000000000000000000000000000000000",
-    chain: {
-      id: 10,
-    },
-  }),
+  useAccount: jest.fn(),
 }));
 
 describe("<CreateProgramPage />", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
 
+    (wagmi.useAccount as jest.Mock).mockReturnValue({
+      chainId: 10,
+      address: "0x0000000000000000000000000000000000000000",
+      chain: {
+        id: 10,
+        name: "Testimism",
+      },
+    } as unknown as ReturnType<typeof wagmi.useAccount>);
   });
 
   it("shows program chain tooltip", async () => {
@@ -150,16 +153,15 @@ describe("<CreateProgramPage />", () => {
   });
 
   it("displays wrong network when connected to unsupported network", async () => {
-    jest.spyOn(wagmi, "useAccount").mockImplementation(
-      () =>
-        ({
-          chainId: 9999,
-          address: "0x0000000000000000000000000000000000000000",
-          chain: {
-            id: 9999,
-          },
-        }) as unknown as wagmi.UseAccountReturnType<wagmi.Config>
-    );
+    // Overwriting the mock for this specific test
+    jest.spyOn(wagmi, "useAccount").mockReturnValue({
+      chainId: 9999,
+      address: "0x0000000000000000000000000000000000000000",
+      chain: {
+        id: 9999,
+        name: "Homer",
+      },
+    } as unknown as ReturnType<typeof wagmi.useAccount>);
 
     renderWithContext(<CreateProgramPage />);
 
