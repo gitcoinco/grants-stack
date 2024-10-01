@@ -20,11 +20,7 @@ import { parseEther } from "ethers/lib/utils";
 
 jest.mock("../../common/Auth");
 jest.mock("wagmi", () => ({
-  useBalance: () => ({
-    data: { formatted: "0", value: "0" },
-    error: null,
-    loading: false,
-  }),
+  useBalance: jest.fn(),
   useSwitchChain: () => ({
     switchChain: jest.fn(),
   }),
@@ -73,8 +69,6 @@ const useGroupProjectsByPaymentStatusMock = jest.spyOn(
 );
 
 describe("View Fund Grantees", () => {
-  // TODO: check default values in base.
-  // I've added them to avoid typescript errors.
   const matchingStatsData: MatchingStatsData[] = [
     {
       index: 0,
@@ -135,20 +129,16 @@ describe("View Fund Grantees", () => {
   ];
 
   beforeEach(() => {
+    jest.clearAllMocks(); // Clear previous mocks
+
     useGroupProjectsByPaymentStatusMock.mockReturnValue({
       paid: [matchingStatsData[0], matchingStatsData[1]],
       unpaid: [matchingStatsData[2], matchingStatsData[3]],
       all: matchingStatsData,
     });
 
-    (useParams as jest.Mock).mockImplementation(() => {
-      return {
-        id: mockRoundData.id,
-      };
-    });
-
-    (useParams as jest.Mock).mockReturnValueOnce({
-      id: undefined,
+    (useParams as jest.Mock).mockReturnValue({
+      id: mockRoundData.id,
     });
   });
 
@@ -175,10 +165,6 @@ describe("View Fund Grantees", () => {
   });
 
   it("displays finalized status when round is finalized", async () => {
-    (useParams as jest.Mock).mockReturnValueOnce({
-      id: undefined,
-    });
-
     await act(async () => {
       render(
         wrapWithBulkUpdateGrantApplicationContext(
@@ -260,18 +246,15 @@ describe("View Fund Grantees", () => {
     });
 
     it("Should show the confirmation modal and close on cancel", async () => {
-      jest.spyOn(wagmi, "useBalance").mockImplementation(
-        () =>
-          ({
-            data: { formatted: "0", value: ethers.utils.parseEther("1000") },
-            error: null,
-            loading: false,
-          }) as unknown as UseBalanceReturnType<unknown>
-      );
+      (wagmi.useBalance as jest.Mock).mockReturnValue({
+        data: { formatted: "0", value: ethers.utils.parseEther("1000") },
+        error: null,
+        loading: false,
+      } as unknown as UseBalanceReturnType<unknown>);
 
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
-        checkboxes[0].click();
+        fireEvent.click(checkboxes[0]);
       });
 
       await act(async () => {
@@ -327,7 +310,7 @@ describe("View Fund Grantees", () => {
       );
       await act(async () => {
         const checkboxes = screen.queryAllByTestId("project-checkbox");
-        checkboxes[0].click();
+        fireEvent.click(checkboxes[0]);
       });
 
       await act(async () => {
@@ -365,7 +348,8 @@ describe("View Fund Grantees", () => {
         );
       });
     });
-    it("displays paid projects section on clicking paid grantees tab", async () => {
+
+    it("displays paid projects section & table headers on clicking paid grantees tab", async () => {
       await act(async () => {
         const paidGranteesTab = screen.getByText("Paid Grantees");
         fireEvent.click(paidGranteesTab);
@@ -386,7 +370,7 @@ describe("View Fund Grantees", () => {
       ).toBeInTheDocument();
     });
 
-    it("displays exact list of projects in table which have been paid", async () => {
+    it("displays exact list of paid projects in table", async () => {
       await act(async () => {
         const paidGranteesTab = screen.getByText("Paid Grantees");
         fireEvent.click(paidGranteesTab);
