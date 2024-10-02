@@ -1,7 +1,7 @@
 import { Contribution } from "data-layer";
-import { RoundAccordionTableRow } from "./RoundAccordionTableRow";
+import { RoundAccordionContribution } from "./RoundAccordionContribution";
 
-export function RoundAccordionTable({
+export function RoundAccordionPanel({
   contributions,
 }: {
   contributions: Contribution[];
@@ -23,7 +23,7 @@ export function RoundAccordionTable({
           )
 
           .map((contribution) => (
-            <RoundAccordionTableRow
+            <RoundAccordionContribution
               key={contribution.id}
               contribution={contribution}
             />

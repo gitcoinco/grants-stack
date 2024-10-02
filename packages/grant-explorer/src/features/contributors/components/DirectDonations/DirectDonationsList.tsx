@@ -1,5 +1,3 @@
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import ReactTooltip from "react-tooltip";
 import { Link } from "react-router-dom";
 import { Hex, formatUnits } from "viem";
 import moment from "moment";
@@ -9,49 +7,7 @@ import { Contribution } from "data-layer";
 
 import { TransactionButton } from "./TransactionButton";
 
-export function DirectDonationsTable(props: { contributions: Contribution[] }) {
-  return (
-    <div className="flex flex-col gap-6">
-      <TableHeader />
-      <Table contributions={props.contributions} />
-    </div>
-  );
-}
-
-function TableHeader() {
-  return (
-    <div className="px-4 flex items-center justify-between font-modern-era-regular font-medium text-lg/[26px]">
-      <div className="flex-1">Project</div>
-      <div className="flex flex-row flex-1 gap-1 items-center justify-center">
-        <div className="text-center">Total Donation</div>
-        <div className="flex items-center">
-          <InformationCircleIcon
-            data-tip
-            data-background-color="#0E0333"
-            data-for="donation-tooltip"
-            className="inline size-5"
-            data-testid={"donation-tooltip"}
-            fill="black"
-          />
-          <ReactTooltip
-            id="donation-tooltip"
-            place="bottom"
-            type="dark"
-            effect="solid"
-          >
-            <p className="text-xs">
-              The displayed amount in USD reflects <br />
-              the value at the time of your donation.
-            </p>
-          </ReactTooltip>
-        </div>
-      </div>
-      <div className="flex-1 flex justify-end">Transaction</div>
-    </div>
-  );
-}
-
-function Table(props: { contributions: Contribution[] }) {
+export function DirectDonationsList(props: { contributions: Contribution[] }) {
   const contributions = props.contributions
     .flat()
     .sort(

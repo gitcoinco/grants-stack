@@ -1,8 +1,8 @@
-import { DirectDonationsTable } from "./DirectDonationsTable";
-import { DonationsTable } from "./DonationsTable";
+import { DirectDonations } from "./DirectDonations/DirectDonations";
+import { RoundDonations } from "./RoundDonations";
 import { ContributionsData } from "../types";
 
-export function DonationHistoryTables({
+export function DonationsHistory({
   contributionsData,
 }: {
   contributionsData?: ContributionsData;
@@ -22,19 +22,17 @@ export function DonationHistoryTables({
 
   return (
     <div className="flex flex-col gap-12">
-      <DonationsTable
+      <RoundDonations
         title="Active Rounds"
         contributions={activeRoundDonations}
       />
-      <DonationsTable title="Past Rounds" contributions={pastRoundDonations} />
+      <RoundDonations title="Past Rounds" contributions={pastRoundDonations} />
       {directAllocationDonationsArray.length > 0 && (
         <div className="flex flex-col gap-4">
           <div className="flex items-center h-[45px] border-black text-black text-lg/[26px] border-b font-modern-era-medium font-medium">
             Direct Donations
           </div>
-          <DirectDonationsTable
-            contributions={directAllocationDonationsArray}
-          />
+          <DirectDonations contributions={directAllocationDonationsArray} />
         </div>
       )}
     </div>

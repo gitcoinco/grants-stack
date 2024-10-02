@@ -1,7 +1,7 @@
-import { DonationsTransactionTable } from "./DonationsTransactionTable";
+import { DonationsTransactions } from "./DonationsTransactions";
 import { ContributionsByHashAndRoundId } from "../../types";
 
-export function DonationsTable({
+export function RoundDonations({
   title,
   contributions = {},
 }: {
@@ -19,7 +19,7 @@ export function DonationsTable({
         <div className="text-md text-center">No Donations found</div>
       ) : (
         transactionHashes.map((transactionHash) => (
-          <DonationsTransactionTable
+          <DonationsTransactions
             key={transactionHash}
             transactionHash={transactionHash}
             contributions={contributions[transactionHash]}

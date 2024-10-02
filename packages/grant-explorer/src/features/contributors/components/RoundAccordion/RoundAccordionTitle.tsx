@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 import { formatTimeAgo } from "../../utils/time";
 
-export function RoundAccordionHeader({
+export function RoundAccordionTitle({
   chainLogo,
   roundName,
   chainId,

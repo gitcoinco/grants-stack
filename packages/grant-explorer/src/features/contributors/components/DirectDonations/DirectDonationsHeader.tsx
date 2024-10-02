@@ -1,10 +1,10 @@
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReactTooltip from "react-tooltip";
 
-export function TableHeader() {
+export function DirectDonationsHeader() {
   return (
     <div className="px-4 flex items-center justify-between font-modern-era-regular font-medium text-lg/[26px]">
-      <div className="flex-1">Round</div>
+      <div className="flex-1">Project</div>
       <div className="flex flex-row flex-1 gap-1 items-center justify-center">
         <div className="text-center">Total Donation</div>
         <div className="flex items-center">
@@ -29,7 +29,7 @@ export function TableHeader() {
           </ReactTooltip>
         </div>
       </div>
-      <div className="flex-1"></div>
+      <div className="flex-1 flex justify-end">Transaction</div>
     </div>
   );
 }

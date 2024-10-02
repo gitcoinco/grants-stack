@@ -1,1 +1,0 @@
-export { DonationsTable } from "./DonationsTable";

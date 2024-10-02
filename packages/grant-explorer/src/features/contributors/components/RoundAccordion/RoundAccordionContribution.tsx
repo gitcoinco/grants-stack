@@ -4,26 +4,16 @@ import { Hex, formatUnits } from "viem";
 import { Contribution } from "data-layer";
 import { getTokenByChainIdAndAddress } from "common";
 
-import { formatTimeAgo } from "../../utils/time";
-
-export function RoundAccordionTableRow({
+export function RoundAccordionContribution({
   contribution,
 }: {
   contribution: Contribution;
 }) {
-  const {
-    id: contributionId,
-    chainId,
-    roundId,
-    applicationId,
-    timestamp,
-    amount,
-  } = contribution;
+  const { chainId, roundId, applicationId, amount } = contribution;
 
   const projectName = contribution.application.project.name;
   const amountInUsd = contribution.amountInUsd.toFixed(2);
 
-  const timeAgo = formatTimeAgo(Number(timestamp));
   const linkToRound = `/round/${chainId}/${roundId.toString().toLowerCase()}/${applicationId}`;
 
   let formattedAmount = "N/A";

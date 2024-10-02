@@ -15,8 +15,8 @@ import {
   stringToBlobUrl,
 } from "common";
 
-import { RoundAccordionTable } from "./RoundAccordionTable";
-import { RoundAccordionHeader } from "./RoundAccordionHeader";
+import { RoundAccordionPanel } from "./RoundAccordionPanel";
+import { RoundAccordionTitle } from "./RoundAccordionTitle";
 
 export function RoundAccordion({
   contributions,
@@ -80,7 +80,7 @@ export function RoundAccordion({
             _hover={{ bg: "white", color: "black" }}
             _disabled={{ bg: "white", color: "black" }}
           >
-            <RoundAccordionHeader
+            <RoundAccordionTitle
               {...{
                 chainLogo,
                 roundName,
@@ -95,7 +95,7 @@ export function RoundAccordion({
           </AccordionButton>
         </h2>
         <AccordionPanel pb={0} px={0}>
-          <RoundAccordionTable contributions={sortedContributions} />
+          <RoundAccordionPanel contributions={sortedContributions} />
         </AccordionPanel>
       </AccordionItem>
     </Accordion>

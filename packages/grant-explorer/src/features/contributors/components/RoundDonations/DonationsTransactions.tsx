@@ -1,9 +1,9 @@
-import { TableHeader } from "./TableHeader";
+import { RoundHeader } from "./RoundHeader";
 import { TransactionHeader } from "./TransactionHeader";
 import { RoundAccordion } from "../RoundAccordion";
 import { ContributionsByRoundId } from "../../types";
 
-export function DonationsTransactionTable({
+export function DonationsTransactions({
   transactionHash,
   contributions = {},
 }: {
@@ -23,7 +23,7 @@ export function DonationsTransactionTable({
         transactionHash={transactionHash}
         transactionChainId={transactionChainId}
       />
-      <TableHeader />
+      <RoundHeader />
       {roundIds.map((roundId) => (
         <RoundAccordion contributions={contributions[roundId]} />
       ))}

@@ -1,7 +1,6 @@
 import { ContributorProfile } from "./ContributorProfile";
 import { DonationImpactCards } from "./DonationImpactCards";
-import { DonationHistoryTables } from "./DonationHistoryTables";
-import { UnknownOrNoContributions } from "./UnknownOrNoContributions";
+import { DonationsHistory } from "./DonationsHistory";
 
 import type { ContributionsData } from "../types";
 
@@ -28,7 +27,7 @@ export function ContributionHistory({
         </div>
         <DonationImpactCards totals={totals} />
         <div className="text-2xl">Donation History</div>
-        <DonationHistoryTables contributionsData={contributionsData} />
+        <DonationsHistory contributionsData={contributionsData} />
       </div>
     </main>
   );
