@@ -1,6 +1,9 @@
 const colors = require("tailwindcss/colors");
 const defaultTheme = require("tailwindcss/defaultTheme");
 
+export const rainbowGradient =
+  "linear-gradient(170deg, #FFD6C9 10%, #B8D9E7 40%, #ABE3EB 60%, #F2DD9E 90%)";
+
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}", "../common/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
@@ -13,8 +16,7 @@ module.exports = {
         "pulse-scale": "pulse-scale 2s ease-in-out infinite",
       },
       backgroundImage: {
-        "rainbow-gradient":
-          "linear-gradient(170deg, #FFD6C9 10%, #B8D9E7 40%, #ABE3EB 60%, #F2DD9E 90%)",
+        "rainbow-gradient": rainbowGradient,
       },
       colors: {
         transparent: "transparent",
@@ -88,6 +90,7 @@ module.exports = {
           400: "#6F3FF5",
           500: "#5932C4",
         },
+        "rainbow-gradient": rainbowGradient,
       },
       keyframes: {
         violetTransition: {
