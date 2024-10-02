@@ -53,7 +53,10 @@ export function RoundInCart(
       potentialVotes: props.roundCart.map((proj) => ({
         roundId: getFormattedRoundId(round?.id ?? zeroAddress),
         projectId: proj.projectRegistryId,
-        amount: BigInt(Math.floor(Number(proj.amount))) ?? "0",
+        amount: parseUnits(
+          proj.amount ?? "0",
+          votingTokenForChain.decimals ?? 18
+        ),
         grantAddress: proj.recipient,
         voter: address ?? zeroAddress,
         token: votingTokenForChain.address.toLowerCase(),
