@@ -74,6 +74,7 @@ function CustomerSupport() {
 
   return (
     <div className="relative" data-testid="customer-support" ref={menuRef}>
+      {/* @ts-expect-error */}
       <Button
         colorScheme="black"
         variant="ghost"
