@@ -18,7 +18,7 @@ export function DonationsTransactionTable({
   const transactionChainId = contributions[roundIds[0]][0].chainId;
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <TransactionHeader
         transactionHash={transactionHash}
         transactionChainId={transactionChainId}

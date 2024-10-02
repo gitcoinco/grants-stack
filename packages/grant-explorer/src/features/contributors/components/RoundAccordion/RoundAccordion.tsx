@@ -62,44 +62,42 @@ export function RoundAccordion({
   });
 
   return (
-    <div className="pb-8">
-      <Accordion
-        className="w-full"
-        allowMultiple={true}
-        defaultIndex={defaultIndex}
-        onChange={(index) => {
-          setDefaultIndex(index);
-        }}
-      >
-        <AccordionItem isDisabled={sortedContributions.length === 0}>
-          <h2>
-            <AccordionButton
-              _expanded={{
-                bg: "white",
-                color: "black",
+    <Accordion
+      className="w-full"
+      allowMultiple={true}
+      defaultIndex={defaultIndex}
+      onChange={(index) => {
+        setDefaultIndex(index);
+      }}
+    >
+      <AccordionItem isDisabled={sortedContributions.length === 0}>
+        <h2>
+          <AccordionButton
+            _expanded={{
+              bg: "white",
+              color: "black",
+            }}
+            _hover={{ bg: "white", color: "black" }}
+            _disabled={{ bg: "white", color: "black" }}
+          >
+            <RoundAccordionHeader
+              {...{
+                chainLogo,
+                roundName,
+                chainId,
+                roundId,
+                lastUpdated,
+                formattedAmount,
+                totalContributionAmountInUsd,
               }}
-              _hover={{ bg: "white", color: "black" }}
-              _disabled={{ bg: "white", color: "black" }}
-            >
-              <RoundAccordionHeader
-                {...{
-                  chainLogo,
-                  roundName,
-                  chainId,
-                  roundId,
-                  lastUpdated,
-                  formattedAmount,
-                  totalContributionAmountInUsd,
-                }}
-              />
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pb={4}>
-            <RoundAccordionTable contributions={sortedContributions} />
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
-    </div>
+            />
+            <AccordionIcon />
+          </AccordionButton>
+        </h2>
+        <AccordionPanel pb={0} px={0}>
+          <RoundAccordionTable contributions={sortedContributions} />
+        </AccordionPanel>
+      </AccordionItem>
+    </Accordion>
   );
 }

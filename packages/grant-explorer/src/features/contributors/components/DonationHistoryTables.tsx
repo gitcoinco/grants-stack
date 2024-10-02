@@ -21,27 +21,22 @@ export function DonationHistoryTables({
     : [];
 
   return (
-    <>
-      <div className="text-2xl mt-6 mb-10">Donation History</div>
-      <div className="border-black mb-2 px-1 py-1 text-black text-lg border-b font-semibold">
-        Active Rounds
-      </div>
-      <DonationsTable contributions={activeRoundDonations} />
-      <div className="border-black mb-2 px-1 py-1 text-black text-lg border-b font-semibold">
-        Past Rounds
-      </div>
-      <DonationsTable contributions={pastRoundDonations} />
-      {/* Direct Allocation */}
+    <div className="flex flex-col gap-12">
+      <DonationsTable
+        title="Active Rounds"
+        contributions={activeRoundDonations}
+      />
+      <DonationsTable title="Past Rounds" contributions={pastRoundDonations} />
       {directAllocationDonationsArray.length > 0 && (
-        <>
-          <div className="border-black mb-2 px-1 py-1 text-black text-lg border-b font-semibold">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center h-[45px] border-black text-black text-lg/[26px] border-b font-modern-era-medium font-medium">
             Direct Donations
           </div>
           <DirectDonationsTable
             contributions={directAllocationDonationsArray}
           />
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 }

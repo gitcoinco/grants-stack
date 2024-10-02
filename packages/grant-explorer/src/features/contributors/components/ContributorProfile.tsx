@@ -30,7 +30,7 @@ export function ContributorProfile({
   const currentOrigin = window.location.origin;
 
   return (
-    <div className="pb-2 flex flex-row items-center justify-between">
+    <div className="flex flex-row items-center justify-between">
       <AvatarWithTitle
         avatarSrc={addressLogo}
         title={ensName || partialAddress}

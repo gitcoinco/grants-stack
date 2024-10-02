@@ -18,13 +18,18 @@ export function ContributionHistory({
 
   return (
     <main>
-      <ContributorProfile address={address} ensName={ensName} />
-      <div className="text-sm text-gray-500 mb-4">
-        Please note that your recent transactions may take a short while to
-        reflect in your donation history, as processing times may vary.
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <ContributorProfile address={address} ensName={ensName} />
+          <div className="text-sm text-gray-500">
+            Please note that your recent transactions may take a short while to
+            reflect in your donation history, as processing times may vary.
+          </div>
+        </div>
+        <DonationImpactCards totals={totals} />
+        <div className="text-2xl">Donation History</div>
+        <DonationHistoryTables contributionsData={contributionsData} />
       </div>
-      <DonationImpactCards totals={totals} />
-      <DonationHistoryTables contributionsData={contributionsData} />
     </main>
   );
 }

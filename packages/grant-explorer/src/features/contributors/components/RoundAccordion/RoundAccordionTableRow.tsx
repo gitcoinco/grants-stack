@@ -41,29 +41,25 @@ export function RoundAccordionTableRow({
   }
 
   return (
-    <tr key={contributionId} className="">
-      <td className="py-4 pr-2 w-2/5">
+    <div className="flex items-center justify-between px-4 font-modern-era-regular font-normal text-base/[26px]">
+      <div className="flex flex-col flex-1">
         <div className="flex items-center">
-          <div className="flex flex-col sm:flex-row">
-            {/* Link to the project */}
-            <Link
-              className={`underline inline-block lg:pr-2 lg:max-w-[300px] max-w-[75px] 2xl:max-w-fit truncate`}
-              title={projectName}
-              to={linkToRound}
-              target="_blank"
-            >
-              {projectName}
-            </Link>
-          </div>
+          {/* Link to the project */}
+          <Link
+            className={`underline inline-block lg:max-w-[300px] max-w-[75px] 2xl:max-w-fit truncate`}
+            title={projectName}
+            to={linkToRound}
+            target="_blank"
+          >
+            {projectName}
+          </Link>
         </div>
-        {/* Display contribution timestamp */}
-        <div className="text-sm text-gray-500 mt-1">{timeAgo}</div>
-      </td>
-      {/* Display donations */}
-      <td className="py-4 truncate lg:pr-16">
-        <span className="font-bold">{formattedAmount} </span>
+      </div>
+      <div className="flex-1 text-center truncate">
+        <span className="text-black">{formattedAmount} </span>
         <span className="text-grey-400">/ ${amountInUsd}</span>
-      </td>
-    </tr>
+      </div>
+      <div className="flex-1"></div>
+    </div>
   );
 }

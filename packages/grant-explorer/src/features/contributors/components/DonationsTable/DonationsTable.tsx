@@ -2,24 +2,30 @@ import { DonationsTransactionTable } from "./DonationsTransactionTable";
 import { ContributionsByHashAndRoundId } from "../../types";
 
 export function DonationsTable({
+  title,
   contributions = {},
 }: {
+  title: string;
   contributions?: ContributionsByHashAndRoundId;
 }) {
   const transactionHashes = Object.keys(contributions);
 
-  if (transactionHashes.length === 0)
-    return <div className="text-md text-center my-12">No Donations found</div>;
-
   return (
-    <>
-      {transactionHashes.map((transactionHash) => (
-        <DonationsTransactionTable
-          key={transactionHash}
-          transactionHash={transactionHash}
-          contributions={contributions[transactionHash]}
-        />
-      ))}
-    </>
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center h-[45px] border-black text-black text-lg/[26px] border-b font-modern-era-medium font-medium">
+        {title}
+      </div>
+      {transactionHashes.length === 0 ? (
+        <div className="text-md text-center">No Donations found</div>
+      ) : (
+        transactionHashes.map((transactionHash) => (
+          <DonationsTransactionTable
+            key={transactionHash}
+            transactionHash={transactionHash}
+            contributions={contributions[transactionHash]}
+          />
+        ))
+      )}
+    </div>
   );
 }

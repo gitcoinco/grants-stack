@@ -18,8 +18,8 @@ export function DonationImpactCards({
   const totalProjectsFunded = totals.totalProjectsFunded.toString();
 
   return (
-    <>
-      <div className="text-2xl my-6 font-sans">Donation Impact</div>
+    <div className="flex flex-col gap-6">
+      <div className="text-2xl font-sans">Donation Impact</div>
       <div className="grid grid-cols-2 grid-row-2 lg:grid-cols-3 lg:grid-row-1 gap-6">
         <div className="col-span-2 lg:col-span-1">
           <StatCard title="Total Donations" value={"$" + totalDonations} />
@@ -31,6 +31,6 @@ export function DonationImpactCards({
           <StatCard title="Projects Funded" value={totalProjectsFunded} />
         </div>
       </div>
-    </>
+    </div>
   );
 }
