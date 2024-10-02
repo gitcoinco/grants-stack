@@ -1,6 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": [
         "^build"
@@ -8,24 +8,24 @@
       "outputs": [
         "build/**"
       ],
-      "outputMode": "errors-only"
+      "outputLogs": "errors-only"
     },
     "test": {
       "inputs": [
         "src/**/*.tsx",
         "src/**/*.ts"
       ],
-      "outputMode": "errors-only"
+      "outputLogs": "errors-only"
     },
     "lint:ci": {
-      "outputMode": "errors-only"
+      "outputLogs": "errors-only"
     },
     "typecheck": {
       "inputs": [
         "src/**/*.tsx",
         "src/**/*.ts"
       ],
-      "outputMode": "errors-only"
+      "outputLogs": "errors-only"
     }
   }
 }
