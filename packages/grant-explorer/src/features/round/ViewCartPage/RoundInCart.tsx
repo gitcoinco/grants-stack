@@ -41,6 +41,21 @@ export function RoundInCart(
     state.getVotingTokenForChain(props.roundCart[0]?.chainId)
   );
 
+  console.log(
+    "potential votes: ",
+    props.roundCart.map((proj) => ({
+      roundId: getFormattedRoundId(round?.id ?? zeroAddress),
+      projectId: proj.projectRegistryId,
+      amount: parseUnits(
+        typeof proj.amount === "string" && proj.amount !== "NaN"
+          ? proj.amount
+          : "0",
+        votingTokenForChain.decimals ?? 18
+      ),
+      initAmount: proj.amount,
+    }))
+  );
+
   const {
     data: matchingEstimates,
     error: matchingEstimateError,
