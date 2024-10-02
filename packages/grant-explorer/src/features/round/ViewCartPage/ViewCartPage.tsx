@@ -105,69 +105,69 @@ export default function ViewCart() {
   // reduce the number of re-renders by memoizing the chainIds
   const memoizedChainIds = useMemo(() => chainIds, [JSON.stringify(chainIds)]);
 
+  const fetchBalances = async () => {
+    const allBalances = await Promise.all(
+      chainIds.map(async (chainId) => {
+        const chainIdNumber = Number(chainId);
+        const chain = getChainById(chainIdNumber);
+
+        const chainBalances = await Promise.all(
+          chain.tokens.map(async (token) => {
+            if (!token.canVote || !address) return null;
+
+            try {
+              const balance = await getBalance(config, {
+                address,
+                token:
+                  token.address === zeroAddress ||
+                  token.address.toLowerCase() === NATIVE.toLowerCase()
+                    ? undefined
+                    : (token.address.toLowerCase() as `0x${string}`),
+                chainId: chainIdNumber,
+              });
+
+              return {
+                ...balance,
+                address: token.address,
+                chainId: chainIdNumber,
+                formattedAmount: Number(
+                  formatUnits(balance.value, balance.decimals)
+                ),
+              };
+            } catch (e) {
+              console.error(
+                `Error fetching balance for chain ${chainIdNumber} and token ${token.address}`,
+                e
+              );
+              return null;
+            }
+          })
+        );
+
+        // Filter and convert to balanceMap directly
+        const balanceMap = chainBalances.reduce(
+          (map, balance) => {
+            if (balance) {
+              map[balance.address.toLowerCase()] = balance; // Use balance directly as it's already typed
+            }
+            return map;
+          },
+          {} as { [tokenAddress: string]: Balance }
+        );
+
+        return { chainId: chainIdNumber, balanceMap };
+      })
+    );
+
+    // Convert array of balances into a single BalanceMap object
+    const newBalances = allBalances.reduce((map, { chainId, balanceMap }) => {
+      map[chainId] = balanceMap;
+      return map;
+    }, {} as BalanceMap);
+    setBalances(newBalances);
+  };
+
   useEffect(() => {
-    const fetchBalances = async () => {
-      const allBalances = await Promise.all(
-        chainIds.map(async (chainId) => {
-          const chainIdNumber = Number(chainId);
-          const chain = getChainById(chainIdNumber);
-
-          const chainBalances = await Promise.all(
-            chain.tokens.map(async (token) => {
-              if (!token.canVote || !address) return null;
-
-              try {
-                const balance = await getBalance(config, {
-                  address,
-                  token:
-                    token.address === zeroAddress ||
-                    token.address.toLowerCase() === NATIVE.toLowerCase()
-                      ? undefined
-                      : (token.address.toLowerCase() as `0x${string}`),
-                  chainId: chainIdNumber,
-                });
-
-                return {
-                  ...balance,
-                  address: token.address,
-                  chainId: chainIdNumber,
-                  formattedAmount: Number(
-                    formatUnits(balance.value, balance.decimals)
-                  ),
-                };
-              } catch (e) {
-                console.error(
-                  `Error fetching balance for chain ${chainIdNumber} and token ${token.address}`,
-                  e
-                );
-                return null;
-              }
-            })
-          );
-
-          // Filter and convert to balanceMap directly
-          const balanceMap = chainBalances.reduce(
-            (map, balance) => {
-              if (balance) {
-                map[balance.address.toLowerCase()] = balance; // Use balance directly as it's already typed
-              }
-              return map;
-            },
-            {} as { [tokenAddress: string]: Balance }
-          );
-
-          return { chainId: chainIdNumber, balanceMap };
-        })
-      );
-
-      // Convert array of balances into a single BalanceMap object
-      const newBalances = allBalances.reduce((map, { chainId, balanceMap }) => {
-        map[chainId] = balanceMap;
-        return map;
-      }, {} as BalanceMap);
-      setBalances(newBalances);
-    };
-
     // Fetch balances if they have not been fetched yet
     if (Object.keys(balances) && address) {
       fetchBalances();
@@ -215,6 +215,11 @@ export default function ViewCart() {
       fromTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
       toTokenAddress: getVotingTokenForChain(chainId).address,
     });
+  };
+
+  const swapModalHandler = async (flag: boolean) => {
+    await fetchBalances();
+    setOpenSwapModal(flag);
   };
 
   return (
@@ -266,7 +271,7 @@ export default function ViewCart() {
           <GenericModal
             body={<SquidWidget {...swapParams} />}
             isOpen={openSwapModel}
-            setIsOpen={setOpenSwapModal}
+            setIsOpen={swapModalHandler}
           />
         </main>
         <div className="my-11">
