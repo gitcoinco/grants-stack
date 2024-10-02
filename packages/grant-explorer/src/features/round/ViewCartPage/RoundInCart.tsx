@@ -14,7 +14,6 @@ import { BoltIcon } from "@heroicons/react/24/outline";
 import { TToken } from "common";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { PassportWidget } from "../../common/PassportWidget";
-import { formatUnits } from "ethers/lib/utils";
 
 export function RoundInCart(
   props: React.ComponentProps<"div"> & {
@@ -54,7 +53,9 @@ export function RoundInCart(
         roundId: getFormattedRoundId(round?.id ?? zeroAddress),
         projectId: proj.projectRegistryId,
         amount: parseUnits(
-          proj.amount ?? "0",
+          typeof proj.amount === "string" && proj.amount !== "NaN"
+            ? proj.amount
+            : "0",
           votingTokenForChain.decimals ?? 18
         ),
         grantAddress: proj.recipient,
