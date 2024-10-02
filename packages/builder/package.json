@@ -141,7 +141,7 @@
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^5.23.0",
     "dotenv": "^16.4.1",
-    "eslint": "^8.2.0",
+    "eslint": ">=8.1.0 <9.0.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
@@ -158,5 +158,10 @@
     "msw": "^0.47.4",
     "postcss-import": "^14.1.0",
     "prettier": "2"
+  },
+  "resolutions": {
+    "@typescript-eslint/eslint-plugin": "6.7.0",
+    "@typescript-eslint/parser": "5.23.0",
+    "typescript": "5.1.6"
   }
 }
