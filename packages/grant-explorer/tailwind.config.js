@@ -1,10 +1,13 @@
-const colors = require("tailwindcss/colors");
-const defaultTheme = require("tailwindcss/defaultTheme");
+import colors from "tailwindcss/colors";
+import defaultTheme from "tailwindcss/defaultTheme";
+import typography from "@tailwindcss/typography";
+import forms from "@tailwindcss/forms";
+import lineClamp from "@tailwindcss/line-clamp";
 
 export const rainbowGradient =
   "linear-gradient(170deg, #FFD6C9 10%, #B8D9E7 40%, #ABE3EB 60%, #F2DD9E 90%)";
 
-module.exports = {
+export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}", "../common/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     fontFamily: {
@@ -124,9 +127,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require("@tailwindcss/typography"),
-    require("@tailwindcss/forms"),
-    require("@tailwindcss/line-clamp"),
-  ],
+  plugins: [typography, forms, lineClamp],
 };
