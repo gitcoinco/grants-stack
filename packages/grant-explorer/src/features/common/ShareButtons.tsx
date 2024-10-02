@@ -88,8 +88,8 @@ export const ThankYouSectionButtons = ({
     <div className="flex flex-col items-center xl-mt-[10%] lg-mt-[10%] md-mt-[10%]">
       <p className="text-5xl font-modern-era-medium">Thank you for</p>
       <h1 className="text-5xl font-modern-era-medium mb-8 ">your support!</h1>
-      <div className="flex flex-col gap-5 items-center">
-        <div className="flex flex-wrap gap-3 items-center justify-center">
+      <div className="flex flex-col gap-5 items-center justify-center">
+        <div className="flex gap-5 items-center justify-center">
           <TwitterButton
             address={address ?? "0x"}
             roundName={roundName}
@@ -98,13 +98,23 @@ export const ThankYouSectionButtons = ({
           <Button
             type="button"
             onClick={() => navigate(`/contributors/${address}`)}
-            className="items-center justify-center font-mono text-xs text-black rounded-lg border border-solid bg-grey-100 border-grey-100 px-1 hover:shadow-md sm:px-7"
+            className="items-center justify-center text-xs text-black rounded-lg border border-solid bg-grey-100 border-grey-100 px-2 hover:shadow-md sm:px-10 font-mono"
             data-testid="donation-history-button"
           >
             Donation History
           </Button>
         </div>
-      </div>
+
+        <Button
+          type="button"
+          $variant="outline"
+          onClick={() => navigate("/")}
+          className="items-center justify-center text-xs rounded-lg w-[193px] border-1 bg-orange-100 hover:shadow-md px-10 font-mono"
+          data-testid="home-button"
+        >
+          Back home
+        </Button>
+      </div>{" "}
     </div>
   );
 };

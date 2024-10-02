@@ -1,5 +1,5 @@
 import { useAccount } from "wagmi";
-import gg22Logo from "../../assets/gg22-logo.svg";
+import attestationFrameLogo from "../../assets/attestation-frame-logo.svg";
 import alt1 from "../../assets/alt1.svg";
 import alt2 from "../../assets/alt2.svg";
 import alt3 from "../../assets/alt3.svg";
@@ -12,6 +12,7 @@ import preview_alt4 from "../../assets/preview_alt_4.svg";
 import preview_alt5 from "../../assets/preview_alt_5.svg";
 import React from "react";
 import { Button } from "common/src/styles";
+import { useResolveENS } from "../../hooks/useENS";
 
 type Project = {
   rank: number;
@@ -36,6 +37,8 @@ export const AttestationFrame = ({
   projects: Project[];
 }) => {
   const { address } = useAccount();
+  const { data: name } = useResolveENS(address ?? "0x");
+
   return (
     <div className="flex flex-col items-center">
       <div
@@ -52,11 +55,36 @@ export const AttestationFrame = ({
       >
         <div className="flex flex-col w-full h-full p-6">
           {/* Header */}
-          <div className="flex items-center justify-between p-5 border border-black rounded-t-lg bg-white bg-opacity-10 overflow-auto">
-            <div className="font-mono font-medium text-black text-sm">
-              {address}
+          <div
+            className="flex items-center justify-between p-5 border border-black rounded-t-lg bg-white bg-opacity-10"
+            style={{ height: "70px", width: "100%" }}
+          >
+            <div
+              className="flex items-center space-x-2"
+              style={{ maxWidth: "80%" }}
+            >
+              {name ? (
+                <div
+                  className="font-mono font-medium text-black text-[19px] truncate"
+                  style={{ maxWidth: "100%" }}
+                >
+                  {name}
+                </div>
+              ) : (
+                <div
+                  className="font-mono font-medium text-black text-sm truncate"
+                  style={{ maxWidth: "100%" }}
+                >
+                  {address}
+                </div>
+              )}
             </div>
-            <img className="h-10" alt="Logo" src={gg22Logo} />
+            <img
+              className="h-6 w-auto"
+              alt="Logo"
+              src={attestationFrameLogo}
+              style={{ flexShrink: 0 }}
+            />
           </div>
 
           {/* Main Body */}
@@ -115,17 +143,17 @@ export const AttestationFrame = ({
             </div>
 
             {/* Right Section (Stats) */}
-            <div className="flex flex-col w-[250px] p-5 border-l border-black">
+            <div className="flex flex-col w-[250px] my-2 p-5 border-l border-black">
               {[
                 { value: projectsFunded, label: "Projects Funded" },
                 { value: roundsSupported, label: "Rounds Supported" },
                 { value: checkedOutChains, label: "Chains" },
               ].map((stat, index) => (
-                <div key={index} className="flex flex-col py-4">
-                  <div className="text-[48px] font-bold font-mono text-black">
+                <div key={index} className="flex flex-col py-5">
+                  <div className="text-[48px] font-medium font-mono text-black">
                     {stat.value}
                   </div>
-                  <div className="text-[16px] mt-2 font-medium font-mono text-black">
+                  <div className="text-[16px] mt-3 font-medium font-mono text-black">
                     {stat.label}
                   </div>
                 </div>
@@ -196,9 +224,9 @@ export const PreviewFrame = ({
           height: "400px",
         }}
       ></div>
-      <div className="flex flex-wrap gap-3 items-center mt-3 bg-white opacity-80  p-2">
+      <div className="flex flex-wrap gap-3 items-center mt-3   p-2">
         <div className="flex flex-col items-center">
-          <div className="flex flex-wrap items-center space-x-2 z-50">
+          <div className="flex flex-wrap items-center space-x-2 z-30">
             <div className="text-2xl font-modern-era-regular">
               Pick your color
             </div>
@@ -219,7 +247,7 @@ export const PreviewFrame = ({
               />
             ))}
           </div>
-          <div className="mt-2 mb-8 z-50">
+          <div className="mt-2 mb-8 z-40">
             <Button
               type="button"
               className="flex items-center justify-center text-xl rounded-lg border-1 font-mono font-bold text-black bg-white px-10 sm:px-10 shadow-md hover:shadow-lg mt-2"

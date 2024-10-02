@@ -5,15 +5,17 @@ import processingIcon from "../../assets/processing.svg";
 import warningIcon from "../../assets/warning.svg";
 
 import { ProgressStatus } from "../../hooks/attestations/config";
-import { useEASAttestation } from "../../hooks/attestations/useEASAttestation";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import { useAccount, useBalance } from "wagmi";
 import { formatEther } from "viem";
-import { useGetAttestationData } from "../../hooks/attestations/useGetAttestationData";
+import { UseQueryResult } from "@tanstack/react-query";
 
 type MintProgressModalBodyProps = {
-  handleToggleModal: () => void;
-  handleGetAttestationPreview: () => Promise<string | undefined>;
+  handleSwitchChain: () => Promise<void>;
+  handleAttest: () => Promise<void>;
+  status: ProgressStatus;
+  GasEstimation: UseQueryResult<bigint, Error>;
+  isLoading: boolean;
 };
 
 function formatAmount(amount: bigint | undefined) {
@@ -22,22 +24,17 @@ function formatAmount(amount: bigint | undefined) {
 }
 
 export function MintProgressModalBody({
-  handleToggleModal,
-  handleGetAttestationPreview,
+  handleSwitchChain,
+  status,
+  GasEstimation,
+  handleAttest,
+  isLoading,
 }: MintProgressModalBodyProps) {
   // Update the chainId to the correct production chainId
   const chainId = 11155111;
   // Update the attestationFee to the correct production attestationFee
   const attestationFee = BigInt(0.001 * 10 ** 18);
   const { address } = useAccount();
-
-  const { data, isLoading } = useGetAttestationData(
-    ["0x1234567890"],
-    handleGetAttestationPreview
-  );
-
-  const { handleAttest, handleSwitchChain, status, GasEstimation } =
-    useEASAttestation(chainId, handleToggleModal, data);
 
   const { data: gasEstimation, isLoading: loadingGasEstimate } = GasEstimation;
 
@@ -105,7 +102,7 @@ export function MintProgressModalBody({
           <Button
             type="button"
             onClick={async () => {
-              handleAttest(data);
+              handleAttest();
             }}
             className="bg-[#00433B] text-white font-mono text-md w-full px-4 py-2 rounded-lg hover:shadow-md"
             disabled={isLoading}
@@ -121,7 +118,7 @@ export function MintProgressModalBody({
               <img
                 src={processingIcon}
                 alt="Processing Icon"
-                className="w-5 h-5"
+                className="w-5 h-5 animate-spin"
               />
               <span>Processing</span>
             </Button>

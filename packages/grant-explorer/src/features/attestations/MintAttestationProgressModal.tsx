@@ -1,6 +1,7 @@
 import { Fragment, ReactNode } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { on } from "events";
 
 interface MintAttestationProgressModalProps {
   isOpen: boolean;
@@ -25,9 +26,9 @@ export default function MintAttestationProgressModal({
       <Dialog
         as="div"
         data-testid="progress-modal"
-        className="relative z-10"
+        className="relative z-40"
         onClose={() => {
-          /* Don't close the dialog when clicking the backdrop */
+          onClose();
         }}
       >
         <Transition.Child

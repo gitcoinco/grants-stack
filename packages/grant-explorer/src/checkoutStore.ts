@@ -38,6 +38,21 @@ import { Connector } from "wagmi";
 type ChainMap<T> = Record<number, T>;
 
 const isV2 = getConfig().allo.version === "allo-v2";
+
+interface Project {
+  rank: number;
+  name: string;
+  round: string;
+  image: string;
+}
+interface FrameProps {
+  selectedBackground: string;
+  topRound: string;
+  projectsFunded: number;
+  roundsSupported: number;
+  checkedOutChains: number;
+  projects: Project[];
+}
 interface CheckoutState {
   permitStatus: ChainMap<ProgressStatus>;
   setPermitStatusForChain: (
@@ -66,6 +81,16 @@ interface CheckoutState {
   getCheckedOutProjects: () => CartProject[];
   checkedOutProjects: CartProject[];
   setCheckedOutProjects: (newArray: CartProject[]) => void;
+  checkedOutProjectsByTx: Record<Hex, CartProject[]>;
+  setCheckedOutProjectsByTx: (tx: Hex, projects: CartProject[]) => void;
+  getCheckedOutProjectsByTx: (tx: Hex) => CartProject[];
+  removeCheckedOutProjectsByTx: (tx: Hex) => void;
+
+  // Create a function that gets an array of transactionHashes and returns the FrameProps object where projects Array
+  // contains the top 3 projects based on those checked out transactions max donation amount in usd
+  // The top round is the round with the most funds allocated in total amount of projects allocated to all transactions in total rounds in all transaction in total chains allocated in these transactions
+
+  getFrameProps: (txHashes: Hex[]) => FrameProps;
 }
 
 const defaultProgressStatusForAllChains = Object.fromEntries(
@@ -322,6 +347,11 @@ export const useCheckoutStore = create<CheckoutState>()(
           set({
             checkedOutProjects: [...get().checkedOutProjects, ...donations],
           });
+          set({
+            checkedOutProjectsByTx: {
+              [receipt.transactionHash]: donations,
+            },
+          });
         } catch (error) {
           let context: Record<string, unknown> = {
             chainId,
@@ -356,6 +386,79 @@ export const useCheckoutStore = create<CheckoutState>()(
       set({
         checkedOutProjects: newArray,
       });
+    },
+    checkedOutProjectsByTx: {},
+    setCheckedOutProjectsByTx: (tx: Hex, projects: CartProject[]) => {
+      set((oldState) => ({
+        checkedOutProjectsByTx: {
+          ...oldState.checkedOutProjectsByTx,
+          [tx]: projects,
+        },
+      }));
+    },
+    getCheckedOutProjectsByTx: (tx: Hex) => {
+      return get().checkedOutProjectsByTx[tx] || [];
+    },
+    removeCheckedOutProjectsByTx: (tx: Hex) => {
+      set((oldState) => {
+        const { [tx]: _, ...rest } = oldState.checkedOutProjectsByTx;
+        return { checkedOutProjectsByTx: rest };
+      });
+    },
+    // Create a function that gets an array of transactionHashes and returns the FrameProps object where projects Array
+    // contains the top 3 projects based on those checked out transactions max donation amount in usd
+    // The top round is the round with the most funds allocated in total amount of projects allocated to all transactions in total rounds in all transaction in total chains allocated in these transactions
+
+    getFrameProps: (txHashes: Hex[]) => {
+      const allProjects: CartProject[] = [];
+      const roundsSet = new Set<string>();
+      const chainsSet = new Set<number>();
+      const amountByRound: Record<
+        string,
+        {
+          roundName: string;
+          totalAmount: number;
+        }
+      > = {};
+
+      for (const txHash of txHashes) {
+        const projects = get().getCheckedOutProjectsByTx(txHash);
+        allProjects.push(...projects);
+        projects.forEach((project) => {
+          roundsSet.add(project.roundId);
+          chainsSet.add(project.chainId);
+          amountByRound[project.roundId] = amountByRound[project.roundId] || {
+            roundName: project.roundId,
+            totalAmount: 0,
+          };
+          // TODO CHANGE WITH ACTUAL ROUNDNAME
+          amountByRound[project.roundId].roundName = project.roundId;
+          amountByRound[project.roundId].totalAmount += Number(project.amount);
+        });
+      }
+      const topProjects = allProjects
+        .sort((a, b) => Number(b.amount) - Number(a.amount))
+        .slice(0, 3)
+        .map((project, i) => ({
+          rank: i,
+          name: project.projectMetadata.title,
+          round: project.roundId,
+          image:
+            project.projectMetadata?.logoImg ??
+            project.projectMetadata?.bannerImg ??
+            "",
+        }));
+      const topRoundName = Object.values(amountByRound).sort(
+        (a, b) => b.totalAmount - a.totalAmount
+      )[0].roundName;
+      return {
+        selectedBackground: "",
+        topRound: topRoundName,
+        projectsFunded: allProjects.length,
+        roundsSupported: roundsSet.size,
+        checkedOutChains: chainsSet.size,
+        projects: topProjects,
+      } as FrameProps;
     },
   }))
 );

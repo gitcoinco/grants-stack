@@ -15,9 +15,11 @@ import { ShareButtons, ThankYouSectionButtons } from "../common/ShareButtons";
 import {
   AttestationFrame,
   PreviewFrame,
-} from "../common/MintYourImpactComponents";
-import MintAttestationProgressModal from "../common/MintAttestationProgressModal"; // Adjust the import path as needed
-import { MintProgressModalBody } from "./MintProgressModalBody"; // We'll define this next
+} from "../attestations/MintYourImpactComponents";
+import MintAttestationProgressModal from "../attestations/MintAttestationProgressModal"; // Adjust the import path as needed
+import { MintProgressModalBody } from "../attestations/MintProgressModalBody"; // We'll define this next
+import { useGetAttestationData } from "../../hooks/attestations/useGetAttestationData";
+import { useEASAttestation } from "../../hooks/attestations/useEASAttestation";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -119,6 +121,16 @@ export default function ThankYou() {
     }
   };
 
+  const { data, isLoading } = useGetAttestationData(
+    ["0x1234567890"],
+    handleGetAttestationPreview
+  );
+
+  const chainId = 11155111;
+
+  const { handleAttest, handleSwitchChain, status, GasEstimation } =
+    useEASAttestation(chainId, handleToggleModal, data);
+
   // Mock data TODO: replace with real data Store the last
   // attestation data based on the last created checkout transactions
   const projectsData = [
@@ -141,6 +153,21 @@ export default function ThankYou() {
       image: image,
     },
   ];
+
+  interface Project {
+    rank: number;
+    name: string;
+    round: string;
+    image: string;
+  }
+  interface FrameProps {
+    selectedBackground: string;
+    topRound: string;
+    projectsFunded: number;
+    roundsSupported: number;
+    checkedOutChains: number;
+    projects: Project[];
+  }
 
   return (
     <>
@@ -228,8 +255,11 @@ export default function ThankYou() {
           subheading="Your unique donation graphic will be generated after you mint."
           body={
             <MintProgressModalBody
-              handleToggleModal={handleToggleModal}
-              handleGetAttestationPreview={handleGetAttestationPreview}
+              handleSwitchChain={handleSwitchChain}
+              status={status}
+              GasEstimation={GasEstimation}
+              handleAttest={handleAttest}
+              isLoading={isLoading}
             />
           }
         />

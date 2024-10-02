@@ -6,6 +6,7 @@ import { useAttestationStatus } from "./useAttestationStatus";
 import { useSwitchChain } from "./useSwitchChain";
 import { useEstimateGas } from "./useEstimateGas";
 import { useAttestMutation } from "./useAttestMutation";
+import { useMemo } from "react";
 
 /**
  * Main hook to manage EAS Attestations.
@@ -13,17 +14,13 @@ import { useAttestMutation } from "./useAttestMutation";
 export const useEASAttestation = (
   chainId: number,
   handleToggleModal: () => void,
-  data?: AttestInput
+  data: AttestInput | undefined
 ) => {
   const { data: walletClient } = useWalletClient({ chainId });
-  const { chainId: userChainID, address } = useAccount();
+  const { address } = useAccount();
   const publicClient = usePublicClient({ chainId });
 
-  const requiresSwitch = chainId !== userChainID;
-
-  const { status, updateStatus } = useAttestationStatus(
-    requiresSwitch ? ProgressStatus.SWITCH_CHAIN : ProgressStatus.NOT_STARTED
-  );
+  const { status, updateStatus } = useAttestationStatus(chainId);
 
   const { easAddress, abi, schema } = useEASConfig(chainId);
 
@@ -60,8 +57,12 @@ export const useEASAttestation = (
     }
   };
 
-  const handleAttest = async (data: AttestInput) => {
+  const handleAttest = async () => {
     try {
+      if (!data) {
+        updateStatus(ProgressStatus.IS_ERROR);
+        return;
+      }
       updateStatus(ProgressStatus.IN_PROGRESS);
       await attest.mutateAsync(data);
       updateStatus(ProgressStatus.IS_SUCCESS);
