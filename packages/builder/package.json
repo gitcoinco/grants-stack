@@ -138,7 +138,7 @@
     "@types/dompurify": "^2.4.0",
     "@types/jest-when": "^3.5.2",
     "@types/react-gtm-module": "^2.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.23.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^5.23.0",
     "dotenv": "^16.4.1",
     "eslint": "^8.2.0",
