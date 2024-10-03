@@ -3,12 +3,16 @@ import { PayoutTokenButton } from "./PayoutTokenButton";
 import { Fragment } from "react";
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { classNames, NATIVE, stringToBlobUrl, TToken } from "common";
+import { ChainBalances } from "../../api/types";
+import { formatUnits } from "ethers/lib/utils";
 
 export function PayoutTokenDropdown(props: {
   payoutTokenOptions: TToken[];
   selectedPayoutToken?: TToken;
   setSelectedPayoutToken: (payoutToken: TToken) => void;
   style?: string;
+  balances?: ChainBalances;
+  balanceWarning: boolean;
 }) {
   return (
     <div className="mt-1 relative col-span-6 sm:col-span-3">
@@ -23,6 +27,13 @@ export function PayoutTokenDropdown(props: {
                 token={props.payoutTokenOptions.find(
                   (t) => t.address === props.selectedPayoutToken?.address
                 )}
+                balance={
+                  props.balances &&
+                  props.balances[
+                    props.selectedPayoutToken?.address.toLowerCase() || ""
+                  ]
+                }
+                balanceWarning={props.balanceWarning}
               />
               <Transition
                 show={open}
@@ -74,6 +85,22 @@ export function PayoutTokenDropdown(props: {
                                     )}
                                   >
                                     {token.code}
+                                  </span>
+                                  <span className="ml-3 text-sm text-gray-500">
+                                    {props.balances &&
+                                      props.balances[
+                                        token.address.toLowerCase()
+                                      ] &&
+                                      `Balance: ${Number(
+                                        formatUnits(
+                                          props.balances[
+                                            token.address.toLowerCase()
+                                          ].value,
+                                          props.balances[
+                                            token.address.toLowerCase()
+                                          ].decimals
+                                        )
+                                      ).toFixed(3)}`}
                                   </span>
                                 </div>
 

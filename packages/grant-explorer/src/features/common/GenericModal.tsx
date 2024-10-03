@@ -6,7 +6,9 @@ interface InfoModalProps {
   titleSize?: "sm" | "lg";
   body?: JSX.Element;
   isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpen:
+    | React.Dispatch<React.SetStateAction<boolean>>
+    | ((flag: boolean) => void);
   children?: ReactNode;
 }
 
