@@ -53,7 +53,9 @@ export function RoundInCart(
         roundId: getFormattedRoundId(round?.id ?? zeroAddress),
         projectId: proj.projectRegistryId,
         amount: parseUnits(
-          proj.amount ?? "0",
+          typeof proj.amount === "string" && proj.amount !== "NaN"
+            ? proj.amount
+            : "0",
           votingTokenForChain.decimals ?? 18
         ),
         grantAddress: proj.recipient,

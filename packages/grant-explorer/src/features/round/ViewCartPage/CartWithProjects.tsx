@@ -9,29 +9,42 @@ import { RoundInCart } from "./RoundInCart";
 import { useTokenPrice, TToken, stringToBlobUrl, getChainById } from "common";
 import { Button, Input } from "common/src/styles";
 import { useCartStorage } from "../../../store";
+import {
+  ArrowRightIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/24/solid";
+import { ChainBalances } from "../../api/types";
 
 type Props = {
   cart: GroupedCartProjectsByRoundId;
   chainId: number;
+  totalAmount: number;
+  balances: ChainBalances;
+  payoutToken: TToken;
+  enoughBalance: boolean;
+  handleSwap: () => void;
 };
 
-export function CartWithProjects({ cart, chainId }: Props) {
+export function CartWithProjects({
+  cart,
+  chainId,
+  totalAmount,
+  balances,
+  payoutToken,
+  enoughBalance,
+  handleSwap,
+}: Props) {
   const chain = getChainById(chainId);
   const cartByRound = Object.values(cart);
-
   const store = useCartStorage();
-
   const [fixedDonation, setFixedDonation] = useState("");
 
-  const { getVotingTokenForChain, setVotingTokenForChain } = useCartStorage();
-  const selectedPayoutToken = getVotingTokenForChain(chainId);
+  const { setVotingTokenForChain } = useCartStorage();
   const payoutTokenOptions: TToken[] = getVotingTokenOptions(
     Number(chainId)
   ).filter((p) => p.canVote);
 
-  const { data, error, loading } = useTokenPrice(
-    selectedPayoutToken.redstoneTokenId
-  );
+  const { data, error, loading } = useTokenPrice(payoutToken.redstoneTokenId);
   const payoutTokenPrice = !loading && !error ? Number(data) : null;
 
   // get number of projects in cartByRound
@@ -43,7 +56,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
     setVotingTokenForChain(
       chainId,
       getVotingTokenOptions(chainId).find(
-        (token) => token.address === selectedPayoutToken.address
+        (token) => token.address === payoutToken.address
       ) ?? getVotingTokenOptions(chainId)[0]
     );
     /* We only want this to happen on first render */
@@ -76,14 +89,16 @@ export function CartWithProjects({ cart, chainId }: Props) {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setFixedDonation(e.target.value);
               }}
-              className="w-16 lg:w-18"
+              className="w-16 lg:w-18 max-h-10"
             />
             <PayoutTokenDropdown
-              selectedPayoutToken={selectedPayoutToken}
+              selectedPayoutToken={payoutToken}
               setSelectedPayoutToken={(token) => {
                 setVotingTokenForChain(chainId, token);
               }}
               payoutTokenOptions={payoutTokenOptions}
+              balances={balances}
+              balanceWarning={!enoughBalance}
             />
           </div>
           <div className="flex flex-row">
@@ -101,13 +116,32 @@ export function CartWithProjects({ cart, chainId }: Props) {
           </div>
         </div>
       </div>
+      {totalAmount > 0 && !enoughBalance && (
+        <div className="flex flex-row justify-between my-4">
+          <div className="rounded-md bg-red-50 py-2 text-pink-500 flex items-center text-sm p-5 w-full justify-between">
+            <ExclamationCircleIcon className="w-6 h-6 text-left" />
+            <span className="p-2 pr-4 flex-1">
+              You do not have enough funds in your wallet to complete this
+              donation. Please bridge funds to this network in order to submit
+              your donation.
+            </span>
+            <div
+              onClick={() => handleSwap()}
+              className="flex items-center text-sm decoration-1 cursor-pointer"
+            >
+              Bridge Funds
+              <ArrowRightIcon className="h-4 w-4 ml-2" />
+            </div>
+          </div>
+        </div>
+      )}
       {cartByRound.map((roundcart, key) => (
         <div key={key}>
           <RoundInCart
             key={key}
             roundCart={roundcart}
             handleRemoveProjectFromCart={store.remove}
-            selectedPayoutToken={selectedPayoutToken}
+            selectedPayoutToken={payoutToken}
             payoutTokenPrice={payoutTokenPrice ?? 0}
           />
         </div>
