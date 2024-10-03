@@ -116,7 +116,6 @@ export default function ThankYou() {
     if (element) {
       const canvas = await html2canvas(element);
       const data = canvas.toDataURL("image/png");
-      console.log(data);
       return data;
     }
   };
@@ -153,21 +152,6 @@ export default function ThankYou() {
       image: image,
     },
   ];
-
-  interface Project {
-    rank: number;
-    name: string;
-    round: string;
-    image: string;
-  }
-  interface FrameProps {
-    selectedBackground: string;
-    topRound: string;
-    projectsFunded: number;
-    roundsSupported: number;
-    checkedOutChains: number;
-    projects: Project[];
-  }
 
   return (
     <>

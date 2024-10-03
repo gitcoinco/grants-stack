@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { CartProject, ProgressStatus } from "./features/api/types";
+import {
+  CartProject,
+  ProgressStatus,
+  AttestationFrameProps,
+} from "./features/api/types";
 import {
   AlloV2,
   createEthersTransactionSender,
@@ -38,21 +42,6 @@ import { Connector } from "wagmi";
 type ChainMap<T> = Record<number, T>;
 
 const isV2 = getConfig().allo.version === "allo-v2";
-
-interface Project {
-  rank: number;
-  name: string;
-  round: string;
-  image: string;
-}
-interface FrameProps {
-  selectedBackground: string;
-  topRound: string;
-  projectsFunded: number;
-  roundsSupported: number;
-  checkedOutChains: number;
-  projects: Project[];
-}
 interface CheckoutState {
   permitStatus: ChainMap<ProgressStatus>;
   setPermitStatusForChain: (
@@ -90,7 +79,7 @@ interface CheckoutState {
   // contains the top 3 projects based on those checked out transactions max donation amount in usd
   // The top round is the round with the most funds allocated in total amount of projects allocated to all transactions in total rounds in all transaction in total chains allocated in these transactions
 
-  getFrameProps: (txHashes: Hex[]) => FrameProps;
+  getFrameProps: (txHashes: Hex[]) => AttestationFrameProps;
 }
 
 const defaultProgressStatusForAllChains = Object.fromEntries(
@@ -458,7 +447,7 @@ export const useCheckoutStore = create<CheckoutState>()(
         roundsSupported: roundsSet.size,
         checkedOutChains: chainsSet.size,
         projects: topProjects,
-      } as FrameProps;
+      } as AttestationFrameProps;
     },
   }))
 );

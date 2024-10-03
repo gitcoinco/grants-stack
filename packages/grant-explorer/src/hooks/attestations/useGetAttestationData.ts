@@ -15,7 +15,6 @@ export const useGetAttestationData = (
       }
 
       const image = await getFile();
-      console.log(image);
 
       if (!image) {
         throw new Error("Image is required");

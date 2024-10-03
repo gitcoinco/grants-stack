@@ -9,6 +9,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import { useAccount, useBalance } from "wagmi";
 import { formatEther } from "viem";
 import { UseQueryResult } from "@tanstack/react-query";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 type MintProgressModalBodyProps = {
   handleSwitchChain: () => Promise<void>;
@@ -34,14 +35,22 @@ export function MintProgressModalBody({
   const chainId = 11155111;
   // Update the attestationFee to the correct production attestationFee
   const attestationFee = BigInt(0.001 * 10 ** 18);
-  const { address } = useAccount();
-
+  const { address, isConnected } = useAccount();
   const { data: gasEstimation, isLoading: loadingGasEstimate } = GasEstimation;
 
   const { data: balance } = useBalance({
     chainId,
     address,
   });
+
+  let notEnoughFunds = false;
+  if (
+    balance?.value &&
+    gasEstimation &&
+    balance.value <= attestationFee + gasEstimation
+  ) {
+    notEnoughFunds = true;
+  }
 
   return (
     <div className="sm:w-fit md:w-[400px]">
@@ -74,8 +83,24 @@ export function MintProgressModalBody({
             <div className="ml-5">
               <span className="text-lg font-bold">Mainnet</span>
               <div className="text-sm font-mono">
-                <span>Balance</span>
-                <span className="ml-2">{`${formatAmount(balance?.value)} ETH`}</span>
+                {notEnoughFunds ? (
+                  <div className="flex flex-row items-center  justify-start ">
+                    <img
+                      src={warningIcon}
+                      alt="errorIcon"
+                      className="h-4 w-4 mr-2"
+                    />
+                    <div className="text-md font-modern-era-medium text-red-500">
+                      <span>Balance</span>
+                      <span className="ml-2">{`${formatAmount(balance?.value)} ETH`}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <span>Balance</span>
+                    <span className="ml-2">{`${formatAmount(balance?.value)} ETH`}</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -87,7 +112,14 @@ export function MintProgressModalBody({
           estimatedGas={gasEstimation}
         />
 
-        {status === ProgressStatus.SWITCH_CHAIN ? (
+        {!isConnected ? (
+          <Button
+            type="button"
+            className="bg-[#DE3714] text-white font-mono text-md w-full px-4 py-2 rounded-lg hover:shadow-md"
+          >
+            <ConnectButton />
+          </Button>
+        ) : status === ProgressStatus.SWITCH_CHAIN ? (
           <Button
             type="button"
             onClick={() => {
@@ -97,6 +129,19 @@ export function MintProgressModalBody({
           >
             Switch Chain
           </Button>
+        ) : notEnoughFunds ? (
+          <div className="w-full flex flex-col items-start justify-center gap-3">
+            <span className="p-2 text-sm font-modern-era-medium">
+              Insufficient funds to complete the minting process. Please bridge
+              or add funds to your wallet to proceed.
+            </span>
+            <Button
+              type="button"
+              className="bg-[#DE3714] text-white font-mono text-md w-full px-4 pb-2 rounded-lg hover:shadow-md"
+            >
+              Bridge Funds
+            </Button>
+          </div>
         ) : status === ProgressStatus.NOT_STARTED ||
           status === ProgressStatus.IS_ERROR ? (
           <Button

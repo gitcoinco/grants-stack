@@ -98,14 +98,8 @@ export const AttestationFrame = ({
                 </h2>
               </div>
 
-              {/* Project List */}
-              <div
-                className="flex-1 truncate"
-                style={{
-                  scrollbarWidth: "none",
-                  msOverflowStyle: "none",
-                }}
-              >
+              {/* Project List (3/4 of the height) */}
+              <div className="flex-[2] ">
                 {projects.map((project, index) => (
                   <div
                     key={index}
@@ -129,13 +123,19 @@ export const AttestationFrame = ({
                     </div>
                   </div>
                 ))}
-                <div className="flex flex-col mt-6">
+              </div>
+
+              {/* Top Round Section (1/4 of the height) */}
+              <div className="flex-[1]">
+                <div
+                  className={`flex flex-col relative top-0 ${projects.length < 3 && "border-t border-black py-4"}`}
+                >
                   <p className="text-black text-[20px] font-medium font-mono">
                     Top Round
                   </p>
                 </div>
-                <div className="flex flex-col ">
-                  <p className="text-black absolute bottom-12 text-[32px] font-medium">
+                <div className="absolute bottom-10 flex flex-col">
+                  <p className="text-black text-[32px] font-medium">
                     {topRound}
                   </p>
                 </div>
