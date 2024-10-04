@@ -4,7 +4,7 @@ import shuffle from "knuth-shuffle-seeded";
 import { Address } from "viem";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
-import { AlloVersion, PaginationInfo } from "./data-layer.types";
+import { AlloVersion, PaginationInfo } from "./types/data-layer.types";
 import { gql } from "graphql-request";
 import {
   Application,
@@ -27,7 +27,7 @@ import {
   RoundApplicationPayout,
   ProjectApplicationWithRoundAndProgram,
   DirectDonationValues,
-} from "./data.types";
+} from "./types/data.types";
 import {
   ApplicationSummary,
   DefaultApi as SearchApi,

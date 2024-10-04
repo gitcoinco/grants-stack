@@ -1,4 +1,4 @@
-import { Collection } from "../data.types";
+import { Collection } from "../types/data.types";
 
 export const COLLECTIONS_HARDCODED: Collection[] = [
   {

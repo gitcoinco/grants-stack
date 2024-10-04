@@ -1,4 +1,4 @@
-import { SearchBasedProjectCategory } from "../data.types";
+import { SearchBasedProjectCategory } from "../types/data.types";
 
 export const CATEGORIES_HARDCODED: SearchBasedProjectCategory[] = [
   {
