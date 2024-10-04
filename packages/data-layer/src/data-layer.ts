@@ -26,7 +26,6 @@ import {
   ExpandedApplicationRef,
   RoundApplicationPayout,
   ProjectApplicationWithRoundAndProgram,
-  BaseDonorValues,
   DirectDonationValues,
 } from "./data.types";
 import {
@@ -501,7 +500,7 @@ export class DataLayer {
       return [];
     }
 
-    const applicationToFilter = (r: ExpandedApplicationRef) => {
+    const applicationToFilter = (r: ExpandedApplicationRef): string => {
       return `{
         and: {
           chainId: { equalTo: ${r.chainId} }
@@ -570,8 +569,8 @@ export class DataLayer {
         projectId: a.project.id,
         name: a.project?.metadata?.title,
         websiteUrl: a.project?.metadata?.website,
-        logoImageCid: a.project?.metadata?.logoImg!,
-        bannerImageCid: a.project?.metadata?.bannerImg!,
+        logoImageCid: a.project?.metadata?.logoImg ?? "",
+        bannerImageCid: a.project?.metadata?.bannerImg ?? "",
         summaryText: a.project?.metadata?.description,
         payoutWalletAddress: a.metadata?.application?.recipient,
         createdAtBlock: 123,
@@ -709,6 +708,7 @@ export class DataLayer {
 
     const projects: Project[] = round.applications.flatMap((application) => {
       if (application.project === null) {
+        // eslint-disable-next-line no-console
         console.error(`Project not found for application ${application.id}`);
         return [];
       }
@@ -978,15 +978,15 @@ export class DataLayer {
     projectId: string;
     chainIds: number[];
   }): Promise<DirectDonationValues[]> {
-    const response: { rounds: { donations: DirectDonationValues[] }[] }  = await request(
-      this.gsIndexerEndpoint,
-      getDirectDonationsByProjectId,
-      { projectId, chainIds }
-    );
-  
+    const response: { rounds: { donations: DirectDonationValues[] }[] } =
+      await request(this.gsIndexerEndpoint, getDirectDonationsByProjectId, {
+        projectId,
+        chainIds,
+      });
+
     // Flatten the donations from all rounds into a single array
-    const allDonations = response.rounds.flatMap(round => round.donations);
-  
+    const allDonations = response.rounds.flatMap((round) => round.donations);
+
     return allDonations;
-  }  
+  }
 }
