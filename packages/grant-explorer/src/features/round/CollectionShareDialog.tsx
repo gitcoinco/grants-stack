@@ -4,7 +4,7 @@ import { parseCollection } from "../collections/collections";
 import xIcon from "../../assets/x-logo-black.png";
 import PinataClient from "common/src/services/pinata";
 import { getConfig } from "common/src/config";
-import { AlloVersion } from "data-layer/src/data-layer.types";
+import { AlloVersion } from "data-layer";
 import { collectionPath } from "common/src/routes/explorer";
 import { Button } from "common/src/styles";
 
@@ -79,7 +79,7 @@ export function CollectionShareDialog(props: Props) {
   );
 
   useEffect(() => {
-    setState(prevState => ({
+    setState((prevState) => ({
       ...prevState,
       applications: [...props.applications],
     }));
