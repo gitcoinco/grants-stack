@@ -11,6 +11,9 @@ export function DonationsTransactions({
   contributions?: ContributionsByRoundId;
 }) {
   const roundIds = Object.keys(contributions);
+
+  const contributionsArray = Object.values(contributions).flat();
+
   const nRounds = roundIds.length;
 
   if (nRounds === 0) return null;
@@ -22,6 +25,7 @@ export function DonationsTransactions({
       <TransactionHeader
         transactionHash={transactionHash}
         transactionChainId={transactionChainId}
+        contributions={contributionsArray}
       />
       <RoundHeader />
       {roundIds.map((roundId) => (

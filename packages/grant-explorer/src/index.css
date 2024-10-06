@@ -109,3 +109,13 @@
 .chakra-accordion .chakra-accordion__item{
   border: 0;
 }
+
+
+@keyframes reverse-spin {
+  to {
+      transform: rotate(-360deg);
+  }
+}
+.animate-reverse-spin {
+  animation: reverse-spin 1s linear infinite;
+}

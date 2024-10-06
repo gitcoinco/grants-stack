@@ -10,16 +10,20 @@ import { useRoundById } from "../../context/RoundContext";
 import image from "../../assets/gitcoinlogo-black.svg";
 import alt1 from "../../assets/alt1.svg";
 import { useWindowSize } from "react-use";
-import html2canvas from "html2canvas-pro";
 import { ShareButtons, ThankYouSectionButtons } from "../common/ShareButtons";
 import {
   AttestationFrame,
+  HiddenAttestationFrame,
   PreviewFrame,
 } from "../attestations/MintYourImpactComponents";
 import MintAttestationProgressModal from "../attestations/MintAttestationProgressModal"; // Adjust the import path as needed
 import { MintProgressModalBody } from "../attestations/MintProgressModalBody"; // We'll define this next
 import { useGetAttestationData } from "../../hooks/attestations/useGetAttestationData";
 import { useEASAttestation } from "../../hooks/attestations/useEASAttestation";
+import { handleGetAttestationPreview } from "../../hooks/attestations/utils/getAttestationPreview";
+import { useResolveENS } from "../../hooks/useENS";
+import { useAccount } from "wagmi";
+import { useGetImages } from "../../hooks/attestations/useGetImages";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -72,6 +76,13 @@ export default function ThankYou() {
     state.getCheckedOutProjects()
   );
 
+  // const transactions = useCheckoutStore((state) =>
+  //   state.getCheckedOutTransactions()
+  // );
+  // const ImpactFrameProps = useCheckoutStore((state) => {
+  //   return state.getFrameProps(transactions);
+  // });
+
   const isMrc =
     new Set(checkedOutProjects.map((project) => project.chainId)).size > 1;
   const topProject = checkedOutProjects
@@ -98,7 +109,7 @@ export default function ThankYou() {
     setSelectedBackground(background);
   };
 
-  const mint = async () => {
+  const toggleModal = async () => {
     setIsModalOpen(!isModalOpen);
   };
 
@@ -111,24 +122,32 @@ export default function ThankYou() {
 
   const flex = width <= 1280;
 
-  const handleGetAttestationPreview = async () => {
-    const element = document.getElementById("attestation-impact-frame");
-    if (element) {
-      const canvas = await html2canvas(element);
-      const data = canvas.toDataURL("image/png");
-      return data;
-    }
-  };
+  const { address } = useAccount();
+  const { data: name, isLoading: isLoadingENS } = useResolveENS(address);
+
+  // const { data: imagesBase64, isLoading: isLoadingImages } = useGetImages(
+  //   ImpactFrameProps.projects.map((project) => project.image),
+  //   isModalOpen
+  // );
+
+  // const { data, isLoading, isRefetching } = useGetAttestationData(
+  //   transactions,
+  //   handleGetAttestationPreview,
+  //   isLoadingENS || isLoadingImages || !isModalOpen,
+  //   selectedBackground
+  // );
 
   const { data, isLoading } = useGetAttestationData(
-    ["0x1234567890"],
-    handleGetAttestationPreview
+    [],
+    handleGetAttestationPreview,
+    isLoadingENS,
+    selectedBackground
   );
 
   const chainId = 11155111;
 
   const { handleAttest, handleSwitchChain, status, GasEstimation } =
-    useEASAttestation(chainId, handleToggleModal, data);
+    useEASAttestation(chainId, handleToggleModal, data?.data);
 
   // Mock data TODO: replace with real data Store the last
   // attestation data based on the last created checkout transactions
@@ -152,6 +171,15 @@ export default function ThankYou() {
       image: image,
     },
   ];
+
+  const FrameProps = {
+    selectedBackground,
+    topRound: round?.roundMetadata?.name ?? "",
+    projectsFunded: 20,
+    roundsSupported: 5,
+    checkedOutChains: 6,
+    projects: projectsData,
+  };
 
   return (
     <>
@@ -192,7 +220,7 @@ export default function ThankYou() {
                       </div>
                       <PreviewFrame
                         handleSelectBackground={handleSelectBackground}
-                        mint={mint}
+                        mint={toggleModal}
                       />
                     </div>
                   </div>
@@ -219,6 +247,8 @@ export default function ThankYou() {
                       projectsFunded={20}
                       roundsSupported={5}
                       topRound={"OSS Round"}
+                      address={address}
+                      ensName={name}
                     />
                   </div>
                 </div>
@@ -234,40 +264,28 @@ export default function ThankYou() {
         {/* Progress Modal */}
         <MintAttestationProgressModal
           isOpen={isModalOpen}
-          onClose={mint}
+          onClose={toggleModal}
           heading="Mint your impact"
           subheading="Your unique donation graphic will be generated after you mint."
           body={
             <MintProgressModalBody
+              toggleStartAction={() => void 0}
               handleSwitchChain={handleSwitchChain}
               status={status}
               GasEstimation={GasEstimation}
               handleAttest={handleAttest}
-              isLoading={isLoading}
+              isLoading={isLoading || isLoadingENS}
             />
           }
         />
       </div>
-      <div
-        id="hidden-attestation-frame"
-        style={{
-          position: "absolute",
-          top: "-9999px",
-          left: "-9999px",
-          width: "0",
-          height: "0",
-          overflow: "hidden",
-        }}
-      >
-        <AttestationFrame
-          selectedBackground={selectedBackground}
-          projects={projectsData}
-          checkedOutChains={6}
-          projectsFunded={20}
-          roundsSupported={5}
-          topRound={"OSS Round"}
-        />
-      </div>
+      <HiddenAttestationFrame
+        FrameProps={FrameProps}
+        selectedBackground={selectedBackground}
+        address={address}
+        name={name}
+        imagesBase64={[image, image, image]}
+      />
     </>
   );
 }

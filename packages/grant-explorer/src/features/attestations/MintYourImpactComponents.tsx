@@ -1,18 +1,9 @@
-import { useAccount } from "wagmi";
-import attestationFrameLogo from "../../assets/attestation-frame-logo.svg";
-import alt1 from "../../assets/alt1.svg";
-import alt2 from "../../assets/alt2.svg";
-import alt3 from "../../assets/alt3.svg";
-import alt4 from "../../assets/alt4.svg";
-import alt5 from "../../assets/alt5.svg";
-import preview_alt1 from "../../assets/preview_alt_1.svg";
-import preview_alt2 from "../../assets/preview_alt_2.svg";
-import preview_alt3 from "../../assets/preview_alt_3.svg";
-import preview_alt4 from "../../assets/preview_alt_4.svg";
-import preview_alt5 from "../../assets/preview_alt_5.svg";
 import React from "react";
 import { Button } from "common/src/styles";
-import { useResolveENS } from "../../hooks/useENS";
+import { AttestationFrameProps } from "../api/types";
+import useColorAndBackground from "../../hooks/attestations/useColorAndBackground";
+import { ShareButtons } from "../common/ShareButtons";
+import { useGetImages } from "../../hooks/attestations/useGetImages";
 
 type Project = {
   rank: number;
@@ -28,6 +19,8 @@ export const AttestationFrame = ({
   roundsSupported,
   checkedOutChains,
   projects,
+  address,
+  ensName,
 }: {
   selectedBackground: string;
   topRound: string;
@@ -35,10 +28,11 @@ export const AttestationFrame = ({
   roundsSupported: number;
   checkedOutChains: number;
   projects: Project[];
+  address: string | undefined;
+  ensName: string | undefined;
 }) => {
-  const { address } = useAccount();
-  const { data: name } = useResolveENS(address ?? "0x");
-
+  const { attestationFrameLogo } = useColorAndBackground();
+  if (!address && !ensName) return null;
   return (
     <div className="flex flex-col items-center">
       <div
@@ -63,12 +57,12 @@ export const AttestationFrame = ({
               className="flex items-center space-x-2"
               style={{ maxWidth: "80%" }}
             >
-              {name ? (
+              {ensName ? (
                 <div
                   className="font-mono font-medium text-black text-[19px] truncate"
                   style={{ maxWidth: "100%" }}
                 >
-                  {name}
+                  {ensName}
                 </div>
               ) : (
                 <div
@@ -88,9 +82,15 @@ export const AttestationFrame = ({
           </div>
 
           {/* Main Body */}
-          <div className="flex flex-1 w-full bg-white bg-opacity-10 border-x border-b border-black rounded-b-lg overflow-hidden">
+          <div
+            className="flex flex-1 w-full bg-white bg-opacity-10 border-x border-b border-black rounded-b-lg overflow-x-auto"
+            style={{
+              scrollbarWidth: "none" /* Firefox */,
+              msOverflowStyle: "none" /* Internet Explorer 10+ */,
+            }}
+          >
             {/* Left Section (Top Projects and Top Round) */}
-            <div className="flex flex-col flex-1 h-full p-5">
+            <div className="flex flex-col flex-1 h-full p-5 w-[350px]">
               {/* Top Projects Header */}
               <div className="w-full pb-4 border-b border-black">
                 <h2 className="font-mono font-medium text-black text-[18px]">
@@ -99,7 +99,13 @@ export const AttestationFrame = ({
               </div>
 
               {/* Project List (3/4 of the height) */}
-              <div className="flex-[2] ">
+              <div
+                className="flex-[2] overflow-x-auto"
+                style={{
+                  scrollbarWidth: "none" /* Firefox */,
+                  msOverflowStyle: "none" /* Internet Explorer 10+ */,
+                }}
+              >
                 {projects.map((project, index) => (
                   <div
                     key={index}
@@ -117,7 +123,7 @@ export const AttestationFrame = ({
                       <p className="text-black text-[14px] font-medium truncate">
                         {project.name}
                       </p>
-                      <p className="text-gray-600 text-[12px]">
+                      <p className="text-gray-600 text-[12px] break-words truncate">
                         {project.round}
                       </p>
                     </div>
@@ -126,16 +132,18 @@ export const AttestationFrame = ({
               </div>
 
               {/* Top Round Section (1/4 of the height) */}
-              <div className="flex-[1]">
+              <div className="flex-[1] w-full mt-4 items-center justify-center">
                 <div
-                  className={`flex flex-col relative top-0 ${projects.length < 3 && "border-t border-black py-4"}`}
+                  className={`flex flex-col ${
+                    projects.length < 3 && "border-t border-black py-4"
+                  }`}
                 >
-                  <p className="text-black text-[20px] font-medium font-mono">
+                  <p className="text-black text-[18px] font-medium font-mono">
                     Top Round
                   </p>
                 </div>
-                <div className="absolute bottom-10 flex flex-col">
-                  <p className="text-black text-[32px] font-medium">
+                <div className="flex flex-col flex-1 items-left text-left relative top-5">
+                  <p className="text-black text-[25px] font-medium break-words leading-tight overflow-hidden">
                     {topRound}
                   </p>
                 </div>
@@ -173,31 +181,13 @@ export const PreviewFrame = ({
   handleSelectBackground: (background: string) => void;
   mint: () => void;
 }) => {
-  const colorMapper = {
-    "0": "#8266BE",
-    "1": "#79A557",
-    "2": "#9BC8E7",
-    "3": "#E3734C",
-    "4": "#BCBFBF",
-  };
-
-  const backgroundMapper = {
-    "0": alt1,
-    "1": alt2,
-    "2": alt3,
-    "3": alt4,
-    "4": alt5,
-  };
-
-  const defaultColor = "#EBEBEB";
-
-  const backgroundAlternatives = [
+  const {
+    backgroundAlternatives,
+    defaultColor,
+    backgroundMapper,
+    colorMapper,
     preview_alt1,
-    preview_alt2,
-    preview_alt3,
-    preview_alt4,
-    preview_alt5,
-  ];
+  } = useColorAndBackground();
 
   const [selectedColor, setSelectedColor] = React.useState("0");
   const [previewBackground, setPreviewBackground] =
@@ -247,17 +237,188 @@ export const PreviewFrame = ({
               />
             ))}
           </div>
-          <div className="mt-2 mb-8 z-40">
-            <Button
-              type="button"
-              className="flex items-center justify-center text-xl rounded-lg border-1 font-mono font-bold text-black bg-white px-10 sm:px-10 shadow-md hover:shadow-lg mt-2"
-              onClick={mint}
+          <div className="mt-2 z-40">
+            <div
+              className={`flex align-center justify-center border-[1px] rounded-[8px] bg-rainbow-gradient border-transparent`}
             >
-              Mint your Donation
-            </Button>
+              <Button
+                type="button"
+                className={`px-10 py-1 rounded-[8px] bg-white font-medium font-mono text-base text-black h-8 whitespace-nowrap border-[2px] border-transparent hover:shadow-md`}
+                onClick={mint}
+                data-testid="mint-donation-button"
+              >
+                Mint donation
+              </Button>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  );
+};
+
+export const PreviewFrameHistoryPage = ({
+  nextStep,
+  selectBackground,
+  previewBackground,
+  selectedColor,
+}: {
+  selectBackground: (background: string) => void;
+  nextStep: () => void;
+  previewBackground: string;
+  selectedColor: string;
+}) => {
+  const { defaultColor, colorMapper } = useColorAndBackground();
+
+  return (
+    <div className="flex flex-col items-center">
+      <div
+        className="flex flex-col w-auto items-center relative rounded-3xl"
+        style={{
+          backgroundImage: `url(${previewBackground})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          width: "300px",
+          height: "300px",
+        }}
+      ></div>
+      <div className="flex flex-wrap gap-3 items-center  p-2">
+        <div className="flex flex-col items-center">
+          <div className="flex flex-wrap items-center space-x-2 z-30">
+            <div className="text-2xl font-modern-era-regular">
+              Pick your color
+            </div>
+
+            {Object.keys(colorMapper).map((key, index) => (
+              <div
+                key={index}
+                onClick={() => selectBackground(key)}
+                className={`w-5 h-5 rounded-full cursor-pointer ${
+                  selectedColor === key ? "border-1 border-black" : ""
+                }`}
+                style={{
+                  backgroundColor:
+                    selectedColor === key
+                      ? colorMapper[key as unknown as keyof typeof colorMapper]
+                      : defaultColor,
+                }}
+              />
+            ))}
+          </div>
+          <div className="mt-2 z-40">
+            <div
+              className={`flex align-center justify-center border-[1px] rounded-[8px] bg-rainbow-gradient border-transparent`}
+            >
+              <Button
+                type="button"
+                className={`px-4 py-1 rounded-[8px] bg-white font-medium font-mono text-base text-black h-8 whitespace-nowrap border-[2px] border-transparent hover:shadow-md`}
+                onClick={nextStep}
+                data-testid="mint-donation-button"
+              >
+                Mint donation
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const HiddenAttestationFrame = ({
+  FrameProps,
+  selectedBackground,
+  address,
+  name,
+  imagesBase64,
+}: {
+  FrameProps: AttestationFrameProps;
+  selectedBackground: string;
+  address: string | undefined;
+  name: string | undefined;
+  imagesBase64: string[] | undefined;
+}) => {
+  return (
+    <div
+      id="hidden-attestation-frame"
+      style={{
+        position: "absolute",
+        top: "-9999px",
+        left: "-9999px",
+        width: "0",
+        height: "0",
+        overflow: "hidden",
+      }}
+    >
+      <AttestationFrame
+        selectedBackground={selectedBackground}
+        projects={FrameProps.projects.map((project, i) => ({
+          ...project,
+          image: imagesBase64 ? imagesBase64[i] : "",
+        }))}
+        checkedOutChains={FrameProps.checkedOutChains}
+        projectsFunded={FrameProps.projectsFunded}
+        roundsSupported={FrameProps.roundsSupported}
+        topRound={FrameProps.topRound}
+        address={address}
+        ensName={name}
+      />
+    </div>
+  );
+};
+import bgImage from "../../assets/mint-your-impact-background.svg";
+
+export const ImpactMintingSuccess = ({
+  ImpactMetadata,
+}: {
+  ImpactMetadata?: string;
+}) => {
+  const {
+    data: image,
+    isLoading,
+    isFetching,
+  } = useGetImages(ImpactMetadata ? [ImpactMetadata] : [], !!ImpactMetadata);
+
+  return (
+    <div
+      className="flex flex-col items-center text-center w-full relative bg-bottom bg-cover "
+      style={{ backgroundImage: `url(${bgImage})` }}
+    >
+      <div className="flex flex-col items-center justify-center gap-4 px-8 py-6 bg-[#ffffff66] rounded-3xl w-[430px] h-[430px]">
+        <div className="flex flex-col items-center justify-center w-full ">
+          <ImageWithLoading
+            src={image?.[0]}
+            isLoading={isLoading || !image || !ImpactMetadata || isFetching}
+          />
+        </div>
+      </div>
+      <ShareButtons />
+    </div>
+  );
+};
+
+// ImageWithLoading component
+const ImageWithLoading = ({
+  src,
+  isLoading,
+  ...props
+}: {
+  src: string | undefined;
+  isLoading: boolean;
+} & React.HTMLProps<HTMLDivElement>) => {
+  // Fixed size of 400x400
+  const sizeClass = "w-[400px] h-[400px]";
+
+  // Handle loading and blur states
+  const loadingClass = isLoading ? "animate-pulse bg-gray-100" : "";
+  const blurClass = !src ? "blur-[40px]" : "";
+
+  return (
+    <div
+      {...props}
+      className={`bg-cover bg-center bg-gray-200 dark:bg-gray-800 ${sizeClass} ${blurClass} ${loadingClass}`}
+      style={{ backgroundImage: `url("${src || ""}")` }} // Use src if available, otherwise keep it empty
+    />
   );
 };

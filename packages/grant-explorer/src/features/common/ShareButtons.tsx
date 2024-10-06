@@ -9,7 +9,7 @@ import xIcon from "../../assets/x-logo-black.png";
 
 export const ShareButtons = (): JSX.Element => {
   return (
-    <div className="pb-8 bg-white z-30">
+    <div className="z-30">
       <div className="flex flex-col items-center justify-center gap-2 relative">
         <span className="font-mona font-semibold">Share</span>
         <div className="flex items-center justify-center gap-2 relative">

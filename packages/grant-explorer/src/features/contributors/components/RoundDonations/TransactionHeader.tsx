@@ -4,13 +4,16 @@ import { getTxBlockExplorerLink } from "common";
 
 import { truncateAddress } from "../../utils/address";
 import { MintingActionButton } from "../Buttons";
+import { Contribution } from "data-layer";
 
 export function TransactionHeader({
   transactionHash,
   transactionChainId,
+  contributions = [],
 }: {
   transactionHash: string;
   transactionChainId: number;
+  contributions?: Contribution[];
 }) {
   const transactionLink = getTxBlockExplorerLink(
     transactionChainId,
@@ -32,6 +35,7 @@ export function TransactionHeader({
       </span>
       <MintingActionButton
         transaction={{ hash: transactionHash, chainId: transactionChainId }}
+        contributions={contributions}
       />
     </div>
   );

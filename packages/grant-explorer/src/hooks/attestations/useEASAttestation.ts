@@ -6,7 +6,6 @@ import { useAttestationStatus } from "./useAttestationStatus";
 import { useSwitchChain } from "./useSwitchChain";
 import { useEstimateGas } from "./useEstimateGas";
 import { useAttestMutation } from "./useAttestMutation";
-import { useMemo } from "react";
 
 /**
  * Main hook to manage EAS Attestations.
