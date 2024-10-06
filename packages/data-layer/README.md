@@ -27,6 +27,13 @@ const { applications, pagination } = await gsData.query({
   type: "applications-paginated",
   page: 0,
 });
+
+// Example usage of getMintingAttestationIdsByTransactionHash
+const transactionHashes = ["0x1234567890abcdef"]; // Replace with a valid transaction hash
+const { data: attestations } =
+  await gsData.getMintingAttestationIdsByTransactionHash({
+    transactionHashes,
+  });
 ```
 
 For more examples, see `src/data-layer.test.ts`.
