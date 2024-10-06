@@ -60,6 +60,8 @@ import {
   getDirectDonationsByProjectId,
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
+import { AttestationService } from "./services";
+import { MintingAttestationIdsData } from "./types/attestations.types";
 
 /**
  * DataLayer is a class that provides a unified interface to the various data sources.
@@ -83,6 +85,8 @@ export class DataLayer {
   private ipfsGateway: string;
   private collectionsSource: collections.CollectionsSource;
   private gsIndexerEndpoint: string;
+
+  private attestationService: AttestationService;
 
   constructor({
     fetch,
@@ -120,6 +124,8 @@ export class DataLayer {
         ? { type: "hardcoded" }
         : { type: "google-sheet", url: collections.googleSheetsUrl };
     this.gsIndexerEndpoint = indexer.baseUrl;
+
+    this.attestationService = new AttestationService(this.gsIndexerEndpoint);
   }
 
   /**
@@ -988,5 +994,15 @@ export class DataLayer {
     const allDonations = response.rounds.flatMap((round) => round.donations);
 
     return allDonations;
+  }
+
+  async getMintingAttestationIdsByTransactionHash({
+    transactionHashes,
+  }: {
+    transactionHashes: string[];
+  }): Promise<MintingAttestationIdsData[]> {
+    return this.attestationService.getMintingAttestationIdsByTransactionHash({
+      transactionHashes,
+    });
   }
 }
