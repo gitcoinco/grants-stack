@@ -15,7 +15,7 @@ export class AttestationService {
   }): Promise<MintingAttestationIdsData[]> {
     const query = gql`
       query getMintingAttestationIdsByTransactionHash(
-        $transactionHashes: [String!]
+        $transactionHashes: [String!]!
       ) {
         attestationTxns(filter: { txnHash: { in: $transactionHashes } }) {
           txnHash
