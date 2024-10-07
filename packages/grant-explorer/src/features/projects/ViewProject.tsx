@@ -49,7 +49,7 @@ import ProgressModal, { errorModalDelayMs } from "../common/ProgressModal";
 import { useDirectAllocation } from "./hooks/useDirectAllocation";
 import { Address, getAddress, zeroAddress } from "viem";
 import GenericModal from "../common/GenericModal";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/solid";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { getBalance } from "@wagmi/core";
