@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { getAddress } from "viem";
 import Papa from "papaparse";
-import { Collection } from "../types/data.types";
+import { Collection } from "../data.types";
 import { COLLECTIONS_HARDCODED } from "./collections.data";
 
 export type CollectionsSource =

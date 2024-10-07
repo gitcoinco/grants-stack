@@ -1,4 +1,4 @@
-import { SearchBasedProjectCategory } from "../types/data.types";
+import { SearchBasedProjectCategory } from "../data.types";
 import { CATEGORIES_HARDCODED } from "./categories.data";
 
 export const getSearchBasedCategories = (): Promise<
