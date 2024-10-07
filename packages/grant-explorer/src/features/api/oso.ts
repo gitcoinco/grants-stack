@@ -11,6 +11,7 @@ const graphQLClient = new GraphQLClient(osoUrl, {
   },
 });
 let hasFetched = false;
+let fetchedProject = "";
 
 export interface IOSOStats {
   oso_codeMetricsByProjectV1: {
@@ -31,6 +32,7 @@ export function useOSO(projectGithub?: string) {
   const [stats, setStats] = useState<IOSOStats | null>(null);
 
   const getStatsFor = async (projectRegistryGithub: string) => {
+    fetchedProject = projectRegistryGithub;
     if (osoApiKey === "")
       throw new Error("OpenSourceObserver API key not set.");
     const queryVars = {
@@ -81,7 +83,7 @@ export function useOSO(projectGithub?: string) {
     revalidateOnMount: true,
   });
 
-  if (stats === null && !hasFetched)
+  if (fetchedProject !== projectGithub)
     projectGithub && getStatsFor(projectGithub);
   return {
     /**
