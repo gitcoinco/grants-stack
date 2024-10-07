@@ -10,7 +10,6 @@ const graphQLClient = new GraphQLClient(osoUrl, {
     authorization: `Bearer ${osoApiKey}`,
   },
 });
-let hasFetched = false;
 let fetchedProject = "";
 
 export interface IOSOStats {
@@ -53,7 +52,6 @@ export function useOSO(projectGithub?: string) {
     `;
 
     try {
-      hasFetched = true;
       const items: IOSOStats = await graphQLClient.request<IOSOStats>(
         queryStats,
         queryVars
@@ -84,7 +82,8 @@ export function useOSO(projectGithub?: string) {
   });
 
   if (fetchedProject !== projectGithub)
-    projectGithub && getStatsFor(projectGithub);
+    // check if currently loaded stats are for viewed project
+    projectGithub && getStatsFor(projectGithub); // fetch if not
   return {
     /**
      * Fetch OSO for stats on a project
