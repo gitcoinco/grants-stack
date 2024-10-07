@@ -26,8 +26,11 @@ const CollectionCard = ({ collection, size }: CollectionCardProps) => {
             <div className="text-grey-400 text-sm">
               {numberOfProjects} projects
             </div>
-            <div className="text-sm flex gap-2 items-center">
-              by <Badge rounded="full">{author}</Badge>
+            <div className="text-sm flex gap-2 items-center truncate max-w-[20ch]">
+              by
+              <div className="truncate">
+                <Badge rounded="full">{author}</Badge>
+              </div>
             </div>
           </div>
         </div>
