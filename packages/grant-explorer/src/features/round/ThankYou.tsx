@@ -22,8 +22,14 @@ import { useGetAttestationData } from "../../hooks/attestations/useGetAttestatio
 import { useEASAttestation } from "../../hooks/attestations/useEASAttestation";
 import { handleGetAttestationPreview } from "../../hooks/attestations/utils/getAttestationPreview";
 import { useResolveENS } from "../../hooks/useENS";
-import { useAccount } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { useGetImages } from "../../hooks/attestations/useGetImages";
+import { useEstimateGas } from "../../hooks/attestations/useEstimateGas";
+import {
+  AttestationChainId,
+  AttestationFee,
+} from "../attestations/utils/constants";
+import { ethers } from "ethers";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -33,6 +39,29 @@ export default function ThankYou() {
 
   const cart = useCartStorage();
   const checkoutStore = useCheckoutStore();
+
+  /** Fetch round data for tweet */
+  const checkedOutProjects = useCheckoutStore((state) =>
+    state.getCheckedOutProjects()
+  );
+
+  const isMrc =
+    new Set(checkedOutProjects.map((project) => project.chainId)).size > 1;
+  const topProject = checkedOutProjects
+    .sort((a, b) =>
+      Number(a.amount) > Number(b.amount)
+        ? -1
+        : Number(a.amount) < Number(b.amount)
+          ? 1
+          : 0
+    )
+    .at(0);
+
+  const { round } = useRoundById(
+    /* If we don't have a round, pass in invalid params and silently fail */
+    Number(topProject?.chainId),
+    topProject?.roundId ?? ""
+  );
 
   /** Remove checked out projects from cart, but keep the ones we didn't yet check out succesfully. */
   const checkedOutChains = useMemo(
@@ -71,35 +100,47 @@ export default function ThankYou() {
     window.scrollTo(0, 100);
   }, []);
 
-  /** Fetch round data for tweet */
-  const checkedOutProjects = useCheckoutStore((state) =>
-    state.getCheckedOutProjects()
+  const transactions = useCheckoutStore((state) =>
+    state.getCheckedOutTransactions()
   );
 
-  // const transactions = useCheckoutStore((state) =>
-  //   state.getCheckedOutTransactions()
-  // );
-  // const ImpactFrameProps = useCheckoutStore((state) => {
-  //   return state.getFrameProps(transactions);
-  // });
+  const ImpactFrameProps = useCheckoutStore((state) => {
+    return state.getFrameProps(transactions);
+  });
 
-  const isMrc =
-    new Set(checkedOutProjects.map((project) => project.chainId)).size > 1;
-  const topProject = checkedOutProjects
-    .sort((a, b) =>
-      Number(a.amount) > Number(b.amount)
-        ? -1
-        : Number(a.amount) < Number(b.amount)
-          ? 1
-          : 0
-    )
-    .at(0);
+  // Mock data TODO: replace with real data Store the last
+  // attestation data based on the last created checkout transactions
+  // const projectsData = [
+  //   {
+  //     rank: 1,
+  //     name: "Saving forests around the world",
+  //     round: "Climate Round",
+  //     image: image,
+  //   },
+  //   {
+  //     rank: 2,
+  //     name: "Funding schools in Mexico",
+  //     round: "Education Round",
+  //     image: image,
+  //   },
+  //   {
+  //     rank: 3,
+  //     name: "Accessible software for everyone",
+  //     round: "OSS Round",
+  //     image: image,
+  //   },
+  // ];
 
-  const { round } = useRoundById(
-    /* If we don't have a round, pass in invalid params and silently fail */
-    Number(topProject?.chainId),
-    topProject?.roundId ?? ""
-  );
+  // const ImpactFrameProps = {
+  //   topRound: round?.roundMetadata?.name ?? "",
+  //   projectsFunded: 20,
+  //   roundsSupported: 5,
+  //   checkedOutChains: 6,
+  //   projects: projectsData,
+  // };
+
+  // For testing add one or multiple test transaction hash/es
+  // const transactions = ["0x1234567890"];
 
   const [minted, setMinted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -125,61 +166,47 @@ export default function ThankYou() {
   const { address } = useAccount();
   const { data: name, isLoading: isLoadingENS } = useResolveENS(address);
 
-  // const { data: imagesBase64, isLoading: isLoadingImages } = useGetImages(
-  //   ImpactFrameProps.projects.map((project) => project.image),
-  //   isModalOpen
-  // );
+  const { data: imagesBase64, isLoading: isLoadingImages } = useGetImages(
+    ImpactFrameProps.projects.map((project) => project.image),
+    isModalOpen
+  );
 
-  // const { data, isLoading, isRefetching } = useGetAttestationData(
-  //   transactions,
-  //   handleGetAttestationPreview,
-  //   isLoadingENS || isLoadingImages || !isModalOpen,
-  //   selectedBackground
-  // );
-
-  const { data, isLoading } = useGetAttestationData(
-    [],
+  const { data, isLoading, isRefetching } = useGetAttestationData(
+    transactions,
     handleGetAttestationPreview,
-    isLoadingENS,
+    isLoadingENS || isLoadingImages || !isModalOpen,
     selectedBackground
   );
 
-  const chainId = 11155111;
+  // const { data, isLoading } = useGetAttestationData(
+  //   ["0x1234567890"],
+  //   handleGetAttestationPreview,
+  //   isLoadingENS,
+  //   selectedBackground
+  // );
+  const frameId = ethers.utils.solidityKeccak256(["string[]"], [transactions]);
 
-  const { handleAttest, handleSwitchChain, status, GasEstimation } =
-    useEASAttestation(chainId, handleToggleModal, data?.data);
+  const {
+    data: gasEstimation,
+    isLoading: loadingGasEstimate,
+    isRefetching: isRefetchingEstimate,
+  } = useEstimateGas(AttestationChainId, !isLoading, data?.data);
 
-  // Mock data TODO: replace with real data Store the last
-  // attestation data based on the last created checkout transactions
-  const projectsData = [
-    {
-      rank: 1,
-      name: "Saving forests around the world",
-      round: "Climate Round",
-      image: image,
-    },
-    {
-      rank: 2,
-      name: "Funding schools in Mexico",
-      round: "Education Round",
-      image: image,
-    },
-    {
-      rank: 3,
-      name: "Accessible software for everyone",
-      round: "OSS Round",
-      image: image,
-    },
-  ];
+  const { handleAttest, handleSwitchChain, status } = useEASAttestation(
+    AttestationChainId,
+    handleToggleModal,
+    data?.data
+  );
 
-  const FrameProps = {
-    selectedBackground,
-    topRound: round?.roundMetadata?.name ?? "",
-    projectsFunded: 20,
-    roundsSupported: 5,
-    checkedOutChains: 6,
-    projects: projectsData,
-  };
+  const { data: balance } = useBalance({
+    chainId: AttestationChainId,
+    address,
+  });
+
+  const notEnoughFunds =
+    balance?.value && gasEstimation
+      ? balance.value <= AttestationFee + gasEstimation
+      : false;
 
   return (
     <>
@@ -189,7 +216,7 @@ export default function ThankYou() {
         style={{ backgroundImage: `url(${bgImage})` }}
       >
         <main className="flex-grow flex items-center justify-center">
-          {!minted ? (
+          {transactions.length > 0 ? (
             <div className="flex flex-col xl:flex-row items-center justify-center w-full text-center">
               {/* Left Section */}
               <div
@@ -227,7 +254,7 @@ export default function ThankYou() {
                 </div>
               </div>
             </div>
-          ) : (
+          ) : minted ? (
             <div className="flex flex-col items-center justify-center max-w-screen-2xl text-center">
               <div className="inline-flex flex-col items-center justify-center gap-6 px-16 pt-8 relative bg-[#ffffff66] rounded-3xl">
                 <div className="flex flex-col items-start  relative self-stretch w-full ">
@@ -242,18 +269,26 @@ export default function ThankYou() {
                     </div>
                     <AttestationFrame
                       selectedBackground={selectedBackground}
-                      projects={projectsData}
-                      checkedOutChains={6}
-                      projectsFunded={20}
-                      roundsSupported={5}
-                      topRound={"OSS Round"}
+                      projects={ImpactFrameProps.projects}
+                      checkedOutChains={ImpactFrameProps.checkedOutChains}
+                      projectsFunded={ImpactFrameProps.projectsFunded}
+                      roundsSupported={ImpactFrameProps.roundsSupported}
+                      topRound={ImpactFrameProps.topRound}
                       address={address}
                       ensName={name}
+                      frameId={frameId}
                     />
                   </div>
                 </div>
               </div>
               <ShareButtons />
+            </div>
+          ) : (
+            <div className={`w-full h-full flex flex-col items-center`}>
+              <ThankYouSectionButtons
+                roundName={round?.roundMetadata?.name ?? ""}
+                isMrc={isMrc}
+              />
             </div>
           )}
         </main>
@@ -262,30 +297,38 @@ export default function ThankYou() {
         </div>
 
         {/* Progress Modal */}
-        <MintAttestationProgressModal
-          isOpen={isModalOpen}
-          onClose={toggleModal}
-          heading="Mint your impact"
-          subheading="Your unique donation graphic will be generated after you mint."
-          body={
-            <MintProgressModalBody
-              toggleStartAction={() => void 0}
-              handleSwitchChain={handleSwitchChain}
-              status={status}
-              GasEstimation={GasEstimation}
-              handleAttest={handleAttest}
-              isLoading={isLoading || isLoadingENS}
+        {transactions.length > 0 && (
+          <>
+            <MintAttestationProgressModal
+              isOpen={isModalOpen}
+              onClose={toggleModal}
+              heading="Mint your impact"
+              subheading="Your unique donation graphic will be generated after you mint."
+              body={
+                <MintProgressModalBody
+                  toggleStartAction={() => void 0}
+                  handleSwitchChain={handleSwitchChain}
+                  status={status}
+                  gasEstimation={gasEstimation}
+                  isLoadingEstimation={loadingGasEstimate}
+                  notEnoughFunds={notEnoughFunds}
+                  handleAttest={handleAttest}
+                  impactImageCid={data?.impactImageCid}
+                  isLoading={isLoading || isLoadingENS || isRefetchingEstimate}
+                />
+              }
             />
-          }
-        />
+            <HiddenAttestationFrame
+              FrameProps={ImpactFrameProps}
+              selectedBackground={selectedBackground}
+              address={address}
+              name={name}
+              imagesBase64={imagesBase64 ?? [image, image, image]}
+              frameId={frameId}
+            />
+          </>
+        )}
       </div>
-      <HiddenAttestationFrame
-        FrameProps={FrameProps}
-        selectedBackground={selectedBackground}
-        address={address}
-        name={name}
-        imagesBase64={[image, image, image]}
-      />
     </>
   );
 }

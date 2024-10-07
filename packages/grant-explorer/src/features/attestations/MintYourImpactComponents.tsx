@@ -13,6 +13,7 @@ type Project = {
 };
 
 export const AttestationFrame = ({
+  frameId,
   selectedBackground,
   topRound,
   projectsFunded,
@@ -22,6 +23,7 @@ export const AttestationFrame = ({
   address,
   ensName,
 }: {
+  frameId: string;
   selectedBackground: string;
   topRound: string;
   projectsFunded: number;
@@ -29,15 +31,14 @@ export const AttestationFrame = ({
   checkedOutChains: number;
   projects: Project[];
   address: string | undefined;
-  ensName: string | undefined;
+  ensName: string | null | undefined;
 }) => {
   const { attestationFrameLogo } = useColorAndBackground();
-  if (!address && !ensName) return null;
   return (
     <div className="flex flex-col items-center">
       <div
         className="relative rounded-3xl overflow-hidden"
-        id="attestation-impact-frame"
+        id={`attestation-impact-frame-${frameId}`}
         style={{
           backgroundImage: `url(${selectedBackground})`,
           backgroundSize: "cover",
@@ -332,12 +333,14 @@ export const HiddenAttestationFrame = ({
   address,
   name,
   imagesBase64,
+  frameId,
 }: {
   FrameProps: AttestationFrameProps;
   selectedBackground: string;
   address: string | undefined;
-  name: string | undefined;
+  name: string | null | undefined;
   imagesBase64: string[] | undefined;
+  frameId: string;
 }) => {
   return (
     <div
@@ -352,6 +355,7 @@ export const HiddenAttestationFrame = ({
       }}
     >
       <AttestationFrame
+        frameId={frameId}
         selectedBackground={selectedBackground}
         projects={FrameProps.projects.map((project, i) => ({
           ...project,
@@ -370,15 +374,15 @@ export const HiddenAttestationFrame = ({
 import bgImage from "../../assets/mint-your-impact-background.svg";
 
 export const ImpactMintingSuccess = ({
-  ImpactMetadata,
+  impactImageCid,
 }: {
-  ImpactMetadata?: string;
+  impactImageCid?: string;
 }) => {
   const {
     data: image,
     isLoading,
     isFetching,
-  } = useGetImages(ImpactMetadata ? [ImpactMetadata] : [], !!ImpactMetadata);
+  } = useGetImages(impactImageCid ? [impactImageCid] : [], !!impactImageCid);
 
   return (
     <div
@@ -389,7 +393,7 @@ export const ImpactMintingSuccess = ({
         <div className="flex flex-col items-center justify-center w-full ">
           <ImageWithLoading
             src={image?.[0]}
-            isLoading={isLoading || !image || !ImpactMetadata || isFetching}
+            isLoading={isLoading || !image || !impactImageCid || isFetching}
           />
         </div>
       </div>

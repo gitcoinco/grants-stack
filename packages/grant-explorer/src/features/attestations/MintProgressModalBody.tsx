@@ -5,7 +5,6 @@ import processingIcon from "../../assets/processing.svg";
 import warningIcon from "../../assets/warning.svg";
 import { ProgressStatus } from "../../hooks/attestations/config";
 import { useAccount, useBalance } from "wagmi";
-import { UseQueryResult } from "@tanstack/react-query";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   ImpactMintingSuccess,
@@ -13,25 +12,31 @@ import {
 } from "./MintYourImpactComponents";
 import { CostDetails } from "./MintCostDetails";
 import { formatAmount } from "./utils/formatAmount";
+import { AttestationChainId, AttestationFee } from "./utils/constants";
 
 type MintProgressModalBodyProps = {
   handleSwitchChain: () => Promise<void>;
   handleAttest: () => Promise<void>;
   toggleStartAction: () => void;
-  status: ProgressStatus;
-  GasEstimation: UseQueryResult<bigint, Error>;
-  isLoading: boolean;
   selectBackground?: (background: string) => void;
+
+  status: ProgressStatus;
+  isLoading: boolean;
+  impactImageCid: string;
+  gasEstimation: bigint | undefined;
+  notEnoughFunds: boolean;
+  isLoadingEstimation: boolean;
   isTransactionHistoryPage?: boolean;
   previewBackground?: string;
   selectedColor?: string;
-  metadataCid?: string;
 };
 
 export function MintProgressModalBody({
   handleSwitchChain,
   status,
-  GasEstimation,
+  gasEstimation,
+  isLoadingEstimation,
+  notEnoughFunds,
   handleAttest,
   toggleStartAction,
   isLoading,
@@ -39,21 +44,15 @@ export function MintProgressModalBody({
   isTransactionHistoryPage,
   selectedColor,
   previewBackground,
-  metadataCid,
+  impactImageCid,
 }: MintProgressModalBodyProps) {
-  const chainId = 11155111;
-  const attestationFee = BigInt(0.001 * 10 ** 18);
   const { address, isConnected } = useAccount();
-  const { data: gasEstimation, isLoading: loadingGasEstimate } = GasEstimation;
-  const { data: balance } = useBalance({ chainId, address });
+  const { data: balance } = useBalance({
+    chainId: AttestationChainId,
+    address,
+  });
   const [nextStep, setNextStep] = useState(false);
 
-  const notEnoughFunds =
-    balance?.value &&
-    gasEstimation &&
-    balance.value <= attestationFee + gasEstimation;
-
-  const succ = status === ProgressStatus.IS_SUCCESS;
   return (
     <div className="min-w-full min-h-full">
       {isTransactionHistoryPage && !nextStep ? (
@@ -68,8 +67,8 @@ export function MintProgressModalBody({
             selectedColor={selectedColor as string}
           />
         </div>
-      ) : succ ? (
-        <ImpactMintingSuccess ImpactMetadata={metadataCid} />
+      ) : status === ProgressStatus.IS_SUCCESS && !isTransactionHistoryPage ? (
+        <ImpactMintingSuccess impactImageCid={impactImageCid} />
       ) : (
         <div className="flex flex-col items-start justify-center">
           {status === ProgressStatus.IS_ERROR && (
@@ -112,8 +111,8 @@ export function MintProgressModalBody({
           </div>
 
           <CostDetails
-            isLoading={loadingGasEstimate}
-            attestationFee={attestationFee}
+            isLoading={isLoadingEstimation}
+            attestationFee={AttestationFee}
             estimatedGas={gasEstimation}
           />
 

@@ -67,7 +67,7 @@ export const useAttestMutation = (
     onSuccess: () => {
       // We need to find out if we are going to close the modal and
       //  route to a new page or show the success page inside the modal
-      // handleToggleModal();
+      handleToggleModal();
       updateStatus(ProgressStatus.IS_SUCCESS);
     },
   });

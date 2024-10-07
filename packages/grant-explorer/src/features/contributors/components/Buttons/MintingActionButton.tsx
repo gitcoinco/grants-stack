@@ -56,7 +56,11 @@ export function MintingActionButton({
         selectBackground={selectBackground}
         selectedBackground={selectedBackground}
       />
-      <MintDonationButton isMinted toggleModal={toggleModal} isOpen={isOpen} />
+      <MintDonationButton
+        isMinted={isMinted}
+        toggleModal={toggleModal}
+        isOpen={isOpen}
+      />
     </>
   );
 }

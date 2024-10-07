@@ -408,6 +408,17 @@ export const useCheckoutStore = create<CheckoutState>()(
         }
       > = {};
 
+      if (txHashes.length === 0) {
+        return {
+          selectedBackground: "",
+          topRound: "",
+          projectsFunded: 0,
+          roundsSupported: 0,
+          checkedOutChains: 0,
+          projects: [],
+        } as AttestationFrameProps;
+      }
+
       for (const txHash of txHashes) {
         const projects = get().getCheckedOutProjectsByTx(txHash);
         allProjects.push(...projects);

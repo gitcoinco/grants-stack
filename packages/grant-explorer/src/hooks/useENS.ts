@@ -20,7 +20,7 @@ export const useResolveENS = (address?: Address) => {
         universalResolverAddress: "0xce01f8eee7E479C928F8919abD53E553a36CeF67",
       });
 
-      const name = ens ? normalize(ens) : undefined;
+      const name = ens ? normalize(ens) : null;
       return name;
     },
   });

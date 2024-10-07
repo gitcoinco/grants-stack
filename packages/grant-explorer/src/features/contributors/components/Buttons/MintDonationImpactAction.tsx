@@ -5,13 +5,34 @@ import { useGetAttestationData } from "../../../../hooks/attestations/useGetAtte
 import { useEASAttestation } from "../../../../hooks/attestations/useEASAttestation";
 import { useResolveENS } from "../../../../hooks/useENS";
 import { handleGetAttestationPreview } from "../../../../hooks/attestations/utils/getAttestationPreview";
+import { useParams } from "react-router-dom";
 
-import { useAccount } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { useGetImages } from "../../../../hooks/attestations/useGetImages";
 import { getContributionFrameProps } from "../../utils/getContributionFrameProps";
 import { MintDonationButton } from "./MintDonationButton";
 import { Contribution } from "data-layer";
 import { ProgressStatus } from "../../../../hooks/attestations/config";
+import { useEstimateGas } from "../../../../hooks/attestations/useEstimateGas";
+
+import {
+  AttestationChainId,
+  AttestationFee,
+} from "../../../attestations/utils/constants";
+import { ethers } from "ethers";
+
+interface MintDonationImpactActionProps {
+  toggleModal: () => void;
+  toggleStartAction: (started: boolean) => void;
+  selectBackground: (background: string) => void;
+  startAction: boolean;
+  isOpen: boolean;
+  contributions: Contribution[];
+  transactionHash: string;
+  selectedColor: string;
+  previewBackground: string;
+  selectedBackground: string;
+}
 export function MintDonationImpactAction({
   startAction,
   isOpen,
@@ -23,27 +44,22 @@ export function MintDonationImpactAction({
   previewBackground,
   selectBackground,
   selectedBackground,
-}: {
-  startAction: boolean;
-  isOpen: boolean;
-  toggleModal: () => void;
-  toggleStartAction: (started: boolean) => void;
-  contributions: Contribution[];
-  transactionHash: string;
-  selectedColor: string;
-  previewBackground: string;
-  selectBackground: (background: string) => void;
-  selectedBackground: string;
-}) {
+}: MintDonationImpactActionProps) {
   const { address } = useAccount();
-  const { data: name, isLoading: isLoadingENS } = useResolveENS(address);
+  const { address: contributorAddress } = useParams();
+  const { data: name, isLoading: isLoadingENS } = useResolveENS(
+    contributorAddress as `0x${string}` | undefined
+  );
 
   const FrameProps = getContributionFrameProps(contributions);
   const handleToggleModal = () => {
     toggleModal();
   };
 
-  const chainId = 11155111;
+  const frameId = ethers.utils.solidityKeccak256(
+    ["string[]"],
+    [[transactionHash]]
+  );
 
   const { data: imagesBase64, isLoading: isLoadingImages } = useGetImages(
     FrameProps.projects.map((project) => project.image),
@@ -57,8 +73,31 @@ export function MintDonationImpactAction({
     selectedColor
   );
 
-  const { handleAttest, handleSwitchChain, status, GasEstimation } =
-    useEASAttestation(chainId, handleToggleModal, data?.data);
+  const {
+    data: gasEstimation,
+    isLoading: loadingGasEstimate,
+    isRefetching: isRefetchingEstimate,
+  } = useEstimateGas(
+    AttestationChainId,
+    !isLoading && !isRefetching,
+    data?.data
+  );
+
+  const { handleAttest, handleSwitchChain, status } = useEASAttestation(
+    AttestationChainId,
+    () => {},
+    data?.data
+  );
+
+  const { data: balance } = useBalance({
+    chainId: AttestationChainId,
+    address: address,
+  });
+
+  const notEnoughFunds =
+    balance?.value && gasEstimation
+      ? balance.value <= AttestationFee + gasEstimation
+      : false;
 
   const title =
     status !== ProgressStatus.IS_SUCCESS
@@ -70,9 +109,18 @@ export function MintDonationImpactAction({
       ? "Your unique donation graphic will be generated after you mint."
       : "Share with your friends";
 
+  const loading =
+    isLoading || isLoadingENS || isRefetching || isRefetchingEstimate;
+
+  const isMinted = false;
+
   return (
     <>
-      <MintDonationButton toggleModal={toggleModal} isOpen={!isOpen} isMinted />
+      <MintDonationButton
+        toggleModal={toggleModal}
+        isOpen={!isOpen}
+        isMinted={isMinted}
+      />
 
       <MintAttestationProgressModal
         isOpen={isOpen}
@@ -86,24 +134,27 @@ export function MintDonationImpactAction({
           <MintProgressModalBody
             handleSwitchChain={handleSwitchChain}
             status={status}
-            GasEstimation={GasEstimation}
+            gasEstimation={gasEstimation}
+            isLoadingEstimation={loadingGasEstimate}
+            notEnoughFunds={notEnoughFunds}
             handleAttest={handleAttest}
-            isLoading={isLoading || isLoadingENS || isRefetching}
+            isLoading={loading}
             selectBackground={selectBackground}
             previewBackground={previewBackground}
             selectedColor={selectedColor}
             isTransactionHistoryPage
             toggleStartAction={() => toggleStartAction(true)}
-            metadataCid={data?.impactImageCid}
+            impactImageCid={data?.impactImageCid}
           />
         }
       />
       <HiddenAttestationFrame
         FrameProps={FrameProps}
         selectedBackground={selectedBackground}
-        address={address}
+        address={contributorAddress}
         name={name}
         imagesBase64={imagesBase64}
+        frameId={frameId}
       />
     </>
   );
