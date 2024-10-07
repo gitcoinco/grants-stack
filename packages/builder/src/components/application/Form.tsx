@@ -1,3 +1,4 @@
+// Form.tsx
 import { Stack } from "@chakra-ui/react";
 import { datadogRum } from "@datadog/browser-rum";
 import { getConfig } from "common/src/config";
@@ -16,6 +17,7 @@ import {
   RoundApplicationMetadata,
 } from "data-layer/dist/roundApplication.types";
 import { getChainById, useValidateCredential } from "common";
+import { useGap } from "gap";
 import { Fragment, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -373,6 +375,136 @@ export default function Form({
   const needsProject = !schema.questions.find((q) => q.type === "project");
   const now = new Date().getTime() / 1000;
 
+  const {
+    getProjectById,
+    createProject,
+    createGrant,
+    createMilestone,
+    project,
+    milestones,
+    isGapLoading,
+    error,
+  } = useGap(process.env.REACT_APP_KARMA_GAP_INDEXER_URL!);
+
+  const [newProjectData, setNewProjectData] = useState<{
+    title: string;
+    description: string;
+    imageURL: string;
+    links?: { type: string; url: string }[];
+    tags?: { name: string }[];
+    members?: `0x${string}`[];
+  }>({
+    title: "",
+    description: "",
+    imageURL: "",
+    links: [],
+    tags: [],
+    members: [],
+  });
+
+  const [newGrantData, setNewGrantData] = useState<{
+    communityUID: string;
+    title: string;
+    proposalURL: string;
+    description?: string;
+    cycle?: string;
+    season?: string;
+    milestones?: Array<{
+      title: string;
+      description: string;
+      endsAt: number;
+    }>;
+  }>({
+    communityUID: "",
+    title: "",
+    proposalURL: "",
+    description: "",
+    cycle: "",
+    season: "",
+    milestones: [],
+  });
+
+  const [newMilestoneData, setNewMilestoneData] = useState<{
+    title: string;
+    description: string;
+    endsAt: number;
+  }>({
+    title: "",
+    description: "",
+    endsAt: Date.now(),
+  });
+
+  const handleNewProjectInputChange = (e: ChangeHandlers) => {
+    const { name, value } = e.target;
+    setNewProjectData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleNewGrantInputChange = (e: ChangeHandlers) => {
+    const { name, value } = e.target;
+    setNewGrantData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleNewMilestoneInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    let updatedValue: string | number = value;
+
+    if (name === "endsAt") {
+      updatedValue = new Date(value).getTime();
+    }
+
+    setNewMilestoneData((prevData) => ({
+      ...prevData,
+      [name]: updatedValue,
+    }));
+  };
+
+  const handleCreateMilestone = async () => {
+    try {
+      setIsLoading(true);
+
+      // Step 1: Create Project
+      const projectResult = await createProject(newProjectData);
+
+      // Step 2: Create Grant
+      const grantResult = await createGrant(
+        newGrantData,
+        projectResult.projectUID
+      );
+
+      // Step 3: Create Milestone
+      await createMilestone(newMilestoneData, grantResult.grantUID);
+
+      // After creating everything, refresh the project data
+      getProjectById(projectResult.projectUID);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error creating milestone:", err);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isValidProjectSelected && selectedProjectID) {
+      getProjectById(selectedProjectID);
+    }
+  }, [isValidProjectSelected, selectedProjectID, getProjectById]);
+
+  useEffect(() => {
+    if (project) {
+      console.log("Project found:", project);
+    }
+  }, [project]);
+
   return (
     <>
       {preview && selectedProjectMetadata && (
@@ -455,6 +587,195 @@ export default function Form({
               );
             }
 
+            if (input.title === "Milestones") {
+              const renderMilestoneContent = () => {
+                if (isGapLoading) {
+                  return <p>Loading project information...</p>;
+                }
+                if (project) {
+                  return (
+                    <div>
+                      <p>Project Title: {project.title}</p>
+                      {/* Display existing milestones if any */}
+                      {milestones && milestones.length > 0 ? (
+                        <div>
+                          <h3>Existing Milestones:</h3>
+                          <ul>
+                            {milestones.map((milestone) => (
+                              <li key={milestone.uid}>
+                                <strong>{milestone.title}</strong>:
+                                {milestone.description}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : (
+                        <p>No milestones found for this project.</p>
+                      )}
+                      {/* Form to create a new milestone */}
+                      <h3>Create a New Milestone</h3>
+                      <TextInput
+                        key="newMilestoneTitle"
+                        label="Milestone Title"
+                        name="title"
+                        value={newMilestoneData.title}
+                        disabled={false}
+                        changeHandler={handleNewMilestoneInputChange}
+                        required
+                        feedback={{ type: "none", message: "" }}
+                      />
+                      <TextArea
+                        key="newMilestoneDescription"
+                        label="Milestone Description"
+                        name="description"
+                        value={newMilestoneData.description}
+                        disabled={false}
+                        changeHandler={handleNewMilestoneInputChange}
+                        required
+                        feedback={{ type: "none", message: "" }}
+                      />
+                      {/* Date input for endsAt */}
+                      <TextInput
+                        key="newMilestoneEndsAt"
+                        label="Milestone End Date"
+                        name="endsAt"
+                        inputType="date"
+                        value={new Date(newMilestoneData.endsAt)
+                          .toISOString()
+                          .substr(0, 10)}
+                        disabled={false}
+                        changeHandler={handleNewMilestoneInputChange}
+                        required
+                        feedback={{ type: "none", message: "" }}
+                      />
+                      {/* Create Milestone Button */}
+                      <Button
+                        variant={ButtonVariants.primary}
+                        onClick={handleCreateMilestone}
+                        disabled={isGapLoading}
+                      >
+                        Create Milestone
+                      </Button>
+                    </div>
+                  );
+                }
+                if (error) {
+                  return (
+                    <div>
+                      <p>No project found in Karma GAP for this application.</p>
+                      <p>
+                        Please enter the project details to create a new
+                        project, grant, and milestone.
+                      </p>
+                      {/* Form to create a new project */}
+                      <h3>Create a New Project</h3>
+                      <TextInput
+                        key="newProjectTitle"
+                        label="Project Title"
+                        name="title"
+                        value={newProjectData.title}
+                        disabled={false}
+                        changeHandler={handleNewProjectInputChange}
+                        required
+                        feedback={{ type: "none", message: "" }}
+                      />
+                      <TextArea
+                        key="newProjectDescription"
+                        label="Project Description"
+                        name="description"
+                        value={newProjectData.description}
+                        disabled={false}
+                        changeHandler={handleNewProjectInputChange}
+                        required
+                        feedback={{ type: "none", message: "" }}
+                      />
+                      {/* Form to create a new grant */}
+                      <h3>Create a New Grant</h3>
+                      <TextInput
+                        key="newGrantTitle"
+                        label="Grant Title"
+                        name="title"
+                        value={newGrantData.title}
+                        disabled={false}
+                        changeHandler={handleNewGrantInputChange}
+                        required
+                        feedback={{ type: "none", message: "" }}
+                      />
+                      <TextArea
+                        key="newGrantDescription"
+                        label="Grant Description"
+                        name="description"
+                        value={newGrantData.description}
+                        disabled={false}
+                        changeHandler={handleNewGrantInputChange}
+                        required
+                        feedback={{ type: "none", message: "" }}
+                      />
+                      {/* Form to create a new milestone */}
+                      <h3>Create a New Milestone</h3>
+                      <TextInput
+                        key="newMilestoneTitle"
+                        label="Milestone Title"
+                        name="title"
+                        value={newMilestoneData.title}
+                        disabled={false}
+                        changeHandler={handleNewMilestoneInputChange}
+                        required
+                        feedback={{ type: "none", message: "" }}
+                      />
+                      <TextArea
+                        key="newMilestoneDescription"
+                        label="Milestone Description"
+                        name="description"
+                        value={newMilestoneData.description}
+                        disabled={false}
+                        changeHandler={handleNewMilestoneInputChange}
+                        required
+                        feedback={{ type: "none", message: "" }}
+                      />
+                      {/* Date input for endsAt */}
+                      <TextInput
+                        key="newMilestoneEndsAt"
+                        label="Milestone End Date"
+                        name="endsAt"
+                        inputType="date"
+                        value={new Date(newMilestoneData.endsAt)
+                          .toISOString()
+                          .substr(0, 10)}
+                        disabled={false}
+                        changeHandler={handleNewMilestoneInputChange}
+                        required
+                        feedback={{ type: "none", message: "" }}
+                      />
+                      {/* Create Milestone Button */}
+                      <Button
+                        variant={ButtonVariants.primary}
+                        onClick={handleCreateMilestone}
+                        disabled={isGapLoading}
+                      >
+                        Create Milestone
+                      </Button>
+                    </div>
+                  );
+                }
+                // Default case if none of the above conditions are met
+                return <p>Loading project information...</p>;
+              };
+              return (
+                <div key={input.id} className="mt-6">
+                  <InputLabel
+                    title={input.title}
+                    encrypted={input.encrypted}
+                    hidden={input.hidden}
+                  />
+                  {isValidProjectSelected && selectedProjectID ? (
+                    renderMilestoneContent()
+                  ) : (
+                    <p>Please select a project to view or create milestones.</p>
+                  )}
+                </div>
+              );
+            }
             // Add isPreview for Application View when readonly
             if (
               (isValidProjectSelected || readOnly) &&

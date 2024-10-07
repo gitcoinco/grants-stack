@@ -1,0 +1,28 @@
+{
+  "name": "gap",
+  "version": "1.0.0",
+  "main": "dist/gap.bundle.js",
+  "types": "dist/index.d.ts",
+  "private": false,
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@show-karma/karma-gap-sdk": "^0.3.45",
+    "ethers": "^6.13.3",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.31",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.6.2",
+    "webpack": "^5",
+    "webpack-cli": "^5.1.4"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0",
+    "@typechain/ethers-v6": "^0.5.1",
+    "typechain": "^8.3.2"
+  }
+}

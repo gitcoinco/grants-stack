@@ -2,7 +2,7 @@
   "name": "builder",
   "version": "0.1.0",
   "private": true,
-    "engines": {
+  "engines": {
     "npm": ">=8.5.5",
     "node": ">=20.1.0"
   },
@@ -16,6 +16,7 @@
     "@datadog/browser-rum": "^4.16.0",
     "@ethersproject/address": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
+    "gap": "file:../gap",
     "@gitcoinco/passport-sdk-types": "^0.2.0",
     "@headlessui/react": "^1.6.5",
     "@heroicons/react": "^2.0.11",
