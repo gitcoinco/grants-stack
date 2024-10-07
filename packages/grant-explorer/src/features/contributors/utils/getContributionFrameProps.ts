@@ -56,7 +56,6 @@ export const getContributionFrameProps = (
     )[0]?.roundName || "";
 
   return {
-    selectedBackground: "",
     topRound,
     projectsFunded: allProjects.length,
     roundsSupported: roundsSet.size,

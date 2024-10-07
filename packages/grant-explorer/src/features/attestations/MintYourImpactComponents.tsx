@@ -405,15 +405,14 @@ export const ImpactMintingSuccess = ({
 // ImageWithLoading component
 const ImageWithLoading = ({
   src,
+  sizeClass = "w-[400px] h-[400px]",
   isLoading,
   ...props
 }: {
   src: string | undefined;
+  sizeClass?: string;
   isLoading: boolean;
 } & React.HTMLProps<HTMLDivElement>) => {
-  // Fixed size of 400x400
-  const sizeClass = "w-[400px] h-[400px]";
-
   // Handle loading and blur states
   const loadingClass = isLoading ? "animate-pulse bg-gray-100" : "";
   const blurClass = !src ? "blur-[40px]" : "";

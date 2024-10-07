@@ -17,7 +17,7 @@ import {
   PreviewFrame,
 } from "../attestations/MintYourImpactComponents";
 import MintAttestationProgressModal from "../attestations/MintAttestationProgressModal"; // Adjust the import path as needed
-import { MintProgressModalBody } from "../attestations/MintProgressModalBody"; // We'll define this next
+import { MintProgressModalBodyThankYou } from "../attestations/MintProgressModalBody"; // We'll define this next
 import { useGetAttestationData } from "../../hooks/attestations/useGetAttestationData";
 import { useEASAttestation } from "../../hooks/attestations/useEASAttestation";
 import { handleGetAttestationPreview } from "../../hooks/attestations/utils/getAttestationPreview";
@@ -100,47 +100,48 @@ export default function ThankYou() {
     window.scrollTo(0, 100);
   }, []);
 
-  const transactions = useCheckoutStore((state) =>
-    state.getCheckedOutTransactions()
-  );
+  // const transactions = useCheckoutStore((state) =>
+  //   state.getCheckedOutTransactions()
+  // );
 
-  const ImpactFrameProps = useCheckoutStore((state) => {
-    return state.getFrameProps(transactions);
-  });
+  // const ImpactFrameProps = useCheckoutStore((state) => {
+  //   return state.getFrameProps(transactions);
+  // });
 
-  // Mock data TODO: replace with real data Store the last
-  // attestation data based on the last created checkout transactions
-  // const projectsData = [
-  //   {
-  //     rank: 1,
-  //     name: "Saving forests around the world",
-  //     round: "Climate Round",
-  //     image: image,
-  //   },
-  //   {
-  //     rank: 2,
-  //     name: "Funding schools in Mexico",
-  //     round: "Education Round",
-  //     image: image,
-  //   },
-  //   {
-  //     rank: 3,
-  //     name: "Accessible software for everyone",
-  //     round: "OSS Round",
-  //     image: image,
-  //   },
-  // ];
+  // For testing out otherwise comment till transaction and uncomment the above { transactions } and { ImpactFrameProps }
+  const projectsData = [
+    {
+      rank: 1,
+      name: "Saving forests around the world",
+      round: "Climate Round",
+      image: image,
+    },
+    {
+      rank: 2,
+      name: "Funding schools in Mexico",
+      round: "Education Round",
+      image: image,
+    },
+    {
+      rank: 3,
+      name: "Accessible software for everyone",
+      round: "OSS Round",
+      image: image,
+    },
+  ];
 
-  // const ImpactFrameProps = {
-  //   topRound: round?.roundMetadata?.name ?? "",
-  //   projectsFunded: 20,
-  //   roundsSupported: 5,
-  //   checkedOutChains: 6,
-  //   projects: projectsData,
-  // };
+  const ImpactFrameProps = {
+    topRound: round?.roundMetadata?.name ?? "",
+    projectsFunded: 20,
+    roundsSupported: 5,
+    checkedOutChains: 6,
+    projects: projectsData,
+  };
 
   // For testing add one or multiple test transaction hash/es
-  // const transactions = ["0x1234567890"];
+  const transactions = [
+    "0x9c058fb124c2899602f923afe8e4f61a86a4901435460272bf16939cfb719f3d",
+  ];
 
   const [minted, setMinted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -154,9 +155,10 @@ export default function ThankYou() {
     setIsModalOpen(!isModalOpen);
   };
 
-  const handleToggleModal = () => {
+  const handleSetMinted = () => {
     setMinted(true);
     setIsModalOpen(false);
+    checkoutStore.cleanCheckedOutProjects();
   };
 
   const { width } = useWindowSize();
@@ -171,19 +173,20 @@ export default function ThankYou() {
     isModalOpen
   );
 
-  const { data, isLoading, isRefetching } = useGetAttestationData(
-    transactions,
-    handleGetAttestationPreview,
-    isLoadingENS || isLoadingImages || !isModalOpen,
-    selectedBackground
-  );
-
-  // const { data, isLoading } = useGetAttestationData(
-  //   ["0x1234567890"],
+  // const { data, isLoading, isRefetching } = useGetAttestationData(
+  //   transactions,
   //   handleGetAttestationPreview,
-  //   isLoadingENS,
+  //   isLoadingENS || isLoadingImages || !isModalOpen,
   //   selectedBackground
   // );
+
+  // For testing out otherwise comment and uncomment the above
+  const { data, isLoading } = useGetAttestationData(
+    transactions,
+    handleGetAttestationPreview,
+    isLoadingENS,
+    selectedBackground
+  );
   const frameId = ethers.utils.solidityKeccak256(["string[]"], [transactions]);
 
   const {
@@ -194,7 +197,7 @@ export default function ThankYou() {
 
   const { handleAttest, handleSwitchChain, status } = useEASAttestation(
     AttestationChainId,
-    handleToggleModal,
+    handleSetMinted,
     data?.data
   );
 
@@ -216,7 +219,7 @@ export default function ThankYou() {
         style={{ backgroundImage: `url(${bgImage})` }}
       >
         <main className="flex-grow flex items-center justify-center">
-          {transactions.length > 0 ? (
+          {transactions.length > 0 && !minted ? (
             <div className="flex flex-col xl:flex-row items-center justify-center w-full text-center">
               {/* Left Section */}
               <div
@@ -305,8 +308,7 @@ export default function ThankYou() {
               heading="Mint your impact"
               subheading="Your unique donation graphic will be generated after you mint."
               body={
-                <MintProgressModalBody
-                  toggleStartAction={() => void 0}
+                <MintProgressModalBodyThankYou
                   handleSwitchChain={handleSwitchChain}
                   status={status}
                   gasEstimation={gasEstimation}

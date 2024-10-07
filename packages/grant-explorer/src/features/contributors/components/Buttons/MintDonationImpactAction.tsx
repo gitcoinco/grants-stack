@@ -1,6 +1,6 @@
 import { HiddenAttestationFrame } from "../../../attestations/MintYourImpactComponents";
 import MintAttestationProgressModal from "../../../attestations/MintAttestationProgressModal";
-import { MintProgressModalBody } from "../../../attestations/MintProgressModalBody";
+import { MintProgressModalBodyHistory } from "../../../attestations/MintProgressModalBody";
 import { useGetAttestationData } from "../../../../hooks/attestations/useGetAttestationData";
 import { useEASAttestation } from "../../../../hooks/attestations/useEASAttestation";
 import { useResolveENS } from "../../../../hooks/useENS";
@@ -52,9 +52,6 @@ export function MintDonationImpactAction({
   );
 
   const FrameProps = getContributionFrameProps(contributions);
-  const handleToggleModal = () => {
-    toggleModal();
-  };
 
   const frameId = ethers.utils.solidityKeccak256(
     ["string[]"],
@@ -131,7 +128,7 @@ export function MintDonationImpactAction({
         heading={title}
         subheading={subheading}
         body={
-          <MintProgressModalBody
+          <MintProgressModalBodyHistory
             handleSwitchChain={handleSwitchChain}
             status={status}
             gasEstimation={gasEstimation}

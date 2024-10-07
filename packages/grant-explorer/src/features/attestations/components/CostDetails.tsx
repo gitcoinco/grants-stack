@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { formatAmount } from "./utils/formatAmount";
+import { formatAmount } from "../utils/formatAmount";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/20/solid";
 export const CostDetails = ({
   attestationFee,

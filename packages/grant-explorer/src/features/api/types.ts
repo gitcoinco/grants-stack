@@ -88,7 +88,6 @@ export type AttestationProject = {
 };
 
 export type AttestationFrameProps = {
-  selectedBackground: string;
   topRound: string;
   projectsFunded: number;
   roundsSupported: number;

@@ -73,7 +73,7 @@ interface CheckoutState {
   checkedOutProjectsByTx: Record<Hex, CartProject[]>;
   setCheckedOutProjectsByTx: (tx: Hex, projects: CartProject[]) => void;
   getCheckedOutProjectsByTx: (tx: Hex) => CartProject[];
-  removeCheckedOutProjectsByTx: (tx: Hex) => void;
+  cleanCheckedOutProjects: () => void;
   getCheckedOutTransactions: () => Hex[];
   getFrameProps: (txHashes: Hex[]) => AttestationFrameProps;
 }
@@ -384,10 +384,9 @@ export const useCheckoutStore = create<CheckoutState>()(
     getCheckedOutProjectsByTx: (tx: Hex) => {
       return get().checkedOutProjectsByTx[tx] || [];
     },
-    removeCheckedOutProjectsByTx: (tx: Hex) => {
-      set((oldState) => {
-        const { [tx]: _, ...rest } = oldState.checkedOutProjectsByTx;
-        return { checkedOutProjectsByTx: rest, _ };
+    cleanCheckedOutProjects: () => {
+      set({
+        checkedOutProjectsByTx: {},
       });
     },
     // Create a function that gets an array of transactionHashes and returns the FrameProps object where projects Array
