@@ -61,7 +61,7 @@ import {
 } from "./queries";
 import { mergeCanonicalAndLinkedProjects } from "./utils";
 import { AttestationService } from "./services";
-import { MintingAttestationIdsData } from "./types/attestations.types";
+import { MintingAttestationIdsData } from "./attestations.types";
 
 /**
  * DataLayer is a class that provides a unified interface to the various data sources.
