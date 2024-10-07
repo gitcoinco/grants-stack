@@ -13,20 +13,24 @@ const graphQLClient = new GraphQLClient(osoUrl, {
 let fetchedProject = "";
 
 export interface IOSOStats {
-  oso_codeMetricsByProjectV1: {
-    contributorCount: number;
-    firstCommitDate: number;
-    activeDeveloperCount6Months: number;
-  };
+  oso_codeMetricsByProjectV1: [
+    {
+      contributorCount: number;
+      firstCommitDate: number;
+      activeDeveloperCount6Months: number;
+    },
+  ];
 }
 
 export function useOSO(projectGithub?: string) {
   const emptyReturn: IOSOStats = {
-    oso_codeMetricsByProjectV1: {
-      contributorCount: 0,
-      firstCommitDate: 0,
-      activeDeveloperCount6Months: 0,
-    },
+    oso_codeMetricsByProjectV1: [
+      {
+        contributorCount: 0,
+        firstCommitDate: 0,
+        activeDeveloperCount6Months: 0,
+      },
+    ],
   };
   const [stats, setStats] = useState<IOSOStats | null>(null);
 
@@ -57,18 +61,13 @@ export function useOSO(projectGithub?: string) {
         queryVars
       );
 
-      if (!Array.isArray(items.oso_codeMetricsByProjectV1)) {
+      if (!items.oso_codeMetricsByProjectV1?.length) {
         throw new Error("no stats returned");
       }
-
-      if (items.oso_codeMetricsByProjectV1.length > 0) {
-        const parsedItems: IOSOStats = {
-          oso_codeMetricsByProjectV1: items.oso_codeMetricsByProjectV1[0],
-        };
-        setStats(parsedItems);
-      } else {
-        throw new Error("no stats returned");
-      }
+      const parsedItems: IOSOStats = {
+        oso_codeMetricsByProjectV1: items.oso_codeMetricsByProjectV1,
+      };
+      setStats(parsedItems);
     } catch (e) {
       console.error(`No stats found for project: ${projectGithub}`);
       console.error(e);

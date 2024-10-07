@@ -6,7 +6,7 @@ import { formatTimeAgo } from "../../common/utils/utils";
 
 export const StatList = ({ stats }: { stats: IOSOStats | null }) => {
   if (stats === null) return;
-  return stats.oso_codeMetricsByProjectV1.contributorCount > 0 ? (
+  return stats.oso_codeMetricsByProjectV1[0].contributorCount > 0 ? (
     <React.Fragment>
       <h4 className="text-3xl mt-5 ml-4">Impact stats</h4>
       <Flex gap={2} flexDir={{ base: "column", md: "row" }} py={6} px={3}>
@@ -19,7 +19,7 @@ export const StatList = ({ stats }: { stats: IOSOStats | null }) => {
             {" "}
             <Stat
               isLoading={false}
-              value={`${formatTimeAgo(stats.oso_codeMetricsByProjectV1.firstCommitDate)}`}
+              value={`${formatTimeAgo(stats.oso_codeMetricsByProjectV1[0].firstCommitDate)}`}
             >
               Project age
             </Stat>
@@ -32,7 +32,7 @@ export const StatList = ({ stats }: { stats: IOSOStats | null }) => {
         >
           <Stat
             isLoading={false}
-            value={`${stats.oso_codeMetricsByProjectV1.contributorCount}`}
+            value={`${stats.oso_codeMetricsByProjectV1[0].contributorCount}`}
           >
             Unique code contributors
           </Stat>
@@ -67,5 +67,5 @@ export const StatList = ({ stats }: { stats: IOSOStats | null }) => {
 };
 
 function projectDevs(stats: IOSOStats) {
-  return stats.oso_codeMetricsByProjectV1.activeDeveloperCount6Months;
+  return stats.oso_codeMetricsByProjectV1[0].activeDeveloperCount6Months;
 }
