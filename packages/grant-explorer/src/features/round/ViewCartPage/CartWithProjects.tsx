@@ -77,6 +77,7 @@ export function CartWithProjects({ cart, chainId }: Props) {
                 setFixedDonation(e.target.value);
               }}
               className="w-16 lg:w-18"
+              placeholder={"0"}
             />
             <PayoutTokenDropdown
               selectedPayoutToken={selectedPayoutToken}

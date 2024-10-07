@@ -95,7 +95,6 @@ export const Badge = tw.div<{
   max-w-full
   w-fit
   items-center
-  justify-center
   px-2
   py-1.5
   ${(p) => colorMap[p.color ?? "grey"]}

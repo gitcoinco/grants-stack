@@ -1,5 +1,5 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { ShieldCheckIcon } from "@heroicons/react/24/solid";
+import { ArrowTrendingUpIcon, LinkIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
 import {
   formatDateWithOrdinal,
   renderToHTML,
@@ -37,7 +37,7 @@ import { useGap } from "../api/gap";
 import { StatList } from "./OSO/ImpactStats";
 import { useOSO } from "../api/oso";
 import { CheckIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
-import { useDataLayer } from "data-layer";
+import { Application, useDataLayer } from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
 import { truncate } from "../common/utils/truncate";
 import {
@@ -504,24 +504,9 @@ function Sidebar(props: {
   removeFromCart: () => void;
   addToCart: () => void;
 }) {
-  return (
-    <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
-      <ProjectStats />
-      {props.isBeforeRoundEndDate && (
-        <CartButtonToggle
-          isAlreadyInCart={props.isAlreadyInCart}
-          addToCart={props.addToCart}
-          removeFromCart={props.removeFromCart}
-        />
-      )}
-    </div>
-  );
-}
-
-export function ProjectStats() {
   const { chainId, roundId, applicationId } = useProjectDetailsParams();
-  const { round } = useRoundById(Number(chainId), roundId);
   const dataLayer = useDataLayer();
+
   const { data: application } = useApplication(
     {
       chainId: Number(chainId as string),
@@ -530,6 +515,40 @@ export function ProjectStats() {
     },
     dataLayer
   );
+
+  return (
+    <div>
+      <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
+        <ProjectStats application={application}/>
+        {props.isBeforeRoundEndDate && (
+          <CartButtonToggle
+            isAlreadyInCart={props.isAlreadyInCart}
+            addToCart={props.addToCart}
+            removeFromCart={props.removeFromCart}
+          />
+        )}
+      </div>
+      {!props.isBeforeRoundEndDate &&
+        <a
+          href={`/#/projects/${application?.project.id}`}
+          target="_blank"
+          className="mt-4 flex font-bold justify-center border rounded-lg px-4 py-2"
+        >
+          <ArrowTrendingUpIcon className="w-4 h-4 inline-block mt-1 mr-2" />
+          View history
+          <LinkIcon className="w-4 h-4 ml-2 mt-1" />
+        </a>
+      }
+    </div>
+  );
+}
+
+export function ProjectStats(props: {
+  application: Application | undefined
+}) {
+  const { chainId, roundId } = useProjectDetailsParams();
+  const { round } = useRoundById(Number(chainId), roundId);
+  const application = props.application;
 
   const timeRemaining =
     round?.roundEndTime && !isInfiniteDate(round?.roundEndTime)
@@ -570,6 +589,7 @@ export function ProjectStats() {
               : "Round ended"
         }
       </Stat>
+
     </div>
   );
 }
