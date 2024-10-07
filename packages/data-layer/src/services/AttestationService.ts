@@ -1,5 +1,5 @@
 import { gql, request } from "graphql-request";
-import { MintingAttestationIdsData } from "../types/attestations.types";
+import { MintingAttestationIdsData } from "../attestations.types";
 
 export class AttestationService {
   private gsIndexerEndpoint: string;
