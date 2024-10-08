@@ -4,148 +4,70 @@ import { Hex } from "viem";
 import { gql, GraphQLClient } from "graphql-request";
 
 const osoApiKey = process.env.REACT_APP_OSO_API_KEY as string;
-const osoUrl = "https://opensource-observer.hasura.app/v1/graphql";
+const osoUrl = "https://www.opensource.observer/api/v1/graphql";
 const graphQLClient = new GraphQLClient(osoUrl, {
   headers: {
     authorization: `Bearer ${osoApiKey}`,
   },
 });
-let hasFetched = false;
-
-interface IOSOId {
-  projects_v1: {
-    project_id: Hex;
-  };
-}
+let fetchedProject = "";
 
 export interface IOSOStats {
-  code_metrics_by_project_v1: {
-    contributor_count: number;
-    first_commit_date: number;
-  };
-  events_monthly_to_project: [
+  oso_codeMetricsByProjectV1: [
     {
-      bucket_month: number;
-      amount: number;
-    },
-    {
-      bucket_month: number;
-      amount: number;
-    },
-    {
-      bucket_month: number;
-      amount: number;
-    },
-    {
-      bucket_month: number;
-      amount: number;
-    },
-    {
-      bucket_month: number;
-      amount: number;
-    },
-    {
-      bucket_month: number;
-      amount: number;
+      contributorCount: number;
+      firstCommitDate: number;
+      activeDeveloperCount6Months: number;
     },
   ];
 }
 
 export function useOSO(projectGithub?: string) {
   const emptyReturn: IOSOStats = {
-    code_metrics_by_project_v1: {
-      contributor_count: 0,
-      first_commit_date: 0,
-    },
-    events_monthly_to_project: [
+    oso_codeMetricsByProjectV1: [
       {
-        bucket_month: 0,
-        amount: 0,
-      },
-      {
-        bucket_month: 0,
-        amount: 0,
-      },
-      {
-        bucket_month: 0,
-        amount: 0,
-      },
-      {
-        bucket_month: 0,
-        amount: 0,
-      },
-      {
-        bucket_month: 0,
-        amount: 0,
-      },
-      {
-        bucket_month: 0,
-        amount: 0,
+        contributorCount: 0,
+        firstCommitDate: 0,
+        activeDeveloperCount6Months: 0,
       },
     ],
   };
   const [stats, setStats] = useState<IOSOStats | null>(null);
 
   const getStatsFor = async (projectRegistryGithub: string) => {
+    fetchedProject = projectRegistryGithub;
     if (osoApiKey === "")
       throw new Error("OpenSourceObserver API key not set.");
-    const queryId = gql`{
-      projects_v1(where: {display_name: {_ilike: "${projectRegistryGithub}"}}
-        distinct_on: project_id
-      ) {
-        project_id
+    const queryVars = {
+      where: {
+        displayName: {
+          _ilike: `${projectRegistryGithub}`,
+        },
+      },
+    };
+    const queryStats = gql`
+      query myQuery($where: Oso_CodeMetricsByProjectV1BoolExp) {
+        oso_codeMetricsByProjectV1(where: $where) {
+          contributorCount
+          firstCommitDate
+          activeDeveloperCount6Months
+        }
       }
-      }`;
+    `;
 
     try {
-      hasFetched = true;
-      const idData: IOSOId = await graphQLClient.request<IOSOId>(queryId);
+      const items: IOSOStats = await graphQLClient.request<IOSOStats>(
+        queryStats,
+        queryVars
+      );
 
-      if (!Array.isArray(idData.projects_v1)) {
-        setStats(emptyReturn);
-        return;
+      if (!items.oso_codeMetricsByProjectV1?.length) {
+        throw new Error("no stats returned");
       }
-
-      const parsedId: IOSOId = {
-        projects_v1: idData.projects_v1[0],
+      const parsedItems: IOSOStats = {
+        oso_codeMetricsByProjectV1: items.oso_codeMetricsByProjectV1,
       };
-
-      const queryStats = gql`{
-        code_metrics_by_project_v1(where: {project_id: {_eq: "${parsedId.projects_v1.project_id}"}}) {
-          contributor_count
-          first_commit_date
-        }
-        events_monthly_to_project(
-          where: {project_id: {_eq: "${parsedId.projects_v1.project_id}"}, event_type: {_eq: "COMMIT_CODE"}}
-          limit: 6
-          order_by: {bucket_month: desc}
-        ) {
-          bucket_month
-          amount
-        }
-      }`;
-
-      const items: IOSOStats =
-        await graphQLClient.request<IOSOStats>(queryStats);
-
-      if (!Array.isArray(items.code_metrics_by_project_v1)) {
-        setStats(emptyReturn);
-        return;
-      }
-
-      if (items.events_monthly_to_project.length === 6) {
-        const parsedItems: IOSOStats = {
-          code_metrics_by_project_v1: items.code_metrics_by_project_v1[0],
-          events_monthly_to_project: items.events_monthly_to_project,
-        };
-        setStats(parsedItems);
-      } else {
-        const parsedItems: IOSOStats = {
-          code_metrics_by_project_v1: items.code_metrics_by_project_v1[0],
-          events_monthly_to_project: emptyReturn.events_monthly_to_project,
-        };
-        setStats(parsedItems);
-      }
+      setStats(parsedItems);
     } catch (e) {
       console.error(`No stats found for project: ${projectGithub}`);
       console.error(e);
@@ -158,8 +80,9 @@ export function useOSO(projectGithub?: string) {
     revalidateOnMount: true,
   });
 
-  if (stats === null && !hasFetched)
-    projectGithub && getStatsFor(projectGithub);
+  if (fetchedProject !== projectGithub)
+    // check if currently loaded stats are for viewed project
+    projectGithub && getStatsFor(projectGithub); // fetch if not
   return {
     /**
      * Fetch OSO for stats on a project
