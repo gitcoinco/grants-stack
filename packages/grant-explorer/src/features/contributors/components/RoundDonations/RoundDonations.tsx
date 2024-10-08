@@ -1,5 +1,6 @@
 import { DonationsTransactions } from "./DonationsTransactions";
 import { ContributionsByHashAndRoundId } from "../../types";
+import { useMintingAttestations } from "../../hooks/useMintingAttestations";
 
 export function RoundDonations({
   title,
@@ -9,6 +10,13 @@ export function RoundDonations({
   contributions?: ContributionsByHashAndRoundId;
 }) {
   const transactionHashes = Object.keys(contributions);
+
+  const {
+    data: mintingAttestations,
+    isFetching,
+    isLoading,
+    refetch,
+  } = useMintingAttestations(transactionHashes);
 
   return (
     <div className="flex flex-col gap-6">
@@ -23,6 +31,11 @@ export function RoundDonations({
             key={transactionHash}
             transactionHash={transactionHash}
             contributions={contributions[transactionHash]}
+            transactionAttestationsData={{
+              transactionAttestations: mintingAttestations?.[transactionHash],
+              isFetchingAttestations: isFetching || isLoading,
+              refetch,
+            }}
           />
         ))
       )}

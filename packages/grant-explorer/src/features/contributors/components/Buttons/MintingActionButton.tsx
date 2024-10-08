@@ -1,4 +1,4 @@
-import { Contribution } from "data-layer";
+import { Contribution, MintingAttestationIdsData } from "data-layer";
 import { ViewAttestationButton } from "./ViewAttestationButton";
 import { useState } from "react";
 import useColorAndBackground from "../../../../hooks/attestations/useColorAndBackground";
@@ -8,12 +8,18 @@ import { MintDonationImpactAction } from "./MintDonationImpactAction";
 export function MintingActionButton({
   transaction,
   contributions,
+  attestationData,
 }: {
   transaction: {
     hash: string;
     chainId: number;
   };
   contributions: Contribution[];
+  attestationData: {
+    attestation?: MintingAttestationIdsData;
+    isFetchingAttestations?: boolean;
+    refetch?: () => void;
+  };
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isActionStarted, setIsActionStarted] = useState(false);
@@ -26,15 +32,16 @@ export function MintingActionButton({
     setIsActionStarted(started);
   }
 
+  const { attestation, isFetchingAttestations = false } = attestationData;
+
+  const isMinted = !!attestation;
+
   const {
     selectedColor,
     previewBackground,
     selectBackground,
     selectedBackground,
   } = useColorAndBackground();
-
-  const isMinted = false;
-  // const canMint = true;
 
   return isMinted ? (
     <ViewAttestationButton
@@ -57,7 +64,7 @@ export function MintingActionButton({
         selectedBackground={selectedBackground}
       />
       <MintDonationButton
-        disabled={isMinted}
+        disabled={isFetchingAttestations}
         onClick={toggleModal}
         isOpen={isOpen}
       />
