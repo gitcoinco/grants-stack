@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AlloKitProviders>
           <Header />
-          <main className="max-w-screen-lg py-16 mx-auto">{children}</main>
+          <main className="max-w-screen-lg">{children}</main>
         </AlloKitProviders>
       </body>
     </html>

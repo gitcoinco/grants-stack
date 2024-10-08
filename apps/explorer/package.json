@@ -9,10 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@allo-team/kit": "^0.1.5",
+    "@allo-team/kit": "^0.1.13",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.11.4",
+    "lucide-react": "^0.451.0",
     "next": "14.2.5",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "tailwind-merge": "^2.5.3",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/node": "^20",
