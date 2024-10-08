@@ -73,7 +73,7 @@ const aggregateContributions = (contributions: Contribution[]) => {
   );
 };
 
-export const useContributionHistory = (
+export const useContributionsByDonor = (
   chainIds: number[],
   rawAddress: string
 ): ContributionHistoryState => {

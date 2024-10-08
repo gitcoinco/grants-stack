@@ -3,14 +3,14 @@ import { isAddress } from "viem";
 
 import { ContributionHistory } from "./ContributionHistory";
 
-import { useContributionHistory } from "../hooks/useContributionHistory";
+import { useContributionsByDonor } from "../hooks/useContributionsByDonor";
 import { ContributionHistoryError } from "./ContributionHistoryError";
 
 export function ContributionHistoryContainer(props: {
   address: string;
   chainIds: number[];
 }) {
-  const { status, error, data } = useContributionHistory(
+  const { status, error, data } = useContributionsByDonor(
     props.chainIds,
     props.address
   );
