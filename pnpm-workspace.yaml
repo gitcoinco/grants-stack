@@ -6,3 +6,5 @@ packages:
   - 'packages/grant-explorer'
   - 'packages/builder'
   - 'packages/verify-env'
+  - 'apps/*'
+
