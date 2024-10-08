@@ -14,7 +14,7 @@ export const useAttestationStatus = (chainId: number) => {
     return requiresSwitch
       ? ProgressStatus.SWITCH_CHAIN
       : ProgressStatus.NOT_STARTED;
-  }, [requiresSwitch, userChainID]);
+  }, [requiresSwitch]);
 
   const [status, setStatus] = useState<ProgressStatus>(initialStatus);
 

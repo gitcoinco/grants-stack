@@ -1,12 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { AttestInput, ProgressStatus } from "./config";
 import { useEASConfig } from "./useEASConfig";
 import { useAttestationStatus } from "./useAttestationStatus";
 import { useSwitchChain } from "./useSwitchChain";
-import { useEstimateGas } from "./useEstimateGas";
 import { useAttestMutation } from "./useAttestMutation";
-import { useMemo } from "react";
 
 /**
  * Main hook to manage EAS Attestations.
@@ -25,16 +22,6 @@ export const useEASAttestation = (
   const { easAddress, abi, schema } = useEASConfig(chainId);
 
   const { mutateAsync: switchChain } = useSwitchChain(chainId, updateStatus);
-
-  const { mutateAsync: estimateGas } = useEstimateGas(chainId);
-
-  const GasEstimation = useQuery({
-    queryKey: ["gasEstimation", chainId, data],
-    enabled: !!data && !!chainId,
-    queryFn: async () => {
-      return await estimateGas(data as AttestInput);
-    },
-  });
 
   const attest = useAttestMutation(
     chainId,
@@ -71,5 +58,5 @@ export const useEASAttestation = (
     }
   };
 
-  return { status, handleSwitchChain, handleAttest, GasEstimation };
+  return { status, handleSwitchChain, handleAttest };
 };
