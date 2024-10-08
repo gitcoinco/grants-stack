@@ -3,13 +3,13 @@ import { useMemo } from "react";
 import { MintingAttestationIdsData, useDataLayer } from "data-layer";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
-type MintingAttestationsResponse = Omit<
+export type MintingAttestationsResponse = Omit<
   UseQueryResult<MintingAttestationIdsData[], Error>,
   "data"
 > & { data?: Record<string, MintingAttestationIdsData[]> };
 
 export const useMintingAttestations = (
-  transactionHashes: string[]
+  transactionHashes: string[] = []
 ): MintingAttestationsResponse => {
   const dataLayer = useDataLayer();
 
