@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Home, CircleDollarSign, Briefcase } from "lucide-react";
 import DisplayGrid from "./DisplayGrid";
-import { RoundsQuery } from "@allo-team/kit";
+import { DiscoverProjects, DiscoverRounds, RoundsQuery } from "@allo-team/kit";
 
 const NavButton = ({ icon, label, isActive, onClick }) => (
   <Button
@@ -48,11 +48,12 @@ export default function HomeNav() {
     },
     rounds: {
       title: "Active Funding Rounds",
-      content: <DisplayGrid query={allRoundsQuery} />,
+      content: <DiscoverRounds query={allRoundsQuery} />,
     },
     projects: {
       title: "Featured Projects",
-      content: <DisplayGrid query={allProjectsQuery} />,
+      // content: <DisplayGrid query={allProjectsQuery} />,
+      content: <DiscoverProjects query={allProjectsQuery} />,
     },
   };
 
