@@ -10,16 +10,26 @@ import { useRoundById } from "../../context/RoundContext";
 import image from "../../assets/gitcoinlogo-black.svg";
 import alt1 from "../../assets/alt1.svg";
 import { useWindowSize } from "react-use";
-import html2canvas from "html2canvas-pro";
 import { ShareButtons, ThankYouSectionButtons } from "../common/ShareButtons";
 import {
   AttestationFrame,
+  HiddenAttestationFrame,
   PreviewFrame,
 } from "../attestations/MintYourImpactComponents";
 import MintAttestationProgressModal from "../attestations/MintAttestationProgressModal"; // Adjust the import path as needed
-import { MintProgressModalBody } from "../attestations/MintProgressModalBody"; // We'll define this next
+import { MintProgressModalBodyThankYou } from "../attestations/MintProgressModalBody"; // We'll define this next
 import { useGetAttestationData } from "../../hooks/attestations/useGetAttestationData";
 import { useEASAttestation } from "../../hooks/attestations/useEASAttestation";
+import { handleGetAttestationPreview } from "../../hooks/attestations/utils/getAttestationPreview";
+import { useResolveENS } from "../../hooks/useENS";
+import { useAccount, useBalance } from "wagmi";
+import { useGetImages } from "../../hooks/attestations/useGetImages";
+import { useEstimateGas } from "../../hooks/attestations/useEstimateGas";
+import {
+  AttestationChainId,
+  AttestationFee,
+} from "../attestations/utils/constants";
+import { ethers } from "ethers";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -29,6 +39,29 @@ export default function ThankYou() {
 
   const cart = useCartStorage();
   const checkoutStore = useCheckoutStore();
+
+  /** Fetch round data for tweet */
+  const checkedOutProjects = useCheckoutStore((state) =>
+    state.getCheckedOutProjects()
+  );
+
+  const isMrc =
+    new Set(checkedOutProjects.map((project) => project.chainId)).size > 1;
+  const topProject = checkedOutProjects
+    .sort((a, b) =>
+      Number(a.amount) > Number(b.amount)
+        ? -1
+        : Number(a.amount) < Number(b.amount)
+          ? 1
+          : 0
+    )
+    .at(0);
+
+  const { round } = useRoundById(
+    /* If we don't have a round, pass in invalid params and silently fail */
+    Number(topProject?.chainId),
+    topProject?.roundId ?? ""
+  );
 
   /** Remove checked out projects from cart, but keep the ones we didn't yet check out succesfully. */
   const checkedOutChains = useMemo(
@@ -67,71 +100,15 @@ export default function ThankYou() {
     window.scrollTo(0, 100);
   }, []);
 
-  /** Fetch round data for tweet */
-  const checkedOutProjects = useCheckoutStore((state) =>
-    state.getCheckedOutProjects()
-  );
+  // const transactions = useCheckoutStore((state) =>
+  //   state.getCheckedOutTransactions()
+  // );
 
-  const isMrc =
-    new Set(checkedOutProjects.map((project) => project.chainId)).size > 1;
-  const topProject = checkedOutProjects
-    .sort((a, b) =>
-      Number(a.amount) > Number(b.amount)
-        ? -1
-        : Number(a.amount) < Number(b.amount)
-          ? 1
-          : 0
-    )
-    .at(0);
+  // const ImpactFrameProps = useCheckoutStore((state) => {
+  //   return state.getFrameProps(transactions);
+  // });
 
-  const { round } = useRoundById(
-    /* If we don't have a round, pass in invalid params and silently fail */
-    Number(topProject?.chainId),
-    topProject?.roundId ?? ""
-  );
-
-  const [minted, setMinted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBackground, setSelectedBackground] = useState(alt1);
-
-  const handleSelectBackground = (background: string) => {
-    setSelectedBackground(background);
-  };
-
-  const mint = async () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
-  const handleToggleModal = () => {
-    setMinted(true);
-    setIsModalOpen(false);
-  };
-
-  const { width } = useWindowSize();
-
-  const flex = width <= 1280;
-
-  const handleGetAttestationPreview = async () => {
-    const element = document.getElementById("attestation-impact-frame");
-    if (element) {
-      const canvas = await html2canvas(element);
-      const data = canvas.toDataURL("image/png");
-      return data;
-    }
-  };
-
-  const { data, isLoading } = useGetAttestationData(
-    ["0x1234567890"],
-    handleGetAttestationPreview
-  );
-
-  const chainId = 11155111;
-
-  const { handleAttest, handleSwitchChain, status, GasEstimation } =
-    useEASAttestation(chainId, handleToggleModal, data);
-
-  // Mock data TODO: replace with real data Store the last
-  // attestation data based on the last created checkout transactions
+  // For testing out otherwise comment till transaction and uncomment the above { transactions } and { ImpactFrameProps }
   const projectsData = [
     {
       rank: 1,
@@ -153,6 +130,87 @@ export default function ThankYou() {
     },
   ];
 
+  const ImpactFrameProps = {
+    topRound: round?.roundMetadata?.name ?? "",
+    projectsFunded: 20,
+    roundsSupported: 5,
+    checkedOutChains: 6,
+    projects: projectsData,
+  };
+
+  // For testing add one or multiple test transaction hash/es
+  const transactions = [
+    "0x9c058fb124c2899602f923afe8e4f61a86a4901435460272bf16939cfb719f3d",
+  ];
+
+  const [minted, setMinted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBackground, setSelectedBackground] = useState(alt1);
+
+  const handleSelectBackground = (background: string) => {
+    setSelectedBackground(background);
+  };
+
+  const toggleModal = async () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const handleSetMinted = () => {
+    setMinted(true);
+    setIsModalOpen(false);
+    checkoutStore.cleanCheckedOutProjects();
+  };
+
+  const { width } = useWindowSize();
+
+  const flex = width <= 1280;
+
+  const { address } = useAccount();
+  const { data: name, isLoading: isLoadingENS } = useResolveENS(address);
+
+  const { data: imagesBase64, isLoading: isLoadingImages } = useGetImages(
+    ImpactFrameProps.projects.map((project) => project.image),
+    isModalOpen
+  );
+
+  // const { data, isLoading, isRefetching } = useGetAttestationData(
+  //   transactions,
+  //   handleGetAttestationPreview,
+  //   isLoadingENS || isLoadingImages || !isModalOpen,
+  //   selectedBackground
+  // );
+
+  // For testing out otherwise comment and uncomment the above
+  const { data, isLoading } = useGetAttestationData(
+    transactions,
+    handleGetAttestationPreview,
+    isLoadingENS,
+    selectedBackground
+  );
+  const frameId = ethers.utils.solidityKeccak256(["string[]"], [transactions]);
+
+  const {
+    data: gasEstimation,
+    isLoading: loadingGasEstimate,
+    isRefetching: isRefetchingEstimate,
+  } = useEstimateGas(AttestationChainId, !isLoading, data?.data);
+
+  const { handleAttest, handleSwitchChain, status } = useEASAttestation(
+    AttestationChainId,
+    handleSetMinted,
+    data?.data
+  );
+
+  const { data: balance } = useBalance({
+    chainId: AttestationChainId,
+    address,
+  });
+
+  const notEnoughFunds =
+    balance?.value && gasEstimation
+      ? balance.value <= AttestationFee + gasEstimation
+      : false;
+
   return (
     <>
       <Navbar />
@@ -161,7 +219,7 @@ export default function ThankYou() {
         style={{ backgroundImage: `url(${bgImage})` }}
       >
         <main className="flex-grow flex items-center justify-center">
-          {!minted ? (
+          {transactions.length > 0 && !minted ? (
             <div className="flex flex-col xl:flex-row items-center justify-center w-full text-center">
               {/* Left Section */}
               <div
@@ -192,14 +250,14 @@ export default function ThankYou() {
                       </div>
                       <PreviewFrame
                         handleSelectBackground={handleSelectBackground}
-                        mint={mint}
+                        mint={toggleModal}
                       />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          ) : (
+          ) : minted ? (
             <div className="flex flex-col items-center justify-center max-w-screen-2xl text-center">
               <div className="inline-flex flex-col items-center justify-center gap-6 px-16 pt-8 relative bg-[#ffffff66] rounded-3xl">
                 <div className="flex flex-col items-start  relative self-stretch w-full ">
@@ -214,16 +272,26 @@ export default function ThankYou() {
                     </div>
                     <AttestationFrame
                       selectedBackground={selectedBackground}
-                      projects={projectsData}
-                      checkedOutChains={6}
-                      projectsFunded={20}
-                      roundsSupported={5}
-                      topRound={"OSS Round"}
+                      projects={ImpactFrameProps.projects}
+                      checkedOutChains={ImpactFrameProps.checkedOutChains}
+                      projectsFunded={ImpactFrameProps.projectsFunded}
+                      roundsSupported={ImpactFrameProps.roundsSupported}
+                      topRound={ImpactFrameProps.topRound}
+                      address={address}
+                      ensName={name}
+                      frameId={frameId}
                     />
                   </div>
                 </div>
               </div>
               <ShareButtons />
+            </div>
+          ) : (
+            <div className={`w-full h-full flex flex-col items-center`}>
+              <ThankYouSectionButtons
+                roundName={round?.roundMetadata?.name ?? ""}
+                isMrc={isMrc}
+              />
             </div>
           )}
         </main>
@@ -232,41 +300,36 @@ export default function ThankYou() {
         </div>
 
         {/* Progress Modal */}
-        <MintAttestationProgressModal
-          isOpen={isModalOpen}
-          onClose={mint}
-          heading="Mint your impact"
-          subheading="Your unique donation graphic will be generated after you mint."
-          body={
-            <MintProgressModalBody
-              handleSwitchChain={handleSwitchChain}
-              status={status}
-              GasEstimation={GasEstimation}
-              handleAttest={handleAttest}
-              isLoading={isLoading}
+        {transactions.length > 0 && (
+          <>
+            <MintAttestationProgressModal
+              isOpen={isModalOpen}
+              onClose={toggleModal}
+              heading="Mint your impact"
+              subheading="Your unique donation graphic will be generated after you mint."
+              body={
+                <MintProgressModalBodyThankYou
+                  handleSwitchChain={handleSwitchChain}
+                  status={status}
+                  gasEstimation={gasEstimation}
+                  isLoadingEstimation={loadingGasEstimate}
+                  notEnoughFunds={notEnoughFunds}
+                  handleAttest={handleAttest}
+                  impactImageCid={data?.impactImageCid}
+                  isLoading={isLoading || isLoadingENS || isRefetchingEstimate}
+                />
+              }
             />
-          }
-        />
-      </div>
-      <div
-        id="hidden-attestation-frame"
-        style={{
-          position: "absolute",
-          top: "-9999px",
-          left: "-9999px",
-          width: "0",
-          height: "0",
-          overflow: "hidden",
-        }}
-      >
-        <AttestationFrame
-          selectedBackground={selectedBackground}
-          projects={projectsData}
-          checkedOutChains={6}
-          projectsFunded={20}
-          roundsSupported={5}
-          topRound={"OSS Round"}
-        />
+            <HiddenAttestationFrame
+              FrameProps={ImpactFrameProps}
+              selectedBackground={selectedBackground}
+              address={address}
+              name={name}
+              imagesBase64={imagesBase64 ?? [image, image, image]}
+              frameId={frameId}
+            />
+          </>
+        )}
       </div>
     </>
   );

@@ -73,12 +73,8 @@ interface CheckoutState {
   checkedOutProjectsByTx: Record<Hex, CartProject[]>;
   setCheckedOutProjectsByTx: (tx: Hex, projects: CartProject[]) => void;
   getCheckedOutProjectsByTx: (tx: Hex) => CartProject[];
-  removeCheckedOutProjectsByTx: (tx: Hex) => void;
-
-  // Create a function that gets an array of transactionHashes and returns the FrameProps object where projects Array
-  // contains the top 3 projects based on those checked out transactions max donation amount in usd
-  // The top round is the round with the most funds allocated in total amount of projects allocated to all transactions in total rounds in all transaction in total chains allocated in these transactions
-
+  cleanCheckedOutProjects: () => void;
+  getCheckedOutTransactions: () => Hex[];
   getFrameProps: (txHashes: Hex[]) => AttestationFrameProps;
 }
 
@@ -388,16 +384,17 @@ export const useCheckoutStore = create<CheckoutState>()(
     getCheckedOutProjectsByTx: (tx: Hex) => {
       return get().checkedOutProjectsByTx[tx] || [];
     },
-    removeCheckedOutProjectsByTx: (tx: Hex) => {
-      set((oldState) => {
-        const { [tx]: _, ...rest } = oldState.checkedOutProjectsByTx;
-        return { checkedOutProjectsByTx: rest };
+    cleanCheckedOutProjects: () => {
+      set({
+        checkedOutProjectsByTx: {},
       });
     },
     // Create a function that gets an array of transactionHashes and returns the FrameProps object where projects Array
     // contains the top 3 projects based on those checked out transactions max donation amount in usd
     // The top round is the round with the most funds allocated in total amount of projects allocated to all transactions in total rounds in all transaction in total chains allocated in these transactions
-
+    getCheckedOutTransactions: () => {
+      return Object.keys(get().checkedOutProjectsByTx) as Hex[];
+    },
     getFrameProps: (txHashes: Hex[]) => {
       const allProjects: CartProject[] = [];
       const roundsSet = new Set<string>();
@@ -409,6 +406,17 @@ export const useCheckoutStore = create<CheckoutState>()(
           totalAmount: number;
         }
       > = {};
+
+      if (txHashes.length === 0) {
+        return {
+          selectedBackground: "",
+          topRound: "",
+          projectsFunded: 0,
+          roundsSupported: 0,
+          checkedOutChains: 0,
+          projects: [],
+        } as AttestationFrameProps;
+      }
 
       for (const txHash of txHashes) {
         const projects = get().getCheckedOutProjectsByTx(txHash);
