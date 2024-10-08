@@ -8,6 +8,7 @@ const chainData = getChains();
 const rpcUrls: { [key: number]: string | undefined } = {
   1: "https://eth-mainnet.g.alchemy.com/v2/",
   10: "https://opt-mainnet.g.alchemy.com/v2/",
+  100: "https://gnosis-mainnet.g.alchemy.com/v2/",
   // 42: "", // lukso
   137: "https://polygon-mainnet.g.alchemy.com/v2/",
   // 250: "", // fantom
@@ -22,7 +23,7 @@ const rpcUrls: { [key: number]: string | undefined } = {
   43114: "https://avalanche-mainnet.infura.io/v3/", // avax
   44787: "https://celo-alfajores.infura.io/v3/", // alfajores
   // 80001: "https://polygon-mumbai.g.alchemy.com/v2/", // not supported anymore
-  // 534351: "", // scroll sepol
+  // 534351: "", // scroll sepolia
   // 534352: "", // scroll mainnet
   // 1329: "", // sei
   // 713715: "", // sei devnet

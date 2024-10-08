@@ -20,6 +20,7 @@ import {
   TToken,
   getPayoutTokens,
   getTokenByChainIdAndAddress,
+  getChainById,
 } from "common";
 import { errorModalDelayMs } from "../../constants";
 import { usePayouts } from "./usePayouts";
@@ -395,7 +396,7 @@ export default function ApplicationDirectPayout({ round, application }: Props) {
                                 </span>
                                 <a
                                   target="_blank"
-                                  href={`${chain?.blockExplorers?.default.url}/tx/${payout.txnHash}`}
+                                  href={`${getChainById(chain.id).blockExplorer}/tx/${payout.txnHash}`}
                                   className="inline items-center ml-2"
                                   rel="noreferrer"
                                 >

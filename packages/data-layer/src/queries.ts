@@ -849,11 +849,10 @@ export const getDirectDonationsByProjectId = gql`
     ) {
       donations(filter: { projectId: { equalTo: $projectId } }) {
         id
+        amount
+        donorAddress
+        amountInUsd
       }
-      id
-      uniqueDonorsCount
-      totalAmountDonatedInUsd
-      totalDonationsCount
     }
   }
 `;

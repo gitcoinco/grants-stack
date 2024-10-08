@@ -505,7 +505,7 @@ function ViewRoundResults({
                                     target="_blank"
                                     href={`https://qf-calculator.fly.dev/?round_id=${round.id}&chain_id=${chain.id}`}
                                   >
-                                    cluster matching template
+                                    cluster matching application
                                   </a>{" "}
                                   to calculate your results. Click{" "}
                                   <a
@@ -537,9 +537,25 @@ function ViewRoundResults({
                                   - System default quadratic funding calculation
                                 </span>
                                 <span className="text-sm mt-1 ml-2 text-gray-400">
-                                  Since you selected manual verification at
-                                  setup, select this option to calculate your
-                                  round’s final results.
+                                  Since you default quadratic funding calculation
+                                  at setup, select this option. Please
+                                  use this{" "}
+                                  <a
+                                    className="underline"
+                                    target="_blank"
+                                    href={`https://qf-calculator.fly.dev/?round_id=${round.id}&chain_id=${chain.id}`}
+                                  >
+                                    cluster matching application
+                                  </a>{" "}
+                                  to calculate your results. Click{" "}
+                                  <a
+                                    className="underline"
+                                    target="_blank"
+                                    href="https://roundoperations.gitcoin.co/round-operations/post-round/cluster-matching-and-csv-upload"
+                                  >
+                                    here
+                                  </a>{" "}
+                                  to learn more.
                                 </span>
                               </div>
                             )}

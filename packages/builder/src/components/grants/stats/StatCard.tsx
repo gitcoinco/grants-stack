@@ -27,7 +27,7 @@ export default function StatCard({
     >
       <Box mb={2}>
         <div className="table-row">
-          <div className="text-[14px] text-gitcoin-grey-500 font-semibold table-cell">
+          <div className="text-[12px] text-gitcoin-grey-500 font-semibold table-cell">
             {heading}{" "}
           </div>
 

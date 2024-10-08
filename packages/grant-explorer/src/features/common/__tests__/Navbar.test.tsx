@@ -7,7 +7,7 @@ import {
   renderWithContext,
 } from "../../../test-utils";
 import Navbar from "../Navbar";
-import type wagmi from "wagmi";
+import * as wagmi from "wagmi";
 import type rrd from "react-router-dom";
 const userAddress = faker.finance.ethereumAddress();
 

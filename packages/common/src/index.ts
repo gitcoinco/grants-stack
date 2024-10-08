@@ -483,6 +483,7 @@ export function isLitUnavailable(chainId: number) {
     42, // LUKSO,
     713715, // SEI_DEVNET,
     1329, // SEI_MAINNET,
+    1088, // METIS
   ].includes(chainId);
 }
 

@@ -55,11 +55,27 @@ export async function roundApplicationsToCSV(
   });
 
   const decryptedData: Record<string, string>[] = [];
+  const columns = new Set([
+    "id",
+    "projectId",
+    "status",
+    "title",
+    "payoutAddress",
+    "signature",
+    "website",
+    "projectTwitter",
+    "projectGithub",
+    "userGithub"
+  ]);
+
 
   for (const application of applications) {
     const answers =
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       application.metadata?.application.answers.flatMap((answer: any) => {
+
+        columns.add(answer.question);
+
         if (answer.answer) {
           return [[answer.question, answer.answer]];
         } else if (answer.encryptedAnswer) {
@@ -109,8 +125,10 @@ export async function roundApplicationsToCSV(
     });
   }
 
+  const columnsArray = Array.from(columns) as string[];
+
   const csv = (await new Promise((resolve, reject) => {
-    stringifyCsv(decryptedData, { header: true }, (err, data) => {
+    stringifyCsv(decryptedData, { header: true , columns: columnsArray}, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -118,6 +136,5 @@ export async function roundApplicationsToCSV(
       }
     });
   })) as string;
-
   return csv;
 }

@@ -58,6 +58,7 @@ import {
   formatDateWithOrdinal,
   getRoundStrategyType,
   getUTCTime,
+  isLitUnavailable,
   useAllo,
   VerifiedCredentialState,
 } from "common";
@@ -333,7 +334,7 @@ export default function ViewApplicationPage() {
 
       if (application?.answers && application.answers.length > 0) {
         for (let _answerBlock of application.answers) {
-          if (_answerBlock.encryptedAnswer) {
+          if (_answerBlock.encryptedAnswer && !isLitUnavailable(round.chainId!)) {
             try {
               const encryptedAnswer = _answerBlock.encryptedAnswer;
               const base64EncryptedString = [

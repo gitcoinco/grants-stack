@@ -64,6 +64,7 @@ const OVERRIDE_PRIVATE_ROUND_IDS = [
 export const filterOutPrivateRounds = (rounds: RoundGetRound[]) => {
   return rounds.filter(
     (round) =>
+      (round.roundMetadata && round.roundMetadata.roundType) &&
       round.roundMetadata.roundType !== "private" ||
       OVERRIDE_PRIVATE_ROUND_IDS.includes(round.id.toLowerCase())
   );

@@ -1,7 +1,7 @@
 import { ProgressStatus, ProgressStep } from "../../features/api/types";
 import { Erc20__factory } from "../../types/generated/typechain";
-import { Allo, TToken } from "common";
-import { Hex } from "viem";
+import { Allo, NATIVE, TToken } from "common";
+import { Hex, zeroAddress } from "viem";
 import { datadogRum } from "@datadog/browser-rum";
 import { datadogLogs } from "@datadog/browser-logs";
 import { useState } from "react";
@@ -111,7 +111,10 @@ export function usePayout() {
       await allo
         .payoutDirectGrants({
           roundId: roundId,
-          token: token.address,
+          token:
+            token.address === zeroAddress
+              ? (NATIVE as `0x${string}`)
+              : token.address,
           amount: payoutAmount,
           recipientAddress: payoutWallet,
           recipientId: applicationId,
