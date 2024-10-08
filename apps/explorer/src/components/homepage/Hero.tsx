@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import InfoCard from "./InfoCard";
+import StatsCard from "./StatsCard";
 
 export default function Hero() {
   return (
@@ -16,7 +14,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <InfoCard />
+            <StatsCard />
           </motion.div>
           <motion.div
             className="flex flex-col justify-center space-y-4"

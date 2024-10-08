@@ -2,15 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ChevronRight, Home, CircleDollarSign, Briefcase } from "lucide-react";
+import { Home, CircleDollarSign, Briefcase } from "lucide-react";
+import DisplayGrid from "./DisplayGrid";
+import { RoundsQuery } from "@allo-team/kit";
 
 const NavButton = ({ icon, label, isActive, onClick }) => (
   <Button
@@ -23,92 +17,42 @@ const NavButton = ({ icon, label, isActive, onClick }) => (
   </Button>
 );
 
-const ItemCard = ({ title, description, type }) => (
-  <Card>
-    <CardHeader>
-      <CardTitle>{title}</CardTitle>
-      <CardDescription>{type}</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <p>{description}</p>
-    </CardContent>
-    <CardFooter>
-      <Button variant="outline">
-        Learn More <ChevronRight className="w-4 h-4 ml-2" />
-      </Button>
-    </CardFooter>
-  </Card>
-);
-
 export default function HomeNav() {
   const [activeView, setActiveView] = useState("home");
+
+  const featuredQuery: RoundsQuery = {
+    where: { chainId: { equalTo: 8453 } },
+    orderBy: { match_amount_in_usd: "desc" },
+    first: 10,
+  };
+
+  const allRoundsQuery: RoundsQuery = {
+    where: { chainId: { equalTo: 8453 } },
+    orderBy: { match_amount_in_usd: "desc" },
+    first: 10,
+  };
+
+  const allProjectsQuery: RoundsQuery = {
+    where: { chainId: { equalTo: 8453 } },
+    orderBy: { match_amount_in_usd: "desc" },
+    first: 10,
+  };
 
   const views = {
     home: {
       title: "Featured Rounds and Projects",
       content: (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <ItemCard
-            title="Sustainable Energy Initiative"
-            description="A round focused on funding innovative renewable energy projects."
-            type="Round"
-          />
-          <ItemCard
-            title="Ocean Cleanup Robot"
-            description="An autonomous robot designed to collect plastic waste from the ocean."
-            type="Project"
-          />
-          <ItemCard
-            title="Urban Farming Solutions"
-            description="Funding for vertical farming projects in urban areas."
-            type="Round"
-          />
-        </div>
+        <DisplayGrid query={featuredQuery} />
+        // <DisplayGrid query={featuredQuery} />
       ),
     },
     rounds: {
       title: "Active Funding Rounds",
-      content: (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <ItemCard
-            title="Tech for Good"
-            description="Supporting technology projects with positive social impact."
-            type="Round"
-          />
-          <ItemCard
-            title="Climate Action Fund"
-            description="Initiatives addressing climate change and environmental protection."
-            type="Round"
-          />
-          <ItemCard
-            title="Education Innovation"
-            description="Funding for projects revolutionizing learning and education."
-            type="Round"
-          />
-        </div>
-      ),
+      content: <DisplayGrid query={allRoundsQuery} />,
     },
     projects: {
       title: "Featured Projects",
-      content: (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <ItemCard
-            title="AI for Healthcare"
-            description="Developing AI solutions to improve medical diagnostics."
-            type="Project"
-          />
-          <ItemCard
-            title="Sustainable Housing"
-            description="Eco-friendly, affordable housing solutions for urban areas."
-            type="Project"
-          />
-          <ItemCard
-            title="Clean Water Initiative"
-            description="Innovative water purification technology for developing regions."
-            type="Project"
-          />
-        </div>
-      ),
+      content: <DisplayGrid query={allProjectsQuery} />,
     },
   };
 
