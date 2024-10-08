@@ -57,8 +57,8 @@ export function MintingActionButton({
         selectedBackground={selectedBackground}
       />
       <MintDonationButton
-        isMinted={isMinted}
-        toggleModal={toggleModal}
+        disabled={isMinted}
+        onClick={toggleModal}
         isOpen={isOpen}
       />
     </>

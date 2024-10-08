@@ -82,7 +82,7 @@ export function MintDonationImpactAction({
 
   const { handleAttest, handleSwitchChain, status } = useEASAttestation(
     AttestationChainId,
-    () => {},
+    () => null,
     data?.data
   );
 
@@ -114,9 +114,9 @@ export function MintDonationImpactAction({
   return (
     <>
       <MintDonationButton
-        toggleModal={toggleModal}
+        onClick={toggleModal}
         isOpen={!isOpen}
-        isMinted={isMinted}
+        disabled={isMinted}
       />
 
       <MintAttestationProgressModal
