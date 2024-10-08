@@ -10,13 +10,10 @@ export function ContributionHistoryContainer(props: {
   address: string;
   chainIds: number[];
 }) {
-  const { status, error, data } = useContributionsByDonor(
+  const { isLoading, isError, error, data } = useContributionsByDonor(
     props.chainIds,
     props.address
   );
-
-  const isLoading = status === "loading";
-  const isError = status === "error";
 
   const { data: ensName } = useEnsName({
     /* If props.address is an ENS name, don't pass in anything, as we already have the ens name*/

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Address, getAddress } from "viem";
+import _ from "lodash";
 
 import { Contribution, useDataLayer } from "data-layer";
 import { dateToEthereumTimestamp } from "common";
@@ -7,12 +8,7 @@ import { dateToEthereumTimestamp } from "common";
 import type { ContributionsData } from "../types";
 import { calculateTotalContributions } from "../utils/calculateTotalContributions";
 import { getContributionRoundStatus } from "../utils/getCountributionRoundStatus";
-
-export type ContributionHistoryState = {
-  status: "success" | "error" | "loading";
-  data?: ContributionsData;
-  error?: string;
-};
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
 const processContribution = (contribution: Contribution) => {
   const timestamp = dateToEthereumTimestamp(
@@ -30,39 +26,50 @@ const aggregateContributions = (contributions: Contribution[]) => {
     contributionsToDirectGrants: ContributionsData["contributionsToDirectGrants"];
   }>(
     (acc, contribution) => {
+      const result = _.cloneDeep(acc);
+
       const processedContribution = processContribution(contribution);
-
-      acc.contributions.push(processedContribution);
-
-      acc.contributionsById[contribution.id] = processedContribution;
-
       const roundStatus = processedContribution.contributionRoundStatus;
       const roundId = processedContribution.roundId;
       const transactionHash = processedContribution.transactionHash;
 
+      result.contributions.push(processedContribution);
+      result.contributionsById[contribution.id] = processedContribution;
+
       if (roundStatus === "direct") {
-        acc.contributionsToDirectGrants.push(processedContribution);
+        result.contributionsToDirectGrants.push(processedContribution);
       } else {
-        acc.contributionsByStatusAndHashAndRoundId = {
-          ...acc.contributionsByStatusAndHashAndRoundId,
-          [roundStatus]: {
-            ...acc.contributionsByStatusAndHashAndRoundId[roundStatus],
-            [transactionHash]: {
-              ...acc.contributionsByStatusAndHashAndRoundId[roundStatus]?.[
-                transactionHash
-              ],
-              [roundId]: [
-                ...(acc.contributionsByStatusAndHashAndRoundId[roundStatus]?.[
-                  transactionHash
-                ]?.[roundId] || []),
-                processedContribution,
-              ],
-            },
-          },
-        };
+        // Ensure the structure exists before inserting the processedContribution
+        if (!result.contributionsByStatusAndHashAndRoundId[roundStatus]) {
+          result.contributionsByStatusAndHashAndRoundId[roundStatus] = {};
+        }
+
+        if (
+          !result.contributionsByStatusAndHashAndRoundId[roundStatus][
+            transactionHash
+          ]
+        ) {
+          result.contributionsByStatusAndHashAndRoundId[roundStatus][
+            transactionHash
+          ] = {};
+        }
+
+        if (
+          !result.contributionsByStatusAndHashAndRoundId[roundStatus][
+            transactionHash
+          ][roundId]
+        ) {
+          result.contributionsByStatusAndHashAndRoundId[roundStatus][
+            transactionHash
+          ][roundId] = [];
+        }
+
+        result.contributionsByStatusAndHashAndRoundId[roundStatus][
+          transactionHash
+        ][roundId].push(processedContribution);
       }
 
-      return acc;
+      return result;
     },
     {
       contributions: [],
@@ -73,58 +80,54 @@ const aggregateContributions = (contributions: Contribution[]) => {
   );
 };
 
+export type ContributionsByDonorResponse = Omit<
+  UseQueryResult<Contribution[], Error>,
+  "data"
+> & { data?: ContributionsData };
+
 export const useContributionsByDonor = (
   chainIds: number[],
   rawAddress: string
-): ContributionHistoryState => {
-  const [state, setState] = useState<ContributionHistoryState>({
-    status: "loading",
-  });
-
+): ContributionsByDonorResponse => {
   const dataLayer = useDataLayer();
 
-  const fetchContributions = useCallback(async () => {
-    setState({ status: "loading" });
-    try {
+  const { data, ...contributionsResponse } = useQuery({
+    queryKey: ["donations", rawAddress.toLowerCase()],
+    queryFn: () => {
       const address: Address = getAddress(rawAddress.toLowerCase());
-      const contributionsResponse = await dataLayer.getDonationsByDonorAddress({
+      return dataLayer.getDonationsByDonorAddress({
         address,
         chainIds,
       });
+    },
+    enabled: !!rawAddress,
+  });
 
-      const {
-        contributions,
-        contributionsById,
-        contributionsByStatusAndHashAndRoundId,
-        contributionsToDirectGrants,
-      } = aggregateContributions(contributionsResponse);
+  const {
+    contributions,
+    contributionsById,
+    contributionsByStatusAndHashAndRoundId,
+    contributionsToDirectGrants,
+    totals,
+  } = useMemo<Omit<ContributionsData, "chainIds">>(() => {
+    const aggregatedContributions = aggregateContributions(data ?? []);
+    const totals = calculateTotalContributions(
+      aggregatedContributions.contributions
+    );
+    return { ...aggregatedContributions, totals };
+  }, [data]);
 
-      const totals = calculateTotalContributions(contributions);
+  const contributionsData = {
+    chainIds,
+    contributions,
+    contributionsById,
+    contributionsByStatusAndHashAndRoundId,
+    contributionsToDirectGrants,
+    totals,
+  };
 
-      const contributionsData: ContributionsData = {
-        chainIds,
-        contributions,
-        totals,
-        contributionsById,
-        contributionsByStatusAndHashAndRoundId,
-        contributionsToDirectGrants,
-      };
-
-      setState({
-        status: "success",
-        data: contributionsData,
-      });
-    } catch (error) {
-      setState({
-        status: "error",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
-  }, [chainIds, dataLayer, rawAddress]);
-
-  useEffect(() => {
-    fetchContributions();
-  }, [fetchContributions]);
-
-  return state;
+  return {
+    ...contributionsResponse,
+    data: contributionsData,
+  };
 };
