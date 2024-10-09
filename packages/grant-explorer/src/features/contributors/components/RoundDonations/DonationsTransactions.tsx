@@ -2,13 +2,20 @@ import { RoundHeader } from "./RoundHeader";
 import { TransactionHeader } from "./TransactionHeader";
 import { RoundAccordion } from "../RoundAccordion";
 import { ContributionsByRoundId } from "../../types";
+import { MintingAttestationIdsData } from "data-layer";
 
 export function DonationsTransactions({
   transactionHash,
   contributions = {},
+  transactionAttestationsData,
 }: {
   transactionHash: string;
   contributions?: ContributionsByRoundId;
+  transactionAttestationsData: {
+    transactionAttestations?: MintingAttestationIdsData[];
+    isFetchingAttestations?: boolean;
+    refetch?: () => void;
+  };
 }) {
   const roundIds = Object.keys(contributions);
 
@@ -20,16 +27,29 @@ export function DonationsTransactions({
 
   const transactionChainId = contributions[roundIds[0]][0].chainId;
 
+  const {
+    transactionAttestations = [],
+    isFetchingAttestations,
+    refetch,
+  } = transactionAttestationsData;
+
+  const lastAttestation = transactionAttestations[0];
+
   return (
     <div className="flex flex-col gap-6">
       <TransactionHeader
         transactionHash={transactionHash}
         transactionChainId={transactionChainId}
         contributions={contributionsArray}
+        attestationData={{
+          attestation: lastAttestation,
+          isFetchingAttestations,
+          refetch,
+        }}
       />
       <RoundHeader />
       {roundIds.map((roundId) => (
-        <RoundAccordion contributions={contributions[roundId]} />
+        <RoundAccordion key={roundId} contributions={contributions[roundId]} />
       ))}
     </div>
   );

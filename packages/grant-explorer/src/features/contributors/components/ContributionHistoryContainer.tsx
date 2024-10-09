@@ -3,20 +3,17 @@ import { isAddress } from "viem";
 
 import { ContributionHistory } from "./ContributionHistory";
 
-import { useContributionHistory } from "../hooks/useContributionHistory";
+import { useContributionsByDonor } from "../hooks/useContributionsByDonor";
 import { ContributionHistoryError } from "./ContributionHistoryError";
 
 export function ContributionHistoryContainer(props: {
   address: string;
   chainIds: number[];
 }) {
-  const { status, error, data } = useContributionHistory(
+  const { isLoading, isError, error, data } = useContributionsByDonor(
     props.chainIds,
     props.address
   );
-
-  const isLoading = status === "loading";
-  const isError = status === "error";
 
   const { data: ensName } = useEnsName({
     /* If props.address is an ENS name, don't pass in anything, as we already have the ens name*/
