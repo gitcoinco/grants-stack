@@ -21,6 +21,10 @@ export class AttestationService {
           txnHash
           attestationUid
           attestationChainId
+          attestation {
+            metadata
+            timestamp
+          }
         }
       }
     `;
