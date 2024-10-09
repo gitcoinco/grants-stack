@@ -50,7 +50,7 @@ export function DonationsTransactions({
       />
       <RoundHeader />
       {roundIds.map((roundId) => (
-        <RoundAccordion contributions={contributions[roundId]} />
+        <RoundAccordion key={roundId} contributions={contributions[roundId]} />
       ))}
     </div>
   );
