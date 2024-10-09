@@ -5,7 +5,7 @@ export type MintingAttestationIdsData = {
   attestation: {
     metadata: {
       impactImageCid: string;
-    };
+    }[];
     timestamp: string;
   };
 };
