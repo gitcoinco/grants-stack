@@ -33,8 +33,7 @@ export function DonationsTransactions({
     refetch,
   } = transactionAttestationsData;
 
-  const lastAttestation =
-    transactionAttestations[transactionAttestations.length - 1];
+  const lastAttestation = transactionAttestations[0];
 
   return (
     <div className="flex flex-col gap-6">

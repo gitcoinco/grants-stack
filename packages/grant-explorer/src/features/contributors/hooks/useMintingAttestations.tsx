@@ -15,10 +15,17 @@ export const useMintingAttestations = (
 
   const attestationsResponse = useQuery({
     queryKey: ["attestations", transactionHashes],
-    queryFn: () =>
-      dataLayer.getMintingAttestationIdsByTransactionHash({
-        transactionHashes,
-      }),
+    queryFn: async () => {
+      const response =
+        await dataLayer.getMintingAttestationIdsByTransactionHash({
+          transactionHashes,
+        });
+      return response.sort((a, b) => {
+        const aTimestamp = a.attestation.timestamp;
+        const bTimestamp = b.attestation.timestamp;
+        return bTimestamp < aTimestamp ? -1 : 1;
+      });
+    },
     enabled: !!transactionHashes && transactionHashes.length > 0,
   });
 
