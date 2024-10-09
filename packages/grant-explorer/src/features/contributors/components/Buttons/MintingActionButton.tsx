@@ -4,6 +4,8 @@ import { useState } from "react";
 import useColorAndBackground from "../../../../hooks/attestations/useColorAndBackground";
 import { MintDonationButton } from "./MintDonationButton";
 import { MintDonationImpactAction } from "./MintDonationImpactAction";
+import { ImpactMintingSuccess } from "../../../attestations/MintYourImpactComponents";
+import Modal from "../../../common/components/Modal";
 
 export function MintingActionButton({
   transaction,
@@ -21,11 +23,22 @@ export function MintingActionButton({
     refetch?: () => void;
   };
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState({
+    mintingModal: false,
+    viewAttestationModal: false,
+  });
   const [isActionStarted, setIsActionStarted] = useState(false);
 
-  function toggleModal() {
-    setIsOpen(!isOpen);
+  function toggleModal(modal: "mintingModal" | "viewAttestationModal") {
+    setIsOpen({ ...isOpen, [modal]: !isOpen[modal] });
+  }
+
+  function toggleMintingModal() {
+    toggleModal("mintingModal");
+  }
+
+  function toggleViewAttestationModal() {
+    toggleModal("viewAttestationModal");
   }
 
   function HandleActionState(started: boolean) {
@@ -33,6 +46,9 @@ export function MintingActionButton({
   }
 
   const { attestation, isFetchingAttestations = false } = attestationData;
+
+  const impactImageCid =
+    attestation?.attestation?.metadata?.[0]?.impactImageCid;
 
   const isMinted = !!attestation;
 
@@ -44,18 +60,22 @@ export function MintingActionButton({
   } = useColorAndBackground();
 
   return isMinted ? (
-    <ViewAttestationButton
-      onClick={() => {
-        console.log(transaction.hash, "View attestation clicked");
-      }}
-    />
+    <>
+      <Modal
+        isOpen={isOpen.viewAttestationModal}
+        onClose={toggleViewAttestationModal}
+      >
+        <ImpactMintingSuccess impactImageCid={impactImageCid} />
+      </Modal>
+      <ViewAttestationButton onClick={toggleViewAttestationModal} />
+    </>
   ) : (
     <>
       <MintDonationImpactAction
         startAction={isActionStarted}
         toggleStartAction={HandleActionState}
-        isOpen={isOpen}
-        toggleModal={toggleModal}
+        isOpen={isOpen.mintingModal}
+        toggleModal={toggleMintingModal}
         contributions={contributions}
         transactionHash={transaction.hash}
         selectedColor={selectedColor}
@@ -65,7 +85,7 @@ export function MintingActionButton({
       />
       <MintDonationButton
         disabled={isFetchingAttestations}
-        onClick={toggleModal}
+        onClick={toggleMintingModal}
       />
     </>
   );
