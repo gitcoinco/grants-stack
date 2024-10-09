@@ -1,5 +1,5 @@
 /* eslint-disable no-unexpected-multiline */
-import { getTokenPrice, NATIVE, submitPassportLite } from "common";
+import { getTokenPrice, submitPassportLite } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -31,7 +31,6 @@ import { useDataLayer } from "data-layer";
 import { isPresent } from "ts-is-present";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
-import { SwapParams } from "./SquidWidget";
 
 export function SummaryContainer(props: {
   enoughBalanceByChainId: Record<number, boolean>;

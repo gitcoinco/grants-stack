@@ -36,7 +36,14 @@ export default function ViewCart() {
   const chainIds = Object.keys(groupedCartProjects);
 
   const [openSwapModel, setOpenSwapModal] = useState<boolean>(false);
-  const [swapParams, setSwapParams] = useState<SwapParams>();
+  const [swapParams, setSwapParams] = useState<SwapParams>(
+    {
+      fromChainId: "1",
+      toChainId: "42161",
+      fromTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      toTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    }
+  );
 
   const handleSwap = (params: SwapParams) => {
     setSwapParams(params);
@@ -208,10 +215,11 @@ export default function ViewCart() {
 
   const swap = (_chainId: number | string) => {
     const chainId = Number(_chainId);
+    const isConnectedChain = !connectedChain || connectedChain === chainId;
+
     handleSwap({
-      initialFromChainId:
-        !connectedChain || connectedChain === chainId ? 1 : connectedChain,
-      initialToChainId: chainId,
+      fromChainId: isConnectedChain ? "1" : connectedChain.toString(),
+      toChainId: chainId.toString(),
       fromTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
       toTokenAddress: getVotingTokenForChain(chainId).address,
     });
@@ -269,6 +277,7 @@ export default function ViewCart() {
             )}
           </div>
           <GenericModal
+            isIframe={true}
             body={<SquidWidget {...swapParams} />}
             isOpen={openSwapModel}
             setIsOpen={swapModalHandler}
