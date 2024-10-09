@@ -1,5 +1,4 @@
-import { fr } from 'date-fns/locale';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export type SwapParams = {
   fromChainId: string;
@@ -32,11 +31,11 @@ const SquidWidget = ({
     initialAssets: {
       from: {
         chainId: fromChainId,
-        address: fromTokenAddress,
+        address: fromTokenAddress?.toLowerCase(),
       },
       to: {
         chainId: toChainId,
-        address: toTokenAddress,
+        address: toTokenAddress?.toLowerCase(),
       },
     },
   };
