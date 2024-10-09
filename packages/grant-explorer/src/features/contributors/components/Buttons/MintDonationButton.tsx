@@ -2,16 +2,14 @@ import { Button } from "common/src/styles";
 
 export function MintDonationButton({
   disabled = false,
-  isOpen,
   onClick = () => null,
 }: {
   disabled?: boolean;
-  isOpen: boolean;
   onClick?: () => void;
 }) {
   return (
     <div
-      className={`flex align-center justify-center border-[1px] rounded-[8px] ${disabled ? "bg-grey-100 border-grey-100" : "bg-rainbow-gradient border-transparent"} ${isOpen && "hidden"}`}
+      className={`flex align-center justify-center border-[1px] rounded-[8px] ${disabled ? "bg-grey-100 border-grey-100" : "bg-rainbow-gradient border-transparent"}`}
     >
       <Button
         type="button"

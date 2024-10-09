@@ -66,7 +66,6 @@ export function MintingActionButton({
       <MintDonationButton
         disabled={isFetchingAttestations}
         onClick={toggleModal}
-        isOpen={isOpen}
       />
     </>
   );

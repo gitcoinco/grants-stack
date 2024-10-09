@@ -10,7 +10,6 @@ import { useParams } from "react-router-dom";
 import { useAccount, useBalance } from "wagmi";
 import { useGetImages } from "../../../../hooks/attestations/useGetImages";
 import { getContributionFrameProps } from "../../utils/getContributionFrameProps";
-import { MintDonationButton } from "./MintDonationButton";
 import { Contribution } from "data-layer";
 import { ProgressStatus } from "../../../../hooks/attestations/config";
 import { useEstimateGas } from "../../../../hooks/attestations/useEstimateGas";
@@ -109,16 +108,8 @@ export function MintDonationImpactAction({
   const loading =
     isLoading || isLoadingENS || isRefetching || isRefetchingEstimate;
 
-  const isMinted = false;
-
   return (
     <>
-      <MintDonationButton
-        onClick={toggleModal}
-        isOpen={!isOpen}
-        disabled={isMinted}
-      />
-
       <MintAttestationProgressModal
         isOpen={isOpen}
         onClose={() => {
