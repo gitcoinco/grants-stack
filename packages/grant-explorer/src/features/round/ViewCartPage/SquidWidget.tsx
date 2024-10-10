@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 export type SwapParams = {
   fromChainId: string;
   toChainId: string;
@@ -14,14 +12,6 @@ const SquidWidget = ({
   fromTokenAddress,
   toTokenAddress,
 }: SwapParams) => {
-
-  console.log('fromChainId', fromChainId);
-  console.log('toChainId', toChainId);
-  console.log('fromTokenAddress', fromTokenAddress);
-  console.log('toTokenAddress', toTokenAddress);
-
-  // State to manage loading
-  const [loading, setLoading] = useState(true);
 
   // Construct the config object
   const config = {
@@ -46,11 +36,6 @@ const SquidWidget = ({
   // Construct the iframe URL
   const iframeUrl = `https://studio.squidrouter.com/iframe?config=${configString}`;
 
-  // Handler for when iframe loads
-  const handleIframeLoad = () => {
-    setLoading(false);
-  };
-
   return (
     <div style={{ position: "relative", width: "500", height: "684px" }}>
       <iframe
@@ -58,7 +43,6 @@ const SquidWidget = ({
         width="500"
         height="684"
         src={iframeUrl}
-        onLoad={handleIframeLoad}
         style={{ display: "block" }}
       />
     </div>

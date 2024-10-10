@@ -1007,4 +1007,12 @@ export class DataLayer {
       transactionHashes,
     });
   }
+
+  async getAttestationCount({
+    attestationChainIds,
+  }: {
+    attestationChainIds: number[]
+  }): Promise<number> {
+    return this.attestationService.getAttestationCount({attestationChainIds});
+  }
 }
