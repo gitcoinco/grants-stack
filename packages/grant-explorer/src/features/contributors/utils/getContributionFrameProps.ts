@@ -56,10 +56,24 @@ export const getContributionFrameProps = (
     )[0]?.roundName || "";
 
   return {
-    topRound,
+    topRoundName: topRound,
     projectsFunded: allProjects.length,
     roundsSupported: roundsSet.size,
     checkedOutChains: chainsSet.size,
     projects: topProjects,
   };
+};
+
+export const getRoundsToFetchNames = (props: AttestationFrameProps) => {
+  if (props.projects.length === 0) {
+    return {};
+  }
+  const roundsToFetchNames: Record<number, string> = {};
+  props.projects.forEach((project) => {
+    roundsToFetchNames[project?.chainId ?? 0] = project.roundId ?? "";
+  });
+  roundsToFetchNames[props.topRound?.chainId ?? 0] =
+    props.topRound?.roundId ?? "";
+
+  return roundsToFetchNames;
 };

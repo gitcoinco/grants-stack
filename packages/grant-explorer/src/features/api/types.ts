@@ -85,10 +85,16 @@ export type AttestationProject = {
   round: string;
   image: string;
   amount?: number;
+  chainId?: number;
+  roundId?: string;
 };
 
 export type AttestationFrameProps = {
-  topRound: string;
+  topRound?: {
+    roundId: string;
+    chainId: number;
+  };
+  topRoundName?: string;
   projectsFunded: number;
   roundsSupported: number;
   checkedOutChains: number;

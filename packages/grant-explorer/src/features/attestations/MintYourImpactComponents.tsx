@@ -364,7 +364,7 @@ export const HiddenAttestationFrame = ({
         checkedOutChains={FrameProps.checkedOutChains}
         projectsFunded={FrameProps.projectsFunded}
         roundsSupported={FrameProps.roundsSupported}
-        topRound={FrameProps.topRound}
+        topRound={FrameProps.topRoundName ?? ""}
         address={address}
         ensName={name}
       />
@@ -376,8 +376,12 @@ import { ImageWithLoading } from "../common/components/ImageWithLoading";
 
 export const ImpactMintingSuccess = ({
   impactImageCid,
+  containerSize = "w-[430px] h-[430px]",
+  imageSize = "w-[400px] h-[400px]",
 }: {
   impactImageCid?: string;
+  containerSize?: string;
+  imageSize?: string;
 }) => {
   const {
     data: image,
@@ -390,11 +394,14 @@ export const ImpactMintingSuccess = ({
       className="flex flex-col items-center text-center w-full relative bg-bottom bg-cover "
       style={{ backgroundImage: `url(${bgImage})` }}
     >
-      <div className="flex flex-col items-center justify-center gap-4 px-8 py-6 bg-[#ffffff66] rounded-3xl w-[430px] h-[430px]">
+      <div
+        className={`flex flex-col items-center justify-center gap-4 px-8 py-6 bg-[#ffffff66] rounded-3xl ${containerSize}`}
+      >
         <div className="flex flex-col items-center justify-center w-full ">
           <ImageWithLoading
             src={image?.[0]}
             isLoading={isLoading || !image || !impactImageCid || isFetching}
+            sizeClass={imageSize}
           />
         </div>
       </div>

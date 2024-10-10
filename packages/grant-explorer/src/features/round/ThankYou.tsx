@@ -6,16 +6,17 @@ import Navbar from "../common/Navbar";
 import { useCartStorage } from "../../store";
 import { useCheckoutStore } from "../../checkoutStore";
 import { ProgressStatus } from "../api/types";
-import { useRoundById } from "../../context/RoundContext";
+import { useRoundById, useRoundNamesByIds } from "../../context/RoundContext";
 import image from "../../assets/gitcoinlogo-black.svg";
 import alt1 from "../../assets/alt1.svg";
 import { useWindowSize } from "react-use";
-import { ShareButtons, ThankYouSectionButtons } from "../common/ShareButtons";
+import { ThankYouSectionButtons } from "../common/ShareButtons";
 import {
-  AttestationFrame,
   HiddenAttestationFrame,
+  ImpactMintingSuccess,
   PreviewFrame,
 } from "../attestations/MintYourImpactComponents";
+import { getRoundsToFetchNames } from "../attestations/utils/getRoundsToFetchNames";
 import MintAttestationProgressModal from "../attestations/MintAttestationProgressModal"; // Adjust the import path as needed
 import { MintProgressModalBodyThankYou } from "../attestations/MintProgressModalBody"; // We'll define this next
 import { useGetAttestationData } from "../../hooks/attestations/useGetAttestationData";
@@ -30,6 +31,7 @@ import {
 } from "../attestations/utils/constants";
 import { ethers } from "ethers";
 import { useAttestationFee } from "../contributors/hooks/useMintingAttestations";
+import { useAttestationStore } from "../../attestationStore";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -40,6 +42,7 @@ export default function ThankYou() {
   const cart = useCartStorage();
   const checkoutStore = useCheckoutStore();
   const { address } = useAccount();
+  const attestationStore = useAttestationStore();
 
   /** Fetch round data for tweet */
   const checkedOutProjects = useCheckoutStore((state) =>
@@ -101,48 +104,18 @@ export default function ThankYou() {
     window.scrollTo(0, 100);
   }, []);
 
-  // const transactions = useCheckoutStore((state) =>
-  //   state.getCheckedOutTransactions()
-  // );
+  const transactions = useAttestationStore((state) =>
+    state.getCheckedOutTransactions()
+  );
 
-  // const ImpactFrameProps = useCheckoutStore((state) => {
-  //   return state.getFrameProps(transactions);
-  // });
+  const ImpactFrameProps = useAttestationStore((state) => {
+    return state.getFrameProps(transactions);
+  });
 
-  // For testing out otherwise comment till transaction and uncomment the above { transactions } and { ImpactFrameProps }
-  const projectsData = [
-    {
-      rank: 1,
-      name: "Saving forests around the world",
-      round: "Climate Round",
-      image: image,
-    },
-    {
-      rank: 2,
-      name: "Funding schools in Mexico",
-      round: "Education Round",
-      image: image,
-    },
-    {
-      rank: 3,
-      name: "Accessible software for everyone",
-      round: "OSS Round",
-      image: image,
-    },
-  ];
+  const roundsToFetchName = getRoundsToFetchNames(ImpactFrameProps);
 
-  const ImpactFrameProps = {
-    topRound: round?.roundMetadata?.name ?? "",
-    projectsFunded: 20,
-    roundsSupported: 5,
-    checkedOutChains: 6,
-    projects: projectsData,
-  };
-
-  // For testing add one or multiple test transaction hash/es
-  const transactions = [
-    "0x9c058fb124c2899602f923afe8e4f61a86a4901435460272bf16939cfb719f3d",
-  ];
+  const { data: roundNames, isLoading: isLoadingRoundNames } =
+    useRoundNamesByIds(roundsToFetchName);
 
   const [minted, setMinted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -159,7 +132,7 @@ export default function ThankYou() {
   const handleSetMinted = () => {
     setMinted(true);
     setIsModalOpen(false);
-    checkoutStore.cleanCheckedOutProjects();
+    attestationStore.cleanCheckedOutProjects();
   };
 
   const { width } = useWindowSize();
@@ -173,20 +146,21 @@ export default function ThankYou() {
     isModalOpen
   );
 
-  // const { data, isLoading, isRefetching } = useGetAttestationData(
-  //   transactions,
-  //   handleGetAttestationPreview,
-  //   isLoadingENS || isLoadingImages || !isModalOpen,
-  //   selectedBackground
-  // );
-
-  // For testing out otherwise comment and uncomment the above
   const { data, isLoading } = useGetAttestationData(
     transactions,
     handleGetAttestationPreview,
-    isLoadingENS,
+    isLoadingENS || isLoadingImages || !isModalOpen || isLoadingRoundNames,
     selectedBackground
   );
+
+  const [impactImageCid, setImpactImageCid] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (data?.impactImageCid) {
+      setImpactImageCid(data.impactImageCid);
+    }
+  }, [data]);
+
   const frameId = ethers.utils.solidityKeccak256(["string[]"], [transactions]);
 
   const {
@@ -212,6 +186,24 @@ export default function ThankYou() {
     balance?.value && gasEstimation
       ? balance.value <= attestationFee + gasEstimation
       : false;
+
+  const topRoundName = roundNames
+    ? roundNames[ImpactFrameProps?.topRound?.chainId ?? 0][
+        ImpactFrameProps?.topRound?.roundId ?? ""
+      ]
+    : "";
+
+  const ImpactFramePropsWithNames = {
+    ...ImpactFrameProps,
+    topRoundName,
+    projects: ImpactFrameProps.projects.map((project) => ({
+      ...project,
+      round: roundNames
+        ? (roundNames[project?.chainId ?? 0][project?.roundId ?? ""] ??
+          project.round)
+        : project.round,
+    })),
+  };
 
   return (
     <>
@@ -272,21 +264,14 @@ export default function ThankYou() {
                         Share with your friends!
                       </div>
                     </div>
-                    <AttestationFrame
-                      selectedBackground={selectedBackground}
-                      projects={ImpactFrameProps.projects}
-                      checkedOutChains={ImpactFrameProps.checkedOutChains}
-                      projectsFunded={ImpactFrameProps.projectsFunded}
-                      roundsSupported={ImpactFrameProps.roundsSupported}
-                      topRound={ImpactFrameProps.topRound}
-                      address={address}
-                      ensName={name}
-                      frameId={frameId}
+                    <ImpactMintingSuccess
+                      impactImageCid={impactImageCid}
+                      containerSize="w-[630px] h-[630px]"
+                      imageSize="w-[600px] h-[600px]"
                     />
                   </div>
                 </div>
               </div>
-              <ShareButtons />
             </div>
           ) : (
             <div className={`w-full h-full flex flex-col items-center`}>
@@ -324,7 +309,7 @@ export default function ThankYou() {
               }
             />
             <HiddenAttestationFrame
-              FrameProps={ImpactFrameProps}
+              FrameProps={ImpactFramePropsWithNames}
               selectedBackground={selectedBackground}
               address={address}
               name={name}
