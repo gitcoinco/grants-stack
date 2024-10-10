@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import {
-  CartProject,
-  ProgressStatus,
-  AttestationFrameProps,
-} from "./features/api/types";
+import { CartProject, ProgressStatus } from "./features/api/types";
 import {
   AlloV2,
   createEthersTransactionSender,
@@ -14,6 +10,7 @@ import {
   getChainById,
 } from "common";
 import { useCartStorage } from "./store";
+import { useAttestationStore } from "./attestationStore";
 import {
   getContract,
   Hex,
@@ -70,12 +67,6 @@ interface CheckoutState {
   getCheckedOutProjects: () => CartProject[];
   checkedOutProjects: CartProject[];
   setCheckedOutProjects: (newArray: CartProject[]) => void;
-  checkedOutProjectsByTx: Record<Hex, CartProject[]>;
-  setCheckedOutProjectsByTx: (tx: Hex, projects: CartProject[]) => void;
-  getCheckedOutProjectsByTx: (tx: Hex) => CartProject[];
-  cleanCheckedOutProjects: () => void;
-  getCheckedOutTransactions: () => Hex[];
-  getFrameProps: (txHashes: Hex[]) => AttestationFrameProps;
 }
 
 const defaultProgressStatusForAllChains = Object.fromEntries(
@@ -332,11 +323,9 @@ export const useCheckoutStore = create<CheckoutState>()(
           set({
             checkedOutProjects: [...get().checkedOutProjects, ...donations],
           });
-          set({
-            checkedOutProjectsByTx: {
-              [receipt.transactionHash]: donations,
-            },
-          });
+          useAttestationStore
+            .getState()
+            .setCheckedOutProjectsByTx(receipt.transactionHash, donations);
         } catch (error) {
           let context: Record<string, unknown> = {
             chainId,
@@ -371,91 +360,6 @@ export const useCheckoutStore = create<CheckoutState>()(
       set({
         checkedOutProjects: newArray,
       });
-    },
-    checkedOutProjectsByTx: {},
-    setCheckedOutProjectsByTx: (tx: Hex, projects: CartProject[]) => {
-      set((oldState) => ({
-        checkedOutProjectsByTx: {
-          ...oldState.checkedOutProjectsByTx,
-          [tx]: projects,
-        },
-      }));
-    },
-    getCheckedOutProjectsByTx: (tx: Hex) => {
-      return get().checkedOutProjectsByTx[tx] || [];
-    },
-    cleanCheckedOutProjects: () => {
-      set({
-        checkedOutProjectsByTx: {},
-      });
-    },
-    // Create a function that gets an array of transactionHashes and returns the FrameProps object where projects Array
-    // contains the top 3 projects based on those checked out transactions max donation amount in usd
-    // The top round is the round with the most funds allocated in total amount of projects allocated to all transactions in total rounds in all transaction in total chains allocated in these transactions
-    getCheckedOutTransactions: () => {
-      return Object.keys(get().checkedOutProjectsByTx) as Hex[];
-    },
-    getFrameProps: (txHashes: Hex[]) => {
-      const allProjects: CartProject[] = [];
-      const roundsSet = new Set<string>();
-      const chainsSet = new Set<number>();
-      const amountByRound: Record<
-        string,
-        {
-          roundName: string;
-          totalAmount: number;
-        }
-      > = {};
-
-      if (txHashes.length === 0) {
-        return {
-          selectedBackground: "",
-          topRound: "",
-          projectsFunded: 0,
-          roundsSupported: 0,
-          checkedOutChains: 0,
-          projects: [],
-        } as AttestationFrameProps;
-      }
-
-      for (const txHash of txHashes) {
-        const projects = get().getCheckedOutProjectsByTx(txHash);
-        allProjects.push(...projects);
-        projects.forEach((project) => {
-          roundsSet.add(project.roundId);
-          chainsSet.add(project.chainId);
-          amountByRound[project.roundId] = amountByRound[project.roundId] || {
-            roundName: project.roundId,
-            totalAmount: 0,
-          };
-          // TODO CHANGE WITH ACTUAL ROUNDNAME
-          amountByRound[project.roundId].roundName = project.roundId;
-          amountByRound[project.roundId].totalAmount += Number(project.amount);
-        });
-      }
-      const topProjects = allProjects
-        .sort((a, b) => Number(b.amount) - Number(a.amount))
-        .slice(0, 3)
-        .map((project, i) => ({
-          rank: i,
-          name: project.projectMetadata.title,
-          round: project.roundId,
-          image:
-            project.projectMetadata?.logoImg ??
-            project.projectMetadata?.bannerImg ??
-            "",
-        }));
-      const topRoundName = Object.values(amountByRound).sort(
-        (a, b) => b.totalAmount - a.totalAmount
-      )[0].roundName;
-      return {
-        selectedBackground: "",
-        topRound: topRoundName,
-        projectsFunded: allProjects.length,
-        roundsSupported: roundsSet.size,
-        checkedOutChains: chainsSet.size,
-        projects: topProjects,
-      } as AttestationFrameProps;
     },
   }))
 );
