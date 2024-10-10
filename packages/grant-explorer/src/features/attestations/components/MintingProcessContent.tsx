@@ -1,5 +1,4 @@
 import { ProgressStatus } from "../../../hooks/attestations/config";
-import { AttestationFee } from "../utils/constants";
 import {
   ErrorMessage,
   BalanceDisplay,
@@ -18,6 +17,7 @@ export const MintingProcessContent = ({
   handleSwitchChain,
   handleAttest,
   isLoading,
+  attestationFee,
 }: {
   status: ProgressStatus;
   balance: bigint | undefined;
@@ -28,6 +28,7 @@ export const MintingProcessContent = ({
   handleSwitchChain: () => Promise<void>;
   handleAttest: () => Promise<void>;
   isLoading: boolean;
+  attestationFee: bigint;
 }) => (
   <div className="flex flex-col items-start justify-center">
     {status === ProgressStatus.IS_ERROR && <ErrorMessage />}
@@ -36,7 +37,7 @@ export const MintingProcessContent = ({
 
     <CostDetails
       isLoading={isLoadingEstimation}
-      attestationFee={AttestationFee}
+      attestationFee={attestationFee}
       estimatedGas={gasEstimation}
     />
 

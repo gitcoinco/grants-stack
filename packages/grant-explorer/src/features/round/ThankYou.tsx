@@ -27,9 +27,9 @@ import { useGetImages } from "../../hooks/attestations/useGetImages";
 import { useEstimateGas } from "../../hooks/attestations/useEstimateGas";
 import {
   AttestationChainId,
-  AttestationFee,
 } from "../attestations/utils/constants";
 import { ethers } from "ethers";
+import { useAttestationFee } from "../contributors/hooks/useMintingAttestations";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -39,6 +39,7 @@ export default function ThankYou() {
 
   const cart = useCartStorage();
   const checkoutStore = useCheckoutStore();
+  const { address } = useAccount();
 
   /** Fetch round data for tweet */
   const checkedOutProjects = useCheckoutStore((state) =>
@@ -165,7 +166,6 @@ export default function ThankYou() {
 
   const flex = width <= 1280;
 
-  const { address } = useAccount();
   const { data: name, isLoading: isLoadingENS } = useResolveENS(address);
 
   const { data: imagesBase64, isLoading: isLoadingImages } = useGetImages(
@@ -206,9 +206,11 @@ export default function ThankYou() {
     address,
   });
 
+  const { data: attestationFee } = useAttestationFee();
+
   const notEnoughFunds =
     balance?.value && gasEstimation
-      ? balance.value <= AttestationFee + gasEstimation
+      ? balance.value <= attestationFee + gasEstimation
       : false;
 
   return (
@@ -309,6 +311,7 @@ export default function ThankYou() {
               subheading="Your unique donation graphic will be generated after you mint."
               body={
                 <MintProgressModalBodyThankYou
+                  attestationFee={attestationFee}
                   handleSwitchChain={handleSwitchChain}
                   status={status}
                   gasEstimation={gasEstimation}

@@ -36,4 +36,27 @@ export class AttestationService {
 
     return response.attestationTxns;
   }
+
+  async getAttestationCountByRecipientId({
+    recipientId,
+  }: {
+    recipientId: string;
+  }): Promise<number> {
+    const query = gql`
+      query getAttestationCountByRecipientId(
+        $recipientId: String!
+      ) {
+        attestations(filter: {recipient: { equalTo: $recipientId}}) {
+          uid
+        }
+      }
+    `;
+
+    const response: { attestations: any[] } =
+      await request(this.gsIndexerEndpoint, query, {
+        recipientId,
+      });
+
+    return response.attestations.length;
+  }
 }

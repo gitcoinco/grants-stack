@@ -16,9 +16,9 @@ import { useEstimateGas } from "../../../../hooks/attestations/useEstimateGas";
 
 import {
   AttestationChainId,
-  AttestationFee,
 } from "../../../attestations/utils/constants";
 import { ethers } from "ethers";
+import { useAttestationFee } from "../../hooks/useMintingAttestations";
 
 interface MintDonationImpactActionProps {
   toggleModal: () => void;
@@ -90,9 +90,12 @@ export function MintDonationImpactAction({
     address: address,
   });
 
+  const { data: attestationFee } = useAttestationFee();
+  console.log("====> A1", attestationFee)
+
   const notEnoughFunds =
     balance?.value && gasEstimation
-      ? balance.value <= AttestationFee + gasEstimation
+      ? balance.value <= attestationFee + gasEstimation
       : false;
 
   const title =
@@ -120,6 +123,7 @@ export function MintDonationImpactAction({
         subheading={subheading}
         body={
           <MintProgressModalBodyHistory
+            attestationFee={attestationFee}
             handleSwitchChain={handleSwitchChain}
             status={status}
             gasEstimation={gasEstimation}

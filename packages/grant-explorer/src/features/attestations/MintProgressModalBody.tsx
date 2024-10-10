@@ -7,6 +7,7 @@ import {
 } from "./MintYourImpactComponents";
 import { AttestationChainId } from "./utils/constants";
 import { MintingProcessContent } from "./components/index";
+import { useAttestationFee } from "../contributors/hooks/useMintingAttestations";
 
 type MintProgressModalBodyProps = {
   handleSwitchChain: () => Promise<void>;
@@ -23,6 +24,7 @@ type MintProgressModalBodyProps = {
   isTransactionHistoryPage?: boolean;
   previewBackground?: string;
   selectedColor?: string;
+  attestationFee: bigint;
 };
 
 // MintProgressModalBodyThankYou component
@@ -44,6 +46,7 @@ export function MintProgressModalBodyThankYou(
     chainId: AttestationChainId,
     address,
   });
+  const { data: attestationFee } = useAttestationFee();
 
   return (
     <div className="min-w-full min-h-full">
@@ -54,6 +57,7 @@ export function MintProgressModalBodyThankYou(
         isLoadingEstimation={isLoadingEstimation}
         gasEstimation={gasEstimation}
         isConnected={isConnected}
+        attestationFee={attestationFee}
         handleSwitchChain={handleSwitchChain}
         handleAttest={handleAttest}
         isLoading={isLoading}
@@ -67,6 +71,7 @@ export function MintProgressModalBodyHistory(
   props: MintProgressModalBodyProps
 ) {
   const {
+    attestationFee,
     handleSwitchChain,
     status,
     gasEstimation,
@@ -115,6 +120,7 @@ export function MintProgressModalBodyHistory(
           handleSwitchChain={handleSwitchChain}
           handleAttest={handleAttest}
           isLoading={isLoading}
+          attestationFee={attestationFee}
         />
       )}
     </div>

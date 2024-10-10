@@ -1007,4 +1007,14 @@ export class DataLayer {
       transactionHashes,
     });
   }
+
+  async getAttestationCountByRecipientId({
+    recipientId,
+  }: {
+    recipientId: string;
+  }): Promise<number> {
+    return this.attestationService.getAttestationCountByRecipientId({
+      recipientId,
+    });
+  }
 }
