@@ -1008,13 +1008,11 @@ export class DataLayer {
     });
   }
 
-  async getAttestationCountByRecipientId({
-    recipientId,
+  async getAttestationCount({
+    attestationChainIds,
   }: {
-    recipientId: string;
+    attestationChainIds: number[]
   }): Promise<number> {
-    return this.attestationService.getAttestationCountByRecipientId({
-      recipientId,
-    });
+    return this.attestationService.getAttestationCount({attestationChainIds});
   }
 }

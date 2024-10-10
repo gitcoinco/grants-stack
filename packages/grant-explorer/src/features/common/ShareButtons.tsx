@@ -11,7 +11,7 @@ export const ShareButtons = (): JSX.Element => {
   return (
     <div className="z-30">
       <div className="flex flex-col items-center justify-center gap-2 relative">
-        <span className="font-mona font-semibold">Share</span>
+        <span className="font-mona font-semibold py-1">Share Your Impact</span>
         <div className="flex items-center justify-center gap-2 relative">
           <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer">
             <img className="relative w-9 h-9" alt="Frame" src={Link} />

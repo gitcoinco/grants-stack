@@ -217,7 +217,7 @@ export const PreviewFrame = ({
       ></div>
       <div className="flex flex-wrap gap-3 items-center mt-3   p-2">
         <div className="flex flex-col items-center">
-          <div className="flex flex-wrap items-center space-x-2 z-30">
+          <div className="flex flex-wrap items-center space-x-2 z-30 my-3">
             <div className="text-2xl font-modern-era-regular">
               Pick your color
             </div>

@@ -37,16 +37,18 @@ export class AttestationService {
     return response.attestationTxns;
   }
 
-  async getAttestationCountByRecipientId({
-    recipientId,
+  async getAttestationCount({
+    attestationChainIds
   }: {
-    recipientId: string;
-  }): Promise<number> {
+    attestationChainIds: number[];
+  }) : Promise<number> {
     const query = gql`
-      query getAttestationCountByRecipientId(
-        $recipientId: String!
+      query getAttestationCount(
+        $attestationChainIds: [Int!]!
       ) {
-        attestations(filter: {recipient: { equalTo: $recipientId}}) {
+        attestations(filter: {
+          chainId: { in: $attestationChainIds }
+        }) {
           uid
         }
       }
@@ -54,7 +56,7 @@ export class AttestationService {
 
     const response: { attestations: any[] } =
       await request(this.gsIndexerEndpoint, query, {
-        recipientId,
+        attestationChainIds,
       });
 
     return response.attestations.length;
