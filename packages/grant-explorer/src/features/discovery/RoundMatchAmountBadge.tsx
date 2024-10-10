@@ -16,6 +16,9 @@ export function RoundMatchAmountBadge({
   tokenAddress,
 }: RoundCardStatProps) {
   const token = getTokenByChainIdAndAddress(chainId, tokenAddress as Hex);
+  if (!token) {
+    return null;
+  }
   const matchAmountNormalized = formatUnits(BigInt(matchAmount), token.decimals);
 
   return (

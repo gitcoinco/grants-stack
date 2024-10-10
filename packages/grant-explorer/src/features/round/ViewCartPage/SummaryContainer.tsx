@@ -1,5 +1,5 @@
 /* eslint-disable no-unexpected-multiline */
-import { getTokenPrice, NATIVE, submitPassportLite } from "common";
+import { getTokenPrice, submitPassportLite } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
@@ -28,20 +28,21 @@ import { Skeleton } from "@chakra-ui/react";
 import { MatchingEstimateTooltip } from "../../common/MatchingEstimateTooltip";
 import { parseChainId } from "common/src/chains";
 import { useDataLayer } from "data-layer";
-import { getBalance } from "@wagmi/core";
 import { isPresent } from "ts-is-present";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
-import { config } from "../../../app/wagmi";
 
-export function SummaryContainer() {
+export function SummaryContainer(props: {
+  enoughBalanceByChainId: Record<number, boolean>;
+  totalAmountByChainId: Record<number, number>;
+  handleSwap: (chainId: number) => void;
+}) {
   const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
   const { address, isConnected, connector } = useAccount();
   const {
     projects,
     getVotingTokenForChain,
-    chainToVotingToken,
     remove: removeProjectFromCart,
   } = useCartStorage();
   const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
@@ -53,78 +54,6 @@ export function SummaryContainer() {
     () => groupBy(projects, "chainId"),
     [projects]
   );
-
-  /*  This needs to be a useMemo to prevent an infinite loop in the below useEffect */
-  /* TODO: can we remove the useMemo without causing an infinite loop? */
-  const chainIds = useMemo(
-    () => Object.keys(projectsByChain).map(Number),
-    [projectsByChain]
-  );
-
-  /** How much of the voting token for a chain does the address have*/
-  // todo: introduce a multicall here
-  const [tokenBalancesPerChain, setTokenBalancesPerChain] = useState<
-    Map<number, bigint>
-  >(new Map());
-  useEffect(() => {
-    const runner = async () => {
-      const newMap = new Map(tokenBalancesPerChain);
-
-      for (const chainId of chainIds) {
-        const votingToken = getVotingTokenForChain(chainId);
-        try {
-          const { value } = await getBalance(config, {
-            address: address!,
-            token:
-              votingToken.address === zeroAddress ||
-              votingToken.address.toLowerCase() === NATIVE.toLowerCase()
-                ? undefined
-                : votingToken.address,
-            chainId,
-          });
-          newMap.set(chainId, value);
-        } catch (e) {
-          console.error(`Error fetching balance for chain ${chainId}`, e);
-        }
-      }
-      setTokenBalancesPerChain(newMap);
-    };
-    if (address && address !== zeroAddress) runner();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
-
-  const totalDonationsPerChain = useMemo(() => {
-    return Object.fromEntries(
-      Object.entries(projectsByChain).map(([key, value]) => [
-        parseChainId(key),
-        value
-          .map((project) => project.amount)
-          .reduce(
-            (acc, amount) =>
-              acc +
-              parseUnits(
-                amount ? amount : "0",
-                getVotingTokenForChain(parseChainId(key)).decimals
-              ),
-            0n
-          ),
-      ])
-    );
-    /* NB: we want to update the totalDonationsPerChain value based on chainToVotingToken */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getVotingTokenForChain, chainToVotingToken, projectsByChain]);
-
-  const enoughFundsToDonatePerChain = useMemo(() => {
-    return Object.fromEntries(
-      chainIds.map((chainId) => {
-        const balanceOfToken = tokenBalancesPerChain.get(chainId);
-        if (balanceOfToken === undefined) {
-          return [chainId, true];
-        }
-        return [chainId, balanceOfToken > totalDonationsPerChain[chainId]];
-      })
-    );
-  }, [chainIds, tokenBalancesPerChain, totalDonationsPerChain]);
 
   const { data: rounds } = useSWR(projects, async (projects) => {
     const uniqueProjects = uniqBy(projects, (p) => `${p.chainId}-${p.roundId}`);
@@ -173,16 +102,6 @@ export function SummaryContainer() {
   const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
     number[]
   >(Object.keys(projectsByChain).map(Number));
-
-  /** Keep the chains to be checked out in sync with the projects in the cart */
-  useEffect(() => {
-    const chainIdsFromProjects = Object.keys(projectsByChain).map(Number);
-    setChainIdsBeingCheckedOut(
-      chainIdsFromProjects.filter(
-        (chainId) => enoughFundsToDonatePerChain[chainId]
-      )
-    );
-  }, [enoughFundsToDonatePerChain, projectsByChain]);
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
@@ -261,9 +180,11 @@ export function SummaryContainer() {
           body={
             <ChainConfirmationModalBody
               projectsByChain={projectsByChain}
-              totalDonationsPerChain={totalDonationsPerChain}
+              totalDonationsPerChain={props.totalAmountByChainId}
               chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
               setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
+              enoughBalanceByChainId={props.enoughBalanceByChainId}
+              handleSwap={props.handleSwap}
             />
           }
           isOpen={openChainConfirmationModal}
@@ -275,7 +196,9 @@ export function SummaryContainer() {
           subheading={"Please hold while we submit your donation."}
           body={
             <MRCProgressModalBody
-              chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
+              chainIdsBeingCheckedOut={chainIdsBeingCheckedOut.filter(
+                (chainId) => props.enoughBalanceByChainId[chainId] === true
+              )}
               tryAgainFn={handleSubmitDonation}
               setIsOpen={setOpenMRCProgressModal}
             />
@@ -326,10 +249,12 @@ export function SummaryContainer() {
       }, modalDelayMs);
 
       await checkout(
-        chainIdsBeingCheckedOut.map((chainId) => ({
-          chainId,
-          permitDeadline: currentPermitDeadline,
-        })),
+        chainIdsBeingCheckedOut
+          .filter((chainId) => props.enoughBalanceByChainId[chainId] === true)
+          .map((chainId) => ({
+            chainId,
+            permitDeadline: currentPermitDeadline,
+          })),
         walletClient,
         connector,
         dataLayer
@@ -342,21 +267,14 @@ export function SummaryContainer() {
   const passportTextClass = getClassForPassportColor("black");
 
   const { data: totalDonationAcrossChainsInUSDData } = useSWR(
-    totalDonationsPerChain,
-    (totalDonationsPerChain) => {
+    props.totalAmountByChainId,
+    (totalAmountByChainId) => {
       return Promise.all(
-        Object.keys(totalDonationsPerChain).map((chainId) =>
+        Object.keys(totalAmountByChainId).map((chainId) =>
           getTokenPrice(
             getVotingTokenForChain(parseChainId(chainId)).redstoneTokenId
           ).then((price) => {
-            return (
-              Number(
-                formatUnits(
-                  totalDonationsPerChain[chainId],
-                  getVotingTokenForChain(parseChainId(chainId)).decimals
-                )
-              ) * Number(price)
-            );
+            return totalAmountByChainId[Number(chainId)] * Number(price);
           })
         )
       );
@@ -411,11 +329,6 @@ export function SummaryContainer() {
   const matchingEstimates = data?.length && data.length > 0 ? data : undefined;
   const estimate = matchingEstimatesToText(matchingEstimates);
 
-  /** Special case where none of the chains to be checked out have enough funds */
-  const notEnoughFunds = Object.values(enoughFundsToDonatePerChain).every(
-    (value) => !value
-  );
-
   /** If there are no projects, render nothing */
   if (projects.length === 0) {
     return null;
@@ -459,10 +372,9 @@ export function SummaryContainer() {
             <Summary
               key={chainId}
               chainId={parseChainId(chainId)}
-              selectedPayoutToken={getVotingTokenForChain(
-                parseChainId(chainId)
-              )}
-              totalDonation={totalDonationsPerChain[chainId]}
+              selectedPayoutToken={getVotingTokenForChain(Number(chainId))}
+              enoughBalance={props.enoughBalanceByChainId[Number(chainId)]}
+              totalDonation={props.totalAmountByChainId[Number(chainId)]}
             />
           ))}
           {totalDonationAcrossChainsInUSD &&
@@ -492,7 +404,7 @@ export function SummaryContainer() {
         // $variant="solid"
         data-testid="handle-confirmation"
         type="button"
-        disabled={notEnoughFunds}
+        disabled={totalDonationAcrossChainsInUSD === 0}
         onClick={() => {
           /* If wallet is not connected, display Rainbowkit modal */
           if (!isConnected) {
@@ -508,15 +420,9 @@ export function SummaryContainer() {
 
           handleConfirmation();
         }}
-        className={`${
-          notEnoughFunds && "border-t"
-        } items-center text-sm rounded-b-3xl w-full bg-blue-100 text-black py-5 text-normal font-mono`}
+        className={`items-center text-sm rounded-b-3xl w-full bg-blue-100 text-black py-5 text-normal font-mono`}
       >
-        {isConnected
-          ? notEnoughFunds
-            ? "Not enough funds to donate"
-            : "Submit your donation!"
-          : "Connect wallet to continue"}
+        {isConnected ? "Submit your donation!" : "Connect wallet to continue"}
       </Button>
       <PayoutModals />
     </div>

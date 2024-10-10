@@ -1,9 +1,10 @@
 import { fireEvent, screen } from "@testing-library/react";
-import ThankYou, {
+import {
   createTwitterShareText,
   createTwitterShareUrl,
   TwitterButton,
-} from "./ThankYou";
+} from "../common/ShareButtons";
+import ThankYou from "../round/ThankYou";
 import { renderWithContext } from "../../test-utils";
 import { zeroAddress } from "viem";
 import { expect } from "vitest";

@@ -494,7 +494,7 @@ export const getProjectsBySearchTerm = gql`
     searchProjects(
       searchTerm: $searchTerm
       filter: {
-        metadata: {isNull: false }
+        metadata: { isNull: false }
         tags: { equalTo: "allo-v2" }
         not: { tags: { contains: "program" } }
         chainId: {
@@ -609,9 +609,9 @@ export const getRoundByIdAndChainId = gql`
   query getRoundByIdAndChainId($roundId: String!, $chainId: Int!) {
     rounds(
       first: 1
-      filter: { 
-        id: { equalTo: $roundId },
-        chainId: { equalTo: $chainId },
+      filter: {
+        id: { equalTo: $roundId }
+        chainId: { equalTo: $chainId }
         roundMetadata: { isNull: false }
       }
     ) {
@@ -736,9 +736,9 @@ export const getRoundForExplorer = gql`
   query getRoundForExplorer($roundId: String!, $chainId: Int!) {
     rounds(
       first: 1
-      filter: { 
-        id: { equalTo: $roundId },
-        chainId: { equalTo: $chainId },
+      filter: {
+        id: { equalTo: $roundId }
+        chainId: { equalTo: $chainId }
         roundMetadata: { isNull: false }
       }
     ) {
@@ -806,6 +806,7 @@ export const getDonationsByDonorAddress = gql`
       application {
         project: canonicalProject {
           name
+          metadata
         }
       }
     }

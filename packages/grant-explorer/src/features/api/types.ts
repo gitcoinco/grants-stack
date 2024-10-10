@@ -1,6 +1,7 @@
 import { WalletClient } from "viem";
 
 import type { Project } from "data-layer";
+import { GetBalanceReturnType } from "@wagmi/core";
 
 export type {
   ApplicationStatus,
@@ -63,3 +64,41 @@ export enum ProgressStatus {
   NOT_STARTED = "NOT_STARTED",
   IS_ERROR = "IS_ERROR",
 }
+
+export type Balance = GetBalanceReturnType & {
+  address: `0x${string}`;
+  chainId: number;
+  formattedAmount: number;
+};
+
+export type ChainBalances = {
+  [tokenAddress: string]: Balance;
+};
+
+export type BalanceMap = {
+  [chainId: string | number]: ChainBalances;
+};
+
+export type AttestationProject = {
+  rank: number;
+  name: string;
+  round: string;
+  image: string;
+  amount?: number;
+  chainId?: number;
+  roundId?: string;
+};
+
+export type AttestationFrameProps = {
+  topRound?: {
+    roundId: string;
+    chainId: number;
+  };
+  topRoundName?: string;
+  projectsFunded: number;
+  roundsSupported: number;
+  checkedOutChains: number;
+  projects: AttestationProject[];
+  address?: string;
+  name?: string;
+};

@@ -784,6 +784,7 @@ export type Contribution = {
   application: {
     project: {
       name: string;
+      metadata?: ProjectMetadata;
     };
   };
   timestamp: string;

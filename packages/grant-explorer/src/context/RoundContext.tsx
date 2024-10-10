@@ -158,3 +158,43 @@ export const useRoundById = (
     getRoundByIdError: context.state.getRoundByIdError,
   };
 };
+
+import { useQuery } from "@tanstack/react-query";
+
+export const useRoundNamesByIds = (rounds: Record<number, string>) => {
+  const dataLayer = useDataLayer();
+
+  return useQuery({
+    queryKey: ["roundNamesByIds", rounds], // Query key
+    enabled: !!rounds && Object.keys(rounds).length > 0, // Only fetch if there are rounds
+    queryFn: async () => {
+      if (!rounds) {
+        return {};
+      }
+      // Create an empty object to store chainId -> roundId -> roundName
+      const roundNames: Record<number, Record<string, string>> = {};
+
+      await Promise.all(
+        Object.entries(rounds).map(async ([chainId, roundId]) => {
+          // If the name is missing, fetch the round data
+          const fetchedRound = (
+            await dataLayer.getRoundForExplorer({
+              roundId,
+              chainId: Number(chainId),
+            })
+          )?.round;
+
+          // Store the fetched round name in the result object
+          if (fetchedRound?.roundMetadata?.name) {
+            if (!roundNames[Number(chainId)]) {
+              roundNames[Number(chainId)] = {};
+            }
+            roundNames[Number(chainId)][roundId] =
+              fetchedRound.roundMetadata.name;
+          }
+        })
+      );
+      return roundNames;
+    },
+  });
+};

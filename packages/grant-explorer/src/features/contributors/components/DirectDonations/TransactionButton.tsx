@@ -1,6 +1,7 @@
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+
 import { Button } from "common/src/styles";
 import { getTxBlockExplorerLink } from "common";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 
 export function TransactionButton(props: { chainId: number; txHash: string }) {
   return (
@@ -11,10 +12,10 @@ export function TransactionButton(props: { chainId: number; txHash: string }) {
       <Button
         type="button"
         $variant="external-link"
-        className="flex flex-row items-center border border-grey-100 rounded-lg text-black font-mono p-2"
+        className="text-sm flex flex-row items-center border border-grey-100 rounded-lg text-black font-mono p-2"
       >
-        <ArrowTopRightOnSquareIcon className="h-5 inline mx-2" />
-        <span>View</span>
+        <ArrowTopRightOnSquareIcon className="h-3 inline mx-2" />
+        {props.txHash.slice(0, 5) + "..." + props.txHash.slice(-5)}
       </Button>
     </a>
   );

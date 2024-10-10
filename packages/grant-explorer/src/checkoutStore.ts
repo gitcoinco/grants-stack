@@ -10,6 +10,7 @@ import {
   getChainById,
 } from "common";
 import { useCartStorage } from "./store";
+import { useAttestationStore } from "./attestationStore";
 import {
   getContract,
   Hex,
@@ -322,6 +323,9 @@ export const useCheckoutStore = create<CheckoutState>()(
           set({
             checkedOutProjects: [...get().checkedOutProjects, ...donations],
           });
+          useAttestationStore
+            .getState()
+            .setCheckedOutProjectsByTx(receipt.transactionHash, donations);
         } catch (error) {
           let context: Record<string, unknown> = {
             chainId,
