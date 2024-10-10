@@ -4,7 +4,6 @@ import { TToken, getChainById, stringToBlobUrl } from "common";
 import { useCartStorage } from "../../../store";
 import { parseChainId } from "common/src/chains";
 import { Checkbox } from "@chakra-ui/react";
-import { SwapParams } from "./SquidWidget";
 
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
