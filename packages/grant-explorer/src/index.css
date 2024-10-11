@@ -44,7 +44,7 @@
 }
 
 .font-modern-era-bold {
-    font-family: 'Modern Era Bold', serif;
+  font-family: "Modern Era Bold", serif;
 }
 
 .blurred::before {
@@ -101,21 +101,36 @@
 
 .rainbow-button {
   border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.20);
-  background: linear-gradient(0deg, rgba(255, 255, 255, 0.60) 0%, rgba(255, 255, 255, 0.60) 100%), linear-gradient(124deg, #FF9776 17.77%, #5F94BC 35.47%, #25BDCE 59.3%, #DEAB0C 91.61%);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(255, 255, 255, 0.6) 100%
+    ),
+    linear-gradient(
+      124deg,
+      #ff9776 17.77%,
+      #5f94bc 35.47%,
+      #25bdce 59.3%,
+      #deab0c 91.61%
+    );
   box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
 }
 
-.chakra-accordion .chakra-accordion__item{
+.chakra-accordion .chakra-accordion__item {
   border: 0;
 }
 
-
 @keyframes reverse-spin {
   to {
-      transform: rotate(-360deg);
+    transform: rotate(-360deg);
   }
 }
 .animate-reverse-spin {
   animation: reverse-spin 1s linear infinite;
+}
+
+.threeProjectsPadding {
+  padding-top: 1.33rem;
+  padding-bottom: 1.33rem;
 }

@@ -34,6 +34,14 @@ export const AttestationFrame = ({
   ensName: string | null | undefined;
 }) => {
   const { attestationFrameLogo } = useColorAndBackground();
+  const projectsLength = projects.length;
+  const padding =
+    projectsLength === 3
+      ? "threeProjectsPadding"
+      : projectsLength === 2
+        ? "py-11"
+        : "py-28";
+
   return (
     <div className="flex flex-col items-center">
       <div
@@ -59,58 +67,39 @@ export const AttestationFrame = ({
               style={{ maxWidth: "80%" }}
             >
               {ensName ? (
-                <div
-                  className="font-mono font-medium text-black text-[19px] truncate"
-                  style={{ maxWidth: "100%" }}
-                >
+                <div className="font-mono font-medium text-black text-[19px] truncate">
                   {ensName}
                 </div>
               ) : (
-                <div
-                  className="font-mono font-medium text-black text-sm truncate"
-                  style={{ maxWidth: "100%" }}
-                >
+                <div className="font-mono font-medium text-black text-sm truncate">
                   {address}
                 </div>
               )}
             </div>
             <img
-              className="h-6 w-auto"
+              className="h-6 w-auto "
               alt="Logo"
               src={attestationFrameLogo}
-              style={{ flexShrink: 0 }}
             />
           </div>
 
           {/* Main Body */}
-          <div
-            className="flex flex-1 w-full bg-white bg-opacity-10 border-x border-b border-black rounded-b-lg overflow-x-auto"
-            style={{
-              scrollbarWidth: "none" /* Firefox */,
-              msOverflowStyle: "none" /* Internet Explorer 10+ */,
-            }}
-          >
+          <div className="flex flex-1 w-full bg-white bg-opacity-10 border-x border-b border-black rounded-b-lg truncate">
             {/* Left Section (Top Projects and Top Round) */}
-            <div className="flex flex-col flex-1 h-full p-5 w-[350px]">
+            <div className="flex flex-col h-full w-[60%] ">
               {/* Top Projects Header */}
-              <div className="w-full pb-4 border-b border-black">
-                <h2 className="font-mono font-medium text-black text-[18px]">
-                  Top Projects
-                </h2>
-              </div>
+              <div className="h-[70%] ">
+                <div className="p-4 border-b border-black">
+                  <h2 className="font-mono font-medium text-black text-[18px]">
+                    Top Projects
+                  </h2>
+                </div>
 
-              {/* Project List (3/4 of the height) */}
-              <div
-                className="flex-[2] overflow-x-auto"
-                style={{
-                  scrollbarWidth: "none" /* Firefox */,
-                  msOverflowStyle: "none" /* Internet Explorer 10+ */,
-                }}
-              >
+                {/* Project List */}
                 {projects.map((project, index) => (
                   <div
                     key={index}
-                    className="flex items-center gap-3 py-4 border-b border-black"
+                    className={`truncate flex items-center gap-3 ${padding} border-b border-black px-2`}
                   >
                     <div className="font-mono font-medium text-black text-[16px]">
                       {project.rank}
@@ -120,11 +109,12 @@ export const AttestationFrame = ({
                       alt="Project"
                       src={project.image}
                     />
-                    <div className="flex flex-col flex-1">
+
+                    <div className="truncate ">
                       <p className="text-black text-[14px] font-medium truncate">
                         {project.name}
                       </p>
-                      <p className="text-gray-600 text-[12px] break-words truncate">
+                      <p className="text-gray-600 text-[12px] truncate">
                         {project.round}
                       </p>
                     </div>
@@ -132,37 +122,34 @@ export const AttestationFrame = ({
                 ))}
               </div>
 
-              {/* Top Round Section (1/4 of the height) */}
-              <div className="flex-[1] w-full mt-4 items-center justify-center">
-                <div
-                  className={`flex flex-col ${
-                    projects.length < 3 && "border-t border-black py-4"
-                  }`}
-                >
-                  <p className="text-black text-[18px] font-medium font-mono">
+              {/* Top Round Section */}
+
+              <div className="h-[5%] pl-5 float-left ">
+                <div className="h-[10%] flex flex-col justify-start">
+                  <div className="text-black text-[18px] font-medium font-mono ">
                     Top Round
-                  </p>
+                  </div>
                 </div>
-                <div className="flex flex-col flex-1 items-left text-left relative top-5">
-                  <p className="text-black text-[25px] font-medium break-words leading-tight overflow-hidden">
-                    {topRound}
-                  </p>
+              </div>
+              <div className="h-[25%] px-5 pb-2 float-left flex flex-col justify-end ">
+                <div className="text-black text-[20px] font-medium truncate ">
+                  {topRound}
                 </div>
               </div>
             </div>
 
             {/* Right Section (Stats) */}
-            <div className="flex flex-col w-[250px] my-2 p-5 border-l border-black">
+            <div className="flex flex-col h-fit pl-5 w-[40%] border-l border-black">
               {[
                 { value: projectsFunded, label: "Projects Funded" },
                 { value: roundsSupported, label: "Rounds Supported" },
                 { value: checkedOutChains, label: "Chains" },
               ].map((stat, index) => (
-                <div key={index} className="flex flex-col py-5">
+                <div key={index} className="flex flex-col py-8 ">
                   <div className="text-[48px] font-medium font-mono text-black">
                     {stat.value}
                   </div>
-                  <div className="text-[16px] mt-3 font-medium font-mono text-black">
+                  <div className="text-[16px] font-medium font-mono text-black">
                     {stat.label}
                   </div>
                 </div>
