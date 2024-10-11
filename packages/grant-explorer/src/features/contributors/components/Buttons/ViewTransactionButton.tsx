@@ -1,19 +1,21 @@
 import { RainbowBorderButton } from "./RainbowBorderButton";
 
-export function MintDonationButton({
-  disabled = false,
-  onClick = () => null,
-}: {
+export type ViewTransactionButtonProps = {
   disabled?: boolean;
   onClick?: () => void;
-}) {
+};
+
+export function ViewTransactionButton({
+  onClick,
+  disabled,
+}: ViewTransactionButtonProps) {
   return (
     <RainbowBorderButton
+      dataTestId="view-transaction-button"
       disabled={disabled}
       onClick={onClick}
-      data-testid="mint-donation-button"
     >
-      Mint donation
+      View transaction
     </RainbowBorderButton>
   );
 }

@@ -4,8 +4,8 @@ import { useState } from "react";
 import useColorAndBackground from "../../../../hooks/attestations/useColorAndBackground";
 import { MintDonationButton } from "./MintDonationButton";
 import { MintDonationImpactAction } from "./MintDonationImpactAction";
-import { ImpactMintingSuccess } from "../../../attestations/MintYourImpactComponents";
-import Modal from "../../../common/components/Modal";
+import { ViewAttestationModal } from "../ViewAttestationModal/ViewAttestationModal";
+import { generateTransactionUrl } from "../../../attestations/utils/generateTransactionUrl";
 
 export function MintingActionButton({
   transaction,
@@ -59,14 +59,20 @@ export function MintingActionButton({
     selectedBackground,
   } = useColorAndBackground();
 
+  const { attestationChainId: chainId, attestationUid = "" } =
+    attestation ?? {};
+
   return isMinted ? (
     <>
-      <Modal
+      <ViewAttestationModal
         isOpen={isOpen.viewAttestationModal}
         onClose={toggleViewAttestationModal}
-      >
-        <ImpactMintingSuccess impactImageCid={impactImageCid} />
-      </Modal>
+        impactImageCid={impactImageCid}
+        transactionUrl={generateTransactionUrl({
+          attestationUid,
+          chainId: Number(chainId),
+        })}
+      />
       <ViewAttestationButton onClick={toggleViewAttestationModal} />
     </>
   ) : (
