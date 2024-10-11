@@ -14,9 +14,7 @@ import { Contribution } from "data-layer";
 import { ProgressStatus } from "../../../../hooks/attestations/config";
 import { useEstimateGas } from "../../../../hooks/attestations/useEstimateGas";
 
-import {
-  AttestationChainId,
-} from "../../../attestations/utils/constants";
+import { AttestationChainId } from "../../../attestations/utils/constants";
 import { ethers } from "ethers";
 import { useAttestationFee } from "../../hooks/useMintingAttestations";
 
@@ -57,7 +55,11 @@ export function MintDonationImpactAction({
     [[transactionHash]]
   );
 
-  const { data: imagesBase64, isLoading: isLoadingImages } = useGetImages(
+  const {
+    data: imagesBase64,
+    isLoading: isLoadingImages,
+    isFetched: imagesFetched,
+  } = useGetImages(
     FrameProps.projects.map((project) => project.image),
     isOpen
   );
@@ -65,7 +67,11 @@ export function MintDonationImpactAction({
   const { data, isLoading, isRefetching } = useGetAttestationData(
     [transactionHash],
     handleGetAttestationPreview,
-    isLoadingENS || isLoadingImages || !isOpen || !startAction,
+    isLoadingENS ||
+      isLoadingImages ||
+      !isOpen ||
+      !startAction ||
+      !imagesFetched,
     selectedColor
   );
 
@@ -91,7 +97,7 @@ export function MintDonationImpactAction({
   });
 
   const { data: attestationFee } = useAttestationFee();
-  console.log("====> A1", attestationFee)
+  console.log("====> A1", attestationFee);
 
   const notEnoughFunds =
     balance?.value && gasEstimation
