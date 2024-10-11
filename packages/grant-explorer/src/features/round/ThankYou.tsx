@@ -26,9 +26,7 @@ import { useResolveENS } from "../../hooks/useENS";
 import { useAccount, useBalance } from "wagmi";
 import { useGetImages } from "../../hooks/attestations/useGetImages";
 import { useEstimateGas } from "../../hooks/attestations/useEstimateGas";
-import {
-  AttestationChainId,
-} from "../attestations/utils/constants";
+import { AttestationChainId } from "../attestations/utils/constants";
 import { ethers } from "ethers";
 import { useAttestationFee } from "../contributors/hooks/useMintingAttestations";
 import { useAttestationStore } from "../../attestationStore";
@@ -141,7 +139,11 @@ export default function ThankYou() {
 
   const { data: name, isLoading: isLoadingENS } = useResolveENS(address);
 
-  const { data: imagesBase64, isLoading: isLoadingImages } = useGetImages(
+  const {
+    data: imagesBase64,
+    isLoading: isLoadingImages,
+    isFetched: imagesFetched,
+  } = useGetImages(
     ImpactFrameProps.projects.map((project) => project.image),
     isModalOpen
   );
@@ -149,7 +151,11 @@ export default function ThankYou() {
   const { data, isLoading } = useGetAttestationData(
     transactions,
     handleGetAttestationPreview,
-    isLoadingENS || isLoadingImages || !isModalOpen || isLoadingRoundNames,
+    isLoadingENS ||
+      isLoadingImages ||
+      !isModalOpen ||
+      isLoadingRoundNames ||
+      !imagesFetched,
     selectedBackground
   );
 
