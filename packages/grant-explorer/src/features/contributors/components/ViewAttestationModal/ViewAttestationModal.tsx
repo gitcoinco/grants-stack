@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useGetImages } from "../../../../hooks/attestations/useGetImages";
 import { ImageWithLoading } from "../../../common/components/ImageWithLoading";
 import Modal from "../../../common/components/Modal";
@@ -8,14 +9,14 @@ export type ViewAttestationModalProps = {
   isOpen: boolean;
   onClose: () => void;
   impactImageCid?: string;
-  onViewTransaction?: () => void;
+  transactionUrl?: string;
 };
 
 export function ViewAttestationModal({
   isOpen,
   onClose,
   impactImageCid,
-  onViewTransaction,
+  transactionUrl = "",
 }: ViewAttestationModalProps) {
   const {
     data: image,
@@ -33,7 +34,9 @@ export function ViewAttestationModal({
         <h2 className="text-black text-3xl sm:text-4xl md:text-5xl/[52px] text-center font-medium font-sans  text-[clamp(1.5rem, 2vw + 1rem, 2rem)]">
           {title}
         </h2>
-        <ViewTransactionButton onClick={onViewTransaction} />
+        <Link to={transactionUrl}>
+          <ViewTransactionButton disabled={!transactionUrl} />
+        </Link>
         <ImageWithLoading
           sizeClass="w-full max-w-[400px] aspect-square relative"
           src={imageSrc}

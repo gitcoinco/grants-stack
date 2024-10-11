@@ -1,9 +1,12 @@
 import { useMemo } from "react";
 
-import { useAccount } from "wagmi";
 import { MintingAttestationIdsData, useDataLayer } from "data-layer";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { AttestationChainId, AttestationFee, FeeExemptAttestationsLimit } from "../../attestations/utils/constants";
+import {
+  AttestationChainId,
+  AttestationFee,
+  FeeExemptAttestationsLimit,
+} from "../../attestations/utils/constants";
 
 export type MintingAttestationsResponse = Omit<
   UseQueryResult<MintingAttestationIdsData[], Error>,
@@ -57,24 +60,24 @@ export const useMintingAttestations = (
 };
 
 export const useAttestationFee = () => {
-
   const dataLayer = useDataLayer();
 
   const exisitingAttestations = useQuery({
-    queryKey :[],
+    queryKey: [],
     queryFn: async () => {
       const response = await dataLayer.getAttestationCount({
-        attestationChainIds: [AttestationChainId]
+        attestationChainIds: [AttestationChainId],
       });
       return response;
     },
-  })
+  });
 
   const fee = useMemo<bigint>(() => {
     if (
       !exisitingAttestations.data ||
       exisitingAttestations.data >= FeeExemptAttestationsLimit
-    ) return AttestationFee;
+    )
+      return AttestationFee;
 
     return BigInt(0);
   }, [exisitingAttestations.data]);
