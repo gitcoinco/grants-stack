@@ -4,8 +4,7 @@ import { useState } from "react";
 import useColorAndBackground from "../../../../hooks/attestations/useColorAndBackground";
 import { MintDonationButton } from "./MintDonationButton";
 import { MintDonationImpactAction } from "./MintDonationImpactAction";
-import { ImpactMintingSuccess } from "../../../attestations/MintYourImpactComponents";
-import Modal from "../../../common/components/Modal";
+import { ViewAttestationModal } from "../ViewAttestationModal/ViewAttestationModal";
 
 export function MintingActionButton({
   transaction,
@@ -61,12 +60,11 @@ export function MintingActionButton({
 
   return isMinted ? (
     <>
-      <Modal
+      <ViewAttestationModal
         isOpen={isOpen.viewAttestationModal}
         onClose={toggleViewAttestationModal}
-      >
-        <ImpactMintingSuccess impactImageCid={impactImageCid} />
-      </Modal>
+        impactImageCid={impactImageCid}
+      />
       <ViewAttestationButton onClick={toggleViewAttestationModal} />
     </>
   ) : (
