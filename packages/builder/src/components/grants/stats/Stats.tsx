@@ -160,7 +160,7 @@ export default function RoundStats() {
           Want to check out more stats?
         </div>
         <a
-          href={`https://gitcoindonordata.xyz/projects/${slugify(
+          href={`https://gitcoindonordata.com/projects/${slugify(
             props.project.metadata?.title ?? ""
           )}`}
           rel="noreferrer"
