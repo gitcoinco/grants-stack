@@ -18,6 +18,7 @@ export const useAttestMutation = (
   easAddress: string | undefined,
   abi: Abi | undefined,
   schema: string | undefined,
+  attestationFee: bigint,
   updateStatus: (status: ProgressStatus) => void,
   handleToggleModal: () => void
 ) => {
@@ -45,7 +46,8 @@ export const useAttestMutation = (
           data,
           schema,
           easAddress,
-          abi
+          abi,
+          attestationFee
         );
 
         const { request } =

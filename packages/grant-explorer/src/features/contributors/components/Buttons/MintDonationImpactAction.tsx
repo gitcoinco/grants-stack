@@ -85,24 +85,24 @@ export function MintDonationImpactAction({
     data?.data
   );
 
+  const { data: attestationFee } = useAttestationFee();
+
   const { handleAttest, handleSwitchChain, status } = useEASAttestation(
     AttestationChainId,
     () => null,
-    data?.data
+    data?.data,
+    attestationFee
   );
 
-  const { data: balance } = useBalance({
+  const { data: balance, isLoading: isLoadingBalance } = useBalance({
     chainId: AttestationChainId,
     address: address,
   });
 
-  const { data: attestationFee } = useAttestationFee();
-  console.log("====> A1", attestationFee);
-
   const notEnoughFunds =
-    balance?.value && gasEstimation
-      ? balance.value <= attestationFee + gasEstimation
-      : false;
+    isLoadingBalance || balance?.value === undefined
+      ? false
+      : balance.value < attestationFee + (gasEstimation ?? 0n);
 
   const title =
     status !== ProgressStatus.IS_SUCCESS

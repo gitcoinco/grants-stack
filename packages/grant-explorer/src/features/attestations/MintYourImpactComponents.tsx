@@ -131,8 +131,8 @@ export const AttestationFrame = ({
                   </div>
                 </div>
               </div>
-              <div className="h-[25%] px-5 pb-2 float-left flex flex-col justify-end ">
-                <div className="text-black text-[20px] font-medium truncate ">
+              <div className="h-[25%] px-5 pb-2 float-left flex flex-col items-left w-full pt-3">
+                <div className="text-black text-[20px] font-medium whitespace-normal ">
                   {topRound}
                 </div>
               </div>

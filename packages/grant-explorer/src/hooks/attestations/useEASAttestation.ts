@@ -11,7 +11,8 @@ import { useAttestMutation } from "./useAttestMutation";
 export const useEASAttestation = (
   chainId: number,
   handleToggleModal: () => void,
-  data: AttestInput | undefined
+  data: AttestInput | undefined,
+  attestationFee: bigint
 ) => {
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useAccount();
@@ -31,6 +32,7 @@ export const useEASAttestation = (
     easAddress,
     abi,
     schema,
+    attestationFee,
     updateStatus,
     handleToggleModal
   );
