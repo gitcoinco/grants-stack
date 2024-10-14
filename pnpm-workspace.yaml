@@ -2,6 +2,7 @@ packages:
   - 'packages/common'
   - 'packages/data-layer'
   - 'packages/eslint-config-gitcoin'
+  - 'packages/gap'
   - 'packages/round-manager'
   - 'packages/grant-explorer'
   - 'packages/builder'
