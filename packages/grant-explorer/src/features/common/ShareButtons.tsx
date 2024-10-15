@@ -3,31 +3,48 @@ import { Hex } from "viem";
 
 import shareOnFarcaster from "../../assets/farcaster-logo.svg";
 import XTwitter from "../../assets/x-logo.svg";
-import telegram from "../../assets/telegram-logo.svg";
 import Link from "../../assets/link.svg";
 import xIcon from "../../assets/x-logo-black.png";
 
-export const ShareButtons = (): JSX.Element => {
+export const ShareButtons = ({
+  attestationLink,
+}: {
+  attestationLink: string;
+}): JSX.Element => {
+  const twitterShareUrl = createTwitterAttestationShareUrl(attestationLink);
+
+  const farcasterShareUrl = createFarcasterShareUrl(attestationLink);
+
   return (
     <div className="z-30">
       <div className="flex flex-col items-center justify-center gap-2 relative">
         <span className="font-mona font-semibold py-1">Share Your Impact</span>
         <div className="flex items-center justify-center gap-2 relative">
           <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer">
-            <img className="relative w-9 h-9" alt="Frame" src={Link} />
+            <img
+              className="relative w-9 h-9"
+              alt="Frame"
+              src={Link}
+              onClick={() => {
+                navigator.clipboard.writeText(attestationLink);
+              }}
+            />
           </div>
           <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer">
-            <img className="relative w-9 h-9" alt="Frame" src={XTwitter} />
+            <img
+              className="relative w-9 h-9"
+              alt="Frame"
+              src={XTwitter}
+              onClick={() => window.open(twitterShareUrl, "_blank")}
+            />
           </div>
           <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer">
             <img
               className="relative w-9 h-9"
               alt="Frame"
               src={shareOnFarcaster}
+              onClick={() => window.open(farcasterShareUrl, "_blank")}
             />
-          </div>
-          <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer">
-            <img className="relative w-9 h-9" alt="Frame" src={telegram} />
           </div>
         </div>
       </div>
@@ -48,6 +65,26 @@ export function createTwitterShareUrl(props: TwitterButtonParams) {
   return `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     shareText
   )}`;
+}
+
+export function createTwitterAttestationShareText(attestationLink: string) {
+  return `Certified public goods supporter 🫡\n\nMy contribution is now onchain—check out the visual that represents my impact.\n\nHat tip to @gitcoin 💚\n\n${attestationLink}`;
+}
+
+export function createTwitterAttestationShareUrl(attestationLink: string) {
+  const shareText = createTwitterAttestationShareText(attestationLink);
+  return `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    shareText
+  )}`;
+}
+
+export function createFarcasterAttestationShareText(attestationLink: string) {
+  return `Certified public goods supporter 🫡\n\nMy contribution is now onchain—check out the visual that represents my impact.\n\nHat tip to @gitcoin 💚\n\n&embeds[${attestationLink}]=https://farcaster.xyz"}`;
+}
+
+export function createFarcasterShareUrl(attestationLink: string) {
+  const shareText = createFarcasterAttestationShareText(attestationLink);
+  return `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
 }
 
 type TwitterButtonParams = {

@@ -11,7 +11,7 @@ import { useAttestationFee } from "../contributors/hooks/useMintingAttestations"
 
 type MintProgressModalBodyProps = {
   handleSwitchChain: () => Promise<void>;
-  handleAttest: () => Promise<void>;
+  handleAttest: () => Promise<void | string | undefined>;
   toggleStartAction?: () => void;
   selectBackground?: (background: string) => void;
 
@@ -86,6 +86,14 @@ export function MintProgressModalBodyHistory(
     impactImageCid,
   } = props;
 
+  const [attestationLink, setAttestationLink] = useState<string | undefined>(
+    undefined
+  );
+
+  const attest = async () => {
+    setAttestationLink((await handleAttest()) as string);
+  };
+
   const { address, isConnected } = useAccount();
   const { data: balance } = useBalance({
     chainId: AttestationChainId,
@@ -108,7 +116,10 @@ export function MintProgressModalBodyHistory(
           />
         </div>
       ) : status === ProgressStatus.IS_SUCCESS ? (
-        <ImpactMintingSuccess impactImageCid={impactImageCid as string} />
+        <ImpactMintingSuccess
+          impactImageCid={impactImageCid as string}
+          attestationLink={attestationLink ?? ""}
+        />
       ) : (
         <MintingProcessContent
           status={status}
@@ -118,7 +129,7 @@ export function MintProgressModalBodyHistory(
           gasEstimation={gasEstimation}
           isConnected={isConnected}
           handleSwitchChain={handleSwitchChain}
-          handleAttest={handleAttest}
+          handleAttest={attest}
           isLoading={isLoading}
           attestationFee={attestationFee}
         />

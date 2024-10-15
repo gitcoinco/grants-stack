@@ -26,7 +26,7 @@ export const MintingProcessContent = ({
   gasEstimation: bigint | undefined;
   isConnected: boolean;
   handleSwitchChain: () => Promise<void>;
-  handleAttest: () => Promise<void>;
+  handleAttest: () => Promise<void | string | undefined>;
   isLoading: boolean;
   attestationFee: bigint;
 }) => (

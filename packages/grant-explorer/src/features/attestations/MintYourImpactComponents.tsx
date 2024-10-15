@@ -362,10 +362,12 @@ import bgImage from "../../assets/mint-your-impact-background.svg";
 import { ImageWithLoading } from "../common/components/ImageWithLoading";
 
 export const ImpactMintingSuccess = ({
+  attestationLink,
   impactImageCid,
   containerSize = "w-[430px] h-[430px]",
   imageSize = "w-[400px] h-[400px]",
 }: {
+  attestationLink: string;
   impactImageCid?: string;
   containerSize?: string;
   imageSize?: string;
@@ -392,7 +394,7 @@ export const ImpactMintingSuccess = ({
           />
         </div>
       </div>
-      <ShareButtons />
+      <ShareButtons attestationLink={attestationLink} />
     </div>
   );
 };

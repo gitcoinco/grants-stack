@@ -33,6 +33,8 @@ export function RoundDonations({
             contributions={contributions[transactionHash]}
             transactionAttestationsData={{
               transactionAttestations: mintingAttestations?.[transactionHash],
+              attestationUid:
+                mintingAttestations?.[transactionHash]?.[0]?.attestationUid,
               isFetchingAttestations: isFetching || isLoading,
               refetch,
             }}

@@ -53,8 +53,10 @@ export const useEASAttestation = (
         return;
       }
       updateStatus(ProgressStatus.IN_PROGRESS);
-      await attest.mutateAsync(data);
+      const attestationUID = await attest.mutateAsync(data);
+      const attestationLink = `https://attestation.gitcoin.co/attestation/${attestationUID}`;
       updateStatus(ProgressStatus.IS_SUCCESS);
+      return attestationLink;
     } catch (error) {
       updateStatus(ProgressStatus.IS_ERROR);
     }

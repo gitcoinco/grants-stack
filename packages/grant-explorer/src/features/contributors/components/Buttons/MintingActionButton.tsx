@@ -62,6 +62,8 @@ export function MintingActionButton({
   const { attestationChainId: chainId, attestationUid = "" } =
     attestation ?? {};
 
+  const attestationLink = `https://attestation.gitcoin.co/attestation/${attestationUid}`;
+
   return isMinted ? (
     <>
       <ViewAttestationModal
@@ -72,6 +74,7 @@ export function MintingActionButton({
           attestationUid,
           chainId: Number(chainId),
         })}
+        attestationLink={attestationLink}
       />
       <ViewAttestationButton onClick={toggleViewAttestationModal} />
     </>

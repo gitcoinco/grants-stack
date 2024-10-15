@@ -43,7 +43,7 @@ export const useGetAttestationData = (
 
       try {
         const response = await fetch(
-          `https://gitcoin-server-api.vercel.app/api/getAttestation`,
+          `https://attestation.gitcoin.co/api/getAttestation`,
           {
             method: "POST",
             headers: {

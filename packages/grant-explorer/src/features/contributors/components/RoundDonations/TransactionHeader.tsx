@@ -13,6 +13,7 @@ interface AttestationData {
 }
 interface TransactionHeaderProps {
   transactionHash: string;
+  attestationUid?: string;
   transactionChainId: number;
   contributions?: Contribution[];
   attestationData: AttestationData;
