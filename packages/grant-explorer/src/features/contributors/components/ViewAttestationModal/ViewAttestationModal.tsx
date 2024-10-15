@@ -8,6 +8,7 @@ import { ViewTransactionButton } from "../Buttons";
 export type ViewAttestationModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  attestationLink: string;
   impactImageCid?: string;
   transactionUrl?: string;
 };
@@ -17,6 +18,7 @@ export function ViewAttestationModal({
   onClose,
   impactImageCid,
   transactionUrl = "",
+  attestationLink,
 }: ViewAttestationModalProps) {
   const {
     data: image,
@@ -42,7 +44,7 @@ export function ViewAttestationModal({
           src={imageSrc}
           isLoading={isLoading}
         />
-        <ShareButtons />
+        <ShareButtons attestationLink={attestationLink} />
       </div>
     </Modal>
   );

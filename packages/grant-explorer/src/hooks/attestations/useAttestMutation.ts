@@ -6,6 +6,7 @@ import {
   TransactionError,
 } from "./utils/handleTransactionError";
 import { Abi, PublicClient, WalletClient } from "viem";
+import { legacyABI } from "./config";
 
 /**
  * Hook for the attestation mutation logic.
@@ -23,7 +24,7 @@ export const useAttestMutation = (
   handleToggleModal: () => void
 ) => {
   return useMutation({
-    mutationFn: async (data: AttestInput): Promise<void> => {
+    mutationFn: async (data: AttestInput): Promise<string> => {
       try {
         if (
           !chainId ||
@@ -58,8 +59,31 @@ export const useAttestMutation = (
           hash,
           confirmations: 1,
         });
+
+        const blockNumber = await publicClient.getBlockNumber();
+
+        // Get AttestationUID from the hash logs
+        const events = await publicClient.getContractEvents({
+          address: easAddress as `0x${string}`,
+          abi: legacyABI,
+          fromBlock: blockNumber - 3n,
+          toBlock: "latest",
+          eventName: "Attested",
+        });
+
+        let attestationUID: string = "";
+
+        events.forEach((event) => {
+          const { args, transactionHash } = event;
+          if (transactionHash === hash) {
+            attestationUID = args.uid as string;
+          }
+        });
+
+        return attestationUID;
       } catch (error) {
         handleTransactionError(error as Error);
+        return "";
       }
     },
     onError: (error: Error) => {

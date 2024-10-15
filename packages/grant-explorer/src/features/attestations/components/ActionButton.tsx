@@ -15,7 +15,7 @@ export const ActionButton = ({
   isConnected: boolean;
   status: ProgressStatus;
   handleSwitchChain: () => Promise<void>;
-  handleAttest: () => Promise<void>;
+  handleAttest: () => Promise<void | string | undefined>;
   notEnoughFunds: boolean;
   isLoading: boolean;
 }) => {

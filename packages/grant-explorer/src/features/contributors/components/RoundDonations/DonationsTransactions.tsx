@@ -12,6 +12,7 @@ export function DonationsTransactions({
   transactionHash: string;
   contributions?: ContributionsByRoundId;
   transactionAttestationsData: {
+    attestationUid?: string;
     transactionAttestations?: MintingAttestationIdsData[];
     isFetchingAttestations?: boolean;
     refetch?: () => void;

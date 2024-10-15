@@ -15,7 +15,7 @@ export function ViewTransactionButton({
       disabled={disabled}
       onClick={onClick}
     >
-      View transaction
+      View attestation
     </RainbowBorderButton>
   );
 }

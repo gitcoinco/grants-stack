@@ -160,6 +160,7 @@ export default function ThankYou() {
   );
 
   const [impactImageCid, setImpactImageCid] = useState<string | undefined>();
+  const [attestationLink, setAttestationLink] = useState<string | undefined>();
 
   useEffect(() => {
     if (data?.impactImageCid) {
@@ -183,6 +184,10 @@ export default function ThankYou() {
     data?.data,
     attestationFee
   );
+
+  const attest = async () => {
+    setAttestationLink(await handleAttest());
+  };
 
   const { data: balance, isLoading: isLoadingBalance } = useBalance({
     chainId: AttestationChainId,
@@ -274,6 +279,7 @@ export default function ThankYou() {
                       impactImageCid={impactImageCid}
                       containerSize="w-[630px] h-[630px]"
                       imageSize="w-[600px] h-[600px]"
+                      attestationLink={attestationLink ?? ""}
                     />
                   </div>
                 </div>
@@ -308,7 +314,7 @@ export default function ThankYou() {
                   gasEstimation={gasEstimation}
                   isLoadingEstimation={loadingGasEstimate}
                   notEnoughFunds={notEnoughFunds}
-                  handleAttest={handleAttest}
+                  handleAttest={attest}
                   impactImageCid={data?.impactImageCid}
                   isLoading={isLoading || isLoadingENS || isRefetchingEstimate}
                 />

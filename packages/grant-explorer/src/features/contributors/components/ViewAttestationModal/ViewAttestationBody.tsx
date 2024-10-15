@@ -1,14 +1,15 @@
-import React from "react";
 import { ShareButtons } from "../../../common/ShareButtons";
 import { RainbowBorderButton } from "../Buttons";
 import { ViewAttestationImage } from "./ViewAttestationImage";
 
 export type ViewAttestationBodyProps = {
+  attestationLink: string;
   impactImageCid?: string;
   onViewTransaction?: () => void;
 };
 
 export function ViewAttestationBody({
+  attestationLink,
   impactImageCid,
   onViewTransaction,
 }: ViewAttestationBodyProps) {
@@ -23,10 +24,10 @@ export function ViewAttestationBody({
         dataTestId="view-transaction-button"
         onClick={onViewTransaction}
       >
-        View transaction
+        View attestation
       </RainbowBorderButton>
       <ViewAttestationImage impactImageCid={impactImageCid} />
-      <ShareButtons />
+      <ShareButtons attestationLink={attestationLink} />
     </div>
   );
 }
