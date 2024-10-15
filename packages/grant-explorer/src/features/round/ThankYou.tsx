@@ -175,23 +175,23 @@ export default function ThankYou() {
     isRefetching: isRefetchingEstimate,
   } = useEstimateGas(AttestationChainId, !isLoading, data?.data);
 
+  const { data: attestationFee } = useAttestationFee();
+
   const { handleAttest, handleSwitchChain, status } = useEASAttestation(
     AttestationChainId,
     handleSetMinted,
-    data?.data
+    data?.data,
+    attestationFee
   );
 
-  const { data: balance } = useBalance({
+  const { data: balance, isLoading: isLoadingBalance } = useBalance({
     chainId: AttestationChainId,
     address,
   });
-
-  const { data: attestationFee } = useAttestationFee();
-
   const notEnoughFunds =
-    balance?.value && gasEstimation
-      ? balance.value <= attestationFee + gasEstimation
-      : false;
+    isLoadingBalance || balance?.value === undefined
+      ? false
+      : balance.value < attestationFee + (gasEstimation ?? 0n);
 
   const topRoundName = roundNames
     ? roundNames[ImpactFrameProps?.topRound?.chainId ?? 0][

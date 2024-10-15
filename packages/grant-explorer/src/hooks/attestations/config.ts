@@ -2,6 +2,7 @@ import { Hex } from "viem";
 
 type EASConfig = {
   eas: Hex;
+  proxy?: Hex;
   schemaRegistry: Hex;
   version?: string;
 };
@@ -29,6 +30,7 @@ export interface AttestInput {
     refUID: Hex;
     data: Hex;
     attester: Hex;
+    value?: bigint;
   };
   signature: Signature;
 }
@@ -62,6 +64,9 @@ export const easConfig: EASConfigByNetwork = {
   // Arbitrum One
   42161: {
     eas: "0xbD75f629A22Dc1ceD33dDA0b68c546A1c035c458",
+    // this is the proxy contract
+    proxy: "0xeb2AddD987c2C4efF3237Ed6d829c214198c0189",
+
     schemaRegistry: "0xA310da9c5B885E7fb3fbA9D66E9Ba6Df512b78eB",
 
     version: "v0.26",
@@ -122,7 +127,7 @@ export const easConfig: EASConfigByNetwork = {
 export const schemaByNetwork = {
   // 1: "",
   // 10: "",
-  // 42161: "",
+  42161: "0x5939eb0646e645e2c2f2aa3400421f0fe677e36168188c6dc21405792079b789",
   // 137: "",
   // 534352: "",
   // 42220: "",
@@ -1244,4 +1249,102 @@ export const VERSION_ABI = [
     stateMutability: "view",
     type: "function",
   },
-];
+] as const;
+
+export const proxyABI = [
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "bytes32",
+            name: "schema",
+            type: "bytes32",
+          },
+          {
+            components: [
+              {
+                internalType: "address",
+                name: "recipient",
+                type: "address",
+              },
+              {
+                internalType: "uint64",
+                name: "expirationTime",
+                type: "uint64",
+              },
+              {
+                internalType: "bool",
+                name: "revocable",
+                type: "bool",
+              },
+              {
+                internalType: "bytes32",
+                name: "refUID",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes",
+                name: "data",
+                type: "bytes",
+              },
+              {
+                internalType: "uint256",
+                name: "value",
+                type: "uint256",
+              },
+            ],
+            internalType: "struct AttestationRequestData",
+            name: "data",
+            type: "tuple",
+          },
+          {
+            components: [
+              {
+                internalType: "uint8",
+                name: "v",
+                type: "uint8",
+              },
+              {
+                internalType: "bytes32",
+                name: "r",
+                type: "bytes32",
+              },
+              {
+                internalType: "bytes32",
+                name: "s",
+                type: "bytes32",
+              },
+            ],
+            internalType: "struct Signature",
+            name: "signature",
+            type: "tuple",
+          },
+          {
+            internalType: "address",
+            name: "attester",
+            type: "address",
+          },
+          {
+            internalType: "uint64",
+            name: "deadline",
+            type: "uint64",
+          },
+        ],
+        internalType: "struct DelegatedProxyAttestationRequest",
+        name: "delegatedRequest",
+        type: "tuple",
+      },
+    ],
+    name: "attestByDelegation",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "payable",
+    type: "function",
+  },
+] as const;

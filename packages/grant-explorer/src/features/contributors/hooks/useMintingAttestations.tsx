@@ -63,7 +63,7 @@ export const useAttestationFee = () => {
   const dataLayer = useDataLayer();
 
   const exisitingAttestations = useQuery({
-    queryKey: [],
+    queryKey: ["getAttestationCount", AttestationChainId],
     queryFn: async () => {
       const response = await dataLayer.getAttestationCount({
         attestationChainIds: [AttestationChainId],
@@ -76,9 +76,9 @@ export const useAttestationFee = () => {
     if (
       !exisitingAttestations.data ||
       exisitingAttestations.data >= FeeExemptAttestationsLimit
-    )
+    ) {
       return AttestationFee;
-
+    }
     return BigInt(0);
   }, [exisitingAttestations.data]);
 

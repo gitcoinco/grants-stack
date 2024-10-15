@@ -2,9 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { AttestationChainId } from "../../features/attestations/utils/constants";
 import { ethers } from "ethers";
 
-// In-memory cache to store fetched attestation data
-const fetchCache = new Map();
-
 /**
  * Hook to fetch attestation data based on a transaction hash.
  */
@@ -44,11 +41,6 @@ export const useGetAttestationData = (
         base64Image: image,
       });
 
-      // // // Check if we have a cached response for this key
-      // if (fetchCache.has(body)) {
-      //   return fetchCache.get(body);
-      // }
-
       try {
         const response = await fetch(
           `https://gitcoin-server-api.vercel.app/api/getAttestation`,
@@ -69,8 +61,7 @@ export const useGetAttestationData = (
 
         const data = await response.json();
 
-        // Store the fetched data in cache
-        fetchCache.set(body, data);
+        console.log("Attestation data:", data);
 
         return {
           data: data.signedAttestation,
