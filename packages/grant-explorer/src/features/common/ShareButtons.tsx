@@ -13,7 +13,10 @@ export const ShareButtons = ({
 }): JSX.Element => {
   const twitterShareUrl = createTwitterAttestationShareUrl(attestationLink);
 
-  const farcasterShareUrl = createFarcasterShareUrl(attestationLink);
+  const farcasterShareText = getFarcasterAttestationShareText();
+  const farcasterShareUrl = createFarcasterShareUrl(farcasterShareText, [
+    attestationLink,
+  ]);
 
   return (
     <div className="z-30">
@@ -78,13 +81,21 @@ export function createTwitterAttestationShareUrl(attestationLink: string) {
   )}`;
 }
 
-export function createFarcasterAttestationShareText(attestationLink: string) {
-  return `Certified public goods supporter 🫡\n\nMy contribution is now onchain—check out the visual that represents my impact.\n\nHat tip to @gitcoin 💚\n\n&embeds[${attestationLink}]=https://farcaster.xyz"}`;
+export function getFarcasterAttestationShareText() {
+  const encodedText1 = encodeURIComponent(
+    `Certified public goods supporter 🫡\n\nMy contribution is now onchain—check out the visual that represents my impact.\n\nHat tip to `
+  );
+  const encodedText2 = encodeURIComponent(` 💚\n`);
+  // NB: mentions should not be encoded
+  return `${encodedText1}@gitcoin${encodedText2}`;
 }
 
-export function createFarcasterShareUrl(attestationLink: string) {
-  const shareText = createFarcasterAttestationShareText(attestationLink);
-  return `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}`;
+export function createFarcasterShareUrl(
+  shareText: string,
+  embedLinks: string[]
+) {
+  // NB: embed links should not be encoded
+  return `https://warpcast.com/~/compose?text=${shareText}${embedLinks.forEach((link) => `&embeds[]=${link}`)}`;
 }
 
 type TwitterButtonParams = {
