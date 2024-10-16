@@ -11,26 +11,22 @@ import {
 } from "../ui/card";
 import { ChevronRight } from "lucide-react";
 
-type RoundCardProps = {
+type ProjectCardProps = {
   title: string;
-  description: string;
-  type: string;
 };
 
-export default function RoundCard({
+export default function ProjectCard({
   title,
   description,
   type,
-}: RoundCardProps) {
+}: ProjectCardProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <CardDescription>{type}</CardDescription>
+        {/* <CardDescription>{type}</CardDescription> */}
       </CardHeader>
-      <CardContent>
-        <p>{description}</p>
-      </CardContent>
+      <CardContent>{/* <p>{description}</p> */}</CardContent>
       <CardFooter>
         <Button variant="outline">
           Learn More <ChevronRight className="w-4 h-4 ml-2" />

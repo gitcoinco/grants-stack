@@ -4,24 +4,24 @@ import React from "react";
 import { motion } from "framer-motion";
 import StatsCard from "../homepage/StatsCard";
 import { useParams } from "next/navigation";
-import { useRoundById } from "@allo-team/kit";
+import { useProjectById, useRoundById } from "@allo-team/kit";
 import { bigIntReplacer } from "@/utils/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, MapPin, Users } from "lucide-react";
 
-type RoundHeroProps = {
-  chainId: string;
-  roundId: string;
+type ProjectHeroProps = {
+  projectId: string;
 };
 
-export default function RoundHero(props: RoundHeroProps) {
+export default function ProjectHero(props: ProjectHeroProps) {
   // console.log(JSON.stringify(props));
 
-  const round = useRoundById(props.roundId, { chainId: props.chainId });
+  // const round = useRoundById(props.roundId, { chainId: props.chainId });
+  const project = useProjectById(props.projectId);
 
-  console.log(JSON.stringify(round, bigIntReplacer));
+  console.log(JSON.stringify(project, bigIntReplacer));
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-background">
@@ -30,7 +30,7 @@ export default function RoundHero(props: RoundHeroProps) {
           <div className="flex flex-col justify-center col-span-3 space-y-4">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                {round.data?.name}
+                {project.data?.name}
               </h1>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -86,7 +86,7 @@ export default function RoundHero(props: RoundHeroProps) {
           </Card>
         </div>
         <div className="py-12 text-muted-foreground md:text-xl">
-          {round.data?.description}
+          {project.data?.description}
         </div>
       </div>
     </section>

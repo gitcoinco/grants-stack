@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import StatsCard from "./StatsCard";
 
@@ -10,7 +11,7 @@ export default function Hero() {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-12 ">
           <motion.div
             className="flex items-center justify-center"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0.1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
@@ -18,7 +19,7 @@ export default function Hero() {
           </motion.div>
           <motion.div
             className="flex flex-col justify-center space-y-4"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0.1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >

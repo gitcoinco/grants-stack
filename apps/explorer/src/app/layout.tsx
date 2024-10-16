@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AlloKitProviders } from "@/components/app/Providers";
+import { Web3Provider } from "@/components/app/Providers";
 import Header from "@/components/app/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Allo Starter Kit Demo App",
+  title: "Gitcoin Grants Explorer",
   description: "",
 };
 
@@ -19,10 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AlloKitProviders>
+        <Web3Provider>
           <Header />
           <main className="max-w-screen-lg">{children}</main>
-        </AlloKitProviders>
+        </Web3Provider>
       </body>
     </html>
   );

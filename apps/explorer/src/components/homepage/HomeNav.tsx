@@ -3,10 +3,26 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Home, CircleDollarSign, Briefcase } from "lucide-react";
-import DisplayGrid from "./DisplayGrid";
-import { DiscoverProjects, DiscoverRounds, RoundsQuery } from "@allo-team/kit";
+import RoundDisplayGrid from "@/components/round/RoundDisplayGrid";
+import ProjectDisplayGrid from "@/components/project/ProjectDisplayGrid";
+import {
+  DiscoverProjects,
+  DiscoverRounds,
+  ProjectsQuery,
+  RoundsQuery,
+} from "@allo-team/kit";
 
-const NavButton = ({ icon, label, isActive, onClick }) => (
+const NavButton = ({
+  icon,
+  label,
+  isActive,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}) => (
   <Button
     variant={isActive ? "default" : "ghost"}
     className="justify-start w-full"
@@ -21,7 +37,7 @@ export default function HomeNav() {
   const [activeView, setActiveView] = useState("home");
 
   const featuredQuery: RoundsQuery = {
-    where: { chainId: { equalTo: 8453 } },
+    where: { status: { equalTo: 8453 } },
     orderBy: { match_amount_in_usd: "desc" },
     first: 10,
   };
@@ -32,28 +48,24 @@ export default function HomeNav() {
     first: 10,
   };
 
-  const allProjectsQuery: RoundsQuery = {
+  const allProjectsQuery: ProjectsQuery = {
     where: { chainId: { equalTo: 8453 } },
-    orderBy: { match_amount_in_usd: "desc" },
+    // orderBy: { match_amount_in_usd: "desc" },
     first: 10,
   };
 
   const views = {
     home: {
       title: "Featured Rounds and Projects",
-      content: (
-        <DisplayGrid query={featuredQuery} />
-        // <DisplayGrid query={featuredQuery} />
-      ),
+      content: <RoundDisplayGrid query={featuredQuery} />,
     },
     rounds: {
       title: "Active Funding Rounds",
-      content: <DiscoverRounds query={allRoundsQuery} />,
+      content: <RoundDisplayGrid query={allRoundsQuery} />,
     },
     projects: {
       title: "Featured Projects",
-      // content: <DisplayGrid query={allProjectsQuery} />,
-      content: <DiscoverProjects query={allProjectsQuery} />,
+      content: <RoundDisplayGrid query={allRoundsQuery} />,
     },
   };
 
