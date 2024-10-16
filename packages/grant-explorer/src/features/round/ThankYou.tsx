@@ -31,12 +31,19 @@ import { ethers } from "ethers";
 import { useAttestationFee } from "../contributors/hooks/useMintingAttestations";
 import { useAttestationStore } from "../../attestationStore";
 import { useDebugMode } from "../api/utils";
+import { RainbowBorderButton } from "../contributors/components/Buttons/RainbowBorderButton";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
     "====> Route: /round/:chainId/:roundId/:txHash/thankyou"
   );
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
+
+  const [minted, setMinted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBackground, setSelectedBackground] = useState(alt1);
+  const [impactImageCid, setImpactImageCid] = useState<string | undefined>();
+  const [attestationLink, setAttestationLink] = useState<string | undefined>();
 
   const cart = useCartStorage();
   const checkoutStore = useCheckoutStore();
@@ -100,8 +107,10 @@ export default function ThankYou() {
   }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 100);
-  }, []);
+    if (!minted) {
+      window.scrollTo(0, 100);
+    }
+  }, [minted]);
 
   const transactions = useAttestationStore((state) =>
     state.getCheckedOutTransactions()
@@ -115,10 +124,6 @@ export default function ThankYou() {
 
   const { data: roundNames, isLoading: isLoadingRoundNames } =
     useRoundNamesByIds(roundsToFetchName);
-
-  const [minted, setMinted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBackground, setSelectedBackground] = useState(alt1);
 
   const handleSelectBackground = (background: string) => {
     setSelectedBackground(background);
@@ -161,9 +166,6 @@ export default function ThankYou() {
     name as string | undefined
   );
 
-  const [impactImageCid, setImpactImageCid] = useState<string | undefined>();
-  const [attestationLink, setAttestationLink] = useState<string | undefined>();
-
   useEffect(() => {
     if (data?.impactImageCid) {
       setImpactImageCid(data.impactImageCid);
@@ -189,6 +191,10 @@ export default function ThankYou() {
 
   const attest = async () => {
     setAttestationLink(await handleAttest());
+  };
+
+  const onViewTransaction = () => {
+    window.open(attestationLink, "_blank");
   };
 
   const { data: balance, isLoading: isLoadingBalance } = useBalance({
@@ -228,7 +234,7 @@ export default function ThankYou() {
       >
         <main className="flex-grow flex items-center justify-center">
           {transactions.length > 0 && !minted ? (
-            <div className="flex flex-col-reverse md:flex-col xl:flex-row items-center justify-center w-full text-center">
+            <div className="flex flex-col  lg:flex-row items-center justify-center w-full text-center">
               {/* Left Section */}
               <div
                 className={`w-full my-[5%] ${flex && "mt-[14%] "}  lg:w-1/2 flex flex-col items-center`}
@@ -241,20 +247,23 @@ export default function ThankYou() {
 
               {/* Right Section */}
               {debugModeEnabled && (
-                <div className="w-full my-[5%] lg:w-1/2  ">
+                <div className="w-full lg:w-1/2  ">
                   <div className="flex flex-col items-center justify-center">
                     {/* Main content */}
                     <div className="w-full max-w-[800px] min-h-svh overflow-hidden bg-gradient-to-b from-[#EBEBEB] to-transparent rounded-t-[400px] flex flex-col items-center justify-center pt-20 px-4 mx-auto">
                       <div className="flex flex-col items-center">
-                        <div className="relative z-10 text-center">
-                          <h1 className="text-2xl md:text-5xl mb-2 font-modern-era-bold">
+                        <div className="relative max-w-[500px] z-10 text-center">
+                          <h1 className="text-5xl mb-2 font-modern-era-bold">
                             Mint your Impact
                           </h1>
-                          <p className="mt-1 text-lg font-modern-era-regular">
-                            Create a unique onchain collectible that
+                          <p className="mt-1 text-lg  font-modern-era-regular">
+                            Capture your contribution onchain with an
+                            attestation and receive a unique visual that
+                            symbolizes your donation.
                           </p>
-                          <p className="mb-2 text-lg font-modern-era-regular">
-                            shows off your donations from this round!
+                          <p className="my-2 text-lg font-modern-era-regular">
+                            This visual reflects your onchain attestation,
+                            marking your support in a meaningful way.
                           </p>
                         </div>
                         <PreviewFrame
@@ -268,25 +277,29 @@ export default function ThankYou() {
               )}
             </div>
           ) : minted ? (
-            <div className="flex flex-col items-center justify-center max-w-screen-2xl text-center">
-              <div className="inline-flex flex-col items-center justify-center gap-6 px-16 pt-8 relative bg-[#ffffff66] rounded-3xl">
-                <div className="flex flex-col items-start  relative self-stretch w-full ">
-                  <div className="w-full my-[5%]  flex flex-col items-center text-left">
-                    <div className="flex flex-col items-start  relative self-stretch w-full ">
-                      <div className="relative w-fit font-modern-era-medium text-[48px] ">
-                        Your donation impact
-                      </div>
-                      <div className="relative self-stretch text-[26px] font-modern-era-regular mb-3">
-                        Share with your friends!
-                      </div>
-                    </div>
-                    <ImpactMintingSuccess
-                      impactImageCid={impactImageCid}
-                      containerSize="w-[630px] h-[630px]"
-                      imageSize="w-[600px] h-[600px]"
-                      attestationLink={attestationLink ?? ""}
-                    />
-                  </div>
+            <div className="flex flex-col items-center absolute top-20 max-w-[600px] h-full text-center">
+              <div className="flex flex-col max-w-[500px] items-center  text-center ">
+                <div className="relative text-center font-modern-era-medium text-[48px] ">
+                  Your donation impact
+                </div>
+                <div className="relative text-[16px] font-modern-era-regular ">
+                  Congratulations! Your attestation is now onchain, and here's
+                  the unique visual that represents your donation. Share your
+                  impact with your community and inspire others to join in!
+                </div>
+                <ImpactMintingSuccess
+                  impactImageCid={impactImageCid}
+                  containerSize="size-[600px]"
+                  imageSize="size-[520px]"
+                  attestationLink={attestationLink ?? ""}
+                />
+                <div className="my-2 z-50">
+                  <RainbowBorderButton
+                    dataTestId="view-transaction-button"
+                    onClick={onViewTransaction}
+                  >
+                    View attestation
+                  </RainbowBorderButton>
                 </div>
               </div>
             </div>

@@ -29,39 +29,37 @@ export const ShareButtons = ({
   };
 
   return (
-    <div className="z-30">
-      <div className="flex flex-col items-center justify-center gap-2 py-1 relative">
-        <span className="font-mona font-semibold py-1">Share Your Impact</span>
-        <div className="flex items-center justify-center gap-2 relative">
-          <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
-            <img
-              className="relative w-9 h-9"
-              alt="Frame"
-              src={Link}
-              onClick={handleCopy} // Update onClick to use handleCopy
-            />
-            {tooltipVisible && ( // Render tooltip conditionally
-              <span className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-black  text-white text-xs rounded px-2 py-1">
-                Copied!
-              </span>
-            )}
-          </div>
-          <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
-            <img
-              className="relative w-9 h-9"
-              alt="Frame"
-              src={XTwitter}
-              onClick={() => window.open(twitterShareUrl, "_blank")}
-            />
-          </div>
-          <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
-            <img
-              className="relative w-9 h-9"
-              alt="Frame"
-              src={shareOnFarcaster}
-              onClick={() => window.open(farcasterShareUrl, "_blank")}
-            />
-          </div>
+    <div className="flex flex-col items-center z-30">
+      <span className="font-mona pb-1 text-md">Share</span>
+      <div className="flex items-center gap-2 pb-1">
+        <div className="flex size-8 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
+          <img
+            className="relative size-8"
+            alt="Frame"
+            src={Link}
+            onClick={handleCopy} // Update onClick to use handleCopy
+          />
+          {tooltipVisible && ( // Render tooltip conditionally
+            <span className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-black  text-white text-xs rounded px-2 py-1">
+              Copied!
+            </span>
+          )}
+        </div>
+        <div className="flex size-8 items-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
+          <img
+            className="relative size-8"
+            alt="Frame"
+            src={XTwitter}
+            onClick={() => window.open(twitterShareUrl, "_blank")}
+          />
+        </div>
+        <div className="flex size-8 items-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
+          <img
+            className="relative size-8"
+            alt="Frame"
+            src={shareOnFarcaster}
+            onClick={() => window.open(farcasterShareUrl, "_blank")}
+          />
         </div>
       </div>
     </div>

@@ -384,8 +384,9 @@ export const ImpactMintingSuccess = ({
       style={{ backgroundImage: `url(${bgImage})` }}
     >
       <div
-        className={`flex flex-col items-center justify-center gap-4 px-8 py-6 bg-[#ffffff66] rounded-3xl ${containerSize}`}
+        className={`flex flex-col items-center justify-center gap-2  bg-[#ffffff66] rounded-3xl ${containerSize}`}
       >
+        <ShareButtons attestationLink={attestationLink} />
         <div className="flex flex-col items-center justify-center w-full ">
           <ImageWithLoading
             src={image?.[0]}
@@ -394,7 +395,6 @@ export const ImpactMintingSuccess = ({
           />
         </div>
       </div>
-      <ShareButtons attestationLink={attestationLink} />
     </div>
   );
 };
