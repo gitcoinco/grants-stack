@@ -28,6 +28,14 @@ const SquidWidget = ({
         address: toTokenAddress?.toLowerCase(),
       },
     },
+    disabledChains: {
+      source: [
+        "1329",
+      ],
+      destination: [
+        "1329",
+      ]
+    },
   };
 
   // Convert config object to a URI-encoded JSON string

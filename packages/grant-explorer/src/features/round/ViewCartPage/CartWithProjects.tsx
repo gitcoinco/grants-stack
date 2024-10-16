@@ -123,12 +123,12 @@ export function CartWithProjects({
             <ExclamationCircleIcon className="w-6 h-6 text-left" />
             <span className="p-2 pr-4 flex-1">
               You do not have enough funds in your wallet to complete this
-              donation. Please bridge funds to this network in order to submit
+              donation. <br/>Please bridge funds to this network in order to submit
               your donation.
             </span>
             <div
               onClick={() => handleSwap()}
-              className="flex items-center text-sm decoration-1 cursor-pointer"
+              className="flex items-center text-sm decoration-1 cursor-pointer rounded border font-semibold p-2 border-pink-500"
             >
               Bridge Funds
               <ArrowRightIcon className="h-4 w-4 ml-2" />

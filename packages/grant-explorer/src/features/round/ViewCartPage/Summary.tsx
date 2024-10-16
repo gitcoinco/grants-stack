@@ -62,8 +62,8 @@ export function Summary({
           className="rounded-md font-normal text-pink-500 flex justify-start items-center mt-2 mb-5 text-xs"
         >
           <span>
-            {`Insufficient funds in your wallet. Please bridge funds over to 
-            ${getChainById(chainId).prettyName}.`}
+            {`Insufficient funds in your wallet.`} <br/> 
+            {`Please bridge funds over to ${getChainById(chainId).prettyName}.`}
           </span>
         </p>
       )}
