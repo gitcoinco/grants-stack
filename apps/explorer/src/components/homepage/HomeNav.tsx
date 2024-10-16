@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Home, CircleDollarSign, Briefcase } from "lucide-react";
 import RoundDisplayGrid from "@/components/round/RoundDisplayGrid";
 import ProjectDisplayGrid from "@/components/project/ProjectDisplayGrid";
@@ -11,6 +10,18 @@ import {
   ProjectsQuery,
   RoundsQuery,
 } from "@allo-team/kit";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const NavButton = ({
   icon,
@@ -56,47 +67,52 @@ export default function HomeNav() {
 
   const views = {
     home: {
+      tab: "Home",
       title: "Featured Rounds and Projects",
       content: <RoundDisplayGrid query={featuredQuery} />,
     },
     rounds: {
+      tab: "Rounds",
       title: "Active Funding Rounds",
       content: <RoundDisplayGrid query={allRoundsQuery} />,
     },
     projects: {
+      tab: "Projects",
       title: "Featured Projects",
-      content: <RoundDisplayGrid query={allRoundsQuery} />,
+      content: <ProjectDisplayGrid query={allRoundsQuery} />,
     },
   };
 
   return (
     <div className="container px-4 py-8 mx-auto">
-      <div className="grid gap-6 md:grid-cols-[200px_1fr]">
-        <nav className="space-y-2">
-          <NavButton
-            icon={<Home className="w-4 h-4" />}
-            label="Home"
-            isActive={activeView === "home"}
-            onClick={() => setActiveView("home")}
-          />
-          <NavButton
-            icon={<CircleDollarSign className="w-4 h-4" />}
-            label="Rounds"
-            isActive={activeView === "rounds"}
-            onClick={() => setActiveView("rounds")}
-          />
-          <NavButton
-            icon={<Briefcase className="w-4 h-4" />}
-            label="Projects"
-            isActive={activeView === "projects"}
-            onClick={() => setActiveView("projects")}
-          />
-        </nav>
-        <main>
-          <h2 className="mb-6 text-2xl font-bold">{views[activeView].title}</h2>
-          {views[activeView].content}
-        </main>
-      </div>
+      <Tabs defaultValue="Home" className="py-8">
+        <TabsList className="grid w-full grid-cols-3 mb-12">
+          <TabsTrigger value={views.home.tab}>{views.home.tab}</TabsTrigger>
+          <TabsTrigger value={views.rounds.tab}>{views.rounds.tab}</TabsTrigger>
+          <TabsTrigger value={views.projects.tab}>
+            {views.projects.tab}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="Home">
+          <main>
+            <h2 className="mb-6 text-2xl font-bold">{views.home.title}</h2>
+            {views.home.content}
+          </main>
+        </TabsContent>
+        <TabsContent value="Rounds">
+          <main>
+            <h2 className="mb-6 text-2xl font-bold">{views.rounds.title}</h2>
+            {views.rounds.content}
+          </main>
+        </TabsContent>
+        <TabsContent value="Projects">
+          <main>
+            <h2 className="mb-6 text-2xl font-bold">{views.projects.title}</h2>
+            {views.projects.content}
+          </main>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

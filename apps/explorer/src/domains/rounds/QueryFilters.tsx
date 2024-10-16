@@ -6,7 +6,7 @@ export function activeRounds() {
   const currentTimestamp = createISOTimestamp();
 
   return gql`
-        query MyQuery($lessThanOrEqualTo: Datetime = "${currentTimestamp}", $greaterThanOrEqualTo: Datetime = "${currentTimestamp}") {
+        query ActiveRounds($lessThanOrEqualTo: Datetime = "${currentTimestamp}", $greaterThanOrEqualTo: Datetime = "${currentTimestamp}") {
         rounds(
             first: 10
             filter: {
@@ -19,6 +19,18 @@ export function activeRounds() {
             roundMetadata
             strategyName
             tags
+            chainId
         }
     }`;
+}
+
+export function activeProjects() {
+  return gql`
+    query activeProjects {
+      projects(first: 10) {
+        metadata
+        name
+      }
+    }
+  `;
 }

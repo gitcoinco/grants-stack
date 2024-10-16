@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import { RoundsQuery, useProjects, useRounds } from "@allo-team/kit";
 import Link from "next/link";
 import ProjectCard from "@/components/project/ProjectCard";
+import { useProjects } from "@/hooks/projects/useProjects";
 
 type Props = {
-  query: RoundsQuery;
+  query: string;
 };
 
 export default function ProjectDisplayGrid(props: Props) {
@@ -15,26 +15,15 @@ export default function ProjectDisplayGrid(props: Props) {
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {projects?.data?.map((object, i) => {
+      {/* {projects?.data?.map((object, i) => {
         return (
           <Link key={i} href={`/project/${object.id}`}>
-            {/* <RoundCard
-                            key={i}
-                            strategy={object.strategy}
-                            id={object.id}
-                            name={object.name}
-                            description={object.description}
-                            eligibility={object.eligibility}
-                            chainId={object.chainId}
-                            matching={object.matching}
-                            roles={object.roles}
-                            phases={object.phases}
-                            // bannerUrl={object.bannerUrl}
-                        /> */}
-            <ProjectCard title={object.name} />
+            
+   
+            <ProjectCard title={object.name} description={object.description} />
           </Link>
         );
-      })}
+      })} */}
     </div>
   );
 }

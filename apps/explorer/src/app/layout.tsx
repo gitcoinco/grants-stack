@@ -21,7 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Web3Provider>
           <Header />
-          <main className="max-w-screen-lg">{children}</main>
+          <main className="">{children}</main>
         </Web3Provider>
       </body>
     </html>

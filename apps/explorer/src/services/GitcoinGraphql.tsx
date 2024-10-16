@@ -1,4 +1,4 @@
-import { GraphQLResponse, Round } from "@/domains/types";
+import { GraphQLResponse, Project, Round } from "@/domains/types";
 import { GraphQLClient, gql } from "graphql-request";
 
 // TODO don't hardcode this lol
@@ -18,5 +18,10 @@ export class GitcoinGraphqlService {
   static async getRound(query: string): Promise<Round> {
     const response = await client.request<{ round: Round }>(query);
     return response.round;
+  }
+
+  static async getProjects(query: string): Promise<Project> {
+    const response = await client.request<{ projects: Project }>(query);
+    return response.projects;
   }
 }

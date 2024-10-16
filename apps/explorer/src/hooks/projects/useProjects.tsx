@@ -3,27 +3,25 @@ import { useQuery } from "@tanstack/react-query";
 import { minutesToMilliseconds } from "date-fns";
 
 import { GitcoinGraphqlService } from "@/services/GitcoinGraphql";
-import { Round } from "@/domains/types";
+import { Project } from "@/domains/types";
 
-export const getRoundKey = (query?: string) => {
-  return ["rounds", query];
+export const getProjectKey = (query?: string) => {
+  return ["project", query];
 };
 
 const defaultQuery: string = gql`
-  query defaultRoundsQuery {
-    rounds(first: 10) {
-      id
-      roundMetadata
-      strategyName
-      tags
+  query activeProjects {
+    projects(first: 10) {
+      metadata
+      name
     }
   }
 `;
 
-export const useRounds = (query: string = defaultQuery) => {
+export const useProjects = (query: string = defaultQuery) => {
   const result = useQuery({
-    queryKey: getRoundKey(query),
-    queryFn: async () => GitcoinGraphqlService.getRounds(query),
+    queryKey: getProjectKey(query),
+    queryFn: async () => GitcoinGraphqlService.getProjects(query),
     staleTime: minutesToMilliseconds(120),
   });
 

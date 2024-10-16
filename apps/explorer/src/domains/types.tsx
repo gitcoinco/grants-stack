@@ -24,6 +24,18 @@ export type Round = {
   token?: Address;
   strategy: Address;
   managers?: Address[];
+  roundMetadata: RoundMetadata;
+};
+
+export type RoundMetadata = {
+  name: string;
+  roundType: string;
+  eligibility: RoundEligibility;
+};
+
+export type RoundEligibility = {
+  description: string;
+  requirements: { requirement: string }[];
 };
 
 export type ApplicationStatus =
@@ -76,27 +88,4 @@ export type GraphQLResponse<T> = {
   isLoading: boolean;
   error: any;
   data: T;
-
-  //  "status": "success",
-  // "fetchStatus": "idle",
-  // "isPending": false,
-  // "isSuccess": true,
-  // "isError": false,
-  // "isInitialLoading": false,
-  // "isLoading": false,
-  // "dataUpdatedAt": 1729035873839,
-  // "error": null,
-  // "errorUpdatedAt": 0,
-  // "failureCount": 0,
-  // "failureReason": null,
-  // "errorUpdateCount": 0,
-  // "isFetched": true,
-  // "isFetchedAfterMount": true,
-  // "isFetching": false,
-  // "isRefetching": false,
-  // "isLoadingError": false,
-  // "isPaused": false,
-  // "isPlaceholderData": false,
-  // "isRefetchError": false,
-  // "isStale": false
 };
