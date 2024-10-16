@@ -412,12 +412,6 @@ export function SummaryContainer(props: {
             return;
           }
 
-          /* Check if user hasn't connected passport yet, display the warning modal */
-          // if (estimate === 0 && !noPassportRoundsInCart) {
-          //   setDonateWarningModalOpen(true);
-          //   return;
-          // }
-
           handleConfirmation();
         }}
         className={`items-center text-sm rounded-b-3xl w-full bg-blue-100 text-black py-5 text-normal font-mono`}
@@ -425,6 +419,9 @@ export function SummaryContainer(props: {
         {isConnected ? "Submit your donation!" : "Connect wallet to continue"}
       </Button>
       <PayoutModals />
+      <p className="mx-auto text-center mt-4 font-medium">
+        Need to bridge funds ? Bridge funds <span className="underline cursor-pointer" onClick={() => props.handleSwap(42161)}>here!</span>
+      </p>
     </div>
   );
 }
