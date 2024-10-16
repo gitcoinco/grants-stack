@@ -5,6 +5,7 @@ import { getTxBlockExplorerLink } from "common";
 import { truncateAddress } from "../../utils/address";
 import { MintingActionButton } from "../Buttons";
 import { Contribution, MintingAttestationIdsData } from "data-layer";
+import { useDebugMode } from "../../../api/utils";
 
 interface AttestationData {
   attestation?: MintingAttestationIdsData;
@@ -30,6 +31,7 @@ export function TransactionHeader({
     transactionHash
   );
   const parcialTransactionHash = truncateAddress(transactionHash, 5);
+  const debugModeEnabled = useDebugMode();
 
   return (
     <div className="bg-grey-75 rounded-lg gap-2 p-4 flex flex-col sm:flex-row items-center justify-between">
@@ -43,11 +45,13 @@ export function TransactionHeader({
           <ArrowTopRightOnSquareIcon className="size-4 text-black" />
         </a>
       </span>
+      {debugModeEnabled &&
       <MintingActionButton
         transaction={{ hash: transactionHash, chainId: transactionChainId }}
         contributions={contributions}
         attestationData={{ attestation, isFetchingAttestations, refetch }}
       />
+      }
     </div>
   );
 }
