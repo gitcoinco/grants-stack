@@ -243,7 +243,7 @@ export default function ThankYou() {
                   <div className="w-full max-w-[800px] min-h-svh overflow-hidden bg-gradient-to-b from-[#EBEBEB] to-transparent rounded-t-[400px] flex flex-col items-center justify-center pt-20 px-4 mx-auto">
                     <div className="flex flex-col items-center">
                       <div className="relative z-10 text-center">
-                        <h1 className="text-5xl mb-2 font-modern-era-bold">
+                        <h1 className="text-2xl md:text-5xl mb-2 font-modern-era-bold">
                           Mint your Impact
                         </h1>
                         <p className="mt-1 text-lg font-modern-era-regular">
