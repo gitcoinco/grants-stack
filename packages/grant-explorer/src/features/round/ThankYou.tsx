@@ -30,7 +30,6 @@ import { AttestationChainId } from "../attestations/utils/constants";
 import { ethers } from "ethers";
 import { useAttestationFee } from "../contributors/hooks/useMintingAttestations";
 import { useAttestationStore } from "../../attestationStore";
-import { useDebugMode } from "../api/utils";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -216,7 +215,6 @@ export default function ThankYou() {
         : project.round,
     })),
   };
-  const debugModeEnabled = useDebugMode();
 
   return (
     <>
@@ -239,7 +237,6 @@ export default function ThankYou() {
               </div>
 
               {/* Right Section */}
-              {debugModeEnabled &&
               <div className="w-full my-[5%] lg:w-1/2  ">
                 <div className="flex flex-col items-center justify-center">
                   {/* Main content */}
@@ -264,7 +261,6 @@ export default function ThankYou() {
                   </div>
                 </div>
               </div>
-              }
             </div>
           ) : minted ? (
             <div className="flex flex-col items-center justify-center max-w-screen-2xl text-center">
