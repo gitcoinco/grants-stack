@@ -69,6 +69,7 @@ import { Box, Tab, Tabs } from "@chakra-ui/react";
 import GenericModal from "../common/GenericModal";
 import RoundStartCountdownBadge from "./RoundStartCountdownBadge";
 import ApplicationsCountdownBanner from "./ApplicationsCountdownBanner";
+import { createFarcasterShareUrl } from "../common/ShareButtons";
 
 export default function ViewRound() {
   datadogLogs.logger.info("====> Route: /round/:chainId/:roundId");
@@ -1164,15 +1165,15 @@ const ShareButton = ({
 📈 $${formatAmount(totalUSDCrowdfunded.toFixed(2))} funded so far
 🤝 ${formatAmount(totalDonations, true)} donations
 👀 Check out ${roundName}’s stats!
-${window.location.href}`;
+`;
 
   const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    shareText
+    shareText + window.location.href
   )}`;
 
-  const farcasterShareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
-    shareText
-  )}`;
+  const farcasterShareUrl = createFarcasterShareUrl(shareText, [
+    window.location.href,
+  ]);
 
   return (
     <>

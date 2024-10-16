@@ -1,0 +1,1 @@
+export { ViewAttestationModal } from "./ViewAttestationModal";

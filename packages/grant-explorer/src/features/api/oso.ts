@@ -1,6 +1,5 @@
 import { useState } from "react";
 import useSWR from "swr";
-import { Hex } from "viem";
 import { gql, GraphQLClient } from "graphql-request";
 
 const osoApiKey = process.env.REACT_APP_OSO_API_KEY as string;
