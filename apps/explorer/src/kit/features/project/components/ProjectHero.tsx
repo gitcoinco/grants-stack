@@ -2,24 +2,30 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import StatsCard from "../homepage/StatsCard";
-import { useParams } from "next/navigation";
 import { useProjectById, useRoundById } from "@allo-team/kit";
 import { bigIntReplacer } from "@/utils/utils";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/kit/primitives/shadcn/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/kit/primitives/shadcn/card";
+import { Badge } from "@/kit/primitives/shadcn/badge";
 import { CalendarDays, MapPin, Users } from "lucide-react";
+import { useProject } from "../hooks/useProjects";
 
 type ProjectHeroProps = {
   projectId: string;
+  chainId: string;
 };
 
 export default function ProjectHero(props: ProjectHeroProps) {
   // console.log(JSON.stringify(props));
 
   // const round = useRoundById(props.roundId, { chainId: props.chainId });
-  const project = useProjectById(props.projectId);
+  // const project = useProjectById(props.projectId);
+  const project = useProject(props.projectId, Number(props.chainId));
 
   console.log(JSON.stringify(project, bigIntReplacer));
 
@@ -30,7 +36,7 @@ export default function ProjectHero(props: ProjectHeroProps) {
           <div className="flex flex-col justify-center col-span-3 space-y-4">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                {project.data?.name}
+                {project.data?.metadata?.title}
               </h1>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -86,7 +92,7 @@ export default function ProjectHero(props: ProjectHeroProps) {
           </Card>
         </div>
         <div className="py-12 text-muted-foreground md:text-xl">
-          {project.data?.description}
+          {project.data?.metadata?.description}
         </div>
       </div>
     </section>

@@ -1,7 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AnimatedNumber } from "../ui/AnimatedNumber";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/kit/primitives/shadcn/card";
+import { AnimatedNumber } from "../../kit/primitives/AnimatedNumber";
 
 export default function StatsCard() {
   return (

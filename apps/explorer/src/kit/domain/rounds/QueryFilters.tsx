@@ -30,6 +30,8 @@ export function activeProjects() {
       projects(first: 10) {
         metadata
         name
+        id
+        chainId
       }
     }
   `;

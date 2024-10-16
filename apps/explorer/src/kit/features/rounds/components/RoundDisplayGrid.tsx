@@ -3,12 +3,12 @@
 import React from "react";
 import { RoundsQuery } from "@allo-team/kit";
 import Link from "next/link";
-import RoundCard from "../round/RoundCard";
-import { useRounds } from "@/hooks/rounds/useRounds";
-import { activeRounds } from "@/domains/rounds/QueryFilters";
+import RoundCard from "./RoundCard";
+import { useRounds } from "@/kit/features/rounds/hooks/useRounds";
+import { activeRounds } from "@/kit/domain/rounds/QueryFilters";
 
 type Props = {
-  query: RoundsQuery;
+  query: string;
 };
 
 export default function RoundDisplayGrid(props: Props) {
@@ -16,7 +16,7 @@ export default function RoundDisplayGrid(props: Props) {
     data: rounds,
     isPending: isRoundsLoading,
     isError: isRoundError,
-  } = useRounds(activeRounds());
+  } = useRounds(props.query);
 
   // const rounds2 = useRounds
 

@@ -1,17 +1,9 @@
 import React from "react";
-import { ApplicationStatusBadge } from "@allo-team/kit";
-import { Button } from "../../kit/primitives/shadcn/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "../../kit/primitives/shadcn/card";
+import { Card, CardContent } from "@/kit/primitives/shadcn/card";
+import { Badge } from "@/kit/primitives/shadcn/badge";
+import { Button } from "@/kit/primitives/shadcn/button";
 import { ChevronRight } from "lucide-react";
-import { Round } from "@/domains/types";
-import { Badge } from "../../kit/primitives/shadcn/badge";
+import { Round } from "@/kit/domain/types";
 
 type RoundCardProps = {
   round: Round;

@@ -1,5 +1,5 @@
-import Hero from "@/components/homepage/Hero";
-import HomeNav from "@/components/homepage/HomeNav";
+import Hero from "@/components/landingpage/Hero";
+import HomeNav from "@/components/landingpage/HomeNav";
 
 export default function Home() {
   return (

@@ -2,15 +2,14 @@
 
 import { useState } from "react";
 import { Home, CircleDollarSign, Briefcase } from "lucide-react";
-import RoundDisplayGrid from "@/components/round/RoundDisplayGrid";
-import ProjectDisplayGrid from "@/components/project/ProjectDisplayGrid";
+
 import {
   DiscoverProjects,
   DiscoverRounds,
   ProjectsQuery,
   RoundsQuery,
 } from "@allo-team/kit";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/kit/primitives/shadcn/button";
 import {
   Card,
   CardContent,
@@ -18,31 +17,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const NavButton = ({
-  icon,
-  label,
-  isActive,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}) => (
-  <Button
-    variant={isActive ? "default" : "ghost"}
-    className="justify-start w-full"
-    onClick={onClick}
-  >
-    {icon}
-    <span className="ml-2">{label}</span>
-  </Button>
-);
+} from "@/kit/primitives/shadcn/card";
+import { Input } from "@/kit/primitives/shadcn/input";
+import { Label } from "@/kit/primitives/shadcn/label";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/kit/primitives/shadcn/tabs";
+import { activeProjects, activeRounds } from "@/kit/domain/rounds/QueryFilters";
+import RoundDisplayGrid from "@/kit/features/rounds/components/RoundDisplayGrid";
+import ProjectDisplayGrid from "@/kit/features/project/components/ProjectDisplayGrid";
 
 export default function HomeNav() {
   const [activeView, setActiveView] = useState("home");
@@ -69,17 +55,17 @@ export default function HomeNav() {
     home: {
       tab: "Home",
       title: "Featured Rounds and Projects",
-      content: <RoundDisplayGrid query={featuredQuery} />,
+      content: <RoundDisplayGrid query={activeRounds()} />,
     },
     rounds: {
       tab: "Rounds",
       title: "Active Funding Rounds",
-      content: <RoundDisplayGrid query={allRoundsQuery} />,
+      content: <RoundDisplayGrid query={activeRounds()} />,
     },
     projects: {
       tab: "Projects",
       title: "Featured Projects",
-      content: <ProjectDisplayGrid query={allRoundsQuery} />,
+      content: <ProjectDisplayGrid query={activeProjects()} />,
     },
   };
 

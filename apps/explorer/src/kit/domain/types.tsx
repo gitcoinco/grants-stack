@@ -76,6 +76,16 @@ export type Project = {
   bannerUrl?: string;
   anchorAddress: string;
   chainId: number;
+  metadata: ProjectMetadata;
+};
+
+export type ProjectMetadata = {
+  title: string | undefined;
+  logoImg: string | undefined;
+  bannerImg: string | undefined;
+  description: string | undefined;
+  projectGithub: string | undefined;
+  projectTwitter: string | undefined;
 };
 
 export type GraphQLResponse<T> = {
