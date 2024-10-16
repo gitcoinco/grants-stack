@@ -5,7 +5,10 @@ import { useAccount } from "wagmi";
 /**
  * Hook to manage attestation status.
  */
-export const useAttestationStatus = (chainId: number) => {
+export const useAttestationStatus = (
+  chainId: number,
+  isHistoryPage?: boolean
+) => {
   const { chainId: userChainID } = useAccount();
 
   const requiresSwitch = chainId !== userChainID;
@@ -13,8 +16,10 @@ export const useAttestationStatus = (chainId: number) => {
   const initialStatus = useMemo(() => {
     return requiresSwitch
       ? ProgressStatus.SWITCH_CHAIN
-      : ProgressStatus.NOT_STARTED;
-  }, [requiresSwitch]);
+      : isHistoryPage
+        ? ProgressStatus.SELECTING_COLOR
+        : ProgressStatus.NOT_STARTED;
+  }, [requiresSwitch, isHistoryPage]);
 
   const [status, setStatus] = useState<ProgressStatus>(initialStatus);
 

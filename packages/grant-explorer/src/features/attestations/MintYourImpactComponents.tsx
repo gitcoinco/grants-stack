@@ -274,7 +274,7 @@ export const PreviewFrameHistoryPage = ({
       <div className="flex flex-wrap gap-3 items-center  p-2">
         <div className="flex flex-col items-center">
           <div className="flex flex-wrap items-center space-x-2 z-30">
-            <div className="text-2xl font-modern-era-regular">
+            <div className="text-lg font-modern-era-regular">
               Pick your color
             </div>
 
@@ -300,11 +300,11 @@ export const PreviewFrameHistoryPage = ({
             >
               <Button
                 type="button"
-                className={`px-4 py-1 rounded-[8px] bg-white font-medium font-mono text-base text-black h-8 whitespace-nowrap border-[2px] border-transparent hover:shadow-md`}
+                className={`px-4 py-1 rounded-[8px] bg-white font-medium font-mono text-base text-black h-8 whitespace-nowrap border-transparent hover:shadow-md`}
                 onClick={nextStep}
                 data-testid="mint-donation-button"
               >
-                Mint donation
+                Mint your donation
               </Button>
             </div>
           </div>

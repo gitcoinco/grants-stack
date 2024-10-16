@@ -99,17 +99,15 @@ export function MintProgressModalBodyHistory(
     chainId: AttestationChainId,
     address,
   });
-  const [nextStep, setNextStep] = useState(false);
 
   return (
     <div className="min-w-full min-h-full">
-      {!nextStep ? (
+      {status === ProgressStatus.SELECTING_COLOR ? (
         <div className="flex flex-col items-center justify-center">
           <PreviewFrameHistoryPage
             selectBackground={selectBackground as () => void}
             nextStep={() => {
               toggleStartAction?.();
-              setNextStep(true);
             }}
             previewBackground={previewBackground as string}
             selectedColor={selectedColor as string}

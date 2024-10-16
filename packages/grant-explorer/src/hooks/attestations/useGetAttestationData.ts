@@ -9,7 +9,8 @@ export const useGetAttestationData = (
   transactionHashes: string[],
   getImpactImageData: (txHash: string) => Promise<string | undefined>,
   isLoading: boolean,
-  selectedColor: string
+  selectedColor: string,
+  donorENS?: string
 ) => {
   return useQuery({
     queryKey: [
@@ -39,6 +40,7 @@ export const useGetAttestationData = (
         transactionHashes,
         chainId: AttestationChainId,
         base64Image: image,
+        donorENS: donorENS,
       });
 
       try {

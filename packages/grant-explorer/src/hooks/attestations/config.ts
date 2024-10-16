@@ -15,6 +15,7 @@ export interface Signature {
 
 export enum ProgressStatus {
   IS_SUCCESS = "IS_SUCCESS",
+  SELECTING_COLOR = "SELECTING_COLOR",
   IN_PROGRESS = "IN_PROGRESS",
   NOT_STARTED = "NOT_STARTED",
   IS_ERROR = "IS_ERROR",

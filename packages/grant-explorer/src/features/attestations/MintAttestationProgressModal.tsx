@@ -1,6 +1,6 @@
 import { Fragment, ReactNode } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { ReactComponent as CloseIcon } from "../../assets/icons/close.svg";
 
 interface MintAttestationProgressModalProps {
   isOpen: boolean;
@@ -20,6 +20,9 @@ export default function MintAttestationProgressModal({
   children,
   ...props
 }: MintAttestationProgressModalProps) {
+  const onAction =
+    heading !== "Mint your impact!" && heading !== "Your donation impact";
+
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
@@ -41,7 +44,9 @@ export default function MintAttestationProgressModal({
           <div className="fixed inset-0 bg-grey-400 bg-opacity-75 transition-opacity" />
         </Transition.Child>
 
-        <div className="flex items-center justify-center min-h-screen p-4">
+        <div
+          className={`flex items-center ${onAction ? "text-left" : "text-center"} justify-center min-h-screen p-4`}
+        >
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -52,13 +57,15 @@ export default function MintAttestationProgressModal({
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <Dialog.Panel
-              className="relative bg-white rounded-3xl px-6 pt-5 pb-4 text-left shadow-xl transform transition-all sm:max-w-md w-full max-h-[90vh] overflow-x-auto overflow-y-auto"
+              className="relative bg-white rounded-3xl px-6 pt-5 pb-4 shadow-xl transform transition-all sm:max-w-md max-w-lg min-w-[375px]  max-h-[90vh] overflow-x-auto overflow-y-auto"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
+              <Dialog.Title
+                className={`${onAction ? "text-lg" : "text-3xl"} font-modern-era-bold text-grey-500`}
+              >
+                {heading}
+              </Dialog.Title>
               <div className="flex justify-between items-center">
-                <Dialog.Title className="text-lg font-modern-era-bold text-grey-500">
-                  {heading}
-                </Dialog.Title>
                 <button
                   type="button"
                   className="text-grey-400 hover:text-grey-500"
@@ -69,7 +76,7 @@ export default function MintAttestationProgressModal({
                     onClose();
                   }}
                 >
-                  <XMarkIcon className="h-6 w-6" />
+                  <CloseIcon className="size-4 absolute top-4 right-4" />
                 </button>
               </div>
               <div className="mt-2">
