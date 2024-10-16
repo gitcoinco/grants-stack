@@ -225,7 +225,7 @@ export default function ThankYou() {
       >
         <main className="flex-grow flex items-center justify-center">
           {transactions.length > 0 && !minted ? (
-            <div className="flex flex-col xl:flex-row items-center justify-center w-full text-center">
+            <div className="flex flex-col-reverse md:flex-col xl:flex-row items-center justify-center w-full text-center">
               {/* Left Section */}
               <div
                 className={`w-full my-[5%] ${flex && "mt-[14%] "}  lg:w-1/2 flex flex-col items-center`}

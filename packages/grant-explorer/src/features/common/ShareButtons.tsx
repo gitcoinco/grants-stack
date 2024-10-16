@@ -111,7 +111,7 @@ export function TwitterButton(props: TwitterButtonParams) {
     <Button
       type="button"
       onClick={() => window.open(shareUrl, "_blank")}
-      className="flex items-center justify-center shadow-sm font-mono text-xs rounded-lg border-1 text-black bg-white px-4 sm:px-10 hover:shadow-md"
+      className="flex items-center justify-center shadow-sm font-mono text-xs rounded-lg border-1 text-black bg-white px-4 sm:px-10 hover:shadow-md border"
       data-testid="x-button"
     >
       <img src={xIcon} alt="X logo" className="w-4 h-4 font-semibold" />
