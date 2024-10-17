@@ -14,10 +14,10 @@ export const useAttestationStatus = (
   const requiresSwitch = chainId !== userChainID;
 
   const initialStatus = useMemo(() => {
-    return requiresSwitch
-      ? ProgressStatus.SWITCH_CHAIN
-      : isHistoryPage
-        ? ProgressStatus.SELECTING_COLOR
+    return isHistoryPage
+      ? ProgressStatus.SELECTING_COLOR
+      : requiresSwitch
+        ? ProgressStatus.SWITCH_CHAIN
         : ProgressStatus.NOT_STARTED;
   }, [requiresSwitch, isHistoryPage]);
 
@@ -28,7 +28,10 @@ export const useAttestationStatus = (
   };
 
   return {
-    status: requiresSwitch ? ProgressStatus.SWITCH_CHAIN : status,
+    status:
+      requiresSwitch && status === ProgressStatus.NOT_STARTED
+        ? ProgressStatus.SWITCH_CHAIN
+        : status,
     updateStatus,
   };
 };
