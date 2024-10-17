@@ -1,20 +1,13 @@
-import { HiddenAttestationFrame } from "../../../attestations/MintYourImpactComponents";
 import { MintProgressModalBodyHistory } from "../../../attestations/MintProgressModalBody";
 import { useGetAttestationData } from "../../../../hooks/attestations/useGetAttestationData";
 import { useEASAttestation } from "../../../../hooks/attestations/useEASAttestation";
-import { useResolveENS } from "../../../../hooks/useENS";
-import { handleGetAttestationPreview } from "../../../../hooks/attestations/utils/getAttestationPreview";
-import { useParams } from "react-router-dom";
 
 import { useAccount, useBalance } from "wagmi";
-import { useGetImages } from "../../../../hooks/attestations/useGetImages";
-import { getContributionFrameProps } from "../../utils/getContributionFrameProps";
 import { Contribution } from "data-layer";
 import { ProgressStatus } from "../../../../hooks/attestations/config";
 import { useEstimateGas } from "../../../../hooks/attestations/useEstimateGas";
 
 import { AttestationChainId } from "../../../attestations/utils/constants";
-import { ethers } from "ethers";
 import { useAttestationFee } from "../../hooks/useMintingAttestations";
 import { useMemo } from "react";
 import Modal from "../../../common/components/Modal";
@@ -36,45 +29,17 @@ export function MintDonationImpactAction({
   isOpen,
   toggleModal,
   toggleStartAction,
-  contributions,
   transactionHash,
   selectedColor,
   previewBackground,
   selectBackground,
-  selectedBackground,
 }: MintDonationImpactActionProps) {
   const { address } = useAccount();
-  const { address: contributorAddress } = useParams();
-  const { data: name, isLoading: isLoadingENS } = useResolveENS(
-    contributorAddress as `0x${string}` | undefined
-  );
-
-  const FrameProps = getContributionFrameProps(contributions);
-
-  const frameId = ethers.utils.solidityKeccak256(
-    ["string[]"],
-    [[transactionHash]]
-  );
-
-  const {
-    data: imagesBase64,
-    isLoading: isLoadingImages,
-    isFetched: imagesFetched,
-  } = useGetImages(
-    FrameProps.projects.map((project) => project.image),
-    isOpen
-  );
 
   const { data, isLoading, isRefetching } = useGetAttestationData(
     [transactionHash],
-    handleGetAttestationPreview,
-    isLoadingENS ||
-      isLoadingImages ||
-      !isOpen ||
-      !startAction ||
-      !imagesFetched,
-    selectedColor,
-    name as string | undefined
+    !isOpen || !startAction,
+    selectedColor
   );
 
   const {
@@ -126,8 +91,7 @@ export function MintDonationImpactAction({
 
     return { title: newTitle, subheading: newSubheading };
   }, [status]);
-  const loading =
-    isLoading || isLoadingENS || isRefetching || isRefetchingEstimate;
+  const loading = isLoading || isRefetching || isRefetchingEstimate;
 
   return (
     <>
@@ -164,14 +128,6 @@ export function MintDonationImpactAction({
           impactImageCid={data?.impactImageCid}
         />
       </Modal>
-      <HiddenAttestationFrame
-        FrameProps={FrameProps}
-        selectedBackground={selectedBackground}
-        address={contributorAddress}
-        name={name}
-        imagesBase64={imagesBase64}
-        frameId={frameId}
-      />
     </>
   );
 }
