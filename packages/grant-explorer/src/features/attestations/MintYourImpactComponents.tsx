@@ -259,7 +259,7 @@ export const PreviewFrameHistoryPage = ({
   const { defaultColor, colorMapper } = useColorAndBackground();
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center gap-6">
       <div
         className="flex flex-col w-auto items-center relative rounded-3xl"
         style={{
@@ -267,48 +267,39 @@ export const PreviewFrameHistoryPage = ({
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          width: "300px",
-          height: "300px",
+          width: "400px",
+          height: "400px",
         }}
       ></div>
-      <div className="flex flex-wrap gap-3 items-center  p-2">
-        <div className="flex flex-col items-center">
-          <div className="flex flex-wrap items-center space-x-2 z-30">
-            <div className="text-2xl font-modern-era-regular">
-              Pick your color
-            </div>
-
-            {Object.keys(colorMapper).map((key, index) => (
-              <div
-                key={index}
-                onClick={() => selectBackground(key)}
-                className={`w-5 h-5 rounded-full cursor-pointer ${
-                  selectedColor === key ? "border-1 border-black" : ""
-                }`}
-                style={{
-                  backgroundColor:
-                    selectedColor === key
-                      ? colorMapper[key as unknown as keyof typeof colorMapper]
-                      : defaultColor,
-                }}
-              />
-            ))}
-          </div>
-          <div className="mt-2 z-40">
-            <div
-              className={`flex align-center justify-center border-[1px] rounded-[8px] bg-rainbow-gradient border-transparent`}
-            >
-              <Button
-                type="button"
-                className={`px-4 py-1 rounded-[8px] bg-white font-medium font-mono text-base text-black h-8 whitespace-nowrap border-[2px] border-transparent hover:shadow-md`}
-                onClick={nextStep}
-                data-testid="mint-donation-button"
-              >
-                Mint donation
-              </Button>
-            </div>
-          </div>
-        </div>
+      <div className="flex flex-wrap items-center space-x-2 z-30">
+        <div className="text-lg font-modern-era-regular">Pick your color</div>
+        {Object.keys(colorMapper).map((key, index) => (
+          <div
+            key={index}
+            onClick={() => selectBackground(key)}
+            className={`w-5 h-5 rounded-full cursor-pointer ${
+              selectedColor === key ? "border-1 border-black" : ""
+            }`}
+            style={{
+              backgroundColor:
+                selectedColor === key
+                  ? colorMapper[key as unknown as keyof typeof colorMapper]
+                  : defaultColor,
+            }}
+          />
+        ))}
+      </div>
+      <div
+        className={`flex align-center justify-center border-[1px] rounded-[8px] bg-rainbow-gradient border-transparent`}
+      >
+        <Button
+          type="button"
+          className={`px-4 py-1 rounded-[8px] bg-white font-medium font-mono text-base text-black h-8 whitespace-nowrap border-transparent hover:shadow-md`}
+          onClick={nextStep}
+          data-testid="mint-donation-button"
+        >
+          Mint your donation
+        </Button>
       </div>
     </div>
   );
@@ -358,19 +349,18 @@ export const HiddenAttestationFrame = ({
     </div>
   );
 };
-import bgImage from "../../assets/mint-your-impact-background.svg";
 import { ImageWithLoading } from "../common/components/ImageWithLoading";
 
 export const ImpactMintingSuccess = ({
   attestationLink,
   impactImageCid,
-  containerSize = "w-[430px] h-[430px]",
-  imageSize = "w-[400px] h-[400px]",
+  imageSize = "size-[400px]",
+  isShareButtonsAbove = true,
 }: {
   attestationLink: string;
   impactImageCid?: string;
-  containerSize?: string;
   imageSize?: string;
+  isShareButtonsAbove?: boolean;
 }) => {
   const {
     data: image,
@@ -378,23 +368,23 @@ export const ImpactMintingSuccess = ({
     isFetching,
   } = useGetImages(impactImageCid ? [impactImageCid] : [], !!impactImageCid);
 
-  return (
-    <div
-      className="flex flex-col items-center text-center w-full relative bg-bottom bg-cover "
-      style={{ backgroundImage: `url(${bgImage})` }}
-    >
-      <div
-        className={`flex flex-col items-center justify-center gap-4 px-8 py-6 bg-[#ffffff66] rounded-3xl ${containerSize}`}
-      >
-        <div className="flex flex-col items-center justify-center w-full ">
-          <ImageWithLoading
-            src={image?.[0]}
-            isLoading={isLoading || !image || !impactImageCid || isFetching}
-            sizeClass={imageSize}
-          />
-        </div>
-      </div>
+  return isShareButtonsAbove ? (
+    <>
       <ShareButtons attestationLink={attestationLink} />
-    </div>
+      <ImageWithLoading
+        src={image?.[0]}
+        isLoading={isLoading || !image || !impactImageCid || isFetching}
+        sizeClass={imageSize}
+      />
+    </>
+  ) : (
+    <>
+      <ImageWithLoading
+        src={image?.[0]}
+        isLoading={isLoading || !image || !impactImageCid || isFetching}
+        sizeClass={imageSize}
+      />
+      <ShareButtons attestationLink={attestationLink} />
+    </>
   );
 };

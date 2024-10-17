@@ -30,7 +30,7 @@ export const MintingProcessContent = ({
   isLoading: boolean;
   attestationFee: bigint;
 }) => (
-  <div className="flex flex-col items-start justify-center">
+  <div className="flex flex-col gap-6 items-start justify-center w-[405px]">
     {status === ProgressStatus.IS_ERROR && <ErrorMessage />}
 
     <BalanceDisplay balance={balance} notEnoughFunds={notEnoughFunds} />

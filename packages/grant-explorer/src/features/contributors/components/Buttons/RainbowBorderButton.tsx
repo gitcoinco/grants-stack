@@ -16,7 +16,7 @@ export function RainbowBorderButton({
 }: PropsWithChildren<RainbowBorderButtonProps>) {
   return (
     <div
-      className={`flex align-center justify-center border rounded-[8px] ${disabled ? "bg-grey-100 border-grey-100" : "bg-rainbow-gradient border-transparent"}`}
+      className={`flex align-center justify-center border hover:shadow-md rounded-[8px] ${disabled ? "bg-grey-100 border-grey-100" : "bg-rainbow-gradient border-transparent"}`}
     >
       <Button
         type="button"

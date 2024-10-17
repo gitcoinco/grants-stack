@@ -12,13 +12,14 @@ export const useEASAttestation = (
   chainId: number,
   handleToggleModal: () => void,
   data: AttestInput | undefined,
-  attestationFee: bigint
+  attestationFee: bigint,
+  isHistoryPage?: boolean
 ) => {
   const { data: walletClient } = useWalletClient({ chainId });
   const { address } = useAccount();
   const publicClient = usePublicClient({ chainId });
 
-  const { status, updateStatus } = useAttestationStatus(chainId);
+  const { status, updateStatus } = useAttestationStatus(chainId, isHistoryPage);
 
   const { easAddress, abi, schema } = useEASConfig(chainId);
 
@@ -62,5 +63,5 @@ export const useEASAttestation = (
     }
   };
 
-  return { status, handleSwitchChain, handleAttest };
+  return { status, handleSwitchChain, handleAttest, updateStatus };
 };

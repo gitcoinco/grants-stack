@@ -5,6 +5,9 @@ import shareOnFarcaster from "../../assets/farcaster-logo.svg";
 import XTwitter from "../../assets/x-logo.svg";
 import Link from "../../assets/link.svg";
 import xIcon from "../../assets/x-logo-black.png";
+import { useNavigate } from "react-router-dom";
+import { useAccount } from "wagmi";
+import { useState } from "react";
 
 export const ShareButtons = ({
   attestationLink,
@@ -17,38 +20,46 @@ export const ShareButtons = ({
   const farcasterShareUrl = createFarcasterShareUrl(farcasterShareText, [
     attestationLink,
   ]);
+  const [tooltipVisible, setTooltipVisible] = useState(false); // Add state for tooltip visibility
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(attestationLink);
+    setTooltipVisible(true); // Show tooltip
+    setTimeout(() => setTooltipVisible(false), 1000); // Hide tooltip after 1 second
+  };
 
   return (
-    <div className="z-30">
-      <div className="flex flex-col items-center justify-center gap-2 relative">
-        <span className="font-mona font-semibold py-1">Share Your Impact</span>
-        <div className="flex items-center justify-center gap-2 relative">
-          <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer">
-            <img
-              className="relative w-9 h-9"
-              alt="Frame"
-              src={Link}
-              onClick={() => {
-                navigator.clipboard.writeText(attestationLink);
-              }}
-            />
-          </div>
-          <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer">
-            <img
-              className="relative w-9 h-9"
-              alt="Frame"
-              src={XTwitter}
-              onClick={() => window.open(twitterShareUrl, "_blank")}
-            />
-          </div>
-          <div className="flex w-9 h-9 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer">
-            <img
-              className="relative w-9 h-9"
-              alt="Frame"
-              src={shareOnFarcaster}
-              onClick={() => window.open(farcasterShareUrl, "_blank")}
-            />
-          </div>
+    <div className="flex flex-col items-center z-30">
+      <span className="font-mona pb-1 text-md">Share</span>
+      <div className="flex items-center gap-2 pb-1">
+        <div className="flex size-8 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
+          <img
+            className="relative size-8"
+            alt="Frame"
+            src={Link}
+            onClick={handleCopy} // Update onClick to use handleCopy
+          />
+          {tooltipVisible && ( // Render tooltip conditionally
+            <span className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-black  text-white text-xs rounded px-2 py-1">
+              Copied!
+            </span>
+          )}
+        </div>
+        <div className="flex size-8 items-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
+          <img
+            className="relative size-8"
+            alt="Frame"
+            src={XTwitter}
+            onClick={() => window.open(twitterShareUrl, "_blank")}
+          />
+        </div>
+        <div className="flex size-8 items-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
+          <img
+            className="relative size-8"
+            alt="Frame"
+            src={shareOnFarcaster}
+            onClick={() => window.open(farcasterShareUrl, "_blank")}
+          />
         </div>
       </div>
     </div>
@@ -111,7 +122,7 @@ export function TwitterButton(props: TwitterButtonParams) {
     <Button
       type="button"
       onClick={() => window.open(shareUrl, "_blank")}
-      className="flex items-center justify-center shadow-sm font-mono text-xs rounded-lg border-1 text-black bg-white px-4 sm:px-10 hover:shadow-md border"
+      className="flex items-center justify-center shadow-md font-mono text-xs rounded-lg border-1 text-black bg-white px-4 sm:px-10 hover:shadow-lg"
       data-testid="x-button"
     >
       <img src={xIcon} alt="X logo" className="w-4 h-4 font-semibold" />
@@ -120,8 +131,6 @@ export function TwitterButton(props: TwitterButtonParams) {
   );
 }
 
-import { useNavigate } from "react-router-dom";
-import { useAccount } from "wagmi";
 export const ThankYouSectionButtons = ({
   roundName,
   isMrc,
