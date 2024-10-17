@@ -1171,9 +1171,10 @@ const ShareButton = ({
     shareText + window.location.href
   )}`;
 
-  const farcasterShareUrl = createFarcasterShareUrl(shareText, [
-    window.location.href,
-  ]);
+  const farcasterShareUrl = createFarcasterShareUrl(
+    encodeURIComponent(shareText),
+    [window.location.href]
+  );
 
   return (
     <>

@@ -95,7 +95,7 @@ export function createFarcasterShareUrl(
   embedLinks: string[]
 ) {
   // NB: embed links should not be encoded
-  return `https://warpcast.com/~/compose?text=${shareText}${embedLinks.forEach((link) => `&embeds[]=${link}`)}`;
+  return `https://warpcast.com/~/compose?text=${shareText}${embedLinks.map((link) => `&embeds[]=${link}`)}`;
 }
 
 type TwitterButtonParams = {
