@@ -6,27 +6,19 @@ import Navbar from "../common/Navbar";
 import { useCartStorage } from "../../store";
 import { useCheckoutStore } from "../../checkoutStore";
 import { ProgressStatus } from "../api/types";
-import { useRoundById, useRoundNamesByIds } from "../../context/RoundContext";
-import image from "../../assets/gitcoinlogo-black.svg";
-import alt1 from "../../assets/alt1.svg";
+import { useRoundById } from "../../context/RoundContext";
 import { useWindowSize } from "react-use";
 import { ThankYouSectionButtons } from "../common/ShareButtons";
 import {
-  HiddenAttestationFrame,
   ImpactMintingSuccess,
   PreviewFrame,
 } from "../attestations/MintYourImpactComponents";
-import { getRoundsToFetchNames } from "../attestations/utils/getRoundsToFetchNames";
 import { MintProgressModalBodyThankYou } from "../attestations/MintProgressModalBody"; // We'll define this next
 import { useGetAttestationData } from "../../hooks/attestations/useGetAttestationData";
 import { useEASAttestation } from "../../hooks/attestations/useEASAttestation";
-import { handleGetAttestationPreview } from "../../hooks/attestations/utils/getAttestationPreview";
-import { useResolveENS } from "../../hooks/useENS";
 import { useAccount, useBalance } from "wagmi";
-import { useGetImages } from "../../hooks/attestations/useGetImages";
 import { useEstimateGas } from "../../hooks/attestations/useEstimateGas";
 import { AttestationChainId } from "../attestations/utils/constants";
-import { ethers } from "ethers";
 import { useAttestationFee } from "../contributors/hooks/useMintingAttestations";
 import { useAttestationStore } from "../../attestationStore";
 import { useDebugMode } from "../api/utils";
@@ -41,7 +33,7 @@ export default function ThankYou() {
 
   const [minted, setMinted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBackground, setSelectedBackground] = useState(alt1);
+  const [selectedColor, setSelectedColor] = useState("0");
   const [impactImageCid, setImpactImageCid] = useState<string | undefined>();
   const [attestationLink, setAttestationLink] = useState<string | undefined>();
 
@@ -116,17 +108,8 @@ export default function ThankYou() {
     state.getCheckedOutTransactions()
   );
 
-  const ImpactFrameProps = useAttestationStore((state) => {
-    return state.getFrameProps(transactions);
-  });
-
-  const roundsToFetchName = getRoundsToFetchNames(ImpactFrameProps);
-
-  const { data: roundNames, isLoading: isLoadingRoundNames } =
-    useRoundNamesByIds(roundsToFetchName);
-
-  const handleSelectBackground = (background: string) => {
-    setSelectedBackground(background);
+  const handleSelectBackground = (option: string) => {
+    setSelectedColor(option);
   };
 
   const toggleModal = async () => {
@@ -136,34 +119,17 @@ export default function ThankYou() {
   const handleSetMinted = () => {
     setMinted(true);
     setIsModalOpen(false);
-    attestationStore.cleanCheckedOutProjects();
+    attestationStore.cleanCheckedOutTransactions();
   };
 
   const { width } = useWindowSize();
 
   const flex = width <= 1280;
 
-  const { data: name, isLoading: isLoadingENS } = useResolveENS(address);
-
-  const {
-    data: imagesBase64,
-    isLoading: isLoadingImages,
-    isFetched: imagesFetched,
-  } = useGetImages(
-    ImpactFrameProps.projects.map((project) => project.image),
-    isModalOpen
-  );
-
   const { data, isLoading } = useGetAttestationData(
     transactions,
-    handleGetAttestationPreview,
-    isLoadingENS ||
-      isLoadingImages ||
-      !isModalOpen ||
-      isLoadingRoundNames ||
-      !imagesFetched,
-    selectedBackground,
-    name as string | undefined
+    !isModalOpen,
+    selectedColor
   );
 
   useEffect(() => {
@@ -171,8 +137,6 @@ export default function ThankYou() {
       setImpactImageCid(data.impactImageCid);
     }
   }, [data]);
-
-  const frameId = ethers.utils.solidityKeccak256(["string[]"], [transactions]);
 
   const {
     data: gasEstimation,
@@ -206,23 +170,6 @@ export default function ThankYou() {
       ? false
       : balance.value < attestationFee + (gasEstimation ?? 0n);
 
-  const topRoundName = roundNames
-    ? roundNames[ImpactFrameProps?.topRound?.chainId ?? 0][
-        ImpactFrameProps?.topRound?.roundId ?? ""
-      ]
-    : "";
-
-  const ImpactFramePropsWithNames = {
-    ...ImpactFrameProps,
-    topRoundName,
-    projects: ImpactFrameProps.projects.map((project) => ({
-      ...project,
-      round: roundNames
-        ? (roundNames[project?.chainId ?? 0][project?.roundId ?? ""] ??
-          project.round)
-        : project.round,
-    })),
-  };
   const debugModeEnabled = useDebugMode();
 
   return (
@@ -328,19 +275,11 @@ export default function ThankYou() {
                 notEnoughFunds={notEnoughFunds}
                 handleAttest={attest}
                 impactImageCid={data?.impactImageCid}
-                isLoading={isLoading || isLoadingENS || isRefetchingEstimate}
+                isLoading={isLoading || isRefetchingEstimate}
                 heading="Mint your impact"
                 subheading="Your attestation will be generated after you mint."
               />
             </Modal>
-            <HiddenAttestationFrame
-              FrameProps={ImpactFramePropsWithNames}
-              selectedBackground={selectedBackground}
-              address={address}
-              name={name}
-              imagesBase64={imagesBase64 ?? [image, image, image]}
-              frameId={frameId}
-            />
           </>
         )}
       </div>

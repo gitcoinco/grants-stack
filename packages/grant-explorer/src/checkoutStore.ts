@@ -325,7 +325,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           });
           useAttestationStore
             .getState()
-            .setCheckedOutProjectsByTx(receipt.transactionHash, donations);
+            .addCheckedOutTransaction(receipt.transactionHash);
         } catch (error) {
           let context: Record<string, unknown> = {
             chainId,
