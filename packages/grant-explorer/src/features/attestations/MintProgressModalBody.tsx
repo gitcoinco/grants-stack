@@ -25,6 +25,8 @@ type MintProgressModalBodyProps = {
   previewBackground?: string;
   selectedColor?: string;
   attestationFee: bigint;
+  heading?: string;
+  subheading?: string;
 };
 
 // MintProgressModalBodyThankYou component
@@ -39,6 +41,8 @@ export function MintProgressModalBodyThankYou(
     notEnoughFunds,
     handleAttest,
     isLoading,
+    heading,
+    subheading,
   } = props;
 
   const { address, isConnected } = useAccount();
@@ -49,7 +53,15 @@ export function MintProgressModalBodyThankYou(
   const { data: attestationFee } = useAttestationFee();
 
   return (
-    <div className="min-w-full min-h-full">
+    <div
+      className={`w-[450px] min-h-full flex flex-col justify-center text-black p-6 gap-8`}
+    >
+      <div className={`flex flex-col gap-2`}>
+        <div className={`text-3xl/[34px] font-modern-era-bold`}>{heading}</div>
+        <div className={`text-[16px]/[26px] font-modern-era-regular`}>
+          {subheading}
+        </div>
+      </div>
       <MintingProcessContent
         status={status}
         balance={balance?.value}
@@ -84,6 +96,8 @@ export function MintProgressModalBodyHistory(
     selectedColor,
     previewBackground,
     impactImageCid,
+    heading,
+    subheading,
   } = props;
 
   const [attestationLink, setAttestationLink] = useState<string | undefined>(
@@ -100,23 +114,40 @@ export function MintProgressModalBodyHistory(
     address,
   });
 
+  const isOnAction =
+    status !== ProgressStatus.SELECTING_COLOR &&
+    status !== ProgressStatus.IS_SUCCESS;
+
   return (
-    <div className="min-w-full min-h-full">
-      {status === ProgressStatus.SELECTING_COLOR ? (
-        <div className="flex flex-col items-center justify-center">
-          <PreviewFrameHistoryPage
-            selectBackground={selectBackground as () => void}
-            nextStep={() => {
-              toggleStartAction?.();
-            }}
-            previewBackground={previewBackground as string}
-            selectedColor={selectedColor as string}
-          />
+    <div
+      className={`min-w-full max-w-[710px] min-h-full flex flex-col justify-center text-black ${!isOnAction ? "p-10 items-center text-center gap-6" : "p-6 gap-8"}`}
+    >
+      <div className={`flex flex-col ${isOnAction ? "gap-2" : "gap-6"}`}>
+        <div
+          className={`${isOnAction ? "text-3xl/[34px]" : "text-5xl/[39px]"} font-modern-era-bold`}
+        >
+          {heading}
         </div>
+        <div
+          className={`${isOnAction ? "text-[16px]/[26px]" : "text-[20px]/[26px]"} font-modern-era-regular`}
+        >
+          {subheading}
+        </div>
+      </div>
+      {status === ProgressStatus.SELECTING_COLOR ? (
+        <PreviewFrameHistoryPage
+          selectBackground={selectBackground as () => void}
+          nextStep={() => {
+            toggleStartAction?.();
+          }}
+          previewBackground={previewBackground as string}
+          selectedColor={selectedColor as string}
+        />
       ) : status === ProgressStatus.IS_SUCCESS ? (
         <ImpactMintingSuccess
           impactImageCid={impactImageCid as string}
           attestationLink={attestationLink ?? ""}
+          isShareButtonsAbove={false}
         />
       ) : (
         <MintingProcessContent

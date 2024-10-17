@@ -8,6 +8,7 @@ interface ModalProps {
   redirectUrl?: string;
   children?: ReactNode;
   showCloseButton?: boolean;
+  padding?: string;
 }
 
 export default function Modal({
@@ -15,6 +16,7 @@ export default function Modal({
   onClose,
   children,
   showCloseButton = true,
+  padding,
   ...props
 }: ModalProps) {
   return (
@@ -47,7 +49,7 @@ export default function Modal({
           leaveTo="opacity-0 scale-95"
         >
           <Dialog.Panel
-            className="relative bg-white rounded-3xl p-10 text-left shadow-xl transform transition-all overflow-x-auto overflow-y-auto"
+            className={`relative bg-white rounded-3xl text-left shadow-xl transform transition-all overflow-x-auto overflow-y-auto ${padding ? padding : "p-10"}`}
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {showCloseButton && (

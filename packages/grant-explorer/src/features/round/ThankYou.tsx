@@ -17,7 +17,6 @@ import {
   PreviewFrame,
 } from "../attestations/MintYourImpactComponents";
 import { getRoundsToFetchNames } from "../attestations/utils/getRoundsToFetchNames";
-import MintAttestationProgressModal from "../attestations/MintAttestationProgressModal"; // Adjust the import path as needed
 import { MintProgressModalBodyThankYou } from "../attestations/MintProgressModalBody"; // We'll define this next
 import { useGetAttestationData } from "../../hooks/attestations/useGetAttestationData";
 import { useEASAttestation } from "../../hooks/attestations/useEASAttestation";
@@ -32,6 +31,7 @@ import { useAttestationFee } from "../contributors/hooks/useMintingAttestations"
 import { useAttestationStore } from "../../attestationStore";
 import { useDebugMode } from "../api/utils";
 import { RainbowBorderButton } from "../contributors/components/Buttons/RainbowBorderButton";
+import Modal from "../common/components/Modal";
 
 export default function ThankYou() {
   datadogLogs.logger.info(
@@ -277,30 +277,29 @@ export default function ThankYou() {
               )}
             </div>
           ) : minted ? (
-            <div className="flex flex-col items-center absolute top-20 max-w-[600px] h-full text-center">
-              <div className="flex flex-col max-w-[500px] items-center  text-center ">
-                <div className="relative text-center font-modern-era-medium text-[48px] ">
+            <div className="rounded-xl absolute top-20 flex flex-col items-center text-center gap-6 px-[64px] py-8 backdrop-blur-xl">
+              <div className="flex flex-col gap-2">
+                <div className="relative text-center font-modern-era-medium text-[48px]/[52px]">
                   Your donation impact
                 </div>
-                <div className="relative text-[16px] font-modern-era-regular ">
+                <div className="relative text-[16px]/[26px] max-w-[500px] font-modern-era-regular">
                   Congratulations! Your attestation is now onchain, and here's
                   the unique visual that represents your donation. Share your
                   impact with your community and inspire others to join in!
                 </div>
-                <ImpactMintingSuccess
-                  impactImageCid={impactImageCid}
-                  containerSize="size-[600px]"
-                  imageSize="size-[520px]"
-                  attestationLink={attestationLink ?? ""}
-                />
-                <div className="my-2 z-50">
-                  <RainbowBorderButton
-                    dataTestId="view-transaction-button"
-                    onClick={onViewTransaction}
-                  >
-                    View attestation
-                  </RainbowBorderButton>
-                </div>
+              </div>
+              <ImpactMintingSuccess
+                impactImageCid={impactImageCid}
+                imageSize="size-[520px]"
+                attestationLink={attestationLink ?? ""}
+              />
+              <div className="my-2 z-50">
+                <RainbowBorderButton
+                  dataTestId="view-transaction-button"
+                  onClick={onViewTransaction}
+                >
+                  View attestation
+                </RainbowBorderButton>
               </div>
             </div>
           ) : (
@@ -319,25 +318,21 @@ export default function ThankYou() {
         {/* Progress Modal */}
         {transactions.length > 0 && (
           <>
-            <MintAttestationProgressModal
-              isOpen={isModalOpen}
-              onClose={toggleModal}
-              heading="Mint your impact"
-              subheading="Your unique donation graphic will be generated after you mint."
-              body={
-                <MintProgressModalBodyThankYou
-                  attestationFee={attestationFee}
-                  handleSwitchChain={handleSwitchChain}
-                  status={status}
-                  gasEstimation={gasEstimation}
-                  isLoadingEstimation={loadingGasEstimate}
-                  notEnoughFunds={notEnoughFunds}
-                  handleAttest={attest}
-                  impactImageCid={data?.impactImageCid}
-                  isLoading={isLoading || isLoadingENS || isRefetchingEstimate}
-                />
-              }
-            />
+            <Modal isOpen={isModalOpen} onClose={toggleModal} padding="p-0">
+              <MintProgressModalBodyThankYou
+                attestationFee={attestationFee}
+                handleSwitchChain={handleSwitchChain}
+                status={status}
+                gasEstimation={gasEstimation}
+                isLoadingEstimation={loadingGasEstimate}
+                notEnoughFunds={notEnoughFunds}
+                handleAttest={attest}
+                impactImageCid={data?.impactImageCid}
+                isLoading={isLoading || isLoadingENS || isRefetchingEstimate}
+                heading="Mint your impact"
+                subheading="Your attestation will be generated after you mint."
+              />
+            </Modal>
             <HiddenAttestationFrame
               FrameProps={ImpactFramePropsWithNames}
               selectedBackground={selectedBackground}

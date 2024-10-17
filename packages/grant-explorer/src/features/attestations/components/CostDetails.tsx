@@ -17,7 +17,7 @@ export const CostDetails = ({
   const estimatedGasFormatted = `${formatAmount(estimatedGas)} ETH`;
 
   return (
-    <div className="w-full flex flex-col mb-4 p-4 font-mono text-sm">
+    <div className="w-full flex flex-col font-mono text-sm">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between w-full focus:outline-none"

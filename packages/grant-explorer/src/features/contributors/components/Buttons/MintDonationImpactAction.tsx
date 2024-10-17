@@ -1,5 +1,4 @@
 import { HiddenAttestationFrame } from "../../../attestations/MintYourImpactComponents";
-import MintAttestationProgressModal from "../../../attestations/MintAttestationProgressModal";
 import { MintProgressModalBodyHistory } from "../../../attestations/MintProgressModalBody";
 import { useGetAttestationData } from "../../../../hooks/attestations/useGetAttestationData";
 import { useEASAttestation } from "../../../../hooks/attestations/useEASAttestation";
@@ -18,6 +17,7 @@ import { AttestationChainId } from "../../../attestations/utils/constants";
 import { ethers } from "ethers";
 import { useAttestationFee } from "../../hooks/useMintingAttestations";
 import { useMemo } from "react";
+import Modal from "../../../common/components/Modal";
 
 interface MintDonationImpactActionProps {
   toggleModal: () => void;
@@ -131,7 +131,7 @@ export function MintDonationImpactAction({
 
   return (
     <>
-      <MintAttestationProgressModal
+      <Modal
         isOpen={isOpen}
         onClose={() => {
           toggleModal();
@@ -140,30 +140,30 @@ export function MintDonationImpactAction({
             updateStatus(ProgressStatus.SELECTING_COLOR);
           }, 500);
         }}
-        heading={title}
-        subheading={subheading}
-        body={
-          <MintProgressModalBodyHistory
-            attestationFee={attestationFee}
-            handleSwitchChain={handleSwitchChain}
-            status={status}
-            gasEstimation={gasEstimation}
-            isLoadingEstimation={loadingGasEstimate}
-            notEnoughFunds={notEnoughFunds}
-            handleAttest={handleAttest}
-            isLoading={loading}
-            selectBackground={selectBackground}
-            previewBackground={previewBackground}
-            selectedColor={selectedColor}
-            isTransactionHistoryPage
-            toggleStartAction={() => {
-              toggleStartAction(true);
-              updateStatus(ProgressStatus.NOT_STARTED);
-            }}
-            impactImageCid={data?.impactImageCid}
-          />
-        }
-      />
+        padding="p-0"
+      >
+        <MintProgressModalBodyHistory
+          heading={title}
+          subheading={subheading}
+          attestationFee={attestationFee}
+          handleSwitchChain={handleSwitchChain}
+          status={status}
+          gasEstimation={gasEstimation}
+          isLoadingEstimation={loadingGasEstimate}
+          notEnoughFunds={notEnoughFunds}
+          handleAttest={handleAttest}
+          isLoading={loading}
+          selectBackground={selectBackground}
+          previewBackground={previewBackground}
+          selectedColor={selectedColor}
+          isTransactionHistoryPage
+          toggleStartAction={() => {
+            toggleStartAction(true);
+            updateStatus(ProgressStatus.NOT_STARTED);
+          }}
+          impactImageCid={data?.impactImageCid}
+        />
+      </Modal>
       <HiddenAttestationFrame
         FrameProps={FrameProps}
         selectedBackground={selectedBackground}
