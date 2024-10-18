@@ -78,27 +78,3 @@ export type ChainBalances = {
 export type BalanceMap = {
   [chainId: string | number]: ChainBalances;
 };
-
-export type AttestationProject = {
-  rank: number;
-  name: string;
-  round: string;
-  image: string;
-  amount?: number;
-  chainId?: number;
-  roundId?: string;
-};
-
-export type AttestationFrameProps = {
-  topRound?: {
-    roundId: string;
-    chainId: number;
-  };
-  topRoundName?: string;
-  projectsFunded: number;
-  roundsSupported: number;
-  checkedOutChains: number;
-  projects: AttestationProject[];
-  address?: string;
-  name?: string;
-};

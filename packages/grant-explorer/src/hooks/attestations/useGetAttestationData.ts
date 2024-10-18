@@ -1,16 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { AttestationChainId } from "../../features/attestations/utils/constants";
-import { ethers } from "ethers";
 
 /**
  * Hook to fetch attestation data based on a transaction hash.
  */
 export const useGetAttestationData = (
   transactionHashes: string[],
-  getImpactImageData: (txHash: string) => Promise<string | undefined>,
   isLoading: boolean,
-  selectedColor: string,
-  donorENS?: string
+  selectedColor: string
 ) => {
   return useQuery({
     queryKey: [
@@ -25,22 +22,10 @@ export const useGetAttestationData = (
         throw new Error("TransactionHashes are required");
       }
 
-      const frameId = ethers.utils.solidityKeccak256(
-        ["string[]"],
-        [transactionHashes]
-      );
-
-      const image = await getImpactImageData(frameId);
-
-      if (!image) {
-        throw new Error("Image is required");
-      }
-      // Generate a cache key from the request parameters
       const body = JSON.stringify({
         transactionHashes,
         chainId: AttestationChainId,
-        base64Image: image,
-        donorENS: donorENS,
+        backgroundOption: selectedColor,
       });
 
       try {

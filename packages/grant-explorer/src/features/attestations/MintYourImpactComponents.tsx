@@ -1,181 +1,18 @@
 import React from "react";
 import { Button } from "common/src/styles";
-import { AttestationFrameProps } from "../api/types";
 import useColorAndBackground from "../../hooks/attestations/useColorAndBackground";
 import { ShareButtons } from "../common/ShareButtons";
 import { useGetImages } from "../../hooks/attestations/useGetImages";
-
-type Project = {
-  rank: number;
-  name: string;
-  round: string;
-  image: string;
-};
-
-export const AttestationFrame = ({
-  frameId,
-  selectedBackground,
-  topRound,
-  projectsFunded,
-  roundsSupported,
-  checkedOutChains,
-  projects,
-  address,
-  ensName,
-}: {
-  frameId: string;
-  selectedBackground: string;
-  topRound: string;
-  projectsFunded: number;
-  roundsSupported: number;
-  checkedOutChains: number;
-  projects: Project[];
-  address: string | undefined;
-  ensName: string | null | undefined;
-}) => {
-  const { attestationFrameLogo } = useColorAndBackground();
-  const projectsLength = projects.length;
-  const padding =
-    projectsLength === 3
-      ? "threeProjectsPadding"
-      : projectsLength === 2
-        ? "py-11"
-        : "py-28";
-
-  return (
-    <div className="flex flex-col items-center">
-      <div
-        className="relative rounded-3xl overflow-hidden"
-        id={`attestation-impact-frame-${frameId}`}
-        style={{
-          backgroundImage: `url(${selectedBackground})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          width: "600px",
-          height: "600px",
-        }}
-      >
-        <div className="flex flex-col w-full h-full p-6">
-          {/* Header */}
-          <div
-            className="flex items-center justify-between p-5 border border-black rounded-t-lg bg-white bg-opacity-10"
-            style={{ height: "70px", width: "100%" }}
-          >
-            <div
-              className="flex items-center space-x-2"
-              style={{ maxWidth: "80%" }}
-            >
-              {ensName ? (
-                <div className="font-mono font-medium text-black text-[19px] truncate">
-                  {ensName}
-                </div>
-              ) : (
-                <div className="font-mono font-medium text-black text-sm truncate">
-                  {address}
-                </div>
-              )}
-            </div>
-            <img
-              className="h-6 w-auto "
-              alt="Logo"
-              src={attestationFrameLogo}
-            />
-          </div>
-
-          {/* Main Body */}
-          <div className="flex flex-1 w-full bg-white bg-opacity-10 border-x border-b border-black rounded-b-lg truncate">
-            {/* Left Section (Top Projects and Top Round) */}
-            <div className="flex flex-col h-full w-[60%] ">
-              {/* Top Projects Header */}
-              <div className="h-[70%] ">
-                <div className="p-4 border-b border-black">
-                  <h2 className="font-mono font-medium text-black text-[18px]">
-                    Top Projects
-                  </h2>
-                </div>
-
-                {/* Project List */}
-                {projects.map((project, index) => (
-                  <div
-                    key={index}
-                    className={`truncate flex items-center gap-3 ${padding} border-b border-black px-2`}
-                  >
-                    <div className="font-mono font-medium text-black text-[16px]">
-                      {project.rank}
-                    </div>
-                    <img
-                      className="w-8 h-8 rounded-full"
-                      alt="Project"
-                      src={project.image}
-                    />
-
-                    <div className="truncate ">
-                      <p className="text-black text-[14px] font-medium truncate">
-                        {project.name}
-                      </p>
-                      <p className="text-gray-600 text-[12px] truncate">
-                        {project.round}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Top Round Section */}
-
-              <div className="h-[5%] pl-5 float-left ">
-                <div className="h-[10%] flex flex-col justify-start">
-                  <div className="text-black text-[18px] font-medium font-mono ">
-                    Top Round
-                  </div>
-                </div>
-              </div>
-              <div className="h-[25%] px-5 pb-2 float-left flex flex-col items-left w-full pt-3">
-                <div className="text-black text-[20px] font-medium whitespace-normal ">
-                  {topRound}
-                </div>
-              </div>
-            </div>
-
-            {/* Right Section (Stats) */}
-            <div className="flex flex-col h-fit pl-5 w-[40%] border-l border-black">
-              {[
-                { value: projectsFunded, label: "Projects Funded" },
-                { value: roundsSupported, label: "Rounds Supported" },
-                { value: checkedOutChains, label: "Chains" },
-              ].map((stat, index) => (
-                <div key={index} className="flex flex-col py-8 ">
-                  <div className="text-[48px] font-medium font-mono text-black">
-                    {stat.value}
-                  </div>
-                  <div className="text-[16px] font-medium font-mono text-black">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export const PreviewFrame = ({
   handleSelectBackground,
   mint,
 }: {
-  handleSelectBackground: (background: string) => void;
+  handleSelectBackground: (option: string) => void;
   mint: () => void;
 }) => {
-  const {
-    backgroundAlternatives,
-    defaultColor,
-    backgroundMapper,
-    colorMapper,
-    preview_alt1,
-  } = useColorAndBackground();
+  const { backgroundAlternatives, defaultColor, colorMapper, preview_alt1 } =
+    useColorAndBackground();
 
   const [selectedColor, setSelectedColor] = React.useState("0");
   const [previewBackground, setPreviewBackground] =
@@ -184,9 +21,7 @@ export const PreviewFrame = ({
   function selectBackground(option: string) {
     setSelectedColor(option);
     setPreviewBackground(backgroundAlternatives[Number(option)]);
-    handleSelectBackground(
-      backgroundMapper[option as keyof typeof backgroundMapper]
-    );
+    handleSelectBackground(option);
   }
 
   return (
@@ -305,50 +140,6 @@ export const PreviewFrameHistoryPage = ({
   );
 };
 
-export const HiddenAttestationFrame = ({
-  FrameProps,
-  selectedBackground,
-  address,
-  name,
-  imagesBase64,
-  frameId,
-}: {
-  FrameProps: AttestationFrameProps;
-  selectedBackground: string;
-  address: string | undefined;
-  name: string | null | undefined;
-  imagesBase64: string[] | undefined;
-  frameId: string;
-}) => {
-  return (
-    <div
-      id="hidden-attestation-frame"
-      style={{
-        position: "absolute",
-        top: "-9999px",
-        left: "-9999px",
-        width: "0",
-        height: "0",
-        overflow: "hidden",
-      }}
-    >
-      <AttestationFrame
-        frameId={frameId}
-        selectedBackground={selectedBackground}
-        projects={FrameProps.projects.map((project, i) => ({
-          ...project,
-          image: imagesBase64 ? imagesBase64[i] : "",
-        }))}
-        checkedOutChains={FrameProps.checkedOutChains}
-        projectsFunded={FrameProps.projectsFunded}
-        roundsSupported={FrameProps.roundsSupported}
-        topRound={FrameProps.topRoundName ?? ""}
-        address={address}
-        ensName={name}
-      />
-    </div>
-  );
-};
 import { ImageWithLoading } from "../common/components/ImageWithLoading";
 
 export const ImpactMintingSuccess = ({
