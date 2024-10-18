@@ -13,9 +13,9 @@ const SquidWidget = ({
   toTokenAddress,
 }: SwapParams) => {
 
-  // Construct the config object
+  // Construct the config objectq
   const config = {
-    integratorId: "squid-swap-widget",
+    integratorId: "gitcoin-50ed7b9e-5407-48c2-9b94-f443b53f6cd4",
     instantExec: true,
     apiUrl: "https://apiplus.squidrouter.com",
     initialAssets: {
@@ -30,10 +30,12 @@ const SquidWidget = ({
     },
     disabledChains: {
       source: [
-        "1329",
+        "pacific-1",
+        "osmosis-1"
       ],
       destination: [
-        "1329",
+        "pacific-1",
+        "osmosis-1"
       ]
     },
   };
