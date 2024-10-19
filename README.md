@@ -1,4 +1,4 @@
-# grants-round
+# grants-stack
 
 This repository contains packages needed for a user to
 - Create & Manage Rounds
