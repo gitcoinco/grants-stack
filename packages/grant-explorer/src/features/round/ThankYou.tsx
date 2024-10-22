@@ -220,6 +220,9 @@ export default function ThankYou() {
                       </div>
                     </div>
                   </div>
+                  <div className="fixed -bottom-6 right-11 w-full z-20">
+                    <Footer />
+                  </div>
                 </div>
               )}
             </div>
@@ -240,13 +243,21 @@ export default function ThankYou() {
                 imageSize="size-[520px]"
                 attestationLink={attestationLink ?? ""}
               />
-              <div className="my-2 z-50">
+              <div className="flex flex-wrap gap-6 my-2 z-50">
                 <RainbowBorderButton
                   dataTestId="view-transaction-button"
                   onClick={onViewTransaction}
                 >
                   View attestation
                 </RainbowBorderButton>
+                <button
+                  className="blue-background-button font-medium font-mono"
+                  onClick={() => {
+                    window.open("https://explorer.gitcoin.co/", "_blank");
+                  }}
+                >
+                  Return to Explorer
+                </button>
               </div>
             </div>
           ) : (
@@ -255,12 +266,12 @@ export default function ThankYou() {
                 roundName={round?.roundMetadata?.name ?? ""}
                 isMrc={isMrc}
               />
+              <div className="fixed -bottom-6 right-11 w-full z-20">
+                <Footer />
+              </div>
             </div>
           )}
         </main>
-        <div className="fixed -bottom-6 right-11 w-full z-20">
-          <Footer />
-        </div>
 
         {/* Progress Modal */}
         {transactions.length > 0 && (
