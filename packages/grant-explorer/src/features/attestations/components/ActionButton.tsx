@@ -2,6 +2,9 @@ import { Button } from "common/src/styles";
 import processingIcon from "../../../assets/processing.svg";
 import { ProgressStatus } from "../../../hooks/attestations/config";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import GenericModal from "../../common/GenericModal";
+import SquidWidget, { SwapParams } from "../../round/ViewCartPage/SquidWidget";
+import { useState } from "react";
 
 // Extracted ActionButton component
 export const ActionButton = ({
@@ -19,6 +22,17 @@ export const ActionButton = ({
   notEnoughFunds: boolean;
   isLoading: boolean;
 }) => {
+  const [openSwapModel, setOpenSwapModal] = useState<boolean>(false);
+  const swapParams = {
+    fromChainId: "1",
+    toChainId: "42161",
+    fromTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    toTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+  } as SwapParams;
+
+  const swapModalHandler = async (flag: boolean) => {
+    setOpenSwapModal(flag);
+  };
   if (!isConnected) {
     return (
       <Button className="bg-[#DE3714] text-white font-mono text-md w-full px-4 py-2 rounded-lg hover:shadow-md">
@@ -41,9 +55,21 @@ export const ActionButton = ({
           Insufficient funds to complete the minting process. Please bridge or
           add funds to your wallet to proceed.
         </span>
-        <Button className="bg-[#DE3714] text-white font-mono text-md w-full px-4 pb-2 rounded-lg hover:shadow-md">
+        <Button
+          onClick={() => {
+            swapModalHandler(true);
+          }}
+          className="bg-[#DE3714] text-white font-mono text-md w-full px-4 pb-2 rounded-lg hover:shadow-md"
+        >
           Bridge Funds
         </Button>
+        <GenericModal
+          isIframe={true}
+          body={<SquidWidget {...swapParams} />}
+          isOpen={openSwapModel}
+          setIsOpen={swapModalHandler}
+          className="z-40"
+        />
       </div>
     );
   } else if (

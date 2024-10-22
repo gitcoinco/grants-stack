@@ -11,6 +11,7 @@ interface InfoModalProps {
     | ((flag: boolean) => void);
   children?: ReactNode;
   isIframe?: boolean;
+  className?: string;
 }
 
 export default function InfoModal({
@@ -30,7 +31,7 @@ export default function InfoModal({
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
         as="div"
-        className="relative z-10"
+        className={`relative ${props.className ?? "z-10"}`}
         initialFocus={cancelButtonRef}
         onClose={setIsOpen}
         data-testid="generic-modal"
