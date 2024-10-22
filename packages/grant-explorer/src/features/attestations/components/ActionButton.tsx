@@ -5,6 +5,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import GenericModal from "../../common/GenericModal";
 import SquidWidget, { SwapParams } from "../../round/ViewCartPage/SquidWidget";
 import { useState } from "react";
+import { NATIVE } from "common";
 
 // Extracted ActionButton component
 export const ActionButton = ({
@@ -26,8 +27,8 @@ export const ActionButton = ({
   const swapParams = {
     fromChainId: "1",
     toChainId: "42161",
-    fromTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-    toTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    fromTokenAddress: NATIVE,
+    toTokenAddress: NATIVE,
   } as SwapParams;
 
   const swapModalHandler = async (flag: boolean) => {
