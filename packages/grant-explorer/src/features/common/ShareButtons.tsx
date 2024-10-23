@@ -94,7 +94,7 @@ export function createTwitterShareUrl(props: TwitterButtonParams) {
 }
 
 export function createTwitterAttestationShareText(attestationLink: string) {
-  return `Just minted my donation on Gitcoin 🫡\n\nMy impact is now onchain!\n\n${attestationLink}`;
+  return `Just minted my donation on @gitcoin 🫡\n\nMy impact is now onchain!\n\n${attestationLink}`;
 }
 
 export function createTwitterAttestationShareUrl(attestationLink: string) {
@@ -105,11 +105,11 @@ export function createTwitterAttestationShareUrl(attestationLink: string) {
 }
 
 export function getFarcasterAttestationShareText() {
-  const encodedText1 = encodeURIComponent(
-    `Just minted my donation on Gitcoin 🫡\n\nMy impact is now onchain!`
-  );
+  const encodedText1 = encodeURIComponent(`Just minted my donation on  `);
+  const encodedText2 = encodeURIComponent(` 🫡\n\nMy impact is now onchain!`);
+
   // NB: mentions should not be encoded
-  return encodedText1;
+  return `${encodedText1}@gitcoin${encodedText2}`;
 }
 
 export function createFarcasterShareUrl(
