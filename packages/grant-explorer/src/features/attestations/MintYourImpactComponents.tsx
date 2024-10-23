@@ -160,22 +160,28 @@ export const ImpactMintingSuccess = ({
   } = useGetImages(impactImageCid ? [impactImageCid] : [], !!impactImageCid);
 
   return isShareButtonsAbove ? (
-    <>
-      <ShareButtons attestationLink={attestationLink} />
+    <div className="flex flex-col items-center gap-6">
+      <ShareButtons
+        attestationLink={attestationLink}
+        isTop={isShareButtonsAbove}
+      />
       <ImageWithLoading
         src={image?.[0]}
         isLoading={isLoading || !image || !impactImageCid || isFetching}
         sizeClass={imageSize}
       />
-    </>
+    </div>
   ) : (
-    <>
+    <div className="flex flex-col items-center gap-6">
       <ImageWithLoading
         src={image?.[0]}
         isLoading={isLoading || !image || !impactImageCid || isFetching}
         sizeClass={imageSize}
       />
-      <ShareButtons attestationLink={attestationLink} />
-    </>
+      <ShareButtons
+        attestationLink={attestationLink}
+        isTop={isShareButtonsAbove}
+      />
+    </div>
   );
 };

@@ -11,7 +11,9 @@ import { useState } from "react";
 
 export const ShareButtons = ({
   attestationLink,
+  isTop,
 }: {
+  isTop?: boolean;
   attestationLink: string;
 }): JSX.Element => {
   const twitterShareUrl = createTwitterAttestationShareUrl(attestationLink);
@@ -30,36 +32,46 @@ export const ShareButtons = ({
 
   return (
     <div className="flex flex-col items-center z-30">
-      <span className="font-mona pb-1 text-md">Share</span>
+      <span className="font-modern-era-medium  pb-2 text-[24px]/[28px]">
+        Share with your network!
+      </span>
       <div className="flex items-center gap-2 pb-1">
-        <div className="flex size-8 items-center justify-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
-          <img
-            className="relative size-8"
-            alt="Frame"
-            src={Link}
-            onClick={handleCopy} // Update onClick to use handleCopy
-          />
+        <div className="rainbow-border-icon">
+          <div className="icon-button ">
+            <img
+              className="icon"
+              alt="Frame"
+              src={shareOnFarcaster}
+              onClick={() => window.open(farcasterShareUrl, "_blank")}
+            />
+          </div>
+        </div>
+        <div className="rainbow-border-icon">
+          <div className="icon-button ">
+            <img
+              className="icon"
+              alt="Frame"
+              src={XTwitter}
+              onClick={() => window.open(twitterShareUrl, "_blank")}
+            />
+          </div>
+        </div>
+        <div className="rainbow-border-icon">
+          <div className="icon-button ">
+            <img
+              className="icon"
+              alt="Frame"
+              src={Link}
+              onClick={handleCopy} // Update onClick to use handleCopy
+            />
+          </div>
           {tooltipVisible && ( // Render tooltip conditionally
-            <span className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-black  text-white text-xs rounded px-2 py-1">
+            <span
+              className={`${isTop ? "copytooltip-top" : "copytooltip-bottom"}`}
+            >
               Copied!
             </span>
           )}
-        </div>
-        <div className="flex size-8 items-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
-          <img
-            className="relative size-8"
-            alt="Frame"
-            src={XTwitter}
-            onClick={() => window.open(twitterShareUrl, "_blank")}
-          />
-        </div>
-        <div className="flex size-8 items-center gap-2 p-2 relative rounded-3xl border border-solid border-color-primitives-neutral-100 cursor-pointer hover:shadow-md">
-          <img
-            className="relative size-8"
-            alt="Frame"
-            src={shareOnFarcaster}
-            onClick={() => window.open(farcasterShareUrl, "_blank")}
-          />
         </div>
       </div>
     </div>
@@ -82,7 +94,7 @@ export function createTwitterShareUrl(props: TwitterButtonParams) {
 }
 
 export function createTwitterAttestationShareText(attestationLink: string) {
-  return `Certified public goods supporter 🫡\n\nMy contribution is now onchain—check out the visual that represents my impact.\n\nHat tip to @gitcoin 💚\n\n${attestationLink}`;
+  return `Just minted my donation on Gitcoin 🫡\n\nMy impact is now onchain!\n\n${attestationLink}`;
 }
 
 export function createTwitterAttestationShareUrl(attestationLink: string) {
@@ -94,11 +106,10 @@ export function createTwitterAttestationShareUrl(attestationLink: string) {
 
 export function getFarcasterAttestationShareText() {
   const encodedText1 = encodeURIComponent(
-    `Certified public goods supporter 🫡\n\nMy contribution is now onchain—check out the visual that represents my impact.\n\nHat tip to `
+    `Just minted my donation on Gitcoin 🫡\n\nMy impact is now onchain!`
   );
-  const encodedText2 = encodeURIComponent(` 💚\n`);
   // NB: mentions should not be encoded
-  return `${encodedText1}@gitcoin${encodedText2}`;
+  return encodedText1;
 }
 
 export function createFarcasterShareUrl(

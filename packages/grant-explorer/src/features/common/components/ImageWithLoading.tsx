@@ -17,7 +17,7 @@ export const ImageWithLoading = ({
   return (
     <div
       {...props}
-      className={`bg-cover bg-center bg-gray-200 dark:bg-gray-800 ${sizeClass} ${blurClass} ${loadingClass}`}
+      className={`bg-cover bg-center bg-transparent  ${sizeClass} ${blurClass} ${loadingClass}`}
       style={{ backgroundImage: `url("${src || ""}")` }} // Use src if available, otherwise keep it empty
     />
   );
