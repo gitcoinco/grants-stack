@@ -11,9 +11,8 @@ import { renderToHTML } from "common/src/markdown";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { ExpandableGrid } from "../../common/ExpandableGrid";
 import { dateFromMs } from "../../api/utils";
-import { useEffect, useState, FC } from "react";
+import { FC } from "react";
 import { IGapImpact, getGapProjectImpactUrl } from "../../api/gap";
-
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { useEnsName } from "wagmi";
 
@@ -21,7 +20,6 @@ interface ImpactItemProps {
   impact: IGapImpact;
   url: string;
 }
-
 const EthereumAddressToENSName: FC<{
   address: `0x${string}`;
   shouldTruncate?: boolean;
@@ -37,71 +35,138 @@ const EthereumAddressToENSName: FC<{
   return <span className="font-body">{ensName || addressToDisplay}</span>;
 };
 
-export const ImpactItem: React.FC<ImpactItemProps> = ({ impact }) => {
+export const ImpactItem: React.FC<ImpactItemProps> = ({ impact, url }) => {
+  const { isOpen, onToggle } = useDisclosure();
+
+  const impactImageProps = {
+    bg: "green.900",
+    borderRadius: "full",
+    height: 8,
+    width: 8,
+    bgImage: GitcoinLogo,
+    bgRepeat: "no-repeat",
+    bgPosition: "45% 40%",
+    bgSize: "50%",
+  };
+
   return (
-    <tr className="" key={impact.uid}>
-      <td
-        className={
-          "py-4 border-t border-t-black pr-6 px-6 max-w-[420px] max-sm:min-w-[200px] text-black "
-        }
-      >
-        <Link
-          target="_blank"
-          href={getGapProjectImpactUrl(impact.refUID)}
-          className="text-lg font-semibold align-top"
-        >
-          {impact.data?.work}
-        </Link>
-      </td>
-      <td
-        className={
-          "py-4 border-t border-t-black pr-6 px-6 max-w-[420px] max-sm:min-w-[200px] align-top"
-        }
-      >
-        <div className="mb-2">{impact.data?.impact}</div>
-        <Link target="_blank" href={impact.data?.proof}>
-          {impact.data?.proof}
-        </Link>
-      </td>
-      <td
-        className={
-          "py-4 border-t border-t-black pr-6 px-6 max-w-[420px] max-sm:min-w-[200px] px-3 align-top pr-5"
-        }
-      >
-        <div className="flex flex-row gap-3 items-center justify-start ml-3 min-w-max max-w-full">
-          {impact.verified.length ? (
-            <div className="w-max max-w-full">
-              {impact.verified.map((verification) => (
-                <div className="flex flex-row gap-2 items-center justify-start">
-                  <div className="bg-teal-100 flex gap-2 rounded-full px-2 text-xs items-center font-modern-era-medium text-teal-500">
-                    <ShieldCheckIcon className="w-4 h-4" />
-                    Verified
-                  </div>
-                  <span className="text-xs">
-                    by{" "}
-                    <EthereumAddressToENSName address={verification.attester} />
-                  </span>
+    <Box mb={4}>
+      <Box bg="gray.50" borderRadius={4} p={5}>
+        <Flex justifyContent="space-between" alignItems="center" gap={4}>
+          <Flex
+            w="full"
+            alignItems="center"
+            justifyContent="space-between"
+            flexWrap="wrap"
+          >
+            <Box>
+              <Text fontWeight="semibold" className="flex gap-3">
+                <Box {...impactImageProps} className="__impact-image" />
+                <Link href={url} target="_blank" className="ml-2 max-w-lg">
+                  {impact.data?.work}
+                </Link>
+              </Text>
+            </Box>
+            <Flex justify="flex-end" gap={5}>
+              <Box>
+                <small>
+                  <span className="hidden md:inline">Completed on: </span>
+                  {impact.data?.completedAt
+                    ? dateFromMs(impact.data.completedAt * 1000)
+                    : "N/A"}
+                </small>
+              </Box>
+              {impact.verified.length > 0 && (
+                <div className="bg-teal-100 flex gap-2 rounded-full px-2 text-xs items-center font-modern-era-medium text-teal-500">
+                  <ShieldCheckIcon className="w-4 h-4" />
+                  Verified
                 </div>
-              ))}
-            </div>
-          ) : null}
-        </div>
-      </td>
-      <td
-        className={
-          "py-4 border-t border-t-black pr-6 px-6 max-w-[420px] max-sm:min-w-[200px] border-l border-l-zinc-400"
-        }
-      >
-        <p className="w-36 max-w-max text-gray-500 text-sm font-medium ">
-          {impact.data?.startedAt
-            ? dateFromMs(impact.data?.startedAt * 1000)
-            : "N/A"}
-          {" → "}
-          {impact.data?.completedAt
-            ? dateFromMs(impact.data?.completedAt * 1000)
-            : "N/A"}
-        </p>
-      </td>
-    </tr>
+              )}
+            </Flex>
+          </Flex>
+          <Box>
+            <ChevronDownIcon
+              className={`cursor-pointer h-5 inline ${
+                isOpen && "rotate-180"
+              } transition-transform`}
+              onClick={onToggle}
+            />
+          </Box>
+        </Flex>
+        <ExpandableGrid isOpen={isOpen}>
+          <Box overflow="hidden">
+            <Divider borderWidth={1} my={4} />
+            <Box
+              __css={{
+                h1: {
+                  fontSize: "1.5rem",
+                  fontWeight: "bold",
+                  margin: "1rem 0",
+                },
+                h2: {
+                  fontSize: "1.25rem",
+                  fontWeight: "bold",
+                  margin: "1rem 0",
+                },
+              }}
+            >
+              <Text fontWeight="bold" mb={2}>
+                Work:
+              </Text>
+              <Box
+                dangerouslySetInnerHTML={{
+                  __html: renderToHTML(impact.data?.work || ""),
+                }}
+              />
+
+              <Text fontWeight="bold" mt={4} mb={2}>
+                Impact:
+              </Text>
+              <Box
+                dangerouslySetInnerHTML={{
+                  __html: renderToHTML(impact.data?.impact || ""),
+                }}
+              />
+
+              <Text fontWeight="bold" mt={4} mb={2}>
+                Proof:
+              </Text>
+              <Link href={impact.data?.proof} target="_blank" color="blue.500">
+                {impact.data?.proof}
+              </Link>
+
+              {impact.verified.length > 0 && (
+                <>
+                  <Text fontWeight="bold" mt={4} mb={2}>
+                    Verifications:
+                  </Text>
+                  {impact.verified.map((verification, index) => (
+                    <Text key={index}>
+                      Verified by:{" "}
+                      <EthereumAddressToENSName
+                        address={verification.attester}
+                      />
+                    </Text>
+                  ))}
+                </>
+              )}
+
+              <Text fontWeight="bold" mt={4} mb={2}>
+                Timeframe:
+              </Text>
+              <Text>
+                {impact.data?.startedAt
+                  ? dateFromMs(impact.data?.startedAt * 1000)
+                  : "N/A"}
+                {" → "}
+                {impact.data?.completedAt
+                  ? dateFromMs(impact.data?.completedAt * 1000)
+                  : "N/A"}
+              </Text>
+            </Box>
+          </Box>
+        </ExpandableGrid>
+      </Box>
+    </Box>
   );
 };

@@ -11,33 +11,16 @@ export const ImpactList: React.FC<ImpactListProps> = ({ impacts }) => {
     <Flex gap={2} flexDir="column" py={6} px={3}>
       <h4 className="text-3xl">Project impacts</h4>
       {impacts.length > 0 ? (
-        <table className="overflow-x-auto w-full my-5">
-          <thead>
-            <tr>
-              <th className="text-black text-xs font-medium uppercase text-left px-6 py-3 font-body">
-                Work
-              </th>
-              <th className="text-black text-xs font-medium uppercase text-left px-6 py-3 font-body">
-                Impact & Proof
-              </th>
-              <th className="text-black text-xs font-medium uppercase text-left px-6 py-3 font-body">
-                Verifications
-              </th>
-              <th className="text-black text-xs font-medium uppercase text-left px-6 py-3 font-body">
-                Timeframe
-              </th>
-            </tr>
-          </thead>
-          <tbody className="">
-            {impacts.map((item) => (
-              <ImpactItem
-                key={item.uid}
-                impact={item}
-                url={getGapProjectImpactUrl(item.refUID)}
-              />
-            ))}
-          </tbody>
-        </table>
+        <>
+          <Text className="text-[18px]">Total impacts ({impacts.length})</Text>
+          {impacts.map((impact) => (
+            <ImpactItem
+              key={impact.uid}
+              impact={impact}
+              url={getGapProjectImpactUrl(impact.refUID)}
+            />
+          ))}
+        </>
       ) : (
         <Text>
           No previous impacts are being tracked for this project. If you're the
