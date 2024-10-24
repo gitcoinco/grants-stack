@@ -10,11 +10,15 @@ import {
 import Project from "../../../components/grants/Show";
 import { projectOwnersLoaded } from "../../../actions/projects";
 
+// Mock the addressFrom function to prevent out-of-scope variable access errors in jest.mock
+// Jest.mock does not allow referencing variables that are declared outside the factory function scope.
+// By defining a mock function within the test file, we ensure that the necessary function is within scope.
+const mockAddressFrom = jest.fn((chainId: number) => addressFrom(chainId));
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
     chainId: 1,
-    registryAddress: addressFrom(1),
+    registryAddress: mockAddressFrom(1),
     id: 1,
   }),
 }));
