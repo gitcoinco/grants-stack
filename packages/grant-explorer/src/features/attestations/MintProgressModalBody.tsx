@@ -120,9 +120,9 @@ export function MintProgressModalBodyHistory(
 
   return (
     <div
-      className={`min-w-full max-w-[710px] min-h-full flex flex-col justify-center text-black ${!isOnAction ? "p-10 items-center text-center gap-6" : "p-6 gap-8"}`}
+      className={`max-w-[710px] p-6 flex flex-col justify-center text-black ${!isOnAction ? "sm:p-10 items-center text-center gap-2 sm:gap-6" : "gap-8"}`}
     >
-      <div className={`flex flex-col ${isOnAction ? "gap-2" : "gap-6"}`}>
+      <div className={`flex flex-col gap-2 ${isOnAction ? "" : "sm:gap-6"}`}>
         <div
           className={`${isOnAction ? "text-3xl/[34px]" : "text-5xl/[39px]"} font-modern-era-bold`}
         >
