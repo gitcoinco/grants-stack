@@ -190,7 +190,7 @@ export default function ViewCart() {
           const balance =
             balances[Number(chainId)][
               getVotingTokenForChain(Number(chainId)).address.toLowerCase()
-            ].formattedAmount;
+            ]?.formattedAmount || 0;
           acc[Number(chainId)] = balance >= totalAmount;
           return acc;
         },
