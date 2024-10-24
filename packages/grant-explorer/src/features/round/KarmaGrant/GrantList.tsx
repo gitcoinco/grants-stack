@@ -1,6 +1,6 @@
 import React from "react";
 import { GrantItem } from "./GrantItem";
-import { IGapGrant, gapAppUrl, getGapProjectUrl } from "../../api/gap";
+import { IGapGrant, gapAppUrl, getGapProjectGrantUrl } from "../../api/gap";
 import { Flex, Link, Text } from "@chakra-ui/react";
 
 interface GrantListProps {
@@ -18,7 +18,7 @@ export const GrantList: React.FC<GrantListProps> = ({ grants }) => {
             <GrantItem
               key={+index}
               grant={grant}
-              url={getGapProjectUrl(grant.projectUID, grant.uid)}
+              url={getGapProjectGrantUrl(grant.projectUID, grant.uid)}
             />
           ))}
           <Text fontFamily="DM Mono" textAlign="center" className={"text-xs"}>

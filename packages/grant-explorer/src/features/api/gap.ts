@@ -29,8 +29,53 @@ export interface IGapGrant {
   updates: IGrantStatus[];
 }
 
+export interface IGapImpact {
+  id: string;
+  uid: Hex;
+  schemaUID: Hex;
+  refUID: Hex;
+  attester: Hex;
+  recipient: Hex;
+  revoked: boolean;
+  revocationTime: number;
+  createdAt: string;
+  updatedAt: string;
+  chainID: number;
+  type: string;
+  data: {
+    work: string;
+    impact: string;
+    proof: string;
+    startedAt: number;
+    completedAt: number;
+    type: string;
+  };
+  txid: string;
+  verified: IGapVerified[];
+}
+
+export interface IGapVerified {
+  id: string;
+  uid: Hex;
+  schemaUID: Hex;
+  refUID: Hex;
+  attester: Hex;
+  recipient: Hex;
+  revoked: boolean;
+  revocationTime: number;
+  createdAt: string;
+  updatedAt: string;
+  chainID: number;
+  type: string;
+  data: {
+    type: string;
+    reason: string;
+  };
+}
+
 export function useGap(projectId?: string) {
   const [grants, setGrants] = useState<IGapGrant[]>([]);
+  const [impacts, setImpacts] = useState<IGapImpact[]>([]);
 
   const getGrantsFor = async (projectRegistryId: string) => {
     if (!indexerUrl) throw new Error("GAP Indexer url not set.");
@@ -76,10 +121,37 @@ export function useGap(projectId?: string) {
     }
   };
 
-  const { isLoading } = useSWR(
+  const getImpactsFor = async (projectRegistryId: string) => {
+    if (!indexerUrl) throw new Error("GAP Indexer url not set.");
+    try {
+      const items: IGapImpact[] = await fetch(
+        `${indexerUrl}/grants/external-id/${projectRegistryId}/impacts`
+      ).then((res) => res.json());
+
+      if (!Array.isArray(items)) {
+        setImpacts([]);
+        return;
+      }
+
+      setImpacts(items);
+    } catch (e) {
+      console.error(`No impacts found for project: ${projectRegistryId}`);
+      console.error(e);
+      setImpacts([]);
+    }
+  };
+
+  const { isLoading: isGrantsLoading } = useSWR(
     `${indexerUrl}/grants/external-id/${projectId}`,
     {
       fetcher: async () => projectId && getGrantsFor(projectId),
+    }
+  );
+
+  const { isLoading: isImpactsLoading } = useSWR(
+    `${indexerUrl}/grants/external-id/${projectId}/impacts`,
+    {
+      fetcher: async () => projectId && getImpactsFor(projectId),
     }
   );
 
@@ -90,16 +162,31 @@ export function useGap(projectId?: string) {
      */
     getGrantsFor,
     /**
+     * Fetch GAP Indexer for impacts for a project
+     * @param projectRegistryId registryId
+     */
+    getImpactsFor,
+    /**
      * Grants for a project (loaded from GAP)
      */
     grants,
-    isGapLoading: isLoading,
+    /**
+     * Impacts for a project (loaded from GAP)
+     */
+    impacts,
+    /**
+     * Loading state for grants and impacts
+     */
+    isGapLoading: isGrantsLoading || isImpactsLoading,
   };
 }
 
 export const gapAppUrl = `${process.env.REACT_APP_KARMA_GAP_APP_URL}`;
 
-export const getGapProjectUrl = (projectUID: string, grantUID?: string) =>
+export const getGapProjectGrantUrl = (projectUID: string, grantUID?: string) =>
   `${gapAppUrl}/project/${projectUID}/${
     grantUID ? `?tab=grants&grant=${grantUID}` : ""
   }`;
+
+export const getGapProjectImpactUrl = (projectUID: string) =>
+  `${gapAppUrl}/project/${projectUID}/impact`;

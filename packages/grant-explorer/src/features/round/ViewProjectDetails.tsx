@@ -1,5 +1,9 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import { ArrowTrendingUpIcon, LinkIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowTrendingUpIcon,
+  LinkIcon,
+  ShieldCheckIcon,
+} from "@heroicons/react/24/solid";
 import {
   formatDateWithOrdinal,
   renderToHTML,
@@ -33,6 +37,7 @@ import { isDirectRound, isInfiniteDate } from "../api/utils";
 import { useCartStorage } from "../../store";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
 import { GrantList } from "./KarmaGrant/GrantList";
+import { ImpactList } from "./KarmaGrant/ImpactList";
 import { useGap } from "../api/gap";
 import { StatList } from "./OSO/ImpactStats";
 import { useOSO } from "../api/oso";
@@ -113,7 +118,9 @@ export default function ViewProjectDetails() {
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
 
-  const { grants } = useGap(projectToRender?.projectRegistryId as string);
+  const { grants, impacts } = useGap(
+    projectToRender?.projectRegistryId as string
+  );
   const { stats } = useOSO(
     projectToRender?.projectMetadata.projectGithub as string
   );
@@ -210,6 +217,7 @@ export default function ViewProjectDetails() {
           <React.Fragment>
             <StatList stats={stats} />
             <GrantList grants={grants} />
+            <ImpactList impacts={impacts} />
           </React.Fragment>
         ),
       },
@@ -519,7 +527,7 @@ function Sidebar(props: {
   return (
     <div>
       <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
-        <ProjectStats application={application}/>
+        <ProjectStats application={application} />
         {props.isBeforeRoundEndDate && (
           <CartButtonToggle
             isAlreadyInCart={props.isAlreadyInCart}
@@ -528,7 +536,7 @@ function Sidebar(props: {
           />
         )}
       </div>
-      {!props.isBeforeRoundEndDate &&
+      {!props.isBeforeRoundEndDate && (
         <a
           href={`/#/projects/${application?.project.id}`}
           target="_blank"
@@ -538,14 +546,12 @@ function Sidebar(props: {
           View history
           <LinkIcon className="w-4 h-4 ml-2 mt-1" />
         </a>
-      }
+      )}
     </div>
   );
 }
 
-export function ProjectStats(props: {
-  application: Application | undefined
-}) {
+export function ProjectStats(props: { application: Application | undefined }) {
   const { chainId, roundId } = useProjectDetailsParams();
   const { round } = useRoundById(Number(chainId), roundId);
   const application = props.application;
@@ -589,7 +595,6 @@ export function ProjectStats(props: {
               : "Round ended"
         }
       </Stat>
-
     </div>
   );
 }
