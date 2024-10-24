@@ -57,28 +57,13 @@ export const useAttestMutation = (
         const hash = await walletClient.writeContract(request);
         await publicClient.waitForTransactionReceipt({
           hash,
-          confirmations: 1,
+          confirmations: 2,
         });
-
-        const blockNumber = await publicClient.getBlockNumber();
-
-        // Get AttestationUID from the hash logs
-        const events = await publicClient.getContractEvents({
-          address: easAddress as `0x${string}`,
-          abi: legacyABI,
-          fromBlock: blockNumber - 3n,
-          toBlock: "latest",
-          eventName: "Attested",
+        const receipt = await publicClient.getTransactionReceipt({
+          hash,
         });
-
-        let attestationUID: string = "";
-
-        events.forEach((event) => {
-          const { args, transactionHash } = event;
-          if (transactionHash === hash) {
-            attestationUID = args.uid as string;
-          }
-        });
+        // TODO make this dynamic when attestation network expands to more networks (Legacy-Proxy) have different logs
+        const attestationUID = receipt.logs[2].topics[1] as string;
 
         return attestationUID;
       } catch (error) {
@@ -91,8 +76,6 @@ export const useAttestMutation = (
       console.error("Error attesting data:", error);
     },
     onSuccess: () => {
-      // We need to find out if we are going to close the modal and
-      //  route to a new page or show the success page inside the modal
       handleToggleModal();
       updateStatus(ProgressStatus.IS_SUCCESS);
     },

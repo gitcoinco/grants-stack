@@ -48,8 +48,6 @@ export const useGetAttestationData = (
 
         const data = await response.json();
 
-        console.log("Attestation data:", data);
-
         return {
           data: data.signedAttestation,
           impactImageCid: data.impactImageCid,

@@ -36,14 +36,12 @@ export default function ViewCart() {
   const chainIds = Object.keys(groupedCartProjects);
 
   const [openSwapModel, setOpenSwapModal] = useState<boolean>(false);
-  const [swapParams, setSwapParams] = useState<SwapParams>(
-    {
-      fromChainId: "1",
-      toChainId: "42161",
-      fromTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-      toTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-    }
-  );
+  const [swapParams, setSwapParams] = useState<SwapParams>({
+    fromChainId: "1",
+    toChainId: "42161",
+    fromTokenAddress: NATIVE,
+    toTokenAddress: NATIVE,
+  });
 
   const handleSwap = (params: SwapParams) => {
     setSwapParams(params);
@@ -220,7 +218,7 @@ export default function ViewCart() {
     handleSwap({
       fromChainId: isConnectedChain ? "1" : connectedChain.toString(),
       toChainId: chainId.toString(),
-      fromTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      fromTokenAddress: NATIVE,
       toTokenAddress: getVotingTokenForChain(chainId).address,
     });
   };

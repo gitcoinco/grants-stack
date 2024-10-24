@@ -21,7 +21,6 @@ import { useEstimateGas } from "../../hooks/attestations/useEstimateGas";
 import { AttestationChainId } from "../attestations/utils/constants";
 import { useAttestationFee } from "../contributors/hooks/useMintingAttestations";
 import { useAttestationStore } from "../../attestationStore";
-import { useDebugMode } from "../api/utils";
 import { RainbowBorderButton } from "../contributors/components/Buttons/RainbowBorderButton";
 import Modal from "../common/components/Modal";
 
@@ -170,7 +169,6 @@ export default function ThankYou() {
       ? false
       : balance.value < attestationFee + (gasEstimation ?? 0n);
 
-  const debugModeEnabled = useDebugMode();
 
   return (
     <>
@@ -193,35 +191,36 @@ export default function ThankYou() {
               </div>
 
               {/* Right Section */}
-              {debugModeEnabled && (
-                <div className="w-full lg:w-1/2  ">
-                  <div className="flex flex-col items-center justify-center">
-                    {/* Main content */}
-                    <div className="w-full max-w-[800px] min-h-svh overflow-hidden bg-gradient-to-b from-[#EBEBEB] to-transparent rounded-t-[400px] flex flex-col items-center justify-center pt-20 px-4 mx-auto">
-                      <div className="flex flex-col items-center">
-                        <div className="relative max-w-[500px] z-10 text-center">
-                          <h1 className="text-5xl mb-2 font-modern-era-bold">
-                            Mint your Impact
-                          </h1>
-                          <p className="mt-1 text-lg  font-modern-era-regular">
-                            Capture your contribution onchain with an
-                            attestation and receive a unique visual that
-                            symbolizes your donation.
-                          </p>
-                          <p className="my-2 text-lg font-modern-era-regular">
-                            This visual reflects your onchain attestation,
-                            marking your support in a meaningful way.
-                          </p>
-                        </div>
-                        <PreviewFrame
-                          handleSelectBackground={handleSelectBackground}
-                          mint={toggleModal}
-                        />
+              <div className="w-full lg:w-1/2  ">
+                <div className="flex flex-col items-center justify-center">
+                  {/* Main content */}
+                  <div className="w-full max-w-[800px] min-h-svh overflow-hidden bg-gradient-to-b from-[#EBEBEB] to-transparent rounded-t-[400px] flex flex-col items-center justify-center pt-20 px-4 mx-auto">
+                    <div className="flex flex-col items-center">
+                      <div className="relative max-w-[500px] z-10 text-center">
+                        <h1 className="text-5xl mb-2 font-modern-era-bold">
+                          Mint your Impact
+                        </h1>
+                        <p className="mt-1 text-lg  font-modern-era-regular">
+                          Capture your contribution onchain with an
+                          attestation and receive a unique visual that
+                          symbolizes your donation.
+                        </p>
+                        <p className="my-2 text-lg font-modern-era-regular">
+                          This visual reflects your onchain attestation,
+                          marking your support in a meaningful way.
+                        </p>
                       </div>
+                      <PreviewFrame
+                        handleSelectBackground={handleSelectBackground}
+                        mint={toggleModal}
+                      />
                     </div>
                   </div>
                 </div>
-              )}
+                <div className="fixed -bottom-6 right-11 w-full z-20">
+                  <Footer />
+                </div>
+              </div>
             </div>
           ) : minted ? (
             <div className="rounded-xl absolute top-20 flex flex-col items-center text-center gap-6 px-[64px] py-8 backdrop-blur-xl">
@@ -240,13 +239,21 @@ export default function ThankYou() {
                 imageSize="size-[520px]"
                 attestationLink={attestationLink ?? ""}
               />
-              <div className="my-2 z-50">
+              <div className="flex flex-wrap gap-6 my-2 z-50">
                 <RainbowBorderButton
                   dataTestId="view-transaction-button"
                   onClick={onViewTransaction}
                 >
                   View attestation
                 </RainbowBorderButton>
+                <button
+                  className="blue-background-button font-medium font-mono"
+                  onClick={() => {
+                    window.open("https://explorer.gitcoin.co/", "_blank");
+                  }}
+                >
+                  Return to Explorer
+                </button>
               </div>
             </div>
           ) : (
@@ -255,12 +262,12 @@ export default function ThankYou() {
                 roundName={round?.roundMetadata?.name ?? ""}
                 isMrc={isMrc}
               />
+              <div className="fixed -bottom-6 right-11 w-full z-20">
+                <Footer />
+              </div>
             </div>
           )}
         </main>
-        <div className="fixed -bottom-6 right-11 w-full z-20">
-          <Footer />
-        </div>
 
         {/* Progress Modal */}
         {transactions.length > 0 && (
