@@ -103,7 +103,6 @@ export const PreviewFrameHistoryPage = ({
         <div className="text-lg font-modern-era-regular">Pick your color</div>
         {Object.keys(colorMapper).map((key, index) => {
           const isSelected = selectedColor === index.toString();
-          console.log(selectedColor, index, isSelected);
           return (
             <div
               key={index}
