@@ -134,35 +134,40 @@ export function MintProgressModalBodyHistory(
           {subheading}
         </div>
       </div>
-      {status === ProgressStatus.SELECTING_COLOR ? (
-        <PreviewFrameHistoryPage
-          selectBackground={selectBackground as () => void}
-          nextStep={() => {
-            toggleStartAction?.();
-          }}
-          previewBackground={previewBackground as string}
-          selectedColor={selectedColor as string}
-        />
-      ) : status === ProgressStatus.IS_SUCCESS ? (
-        <ImpactMintingSuccess
-          impactImageCid={impactImageCid as string}
-          attestationLink={attestationLink ?? ""}
-          isShareButtonsAbove={false}
-        />
-      ) : (
-        <MintingProcessContent
-          status={status}
-          balance={balance?.value}
-          notEnoughFunds={notEnoughFunds}
-          isLoadingEstimation={isLoadingEstimation}
-          gasEstimation={gasEstimation}
-          isConnected={isConnected}
-          handleSwitchChain={handleSwitchChain}
-          handleAttest={attest}
-          isLoading={isLoading}
-          attestationFee={attestationFee}
-        />
-      )}
+      <div className="flex flex-col justify-center items-center w-full">
+        <div className="min-w-[288px] sm:w-[405px] w-full">
+          {status === ProgressStatus.SELECTING_COLOR ? (
+            <PreviewFrameHistoryPage
+              selectBackground={selectBackground as () => void}
+              nextStep={() => {
+                toggleStartAction?.();
+              }}
+              previewBackground={previewBackground as string}
+              selectedColor={selectedColor as string}
+            />
+          ) : status === ProgressStatus.IS_SUCCESS ? (
+            <ImpactMintingSuccess
+              impactImageCid={impactImageCid as string}
+              attestationLink={attestationLink ?? ""}
+              isShareButtonsAbove={false}
+              imageSize="size-[288px] sm:size-[400px]"
+            />
+          ) : (
+            <MintingProcessContent
+              status={status}
+              balance={balance?.value}
+              notEnoughFunds={notEnoughFunds}
+              isLoadingEstimation={isLoadingEstimation}
+              gasEstimation={gasEstimation}
+              isConnected={isConnected}
+              handleSwitchChain={handleSwitchChain}
+              handleAttest={attest}
+              isLoading={isLoading}
+              attestationFee={attestationFee}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 }
