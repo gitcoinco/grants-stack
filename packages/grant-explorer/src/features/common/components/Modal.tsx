@@ -23,7 +23,7 @@ export default function Modal({
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog
         as="div"
-        className="fixed inset-0 z-40 flex items-center justify-center overflow-y-auto m-10"
+        className="fixed inset-0 z-40 flex items-center justify-center mx-5 sm:mx-10"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         onClose={onClose}
       >
@@ -49,7 +49,7 @@ export default function Modal({
           leaveTo="opacity-0 scale-95"
         >
           <Dialog.Panel
-            className={`relative bg-white rounded-3xl text-left shadow-xl transform transition-all overflow-x-auto overflow-y-auto ${padding ? padding : "p-10"}`}
+            className={`relative bg-white rounded-3xl text-left shadow-xl transform transition-all overflow-x-auto ${padding ? padding : "p-10"}`}
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {showCloseButton && (
@@ -66,7 +66,7 @@ export default function Modal({
                 <CloseIcon className="size-5" />
               </button>
             )}
-            {children}
+            <div className="max-h-[90vh] overflow-y-auto">{children}</div>
           </Dialog.Panel>
         </Transition.Child>
       </Dialog>

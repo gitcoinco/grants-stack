@@ -92,44 +92,41 @@ export const PreviewFrameHistoryPage = ({
   selectedColor: string;
 }) => {
   const { defaultColor, colorMapper } = useColorAndBackground();
-
   return (
-    <div className="flex flex-col items-center gap-6">
-      <div
-        className="flex flex-col w-auto items-center relative rounded-3xl"
-        style={{
-          backgroundImage: `url(${previewBackground})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          width: "400px",
-          height: "400px",
-        }}
-      ></div>
+    <div className="flex flex-col items-center gap-2 sm:gap-6">
+      <img
+        className="w-full max-w-[400px] min-w-[287px]"
+        src={previewBackground}
+        alt="preview"
+      />
       <div className="flex flex-wrap items-center space-x-2 z-30">
         <div className="text-lg font-modern-era-regular">Pick your color</div>
-        {Object.keys(colorMapper).map((key, index) => (
-          <div
-            key={index}
-            onClick={() => selectBackground(key)}
-            className={`w-5 h-5 rounded-full cursor-pointer ${
-              selectedColor === key ? "border-1 border-black" : ""
-            }`}
-            style={{
-              backgroundColor:
-                selectedColor === key
+        {Object.keys(colorMapper).map((key, index) => {
+          const isSelected = selectedColor === index.toString();
+          return (
+            <div
+              key={index}
+              onClick={() => selectBackground(key)}
+              className={`size-5 rounded-full cursor-pointer ${
+                isSelected
+                  ? "border border-[#555555] bg-[${colorMapper[key as unknown as keyof typeof colorMapper]}]"
+                  : `bg-[${defaultColor}]`
+              }`}
+              style={{
+                backgroundColor: isSelected
                   ? colorMapper[key as unknown as keyof typeof colorMapper]
                   : defaultColor,
-            }}
-          />
-        ))}
+              }}
+            />
+          );
+        })}
       </div>
       <div
         className={`flex align-center justify-center border-[1px] rounded-[8px] bg-rainbow-gradient border-transparent`}
       >
         <Button
           type="button"
-          className={`px-4 py-1 rounded-[8px] bg-white font-medium font-mono text-base text-black h-8 whitespace-nowrap border-transparent hover:shadow-md`}
+          className={`px-4 py-1 rounded-[8px] bg-white font-medium font-mono text-base text-black h-12 sm:h-8 whitespace-nowrap border-transparent hover:shadow-md`}
           onClick={nextStep}
           data-testid="mint-donation-button"
         >
