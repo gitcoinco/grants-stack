@@ -78,6 +78,11 @@ const parseRainbowChain = (chain: TChain) => {
         webSocket: undefined,
       },
     },
+    contracts: {
+      ensUniversalResolver: {
+        address: chain.contracts.ensUniversalResolver ?? zeroAddress,
+      },
+    },
   } as const satisfies Chain;
   return mappedChain;
 };
