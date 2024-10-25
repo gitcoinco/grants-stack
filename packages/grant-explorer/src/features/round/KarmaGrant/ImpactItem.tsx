@@ -63,7 +63,10 @@ export const ImpactItem: React.FC<ImpactItemProps> = ({ impact, url }) => {
               <Text fontWeight="semibold" className="flex gap-3">
                 <Box {...impactImageProps} className="__impact-image" />
                 <Link href={url} target="_blank" className="ml-2 max-w-lg">
-                  {impact.data?.work}
+                  {impact.data?.impact &&
+                  impact.data.impact.split(" ").length > 20
+                    ? `${impact.data.impact.split(" ").slice(0, 20).join(" ")}...`
+                    : impact.data?.impact}
                 </Link>
               </Text>
             </Box>
