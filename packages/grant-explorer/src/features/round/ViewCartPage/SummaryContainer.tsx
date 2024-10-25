@@ -404,7 +404,10 @@ export function SummaryContainer(props: {
         // $variant="solid"
         data-testid="handle-confirmation"
         type="button"
-        disabled={totalDonationAcrossChainsInUSD === 0}
+        disabled={
+          // enabled, if at least one chain has enough balance to checkout
+          !Object.values(props.enoughBalanceByChainId).some((value) => value)
+        }
         onClick={() => {
           /* If wallet is not connected, display Rainbowkit modal */
           if (!isConnected) {
@@ -420,7 +423,13 @@ export function SummaryContainer(props: {
       </Button>
       <PayoutModals />
       <p className="mx-auto text-center mt-4 font-medium">
-        Need to bridge funds ? Bridge funds <span className="underline cursor-pointer" onClick={() => props.handleSwap(42161)}>here!</span>
+        Need to bridge funds ? Bridge funds{" "}
+        <span
+          className="underline cursor-pointer"
+          onClick={() => props.handleSwap(42161)}
+        >
+          here!
+        </span>
       </p>
     </div>
   );
