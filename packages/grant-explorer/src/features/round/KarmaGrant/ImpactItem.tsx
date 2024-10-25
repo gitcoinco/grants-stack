@@ -25,7 +25,7 @@ const EthereumAddressToENSName: FC<{
   shouldTruncate?: boolean;
 }> = ({ address, shouldTruncate = true }) => {
   const { data: ensName } = useEnsName({
-    address: address,
+    address,
   });
   const lowerCasedAddress = address.toLowerCase();
   const addressToDisplay = shouldTruncate
@@ -140,12 +140,12 @@ export const ImpactItem: React.FC<ImpactItemProps> = ({ impact, url }) => {
                   <Text fontWeight="bold" mt={4} mb={2}>
                     Verifications:
                   </Text>
-                  {impact.verified.map((verification, index) => (
+                  {Array.from(
+                    new Set(impact.verified.map((v) => v.attester))
+                  ).map((attester, index) => (
                     <Text key={index}>
                       Verified by:{" "}
-                      <EthereumAddressToENSName
-                        address={verification.attester}
-                      />
+                      <EthereumAddressToENSName address={attester} />
                     </Text>
                   ))}
                 </>
