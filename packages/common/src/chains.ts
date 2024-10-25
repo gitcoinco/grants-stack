@@ -80,7 +80,7 @@ const parseRainbowChain = (chain: TChain) => {
     },
     contracts: {
       ensUniversalResolver: {
-        address: chain.contracts.ensUniversalResolver as `0x${string}`,
+        address: chain.contracts.ensUniversalResolver ?? zeroAddress,
       },
     },
   } as const satisfies Chain;
