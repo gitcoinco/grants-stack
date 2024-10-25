@@ -216,8 +216,16 @@ export default function ViewProjectDetails() {
         content: (
           <React.Fragment>
             <StatList stats={stats} />
-            <GrantList grants={grants} />
-            <ImpactList impacts={impacts} />
+            <GrantList
+              grants={grants}
+              displayKarmaAttribution={
+                grants.length > 0 && impacts.length === 0
+              }
+            />
+            <ImpactList
+              impacts={impacts}
+              displayKarmaAttribution={impacts.length > 0}
+            />
           </React.Fragment>
         ),
       },

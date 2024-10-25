@@ -4,9 +4,13 @@ import { Flex, Link, Text } from "@chakra-ui/react";
 
 interface ImpactListProps {
   impacts: IGapImpact[];
+  displayKarmaAttribution?: boolean;
 }
 
-export const ImpactList: React.FC<ImpactListProps> = ({ impacts }) => {
+export const ImpactList: React.FC<ImpactListProps> = ({
+  impacts,
+  displayKarmaAttribution = true,
+}) => {
   return (
     <Flex gap={2} flexDir="column" py={6} px={3}>
       <h4 className="text-3xl">Project impacts</h4>
@@ -20,6 +24,17 @@ export const ImpactList: React.FC<ImpactListProps> = ({ impacts }) => {
               url={getGapProjectImpactUrl(impact.refUID)}
             />
           ))}
+          {displayKarmaAttribution && (
+            <Text fontFamily="DM Mono" textAlign="center" className={"text-xs"}>
+              Data provided by Karma via{" "}
+              <Link href={gapAppUrl} target="_blank">
+                <Text as="span" className="text-gitcoin-violet-500">
+                  gap.karmahq.xyz
+                </Text>
+              </Link>
+              .
+            </Text>
+          )}
         </>
       ) : (
         <Text>
@@ -33,16 +48,6 @@ export const ImpactList: React.FC<ImpactListProps> = ({ impacts }) => {
           to add your project and post updates.
         </Text>
       )}
-
-      <Text fontFamily="DM Mono" textAlign="center" className={"text-xs"}>
-        Data provided by Karma via{" "}
-        <Link href={gapAppUrl} target="_blank">
-          <Text as="span" className="text-gitcoin-violet-500">
-            gap.karmahq.xyz
-          </Text>
-        </Link>
-        .
-      </Text>
     </Flex>
   );
 };
