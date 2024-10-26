@@ -815,6 +815,7 @@ function ProjectCard(props: {
                 <p>
                   $
                   {props.crowdfundedUSD?.toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
                 </p>
