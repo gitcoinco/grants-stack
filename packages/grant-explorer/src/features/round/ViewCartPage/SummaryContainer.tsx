@@ -55,6 +55,9 @@ export function SummaryContainer(props: {
     [projects]
   );
 
+  // State to control the visibility of the message in the checkout modal
+  const [showNetworkMessage, setShowNetworkMessage] = useState(false);
+
   const { data: rounds } = useSWR(projects, async (projects) => {
     const uniqueProjects = uniqBy(projects, (p) => `${p.chainId}-${p.roundId}`);
     return Promise.all(
@@ -102,6 +105,11 @@ export function SummaryContainer(props: {
   const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
     number[]
   >(Object.keys(projectsByChain).map(Number));
+
+  useEffect(() => {
+    // Check if there are multiple networks in the checkout
+    setShowNetworkMessage(new Set(chainIdsBeingCheckedOut).size > 1);
+  }, [chainIdsBeingCheckedOut]);
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
@@ -185,6 +193,7 @@ export function SummaryContainer(props: {
               setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
               enoughBalanceByChainId={props.enoughBalanceByChainId}
               handleSwap={props.handleSwap}
+              showNetworkMessage={showNetworkMessage} // Pass the state to the modal body
             />
           }
           isOpen={openChainConfirmationModal}
@@ -204,34 +213,6 @@ export function SummaryContainer(props: {
             />
           }
         />
-        {/*Passport not connected warning modal*/}
-        {/* <ErrorModal
-          isOpen={donateWarningModalOpen}
-          setIsOpen={setDonateWarningModalOpen}
-          onDone={() => {
-            setDonateWarningModalOpen(false);
-            handleConfirmation();
-          }}
-          tryAgainText={"Go to Passport"}
-          doneText={"Donate without matching"}
-          onTryAgain={() => {
-            window.location.href = "https://passport.gitcoin.co";
-          }}
-          heading={`Don’t miss out on getting your donations matched!`}
-          subheading={
-            <>
-              <p className={"text-sm text-grey-400 mb-2"}>
-                Verify your identity with Gitcoin Passport to amplify your
-                donations.
-              </p>
-              <p className={"text-sm text-grey-400"}>
-                Note that donations made without Gitcoin Passport verification
-                will not be matched.
-              </p>
-            </>
-          }
-          closeOnBackgroundClick={true}
-        /> */}
       </>
     );
   }
