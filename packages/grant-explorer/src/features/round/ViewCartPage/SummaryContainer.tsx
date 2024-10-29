@@ -55,8 +55,11 @@ export function SummaryContainer(props: {
     [projects]
   );
 
-  // State to control the visibility of the message in the checkout modal
   const [showNetworkMessage, setShowNetworkMessage] = useState(false);
+  const [clickedSubmit, setClickedSubmit] = useState(false);
+  const [openChainConfirmationModal, setOpenChainConfirmationModal] = useState(false);
+  const [openMRCProgressModal, setOpenMRCProgressModal] = useState(false);
+  const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false); // Added for ErrorModal
 
   const { data: rounds } = useSWR(projects, async (projects) => {
     const uniqueProjects = uniqBy(projects, (p) => `${p.chainId}-${p.roundId}`);
@@ -94,22 +97,18 @@ export function SummaryContainer(props: {
     });
   }, [projects, removeProjectFromCart, rounds]);
 
-  const [clickedSubmit, setClickedSubmit] = useState(false);
+  useEffect(() => {
+    setShowNetworkMessage(new Set(Object.keys(projectsByChain).map(Number)).size > 1);
+  }, [projectsByChain]);
 
   useEffect(() => {
     clickedSubmit && checkEmptyDonations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects, clickedSubmit]);
 
   /** The ids of the chains that will be checked out */
-  const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
-    number[]
-  >(Object.keys(projectsByChain).map(Number));
-
-  useEffect(() => {
-    // Check if there are multiple networks in the checkout
-    setShowNetworkMessage(new Set(chainIdsBeingCheckedOut).size > 1);
-  }, [chainIdsBeingCheckedOut]);
+  const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<number[]>(
+    Object.keys(projectsByChain).map(Number)
+  );
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
@@ -120,18 +119,12 @@ export function SummaryContainer(props: {
       : 0;
 
   const [emptyInput, setEmptyInput] = useState(false);
-  const [openChainConfirmationModal, setOpenChainConfirmationModal] =
-    useState(false);
-  const [openMRCProgressModal, setOpenMRCProgressModal] = useState(false);
-  /* Donate without matching warning modal */
-  // const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
 
   useEffect(() => {
-    /* Check if all chains that were meant to be checked out were succesful */
     const success = chainsToCheckout
       .map((chain) => voteStatus[chain])
       .every((status) => status === ProgressStatus.IS_SUCCESS);
-    /* Redirect to thank you page */
+
     if (success && chainsToCheckout.length > 0) {
       navigate("/thankyou");
     }
@@ -173,7 +166,7 @@ export function SummaryContainer(props: {
     } else {
       console.error("Error submitting to Passport Lite", res);
       datadogLogs.logger.error(
-        `error: submitting to passsport lite - ${res}, address - ${address}`
+        `error: submitting to passport lite - ${res}, address - ${address}`
       );
     }
   }
@@ -193,7 +186,7 @@ export function SummaryContainer(props: {
               setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
               enoughBalanceByChainId={props.enoughBalanceByChainId}
               handleSwap={props.handleSwap}
-              showNetworkMessage={showNetworkMessage} // Pass the state to the modal body
+              showNetworkMessage={showNetworkMessage}
             />
           }
           isOpen={openChainConfirmationModal}
@@ -213,6 +206,34 @@ export function SummaryContainer(props: {
             />
           }
         />
+        {/* Passport not connected warning modal */}
+        {/* <ErrorModal
+          isOpen={donateWarningModalOpen}
+          setIsOpen={setDonateWarningModalOpen}
+          onDone={() => {
+            setDonateWarningModalOpen(false);
+            handleConfirmation();
+          }}
+          tryAgainText={"Go to Passport"}
+          doneText={"Donate without matching"}
+          onTryAgain={() => {
+            window.location.href = "https://passport.gitcoin.co";
+          }}
+          heading={`Don’t miss out on getting your donations matched!`}
+          subheading={
+            <>
+              <p className={"text-sm text-grey-400 mb-2"}>
+                Verify your identity with Gitcoin Passport to amplify your
+                donations.
+              </p>
+              <p className={"text-sm text-grey-400"}>
+                Note that donations made without Gitcoin Passport verification
+                will not be matched.
+              </p>
+            </>
+          }
+          closeOnBackgroundClick={true}
+        /> */}
       </>
     );
   }
@@ -382,7 +403,6 @@ export function SummaryContainer(props: {
       </div>
 
       <Button
-        // $variant="solid"
         data-testid="handle-confirmation"
         type="button"
         disabled={
@@ -404,7 +424,7 @@ export function SummaryContainer(props: {
       </Button>
       <PayoutModals />
       <p className="mx-auto text-center mt-4 font-medium">
-        Need to bridge funds ? Bridge funds{" "}
+        Need to bridge funds? Bridge funds{" "}
         <span
           className="underline cursor-pointer"
           onClick={() => props.handleSwap(42161)}
