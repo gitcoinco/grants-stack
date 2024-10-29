@@ -12,7 +12,7 @@ type ChainConfirmationModalBodyProps = {
   enoughBalanceByChainId: Record<number, boolean>;
   setChainIdsBeingCheckedOut: React.Dispatch<React.SetStateAction<number[]>>;
   handleSwap: (chainId: number) => void;
-  showNetworkMessage: boolean; // Added this line to include showNetworkMessage in props
+  showNetworkMessage: boolean; // Add showNetworkMessage to props
 };
 
 export function ChainConfirmationModalBody({
@@ -74,6 +74,34 @@ export function ChainConfirmationModalBody({
             />
           ))}
       </div>
+      {/* Passport not connected warning modal */}
+      {/* <ErrorModal
+        isOpen={donateWarningModalOpen}
+        setIsOpen={setDonateWarningModalOpen}
+        onDone={() => {
+          setDonateWarningModalOpen(false);
+          handleConfirmation();
+        }}
+        tryAgainText={"Go to Passport"}
+        doneText={"Donate without matching"}
+        onTryAgain={() => {
+          window.location.href = "https://passport.gitcoin.co";
+        }}
+        heading={`Don’t miss out on getting your donations matched!`}
+        subheading={
+          <>
+            <p className={"text-sm text-grey-400 mb-2"}>
+              Verify your identity with Gitcoin Passport to amplify your
+              donations.
+            </p>
+            <p className={"text-sm text-grey-400"}>
+              Note that donations made without Gitcoin Passport verification
+              will not be matched.
+            </p>
+          </>
+        }
+        closeOnBackgroundClick={true}
+      /> */}
     </>
   );
 }
