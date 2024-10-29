@@ -12,6 +12,7 @@ type ChainConfirmationModalBodyProps = {
   enoughBalanceByChainId: Record<number, boolean>;
   setChainIdsBeingCheckedOut: React.Dispatch<React.SetStateAction<number[]>>;
   handleSwap: (chainId: number) => void;
+  showNetworkMessage: boolean; // Added this line to include showNetworkMessage in props
 };
 
 export function ChainConfirmationModalBody({
@@ -21,6 +22,7 @@ export function ChainConfirmationModalBody({
   enoughBalanceByChainId,
   setChainIdsBeingCheckedOut,
   handleSwap,
+  showNetworkMessage, // Accept showNetworkMessage as a prop
 }: ChainConfirmationModalBodyProps) {
   const handleChainCheckboxChange = (chainId: number, checked: boolean) => {
     if (checked) {
@@ -42,10 +44,13 @@ export function ChainConfirmationModalBody({
 
   return (
     <>
-      <p className="text-sm text-grey-400">
-        Checkout all your carts across different networks or select the cart you
-        wish to checkout now.
-      </p>
+      {/* Conditionally render the message based on showNetworkMessage */}
+      {showNetworkMessage && (
+        <p className="text-sm text-grey-400">
+          Checkout all your carts across different networks or select the cart you
+          wish to checkout now.
+        </p>
+      )}
       <div className="my-4">
         {Object.keys(projectsByChain)
           .map(parseChainId)
