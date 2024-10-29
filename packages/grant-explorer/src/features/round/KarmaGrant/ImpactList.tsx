@@ -1,28 +1,27 @@
-import React from "react";
-import { GrantItem } from "./GrantItem";
-import { IGapGrant, gapAppUrl, getGapProjectGrantUrl } from "../../api/gap";
+import { ImpactItem } from "./ImpactItem";
+import { IGapImpact, gapAppUrl, getGapProjectImpactUrl } from "../../api/gap";
 import { Flex, Link, Text } from "@chakra-ui/react";
 
-interface GrantListProps {
-  grants: IGapGrant[];
+interface ImpactListProps {
+  impacts: IGapImpact[];
   displayKarmaAttribution?: boolean;
 }
 
-export const GrantList: React.FC<GrantListProps> = ({
-  grants,
+export const ImpactList: React.FC<ImpactListProps> = ({
+  impacts,
   displayKarmaAttribution = true,
 }) => {
   return (
     <Flex gap={2} flexDir="column" py={6} px={3}>
-      <h4 className="text-3xl">Project milestones</h4>
-      {grants.length > 0 ? (
+      <h4 className="text-3xl">Project impacts</h4>
+      {impacts.length > 0 ? (
         <>
-          <Text className="text-[18px]">Total grants ({grants.length})</Text>
-          {grants.map((grant, index) => (
-            <GrantItem
-              key={+index}
-              grant={grant}
-              url={getGapProjectGrantUrl(grant.projectUID, grant.uid)}
+          <Text className="text-[18px]">Total impacts ({impacts.length})</Text>
+          {impacts.map((impact) => (
+            <ImpactItem
+              key={impact.uid}
+              impact={impact}
+              url={getGapProjectImpactUrl(impact.refUID)}
             />
           ))}
           {displayKarmaAttribution && (
@@ -39,7 +38,7 @@ export const GrantList: React.FC<GrantListProps> = ({
         </>
       ) : (
         <Text>
-          No previous grants are being tracked for this project. If you're the
+          No previous impacts are being tracked for this project. If you're the
           owner of this project, visit{" "}
           <Link target="_blank" href={gapAppUrl}>
             <Text as="span" className="text-gitcoin-violet-500">
