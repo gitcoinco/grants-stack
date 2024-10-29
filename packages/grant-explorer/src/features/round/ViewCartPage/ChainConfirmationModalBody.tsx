@@ -43,8 +43,12 @@ export function ChainConfirmationModalBody({
   return (
     <>
       <p className="text-sm text-grey-400">
-        Checkout all your carts across different networks or select the cart you
-        wish to checkout now.
+      {chainIdsBeingCheckedOut.length > 1 && (
+          <>
+            Checkout all your carts across different networks or select the cart
+            you wish to checkout now.
+          </>
+        )}
       </p>
       <div className="my-4">
         {Object.keys(projectsByChain)
