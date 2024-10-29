@@ -1,5 +1,4 @@
 import { useTokenPrice, TToken, stringToBlobUrl, getChainById } from "common";
-import { formatUnits } from "viem";
 
 type SummaryProps = {
   totalDonation: number;
@@ -62,7 +61,7 @@ export function Summary({
           className="rounded-md font-normal text-pink-500 flex justify-start items-center mt-2 mb-5 text-xs"
         >
           <span>
-            {`Insufficient funds in your wallet.`} <br/> 
+            {`Insufficient funds in your wallet.`} <br />
             {`Please bridge funds over to ${getChainById(chainId).prettyName}.`}
           </span>
         </p>

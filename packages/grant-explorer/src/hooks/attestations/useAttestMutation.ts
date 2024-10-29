@@ -6,7 +6,6 @@ import {
   TransactionError,
 } from "./utils/handleTransactionError";
 import { Abi, PublicClient, WalletClient } from "viem";
-import { legacyABI } from "./config";
 
 /**
  * Hook for the attestation mutation logic.

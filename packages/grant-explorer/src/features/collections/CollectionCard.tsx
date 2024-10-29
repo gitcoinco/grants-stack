@@ -9,30 +9,24 @@ export type CollectionCardProps = {
 };
 
 const CollectionCard = ({ collection, size }: CollectionCardProps) => {
-  const { cid, author, name, numberOfProjects } = collection;
+  const { cid, name, description } = collection;
 
   return (
     <BasicCard className="w-full">
       <a
-        href={collectionPath(cid)}
+        href={collectionPath(cid!)}
         data-track-event={`home-collections-card-${size}`}
       >
         <CardHeader>
           <CollectionBanner />
         </CardHeader>
         <div className="p-4 space-y-1">
-          <div className="font-medium truncate text-xl">{name}</div>
-          <div className="flex justify-between items-center">
-            <div className="text-grey-400 text-sm">
-              {numberOfProjects} projects
-            </div>
-            <div className="text-sm flex gap-2 items-center truncate max-w-[20ch]">
-              by
-              <div className="truncate">
-                <Badge rounded="full">{author}</Badge>
-              </div>
-            </div>
+          <div className="font-medium truncate text-xl">
+            {name}
           </div>
+          <p className="text-grey-400 text-sm">
+            {description}
+          </p>
         </div>
       </a>
     </BasicCard>

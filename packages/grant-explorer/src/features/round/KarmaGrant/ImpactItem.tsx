@@ -12,7 +12,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { ExpandableGrid } from "../../common/ExpandableGrid";
 import { dateFromMs } from "../../api/utils";
 import { FC } from "react";
-import { IGapImpact, getGapProjectImpactUrl } from "../../api/gap";
+import { IGapImpact } from "../../api/gap";
 import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 import { useEnsName } from "wagmi";
 
