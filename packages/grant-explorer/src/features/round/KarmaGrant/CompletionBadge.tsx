@@ -3,10 +3,12 @@ import { IGapGrant } from "../../api/gap";
 import { Flex } from "@chakra-ui/react";
 
 interface CompletionBadgeProps {
+  completed: IGapGrant["completed"];
   milestones: IGapGrant["milestones"];
 }
 
 export const GrantCompletionBadge: React.FC<CompletionBadgeProps> = ({
+  completed,
   milestones,
 }) => {
   const filteredMilestones = milestones.filter(
@@ -18,10 +20,15 @@ export const GrantCompletionBadge: React.FC<CompletionBadgeProps> = ({
     0
   );
 
-  const percent =
-    filteredMilestones.length > 0
-      ? Math.floor((completedCount / filteredMilestones.length) * 100)
-      : 0;
+  let percent = 0;
+  if (milestones.length === 0) {
+    percent = completed ? 100 : 0;
+  } else {
+    percent =
+      filteredMilestones.length > 0
+        ? Math.floor((completedCount / filteredMilestones.length) * 100)
+        : 0;
+  }
 
   return (
     <Flex

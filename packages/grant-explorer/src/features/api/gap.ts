@@ -27,6 +27,7 @@ export interface IGapGrant {
     isGrantUpdate?: boolean;
   }[];
   updates: IGrantStatus[];
+  completed?: IGrantStatus;
 }
 
 export interface IGapImpact {

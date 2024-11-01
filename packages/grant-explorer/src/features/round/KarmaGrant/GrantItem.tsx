@@ -59,7 +59,10 @@ export const GrantItem: React.FC<GrantItemProps> = ({ grant, url }) => {
                   {dateFromMs(grant.createdAtMs)}
                 </small>
               </Box>
-              <GrantCompletionBadge milestones={grant.milestones} />
+              <GrantCompletionBadge
+                completed={grant?.completed}
+                milestones={grant.milestones}
+              />
             </Flex>
           </Flex>
           <Box>
