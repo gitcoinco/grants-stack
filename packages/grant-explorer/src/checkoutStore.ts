@@ -111,6 +111,7 @@ export const useCheckoutStore = create<CheckoutState>()(
       walletClient: WalletClient,
       connector: Connector
     ) => {
+      const userAddress = walletClient.account?.address;
       const chainIdsToCheckOut = chainsToCheckout.map((chain) => chain.chainId);
       get().setChainsToCheckout(
         uniq([...get().chainsToCheckout, ...chainIdsToCheckOut])
@@ -325,7 +326,7 @@ export const useCheckoutStore = create<CheckoutState>()(
           });
           useAttestationStore
             .getState()
-            .addCheckedOutTransaction(receipt.transactionHash);
+            .addCheckedOutTransaction(receipt.transactionHash, userAddress);
         } catch (error) {
           let context: Record<string, unknown> = {
             chainId,

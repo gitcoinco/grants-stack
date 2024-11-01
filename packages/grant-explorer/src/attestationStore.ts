@@ -6,33 +6,45 @@ import { persist } from "zustand/middleware";
 import { Hex } from "viem";
 
 interface AttestationState {
-  checkedOutTransactions: Hex[];
-  addCheckedOutTransaction: (tx: Hex) => void;
-  getCheckedOutTransactions: () => Hex[];
+  checkedOutTransactions: Record<Hex, Hex[]>;
+  addCheckedOutTransaction: (tx: Hex, address?: Hex) => void;
+  getCheckedOutTransactions: (address?: Hex) => Hex[];
   cleanCheckedOutTransactions: () => void;
 }
 
 export const useAttestationStore = create<AttestationState>()(
   persist(
     devtools((set, get) => ({
-      checkedOutTransactions: [],
-      addCheckedOutTransaction: (tx: Hex) => {
+      checkedOutTransactions: {},
+      addCheckedOutTransaction: (tx: Hex, address?: Hex) => {
+        if (!address) {
+          return;
+        }
         set((oldState) => ({
-          checkedOutTransactions: [...oldState.checkedOutTransactions, tx],
+          checkedOutTransactions: {
+            ...oldState.checkedOutTransactions,
+            [address]: [
+              ...(oldState.checkedOutTransactions[address] || []),
+              tx,
+            ],
+          },
         }));
       },
-      getCheckedOutTransactions: () => {
-        return get().checkedOutTransactions;
+      getCheckedOutTransactions: (address?: Hex) => {
+        if (!address) {
+          return [];
+        }
+        return get().checkedOutTransactions[address] || [];
       },
       cleanCheckedOutTransactions: () => {
         set({
-          checkedOutTransactions: [],
+          checkedOutTransactions: {},
         });
       },
     })),
     {
       name: "attestation-store",
-      version: 1,
+      version: 1.01,
     }
   )
 );
