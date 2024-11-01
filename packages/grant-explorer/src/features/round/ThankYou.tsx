@@ -104,7 +104,7 @@ export default function ThankYou() {
   }, [minted]);
 
   const transactions = useAttestationStore((state) =>
-    state.getCheckedOutTransactions()
+    state.getCheckedOutTransactions(address)
   );
 
   const handleSelectBackground = (option: string) => {
@@ -169,7 +169,6 @@ export default function ThankYou() {
       ? false
       : balance.value < attestationFee + (gasEstimation ?? 0n);
 
-
   return (
     <>
       <Navbar />
@@ -201,13 +200,13 @@ export default function ThankYou() {
                           Mint your Impact
                         </h1>
                         <p className="mt-1 text-lg  font-modern-era-regular">
-                          Capture your contribution onchain with an
-                          attestation and receive a unique visual that
-                          symbolizes your donation.
+                          Capture your contribution onchain with an attestation
+                          and receive a unique visual that symbolizes your
+                          donation.
                         </p>
                         <p className="my-2 text-lg font-modern-era-regular">
-                          This visual reflects your onchain attestation,
-                          marking your support in a meaningful way.
+                          This visual reflects your onchain attestation, marking
+                          your support in a meaningful way.
                         </p>
                       </div>
                       <PreviewFrame
