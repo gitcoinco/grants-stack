@@ -40,18 +40,17 @@ const LandingPage = () => {
     );
   }, [roundsEndingSoon.data]);
 
-  // const collections = useCollections();
+  const collections = useCollections();
 
   return (
     <GradientLayout showWalletInteraction showAlloVersionBanner={false}>
       <LandingHero />
 
-      {/* Note: This is being revisited for GG Rounds */}
-      {/* <LandingSection title="Community collections">
+      <LandingSection title="Community collections">
         {collections.data !== undefined && (
           <CollectionsGrid data={collections.data} />
         )}
-      </LandingSection> */}
+      </LandingSection>
 
       <LandingSection
         title="Donate now"

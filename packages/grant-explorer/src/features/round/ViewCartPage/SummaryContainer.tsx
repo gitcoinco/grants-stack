@@ -18,7 +18,7 @@ import { groupBy, uniqBy } from "lodash-es";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
-import { Address, formatUnits, parseUnits, zeroAddress } from "viem";
+import { Address, parseUnits, zeroAddress } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import {
   matchingEstimatesToText,
