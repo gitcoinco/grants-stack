@@ -12,7 +12,7 @@ const CollectionCard = ({ collection, size }: CollectionCardProps) => {
   const { cid, name, description } = collection;
 
   return (
-    <BasicCard className="w-full h-[300px]">
+    <BasicCard className="w-full h-[246px]">
       <a
         href={collectionPath(cid!)}
         data-track-event={`home-collections-card-${size}`}
