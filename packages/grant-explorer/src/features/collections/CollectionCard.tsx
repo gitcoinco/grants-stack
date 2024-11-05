@@ -11,10 +11,14 @@ export type CollectionCardProps = {
 const CollectionCard = ({ collection, size }: CollectionCardProps) => {
   const { cid, name, description } = collection;
 
+  const sliceLength = size === "small" ? 165 : 385;
+
   let desc = description;
-  if (description && description.length > 165) {
-    desc = description.slice(0, 164) + "...";
+  if (description && description.length > sliceLength) {
+    desc = description.slice(0, sliceLength) + "...";
   }
+
+  console.log("size", size, sliceLength);
 
   return (
     <BasicCard className="w-full h-[246px]">
