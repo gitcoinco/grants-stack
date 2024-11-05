@@ -11,6 +11,11 @@ export type CollectionCardProps = {
 const CollectionCard = ({ collection, size }: CollectionCardProps) => {
   const { cid, name, description } = collection;
 
+  let desc = description;
+  if (description && description.length > 165) {
+    desc = description.slice(0, 164) + "...";
+  }
+
   return (
     <BasicCard className="w-full h-[246px]">
       <a
@@ -22,7 +27,7 @@ const CollectionCard = ({ collection, size }: CollectionCardProps) => {
         </CardHeader>
         <div className="p-4 space-y-1">
           <div className="font-medium truncate text-xl">{name}</div>
-          <p className="text-grey-400 text-sm">{description}</p>
+          <p className="text-grey-400 text-sm">{desc}</p>
         </div>
       </a>
     </BasicCard>
