@@ -27,8 +27,8 @@ export function CollectionDetails({
 
   return (
     <div className="mt-16">
-      <div className="flex flex-col gap-12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="col-span-1 md:col-span-4 flex flex-col md:flex-row justify-between items-start md:items-center">
           <h3 className="text-4xl font-medium">
             {`${collection.name ?? defaultCollectionName} (${projectsInView})`}
           </h3>
@@ -41,7 +41,7 @@ export function CollectionDetails({
             />
           </div>
         </div>
-        <div className="text-lg flex-1 whitespace-pre-wrap">
+        <div className="col-span-1 md:col-span-3 text-lg flex-1 whitespace-pre-wrap">
           {description ?? collection.description}
         </div>
       </div>
