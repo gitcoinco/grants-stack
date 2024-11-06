@@ -3,6 +3,7 @@ import { CheckIcon, LinkIcon } from "@heroicons/react/20/solid";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { CollectionV1 } from "./collections";
+import { useCollections } from "./hooks/useCollections";
 
 type Props = {
   collection: CollectionV1;
@@ -17,17 +18,21 @@ export function CollectionDetails({
   projectsInView,
   onAddAllApplicationsToCart,
 }: Props) {
+  const collections = useCollections();
+
+  // filter collections by collection.href
+  const description = collections.data?.find(
+    (c) => c.cid && location.href.includes(c.cid)
+  )?.description;
+
   return (
     <div className="mt-16">
-      <h3 className="text-4xl font-medium mb-2">{`${
-        collection.name ?? defaultCollectionName
-      } (${projectsInView})`}</h3>
-      <div className="flex">
-        <div className="text-lg flex-1 whitespace-pre-wrap">
-          {collection.description}
-        </div>
-        <div className="w-96">
-          <div className="flex justify-end gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="col-span-1 md:col-span-4 flex flex-col md:flex-row justify-between items-start md:items-center">
+          <h3 className="text-4xl font-medium">
+            {`${collection.name ?? defaultCollectionName} (${projectsInView})`}
+          </h3>
+          <div className="flex gap-2 mt-4 md:mt-0">
             <ShareButton url={location.href} />
             <AddToCartButton
               current={projectsInView}
@@ -35,6 +40,9 @@ export function CollectionDetails({
               onAdd={onAddAllApplicationsToCart}
             />
           </div>
+        </div>
+        <div className="col-span-1 md:col-span-3 text-lg flex-1 whitespace-pre-wrap">
+          {description ?? collection.description}
         </div>
       </div>
     </div>
