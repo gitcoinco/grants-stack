@@ -18,8 +18,6 @@ const CollectionCard = ({ collection, size }: CollectionCardProps) => {
     desc = description.slice(0, sliceLength) + "...";
   }
 
-  console.log("size", size, sliceLength);
-
   return (
     <BasicCard className="w-full h-[246px]">
       <a
