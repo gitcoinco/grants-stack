@@ -57,7 +57,7 @@ export enum RoundStatus {
 
 export const ACTIVE_ROUNDS_FILTER: RoundSelectionParams = {
   orderBy: "MATCH_AMOUNT_IN_USD_DESC",
-  status: RoundStatus.active,
+  status: `${RoundStatus.active},verified`,
   type: "allov2.DonationVotingMerkleDistributionDirectTransferStrategy,allov1.QF",
   network: "",
 };
@@ -69,12 +69,13 @@ export const ROUNDS_ENDING_SOON_FILTER: RoundSelectionParams & {
   orderBy: "DONATIONS_END_TIME_ASC",
   type: "",
   network: "",
-  status: RoundStatus.ending_soon,
+  status: `${RoundStatus.ending_soon},verified`,
 };
 
 export const useFilterRounds = (
   where: RoundSelectionParams,
-  chains: TChain[]
+  chains: TChain[],
+  onlywWhitelistedPrograms?: boolean
 ): SWRResponse<RoundGetRound[]> => {
   const chainIds =
     where.network === undefined || where.network.trim() === ""
@@ -102,7 +103,7 @@ export const useFilterRounds = (
   const orderBy =
     where.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : where.orderBy;
   const vars = { orderBy, filter };
-  return useRounds(vars, chainIds);
+  return useRounds(vars, chainIds, onlywWhitelistedPrograms);
 };
 
 const createRoundWhereFilter = (
