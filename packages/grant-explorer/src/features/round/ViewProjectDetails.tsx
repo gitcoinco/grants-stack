@@ -44,13 +44,13 @@ import { useOSO } from "../api/oso";
 import { CheckIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { Application, useDataLayer } from "data-layer";
 import { DefaultLayout } from "../common/DefaultLayout";
-import { truncate } from "../common/utils/truncate";
 import {
   mapApplicationToProject,
   mapApplicationToRound,
   useApplication,
 } from "../projects/hooks/useApplication";
 import { PassportWidget } from "../common/PassportWidget";
+import CopyToClipboard from "./CopyToClipboard";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -370,7 +370,7 @@ function ProjectLinks({ project }: { project?: Project }) {
       }`}
     >
       <ProjectLink icon={EthereumIcon}>
-        {ens.data || truncate(recipient)}
+        <CopyToClipboard text={ens.data || recipient} />
       </ProjectLink>
       <ProjectLink icon={CalendarIcon}>{createdOn}</ProjectLink>
       <ProjectLink url={website} icon={GlobeIcon}>

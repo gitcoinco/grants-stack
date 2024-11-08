@@ -117,7 +117,7 @@ export function CollectionBanner() {
   const [gradient] = useState<string[]>(getRandomGradient());
   return (
     <div
-      className="h-[70px]"
+      className="h-[104px]"
       style={{
         background: `linear-gradient(180deg, #${gradient[0]} 0%, #${gradient[1]} 100%)`,
       }}
