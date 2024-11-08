@@ -312,31 +312,49 @@ export const TabGroup = () => {
                     aria-current={tab.name === currentTab ? "page" : undefined}
                   >
                     <span>{tab.name}</span>
-                    {["Quadratic funding", "Direct grants"].includes(tab.name) &&
+                    {["Quadratic funding", "Direct grants"].includes(
+                      tab.name
+                    ) && (
                       <span
                         className={`py-1 px-2 mx-2 bg-${tab.name === "Quadratic funding" ? "green" : "yellow"}-100 rounded-full text-xs font-mono`}
                       >
-                        {tab.name === "Quadratic funding" ? qfRounds.length : dgRounds.length}
+                        {tab.name === "Quadratic funding"
+                          ? qfRounds.length
+                          : dgRounds.length}
                       </span>
-                    }
+                    )}
                   </span>
                 ))}
               </div>
               <div className="flex flex-row items-center">
                 {programToRender?.tags?.includes(getAlloVersion()) && (
-                  <span
-                    onClick={() => {
-                      setIsModalOpen(true);
-                    }}
-                    className="flex flex-row justify-between items-center hover:shadow-md p-2 rounded-lg text-sm text-grey-500 font-mono ml-auto bg-yellow-100 cursor-pointer"
-                    data-testid="create-round-small-link"
-                  >
-                    <PlusSmIcon
-                      className="h-5 w-5 inline ml-1"
-                      aria-hidden="true"
-                    />
-                    <span className="mr-2">Create round</span>
-                  </span>
+                  <div className="flex flex-row items-center gap-2">
+                    <span
+                      onClick={() => {
+                        setIsModalOpen(true);
+                      }}
+                      className="flex flex-row justify-between items-center hover:shadow-md p-2 rounded-lg text-sm text-grey-500 font-mono ml-auto bg-yellow-100 cursor-pointer"
+                      data-testid="create-round-small-link"
+                    >
+                      <PlusSmIcon
+                        className="h-5 w-5 inline ml-1"
+                        aria-hidden="true"
+                      />
+                      <span className="mr-2">Create round</span>
+                    </span>
+                    <span
+                      onClick={() => {
+                        window.open(
+                          `https://docs.google.com/forms/d/e/1FAIpQLSeplytOjF6mbG51bLOccNMmxOUZlZIDQdyOOw3KiDu5VZkvmA/viewform?usp=pp_url&entry.658554959=${programToRender?.id}&entry.1289763714=${programToRender?.metadata?.name}`,
+                          "_blank"
+                        );
+                      }}
+                      className="flex flex-row justify-between items-center hover:shadow-md p-2 rounded-lg text-sm text-grey-500 font-mono ml-auto bg-blue-100 cursor-pointer"
+                      data-testid="create-round-small-link"
+                    >
+                      <span className="mr-2">Request Explorer Listing</span>
+                    </span>
+                  </div>
                 )}
               </div>
             </nav>
@@ -355,8 +373,11 @@ export const TabGroup = () => {
               <div className="md:mb-8">{dgRoundItems}</div>
             </div>
           )}
-          { currentTab === "Settings" && (
-            <ViewManageProgram program={programToRender!} userAddress={address || "0x"} />
+          {currentTab === "Settings" && (
+            <ViewManageProgram
+              program={programToRender!}
+              userAddress={address || "0x"}
+            />
           )}
         </div>
       </div>
@@ -364,8 +385,7 @@ export const TabGroup = () => {
         rounds.length === 0 &&
         programToRender?.tags?.includes(getAlloVersion()) &&
         currentTab !== "Settings" &&
-        noRoundsGroup
-      }
+        noRoundsGroup}
       <Transition.Root show={isModalOpen} as={Fragment}>
         <Dialog
           as="div"

@@ -942,18 +942,25 @@ export class DataLayer {
     first,
     orderBy,
     filter,
+    whitelistedPrograms,
   }: {
     chainIds: number[];
     first: number;
     orderBy?: OrderByRounds;
     orderDirection?: "asc" | "desc";
     filter?: RoundsQueryVariables["filter"];
+    whitelistedPrograms?: string[];
   }): Promise<{ rounds: RoundGetRound[] }> {
     return await request(this.gsIndexerEndpoint, getRoundsQuery, {
       orderBy: orderBy ?? "NATURAL",
       chainIds,
       first,
-      filter,
+      filter: whitelistedPrograms
+        ? {
+            ...filter,
+            projectId: { in: whitelistedPrograms },
+          }
+        : filter,
     });
   }
 
@@ -1011,8 +1018,8 @@ export class DataLayer {
   async getAttestationCount({
     attestationChainIds,
   }: {
-    attestationChainIds: number[]
+    attestationChainIds: number[];
   }): Promise<number> {
-    return this.attestationService.getAttestationCount({attestationChainIds});
+    return this.attestationService.getAttestationCount({ attestationChainIds });
   }
 }

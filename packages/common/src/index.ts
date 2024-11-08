@@ -488,3 +488,4 @@ export function isLitUnavailable(chainId: number) {
 }
 
 export * from "./chains";
+export * from "./programWhitelist";
