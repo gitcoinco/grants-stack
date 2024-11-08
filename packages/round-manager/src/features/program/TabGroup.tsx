@@ -1,8 +1,12 @@
 "use client";
 
-import { Fragment, useState, Key } from "react";
+import { Fragment, useState, Key, useEffect } from "react";
 import { classNames, getStatusStyle, prettyDates3 } from "../common/Utils";
-import { PlusIcon, PlusSmIcon } from "@heroicons/react/solid";
+import {
+  ExclamationCircleIcon,
+  PlusIcon,
+  PlusSmIcon,
+} from "@heroicons/react/solid";
 import Close from "../../assets/close.svg";
 import DirectGrants from "../../assets/direct-grants.svg";
 import QuadraticFundingSVG from "../../assets/quadratic-funding.svg";
@@ -18,21 +22,28 @@ import { useRounds } from "../../context/round/RoundContext";
 import { ProgressStatus, Round } from "../api/types";
 import { Transition, Dialog } from "@headlessui/react";
 import { useAccount } from "wagmi";
+import { ReactComponent as GrantExplorerLogo } from "../../assets/explorer-black.svg";
+import ConfirmationModal from "../common/ConfirmationModal";
+import { getProgramWhitelistStatus, WhitelistStatus } from "common/src";
 
 const tabs = [
   { name: "Quadratic funding", current: true },
   { name: "Direct grants", current: false },
-  { name: "Settings", current: false},
+  { name: "Settings", current: false },
 ];
 
 export const TabGroup = () => {
   datadogLogs.logger.info("====> Route: /program/:id/TabGroup.tsx");
   datadogLogs.logger.info(`====> URL: ${window.location.href}`);
+  const [openListingModal, setOpenListingModal] = useState(false);
+  const [whitelistStatus, setWhitelistStatus] =
+    useState<WhitelistStatus | null>(null);
 
   const { chainId, id: programId } = useParams() as {
     chainId?: string;
     id: string;
   };
+
   const { chain, address } = useAccount();
   const programChainId = chainId ? Number(chainId) : chain?.id;
   const { program: programToRender } = useProgramById(programId);
@@ -46,6 +57,17 @@ export const TabGroup = () => {
   >(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState(tabs[0].name);
+
+  useEffect(() => {
+    const getWhitelistStatus = async () => {
+      if (!whitelistStatus && programToRender) {
+        const status = await getProgramWhitelistStatus(programToRender.id!);
+        setWhitelistStatus(status);
+      }
+    };
+
+    getWhitelistStatus();
+  }, [programToRender, whitelistStatus]);
 
   const handleTabChange = (tabName: string) => {
     setCurrentTab(tabName);
@@ -73,7 +95,10 @@ export const TabGroup = () => {
               status={status}
               strategyType="quadratic"
               displayBar={{
-                applicationDate: prettyDates3(round.applicationsStartTime, round.applicationsEndTime),
+                applicationDate: prettyDates3(
+                  round.applicationsStartTime,
+                  round.applicationsEndTime
+                ),
                 roundDate: prettyDates3(
                   round.roundStartTime,
                   round.roundEndTime
@@ -344,16 +369,55 @@ export const TabGroup = () => {
                     </span>
                     <span
                       onClick={() => {
-                        window.open(
-                          `https://docs.google.com/forms/d/e/1FAIpQLSeplytOjF6mbG51bLOccNMmxOUZlZIDQdyOOw3KiDu5VZkvmA/viewform?usp=pp_url&entry.658554959=${programToRender?.id}&entry.1289763714=${programToRender?.metadata?.name}`,
-                          "_blank"
-                        );
+                        if (!whitelistStatus) {
+                          setOpenListingModal(true);
+                        }
                       }}
-                      className="flex flex-row justify-between items-center hover:shadow-md p-2 rounded-lg text-sm text-grey-500 font-mono ml-auto bg-blue-100 cursor-pointer"
+                      className={`flex flex-row justify-between items-center p-2 rounded-lg text-sm font-mono ml-auto ${
+                        whitelistStatus === "Accepted"
+                          ? "bg-[#ECEDED] text-[#959C9C] cursor-not-allowed"
+                          : whitelistStatus === "Pending"
+                            ? "bg-[#F4FAEB] text-[#4B5050] cursor-not-allowed"
+                            : whitelistStatus === "Rejected"
+                              ? "bg-[#FFE8E1] text-[#4B5050] cursor-not-allowed"
+                              : "bg-[#E5F4D3] text-grey-500 hover:shadow-md cursor-pointer"
+                      }`}
                       data-testid="create-round-small-link"
                     >
-                      <span className="mr-2">Request Explorer Listing</span>
+                      {whitelistStatus === "Rejected" ? (
+                        <ExclamationCircleIcon className="h-4 w-4 inline mx-1" />
+                      ) : (
+                        <GrantExplorerLogo className="h-5 w-5 inline mx-1" />
+                      )}
+                      <span className="mr-2">
+                        {whitelistStatus === "Pending"
+                          ? "Listing request pending"
+                          : whitelistStatus === "Rejected"
+                            ? "Listing request rejected"
+                            : "Request Explorer listing"}
+                      </span>
                     </span>
+                    <ConfirmationModal
+                      title={"Request Explorer listing"}
+                      confirmButtonText={"Complete approval form"}
+                      confirmButtonAction={() => {
+                        window.open(
+                          `https://docs.google.com/forms/d/e/1FAIpQLSeplytOjF6mbG51bLOccNMmxOUZlZIDQdyOOw3KiDu5VZkvmA/viewform?usp=pp_url&entry.658554959=${programToRender?.id || ""}&entry.1289763714=${programToRender?.metadata?.name || ""}`,
+                          "_blank"
+                        );
+                        setOpenListingModal(false);
+                      }}
+                      body={
+                        <p className="text-sm text-grey-400">
+                          To help maintain a high-quality experience on the
+                          Explorer homepage, please complete a brief form to
+                          reduce spam. Once your program is approved, all rounds
+                          associated with it will be displayed on the Explorer.
+                        </p>
+                      }
+                      isOpen={openListingModal}
+                      setIsOpen={setOpenListingModal}
+                    />
                   </div>
                 )}
               </div>
