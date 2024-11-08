@@ -19,6 +19,7 @@ vi.mock("common", async () => {
   return {
     ...actual,
     renderToPlainText: vi.fn().mockReturnValue((str = "") => str),
+    getWhitelistedPrograms: vi.fn().mockResolvedValue(undefined),
   };
 });
 
@@ -60,7 +61,6 @@ vi.mock("wagmi", async () => {
 });
 
 describe("LandingPage", () => {
-
   it("renders landing page", () => {
     renderWithContext(<LandingPage />);
   });
