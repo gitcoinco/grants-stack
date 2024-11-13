@@ -49,7 +49,8 @@
     "vitest": "^0.34.4"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=20",
+    "pnpm": "9.3.0"
   },
   "dependencies": {
     "@gitcoinco/passport-sdk-types": "^0.2.0",
