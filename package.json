@@ -3,8 +3,8 @@
   "private": true,
   "license": "AGPL-3.0-only",
   "engines": {
-    "npm": ">=8.5.5",
-    "node": ">=20.1.0"
+    "npm": "=8.5.5",
+    "node": "=20.1.0"
   },
   "scripts": {
     "start": "pnpm --filter round-manager run start",
