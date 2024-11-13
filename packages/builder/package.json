@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "npm": "8.5.5",
+    "yarn": "1.22.22",
     "node": "20.1.0",
-        "pnpm": "9.x"
+    "pnpm": "9.x"
 
   },
   "dependencies": {
