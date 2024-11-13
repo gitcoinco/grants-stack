@@ -156,9 +156,7 @@
     "vitest-fetch-mock": "^0.2.2"
   },
   "engines": {
-    "node": "20.1.0",
-    "yarn": "1.22.22",
-    "pnpm": "9.x"
+    "node": ">=20"
   },
   "volta": {
     "node": "20.14.0"

@@ -3,9 +3,7 @@
   "private": true,
   "license": "AGPL-3.0-only",
   "engines": {
-    "yarn": "1.22.22",
-    "node": "20.1.0",
-    "pnpm": "9.x"
+    "node": ">=20"
   },
   "scripts": {
     "start": "pnpm --filter round-manager run start",
