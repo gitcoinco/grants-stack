@@ -11,15 +11,24 @@ import { getExplorerPageTitle } from "./utils/getExplorerPageTitle";
 import { RoundsGrid } from "./RoundsGrid";
 import { getEnabledChains } from "../../app/chainConfig";
 import { useMemo } from "react";
+import { getWhitelistedPrograms } from "common";
 
 const ExploreRoundsPage = () => {
   const [params] = useSearchParams();
   const filter = getRoundSelectionParamsFromUrlParams(params);
-
   // Pass the filter from the search params and build the graphql query
-  const rounds = useFilterRounds(filter, getEnabledChains());
+  const rounds = useFilterRounds(filter, getEnabledChains(), true);
 
-  const publicRounds = useMemo(() => rounds.data?.filter(round => (round.roundMetadata && round.roundMetadata.roundType) && round.roundMetadata.roundType?.toLowerCase() !== "private"), [rounds]);
+  const publicRounds = useMemo(
+    () =>
+      rounds.data?.filter(
+        (round) =>
+          round.roundMetadata &&
+          round.roundMetadata.roundType &&
+          round.roundMetadata.roundType?.toLowerCase() !== "private"
+      ),
+    [rounds]
+  );
   rounds.data = publicRounds;
 
   const sectionTitle = getExplorerPageTitle(filter);

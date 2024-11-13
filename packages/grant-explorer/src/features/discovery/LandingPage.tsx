@@ -22,11 +22,13 @@ import { CollectionsGrid } from "../collections/CollectionsGrid";
 const LandingPage = () => {
   const activeRounds = useFilterRounds(
     ACTIVE_ROUNDS_FILTER,
-    getEnabledChains()
+    getEnabledChains(),
+    true
   );
   const roundsEndingSoon = useFilterRounds(
     ROUNDS_ENDING_SOON_FILTER,
-    getEnabledChains()
+    getEnabledChains(),
+    true
   );
 
   const filteredActiveRounds = useMemo(() => {
