@@ -5,7 +5,8 @@
   "license": "AGPL-3.0-only",
   "engines": {
     "npm": "8.5.5",
-    "node": "20.1.0"
+    "node": "20.1.0",
+    "pnpm": "9.x"
   },
   "scripts": {
     "start": "craco start",

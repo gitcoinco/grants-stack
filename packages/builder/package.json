@@ -4,7 +4,9 @@
   "private": true,
   "engines": {
     "npm": "8.5.5",
-    "node": "20.1.0"
+    "node": "20.1.0",
+        "pnpm": "9.x"
+
   },
   "dependencies": {
     "@babel/core": "^7.20.12",
