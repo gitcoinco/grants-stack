@@ -44,24 +44,15 @@ export function GradientLayout({
           "container mx-auto max-w-screen-2xl relative z-10 px-4 sm:px-6 lg:px-20",
           showAlloVersionBanner ? "pt-[120px]" : "pt-16"
         )}
+        style={{
+          background:
+            "linear-gradient(180deg, #ADEDE5 -13.57%, rgba(21, 184, 220, 0.47) 45.05%, rgba(0,0,0,0) 92.61%)",
+        }}
       >
         {children}
       </div>
 
       <Footer />
-
-      {
-        // FIXME: this is the wrong way to make a gradient for the main content
-        // since it's a div that's covering the full page and any other content
-        // without a higher z-index is not clickable.
-      }
-      <div
-        className="min-h-screen absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, #ADEDE5 -13.57%, rgba(21, 184, 220, 0.47) 45.05%, rgba(0,0,0,0) 92.61%)",
-        }}
-      />
     </main>
   );
 }
