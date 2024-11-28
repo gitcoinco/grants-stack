@@ -630,6 +630,19 @@ export class AlloV2 implements Allo {
         blockNumber: receipt.blockNumber,
       });
 
+      // sync pool with checker
+      await fetch("http://api.checker.gitcoin.co/api/pools", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          alloPoolId: parseInt(poolCreatedEvent.poolId, 10).toString(),
+          chainId: this.chainId,
+          skipEvaluation: false,
+        }),
+      });
+
       emit("indexingStatus", success(void 0));
 
       return success({
@@ -747,6 +760,19 @@ export class AlloV2 implements Allo {
       await this.waitUntilIndexerSynced({
         chainId: this.chainId,
         blockNumber: receipt.blockNumber,
+      });
+
+      // sync pool with checker
+      await fetch("http://api.checker.gitcoin.co/api/pools", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          alloPoolId: args.roundId.toString(),
+          chainId: this.chainId,
+          skipEvaluation: false,
+        }),
       });
 
       emit("indexingStatus", success(null));
