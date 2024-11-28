@@ -201,7 +201,7 @@ export default function ApplicationCard({
     applicationStartTime >= new Date("2024-12-01T00:00:00Z");
 
   const applicationViewLink = showCheckerLink
-    ? `https://beta.checker.gitcoin.co/view/application/${applicationData.chainId}-${applicationData.roundID}-${applicationData.application.id}`
+    ? `https://beta.checker.gitcoin.co/view/application/${applicationData.chainId}/${applicationData.roundID}/${applicationData.application.id}`
     : roundApplicationViewPath(
         applicationData.chainId.toString(),
         applicationData.roundID,

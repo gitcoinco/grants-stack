@@ -68,7 +68,7 @@ function GrantApplications(props: {
                 </div>
                 <div className="h-8 px-3 py-2 bg-[#00433b] rounded-lg border border-[#00433b] justify-center items-center gap-1.5 inline-flex">
                   <Link
-                    to={`https://beta.checker.gitcoin.co/review/${props.chainId}-${props.roundId}`}
+                    to={`https://beta.checker.gitcoin.co/review/${props.chainId}/${props.roundId}`}
                     className="text-white text-sm font-medium font-['DM Mono'] leading-none"
                   >
                     Review Applications
