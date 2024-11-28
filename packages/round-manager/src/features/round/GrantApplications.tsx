@@ -13,6 +13,7 @@ import { Tab } from "@headlessui/react";
 import { horizontalTabStyles } from "../common/Utils";
 import { MdRateReview } from "react-icons/md";
 import { TabApplicationCounter } from "../common/styles";
+import { Link } from "react-router-dom";
 
 function GrantApplications(props: {
   isDirectRound?: boolean;
@@ -55,6 +56,25 @@ function GrantApplications(props: {
               isDirectRound={props.isDirectRound!}
             />
             <div className="py-5 mb-8">
+              <div className="w-[954px] h-[164px] p-6 bg-[#f6fcf0] rounded-2xl border border-[#eaeaea] flex-col justify-start items-start gap-6 inline-flex">
+                <div className="self-stretch h-[60px] flex-col justify-start items-start gap-2 flex">
+                  <div className="self-stretch text-black text-lg font-medium font-['Modern Era'] leading-relaxed">
+                    Checker is now in Beta
+                  </div>
+                  <div className="self-stretch text-black text-base font-normal font-['Modern Era'] leading-relaxed">
+                    Use our AI-powered application assistant to process
+                    applicants with confidence
+                  </div>
+                </div>
+                <div className="h-8 px-3 py-2 bg-[#00433b] rounded-lg border border-[#00433b] justify-center items-center gap-1.5 inline-flex">
+                  <Link
+                    to={`https://beta.checker.gitcoin.co/review/${props.chainId}-${props.roundId}`}
+                    className="text-white text-sm font-medium font-['DM Mono'] leading-none"
+                  >
+                    Review Applications
+                  </Link>
+                </div>
+              </div>
               <div className="my-4 flex justify-start items-center text-md font-normal font-momo">
                 <MdRateReview className="h-4 w-4 mr-2 text-rose-300" />
                 <span>Manual Review</span>

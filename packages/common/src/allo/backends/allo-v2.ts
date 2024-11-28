@@ -631,7 +631,7 @@ export class AlloV2 implements Allo {
       });
 
       // sync pool with checker
-      await fetch("http://api.checker.gitcoin.co/api/pools", {
+      await fetch("https://api.checker.gitcoin.co/api/pools", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -763,7 +763,7 @@ export class AlloV2 implements Allo {
       });
 
       // sync pool with checker
-      await fetch("http://api.checker.gitcoin.co/api/pools", {
+      await fetch("https://api.checker.gitcoin.co/api/pools", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
