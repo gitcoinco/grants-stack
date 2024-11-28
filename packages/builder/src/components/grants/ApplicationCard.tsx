@@ -196,6 +196,18 @@ export default function ApplicationCard({
     return null;
   }
 
+  const applicationStartTime = new Date(props.round.applicationsStartTime);
+  const showCheckerLink =
+    applicationStartTime >= new Date("2024-12-01T00:00:00Z");
+
+  const applicationViewLink = showCheckerLink
+    ? `https://beta.checker.gitcoin.co/view/application/${applicationData.chainId}-${applicationData.roundID}-${applicationData.application.id}`
+    : roundApplicationViewPath(
+        applicationData.chainId.toString(),
+        applicationData.roundID,
+        applicationData.application.metadataCid || ""
+      );
+
   return (
     <Box
       p={2}
@@ -241,13 +253,7 @@ export default function ApplicationCard({
               </a>
             </p>
           )}
-          <Link
-            to={roundApplicationViewPath(
-              applicationData.chainId.toString(),
-              applicationData.roundID,
-              applicationData.application.metadataCid || ""
-            )}
-          >
+          <Link to={applicationViewLink} target="_blank">
             <Button
               backgroundColor="purple.100"
               color="purple.600"
