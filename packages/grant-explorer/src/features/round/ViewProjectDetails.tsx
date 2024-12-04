@@ -102,7 +102,11 @@ export default function ViewProjectDetails() {
     applicationId = paramApplicationId;
   }
 
-  const { data: application, error } = useApplication(
+  const {
+    data: application,
+    error,
+    isLoading,
+  } = useApplication(
     {
       chainId: Number(chainId as string),
       roundId,
@@ -230,7 +234,7 @@ export default function ViewProjectDetails() {
         ),
       },
     ],
-    [stats, grants, projectToRender, description]
+    [stats, grants, projectToRender, description, isLoading]
   );
 
   const handleTabChange = (tabIndex: number) => {
@@ -283,7 +287,9 @@ export default function ViewProjectDetails() {
             />
           )}
           <div className="flex-1">
-            {error === undefined ? (
+            {error === undefined &&
+            !isLoading &&
+            projectToRender !== undefined ? (
               <>
                 <Skeleton isLoaded={Boolean(title)}>
                   <h1 className="text-4xl font-modern-era-medium tracking-tight text-grey-500">
@@ -301,7 +307,7 @@ export default function ViewProjectDetails() {
                 </div>
               </>
             ) : (
-              <p>Couldn't load project data.</p>
+              <p>Couldn't load project data. It may not exist.</p>
             )}
           </div>
         </div>
