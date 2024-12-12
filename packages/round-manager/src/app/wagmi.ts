@@ -1,26 +1,58 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import { QueryClient } from "@tanstack/react-query";
-import { Chain as RChain, getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { allNetworks, mainnetNetworks } from "common/src/chains";
 import { getClient, getConnectorClient } from "@wagmi/core";
 import { providers } from "ethers";
-import { type Account, type Chain, type Client, type Transport } from "viem";
+import {
+  http,
+  type Account,
+  type Chain,
+  type Client,
+  type Transport,
+} from "viem";
 import { Connector } from "wagmi";
-
-export const allChains: RChain[] =
-  process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
+import {
+  rainbowWallet,
+  safeWallet,
+  walletConnectWallet,
+  coinbaseWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 
 /* TODO: remove hardcoded value once we have environment variables validation */
 const projectId =
   process.env.REACT_APP_WALLETCONNECT_PROJECT_ID ??
   "2685061cae0bcaf2b244446153eda9e1";
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: "Popular",
+      wallets: [safeWallet, rainbowWallet, walletConnectWallet, coinbaseWallet],
+    },
+  ],
+  {
+    appName: "Gitcoin Manager",
+    projectId,
+  }
+);
+export const allChains: Chain[] =
+  process.env.REACT_APP_ENV === "development" ? allNetworks : mainnetNetworks;
 
-export const config = getDefaultConfig({
-  appName: "Gitcoin Manager",
-  projectId,
-  chains: [...allChains] as [Chain, ...Chain[]],
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-}) as any;
+import { createConfig } from "wagmi";
+
+const transports = allChains.reduce(
+  (acc, chain) => {
+    acc[chain.id] = http();
+    return acc;
+  },
+  {} as Record<number, ReturnType<typeof http>>
+);
+
+export const config = createConfig({
+  chains: [...allChains] as unknown as readonly [Chain, ...Chain[]],
+  connectors,
+  transports,
+});
 
 const queryClient = new QueryClient();
 

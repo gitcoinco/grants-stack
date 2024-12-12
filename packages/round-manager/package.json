@@ -38,6 +38,8 @@
     "@openzeppelin/merkle-tree": "^1.0.2",
     "@rainbow-me/rainbowkit": "2.1.2",
     "@reduxjs/toolkit": "^1.8.1",
+    "@safe-global/safe-apps-provider": "^0.18.5",
+    "@safe-global/safe-apps-react-sdk": "^4.7.2",
     "@sentry/integrations": "^7.28.0",
     "@sentry/react": "^7.27.0",
     "@sentry/tracing": "^7.26.0",
