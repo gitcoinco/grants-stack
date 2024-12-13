@@ -1,24 +1,31 @@
+import { getWhitelistedPrograms } from "common";
 import useSWR, { SWRResponse } from "swr";
 import { createISOTimestamp } from "../discovery/utils/createRoundsStatusFilter";
 import { RoundGetRound, RoundsQueryVariables, useDataLayer } from "data-layer";
 
 export const useRounds = (
   variables: RoundsQueryVariables,
-  chainIds: number[]
+  chainIds: number[],
+  onlywWhitelistedPrograms = false
 ): SWRResponse<RoundGetRound[]> => {
   const dataLayer = useDataLayer();
 
   const query = useSWR(
     // Cache requests on chainIds and variables as keys (when these are the
     // same, cache will be used instead of new requests)
-    ["rounds", chainIds, variables],
+    ["rounds", chainIds, variables, onlywWhitelistedPrograms],
     async () => {
+      const whitelistedPrograms = onlywWhitelistedPrograms
+        ? await getWhitelistedPrograms()
+        : undefined;
+
       const [spamRounds, { rounds }] = await Promise.all([
         fetchSpamRounds(),
         dataLayer.getRounds({
           ...variables,
           first: 500,
           chainIds,
+          whitelistedPrograms,
         }),
       ]);
 
@@ -64,8 +71,9 @@ const OVERRIDE_PRIVATE_ROUND_IDS = [
 export const filterOutPrivateRounds = (rounds: RoundGetRound[]) => {
   return rounds.filter(
     (round) =>
-      (round.roundMetadata && round.roundMetadata.roundType) &&
-      round.roundMetadata.roundType !== "private" ||
+      (round.roundMetadata &&
+        round.roundMetadata.roundType &&
+        round.roundMetadata.roundType !== "private") ||
       OVERRIDE_PRIVATE_ROUND_IDS.includes(round.id.toLowerCase())
   );
 };

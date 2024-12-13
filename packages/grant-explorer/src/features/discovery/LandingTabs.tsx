@@ -31,7 +31,11 @@ export default function LandingTabs() {
     {
       to: `/rounds?${toQueryString({
         orderBy: "MATCH_AMOUNT_IN_USD_DESC",
-        status: [RoundStatus.active, RoundStatus.taking_applications].join(","),
+        status: [
+          RoundStatus.active,
+          RoundStatus.taking_applications,
+          "verified",
+        ].join(","),
       })}`,
       activeRegExp: /^\/rounds/,
       children: isDesktop ? "Explore rounds" : "Rounds",

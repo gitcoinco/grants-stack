@@ -15,11 +15,23 @@ import { useMemo } from "react";
 const ExploreRoundsPage = () => {
   const [params] = useSearchParams();
   const filter = getRoundSelectionParamsFromUrlParams(params);
-
   // Pass the filter from the search params and build the graphql query
-  const rounds = useFilterRounds(filter, getEnabledChains());
+  const rounds = useFilterRounds(
+    filter,
+    getEnabledChains(),
+    filter.status.includes("verified")
+  );
 
-  const publicRounds = useMemo(() => rounds.data?.filter(round => (round.roundMetadata && round.roundMetadata.roundType) && round.roundMetadata.roundType?.toLowerCase() !== "private"), [rounds]);
+  const publicRounds = useMemo(
+    () =>
+      rounds.data?.filter(
+        (round) =>
+          round.roundMetadata &&
+          round.roundMetadata.roundType &&
+          round.roundMetadata.roundType?.toLowerCase() !== "private"
+      ),
+    [rounds]
+  );
   rounds.data = publicRounds;
 
   const sectionTitle = getExplorerPageTitle(filter);

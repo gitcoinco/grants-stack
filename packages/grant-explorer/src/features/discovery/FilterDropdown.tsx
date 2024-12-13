@@ -41,11 +41,14 @@ export const FILTER_OPTIONS: RoundFilterUiOption[] = [
       },
     ],
   },
-
   {
     label: "Status",
     value: "status",
     children: [
+      {
+        label: "Verified",
+        value: "verified",
+      },
       {
         label: "Active",
         value: RoundStatus.active,
@@ -75,7 +78,6 @@ export function FilterDropdown() {
 
   const filter = getRoundSelectionParamsFromUrlParams(params);
   const { status = "", type = "", network = "" } = filter;
-
   const selected = getFilterLabel({ status, type, network });
   return (
     <Dropdown
@@ -133,7 +135,7 @@ export function FilterDropdown() {
               >
                 <Disclosure.Panel
                   static
-                  className=" mt-1 w-full overflow-auto p-2"
+                  className="mt-1 w-full overflow-auto p-2"
                 >
                   {children
                     ?.filter((child) => !child.hide)

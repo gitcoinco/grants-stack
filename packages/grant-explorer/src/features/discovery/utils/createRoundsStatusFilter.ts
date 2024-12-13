@@ -48,7 +48,7 @@ export function createRoundsStatusFilter(
 ): TimeFilterVariables[] {
   // Default to all filters
   const selectedFilters =
-    status ||
+    status.replace(",verified", "") ||
     [
       RoundStatus.active,
       RoundStatus.taking_applications,
