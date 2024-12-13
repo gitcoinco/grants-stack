@@ -15,7 +15,7 @@ jest.mock("wagmi", () => ({
 }));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
-  getDefaultConfig: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 jest.mock("../../common/Navbar");
 jest.mock("../../common/Auth");
@@ -33,9 +33,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("<CreateRoundPage />", () => {
-  beforeEach(() => {
-   
-  });
+  beforeEach(() => {});
 
   it("sends program to form wizard", () => {
     const programs = [makeProgramData({ id: programId })];

@@ -26,7 +26,7 @@ jest.mock("../../api/round");
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
-  getDefaultConfig: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 
 const mockNetwork = {

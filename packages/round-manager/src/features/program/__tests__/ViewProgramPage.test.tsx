@@ -23,7 +23,7 @@ jest.mock("../../common/Auth");
 jest.mock("../../api/program");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
-  getDefaultConfig: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
