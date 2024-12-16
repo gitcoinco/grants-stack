@@ -9,12 +9,13 @@ import QuadraticFundingForm from "../QuadraticFundingForm";
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
-  getDefaultConfig: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 jest.mock("wagmi", () => ({
   useAccount: () => ({
     chainId: 10,
   }),
+  createConfig: jest.fn(),
 }));
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),

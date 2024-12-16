@@ -14,10 +14,7 @@ import { RoundCategory } from "data-layer";
 import { errorModalDelayMs } from "../../../constants";
 import { useCreateRoundStore } from "../../../stores/createRoundStore";
 import { saveToIPFS } from "../../api/ipfs";
-import {
-  ApplicationMetadata,
-  ProgressStatus,
-} from "../../api/types";
+import { ApplicationMetadata, ProgressStatus } from "../../api/types";
 import { FormStepper } from "../../common/FormStepper";
 import { FormContext } from "../../common/FormWizard";
 import {
@@ -31,7 +28,7 @@ jest.mock("../../common/Auth");
 jest.mock("../../api/payoutStrategy/payoutStrategy");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
-  getDefaultConfig: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 jest.mock("wagmi", () => ({
   useAccount: () => ({
@@ -48,6 +45,7 @@ jest.mock("wagmi", () => ({
     ],
   }),
   useProvider: () => ({}),
+  createConfig: jest.fn(),
 }));
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),
@@ -193,7 +191,6 @@ describe("<RoundApplicationForm />", () => {
 });
 
 describe("Application Form Builder", () => {
-
   it("displays the four default questions", () => {
     renderWithContext(
       <RoundApplicationForm
@@ -598,7 +595,6 @@ describe("Application Form Builder", () => {
     });
   });
   describe("Project Socials", () => {
-
     it("displays the Project Socials", () => {
       renderWithContext(
         <RoundApplicationForm

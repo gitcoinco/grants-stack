@@ -18,7 +18,7 @@ jest.mock("../../api/ipfs");
 jest.mock("../../common/Auth");
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
-  getDefaultConfig: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 
 jest.mock("../../../constants", () => ({

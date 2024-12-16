@@ -26,10 +26,11 @@ jest.mock("wagmi", () => ({
     chainId: 1,
     address: "0x0",
   }),
+  createConfig: jest.fn(),
 }));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
-  getDefaultConfig: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 jest.mock("data-layer", () => ({
   ...jest.requireActual("data-layer"),

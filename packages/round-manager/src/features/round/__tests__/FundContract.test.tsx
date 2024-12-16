@@ -37,7 +37,7 @@ jest.mock("../../../app/wagmi", () => ({
 }));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
-  getDefaultConfig: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -105,18 +105,14 @@ describe("fund contract tabr", () => {
     //     )
     //   )
     // );
-
     // const fundContractTab = screen.getByTestId("fund-contract");
     // fireEvent.click(fundContractTab);
-
     // expect(screen.getByText("Details")).toBeInTheDocument();
-
     // if (process.env.REACT_APP_ALLO_VERSION === "allo-v1") {
     //   expect(screen.getByText("Contract Address:")).toBeInTheDocument();
     //   expect(screen.getByTestId("fund-contract-btn")).toBeInTheDocument();
     //   expect(screen.getByTestId("view-contract-btn")).toBeInTheDocument();
     // }
-
     // expect(screen.getByText("Payout token:")).toBeInTheDocument();
     // expect(screen.getByText("Matching pool size:")).toBeInTheDocument();
     // expect(screen.getByText("Protocol fee:")).toBeInTheDocument();

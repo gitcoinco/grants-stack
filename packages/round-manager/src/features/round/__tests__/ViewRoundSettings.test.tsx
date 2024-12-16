@@ -44,7 +44,7 @@ jest.mock("../../../app/wagmi", () => ({
 
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
-  getDefaultConfig: jest.fn(),
+  connectorsForWallets: jest.fn(),
 }));
 
 jest.mock("../../common/Auth", () => ({

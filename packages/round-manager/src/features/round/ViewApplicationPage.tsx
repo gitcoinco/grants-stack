@@ -170,7 +170,7 @@ export default function ViewApplicationPage() {
     };
 
     if (roundChainId) fetchApplications();
-  }, [roundChainId, roundId]);
+  }, [roundChainId, roundId, id, dataLayer]);
 
   useEffect(() => {
     if (contractUpdatingStatus === ProgressStatus.IS_ERROR) {
@@ -334,7 +334,10 @@ export default function ViewApplicationPage() {
 
       if (application?.answers && application.answers.length > 0) {
         for (let _answerBlock of application.answers) {
-          if (_answerBlock.encryptedAnswer && !isLitUnavailable(round.chainId!)) {
+          if (
+            _answerBlock.encryptedAnswer &&
+            !isLitUnavailable(round.chainId!)
+          ) {
             try {
               const encryptedAnswer = _answerBlock.encryptedAnswer;
               const base64EncryptedString = [
@@ -349,7 +352,7 @@ export default function ViewApplicationPage() {
                 chainId: Number(roundChainId!),
                 contract: roundId.startsWith("0x")
                   ? roundId
-                  : round?.payoutStrategy.id ?? "",
+                  : (round?.payoutStrategy.id ?? ""),
               });
 
               const decryptedString = await lit.decryptString(
@@ -816,7 +819,7 @@ export default function ViewApplicationPage() {
                   answerBlocks?.map((block: AnswerBlock) => {
                     const answerText = Array.isArray(block.answer)
                       ? block.answer.join(", ")
-                      : block.answer ?? "";
+                      : (block.answer ?? "");
 
                     return (
                       <div key={block.questionId} className="pb-5">
