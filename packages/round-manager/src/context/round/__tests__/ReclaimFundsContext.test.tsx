@@ -12,6 +12,7 @@ jest.mock("wagmi", () => ({
   useAccount: () => ({
     chainId: 1,
   }),
+  createConfig: jest.fn(),
 }));
 jest.mock("../../../features/api/payoutStrategy/payoutStrategy");
 
@@ -23,7 +24,6 @@ jest.mock("viem", () => ({
 jest.mock("common", () => ({
   ...jest.requireActual("common"),
   useAllo: jest.fn(),
-  
 }));
 
 const alloBackend = new AlloV1({
@@ -36,7 +36,6 @@ const alloBackend = new AlloV1({
   waitUntilIndexerSynced: jest.fn(),
   transactionSender: createMockTransactionSender(),
 });
-
 
 const testParams: ReclaimFundsParams = {
   allo: alloBackend,

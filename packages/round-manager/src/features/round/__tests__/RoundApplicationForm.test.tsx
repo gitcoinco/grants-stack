@@ -45,6 +45,7 @@ jest.mock("wagmi", () => ({
     ],
   }),
   useProvider: () => ({}),
+  createConfig: jest.fn(),
 }));
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),

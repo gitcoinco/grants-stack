@@ -15,6 +15,7 @@ jest.mock("wagmi", () => ({
   useAccount: () => ({
     chainId: 10,
   }),
+  createConfig: jest.fn(),
 }));
 jest.mock("../../../constants", () => ({
   ...jest.requireActual("../../../constants"),

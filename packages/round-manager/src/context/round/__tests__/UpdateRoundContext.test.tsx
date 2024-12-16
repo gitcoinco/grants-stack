@@ -31,6 +31,7 @@ jest.mock("wagmi", () => ({
   useAccount: () => ({
     chainId: 1,
   }),
+  createConfig: jest.fn(),
 }));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   ConnectButton: jest.fn(),
