@@ -1,6 +1,6 @@
 # round-manager
 
-This package serves the app which holds all the features w.r.t to
+This package serves the app which holds all the features w.r.t
 
 - creating a program
 - maintaining a program
@@ -49,7 +49,7 @@ It contains the `ProtectedRoute` component and `web3Service` which extends the b
 
 ## Encrypting PII information
 
-Since all the data is decentralized stored, there might be PII (Personally identifiable information) data which we cannot store. To see how we handle those scenarios, checkout [EncryptingPII.md](docs/EncryptingPII.md)
+Since all the data is decentrally stored, there might be PII (Personally identifiable information) data which we cannot store. To see how we handle those scenarios, checkout [EncryptingPII.md](docs/EncryptingPII.md)
 
 ### Development
 
