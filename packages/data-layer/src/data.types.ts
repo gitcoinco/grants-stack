@@ -1,6 +1,9 @@
 import { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 import { Address } from "viem";
-import { RoundApplicationMetadata } from "./roundApplication.types";
+import {
+  RoundApplicationMetadata,
+  RoundApplicationQuestion,
+} from "./roundApplication.types";
 export type RoundPayoutType =
   | "allov1.Direct"
   | "allov1.QF"
@@ -256,6 +259,7 @@ export type RoundWithApplications = Omit<RoundGetRound, "applications"> & {
 export type RoundForExplorer = Omit<RoundGetRound, "applications"> & {
   applications: (Application & { anchorAddress: Address })[];
   uniqueDonorsCount?: number;
+  applicationMetadata?: RoundApplicationMetadata;
 };
 
 export type BaseDonorValues = {
@@ -471,6 +475,8 @@ export interface Round {
       info: string;
     };
   };
+
+  applicationQuestions?: RoundApplicationQuestion[];
   /**
    * Pointer to round metadata in a decentralized storage e.g IPFS, Ceramic etc.
    */

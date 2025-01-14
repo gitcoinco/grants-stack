@@ -770,6 +770,8 @@ export class DataLayer {
           id: round.strategyAddress,
           strategyName: round.strategyName,
         },
+        applicationQuestions:
+          round.applicationMetadata?.applicationSchema?.questions,
         approvedProjects: projects,
         uniqueDonorsCount: round.uniqueDonorsCount,
       },
