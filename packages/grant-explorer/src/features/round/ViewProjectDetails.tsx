@@ -52,6 +52,7 @@ import {
 import { DefaultLayout } from "../common/DefaultLayout";
 import {
   mapApplicationToProject,
+  mapApplicationToRound,
   useApplication,
 } from "../projects/hooks/useApplication";
 import { PassportWidget } from "../common/PassportWidget";
@@ -119,9 +120,11 @@ export default function ViewProjectDetails() {
     },
     dataLayer
   );
-  const { round } = useRoundById(Number(chainId), roundId);
+  const { round: roundDetails } = useRoundById(Number(chainId), roundId);
 
   const projectToRender = application && mapApplicationToProject(application);
+  const round = application && mapApplicationToRound(application);
+
   round && (round.chainId = Number(chainId));
   const isSybilDefenseEnabled =
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
@@ -212,7 +215,7 @@ export default function ViewProjectDetails() {
                 <Detail text={description} testID="project-metadata" />
                 <ApplicationFormAnswers
                   answers={projectToRender.grantApplicationFormAnswers}
-                  round={round}
+                  round={roundDetails}
                 />
               </>
             ) : (
@@ -240,7 +243,7 @@ export default function ViewProjectDetails() {
         ),
       },
     ],
-    [stats, grants, projectToRender, description, round, impacts]
+    [stats, grants, projectToRender, description, impacts, roundDetails]
   );
 
   const handleTabChange = (tabIndex: number) => {
@@ -470,19 +473,19 @@ function ApplicationFormAnswers(props: {
 }) {
   const roundQuestions = props.round?.applicationQuestions as (BaseQuestion &
     RoundApplicationQuestion)[];
-  if (!roundQuestions) {
-    return null;
+  let answers: GrantApplicationFormAnswer[] = [];
+  if (roundQuestions) {
+    answers = roundQuestions
+      .filter((q) => !q.hidden && !q.encrypted)
+      .map((q) => ({
+        ...props.answers.find(
+          (a) =>
+            a.questionId === q.id && a.question === q.title && a.type === q.type
+        ),
+        question: q.title,
+      }))
+      .filter((a): a is GrantApplicationFormAnswer => !!a.answer);
   }
-  let answers = roundQuestions
-    .filter((q) => !q.hidden && !q.encrypted)
-    .map((q) => ({
-      ...props.answers.find(
-        (a) =>
-          a.questionId === q.id && a.question === q.title && a.type === q.type
-      ),
-      question: q.title,
-    }))
-    .filter((a): a is GrantApplicationFormAnswer => !!a.answer);
 
   if (answers.length === 0) {
     answers = props.answers.filter((a) => !!a.answer && !a.hidden);
