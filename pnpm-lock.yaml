@@ -380,8 +380,8 @@ importers:
   packages/common:
     dependencies:
       '@allo-team/allo-v2-sdk':
-        specifier: 1.0.79
-        version: 1.0.79(@typechain/ethers-v6@0.5.1(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.6.3))(typescript@5.6.3))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@18.19.60)(typescript@5.6.3))(typechain@8.3.2(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8)
+        specifier: 1.1.1
+        version: 1.1.1(@typechain/ethers-v6@0.5.1(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.6.3))(typescript@5.6.3))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@18.19.60)(typescript@5.6.3))(typechain@8.3.2(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8)
       '@ethersproject/abstract-signer':
         specifier: ^5.7.0
         version: 5.7.0
@@ -1351,8 +1351,8 @@ packages:
   '@adraffy/ens-normalize@1.10.1':
     resolution: {integrity: sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==}
 
-  '@allo-team/allo-v2-sdk@1.0.79':
-    resolution: {integrity: sha512-wtCL7iKn8yHfBowXy+KcaGQ1jTTotyu6yNhhtW+QiMwprVb4HYPV/bME6omSeLiXbeHkmuq+tIcd9RTIo3Eckg==}
+  '@allo-team/allo-v2-sdk@1.1.1':
+    resolution: {integrity: sha512-x2Yu14T7mxMtcId8iIg1Eaawt7crKdMDnSzDZX785MpLWXdtIxQUvf1Gbj4HvyC7CEZWueRSmN7jvf06+NKo7g==}
     engines: {node: '>=16.15.0', npm: '>=8.5.5'}
 
   '@alloc/quick-lru@5.2.0':
@@ -16423,7 +16423,7 @@ snapshots:
 
   '@adraffy/ens-normalize@1.10.1': {}
 
-  '@allo-team/allo-v2-sdk@1.0.79(@typechain/ethers-v6@0.5.1(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.6.3))(typescript@5.6.3))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@18.19.60)(typescript@5.6.3))(typechain@8.3.2(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8)':
+  '@allo-team/allo-v2-sdk@1.1.1(@typechain/ethers-v6@0.5.1(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.6.3))(typescript@5.6.3))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@18.19.60)(typescript@5.6.3))(typechain@8.3.2(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8)':
     dependencies:
       '@typechain/hardhat': 9.1.0(@typechain/ethers-v6@0.5.1(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.6.3))(typescript@5.6.3))(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.15(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@18.19.60)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))(typechain@8.3.2(typescript@5.6.3))
       dotenv: 16.4.5

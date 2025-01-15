@@ -8,6 +8,7 @@ import {
   DonationVotingMerkleDistributionDirectTransferStrategyAbi,
   DonationVotingMerkleDistributionStrategy,
   DonationVotingMerkleDistributionStrategyTypes,
+  EasyRetroFundingStrategy,
   Registry,
   RegistryAbi,
   StrategyFactory,
@@ -715,6 +716,23 @@ export class AlloV2 implements Allo {
 
         case RoundCategory.Direct: {
           const strategyInstance = new DirectGrantsLiteStrategy({
+            chain: this.chainId,
+            poolId: BigInt(args.roundId),
+          });
+
+          registerRecipientTx = strategyInstance.getRegisterRecipientData({
+            registryAnchor: args.projectId,
+            recipientAddress: metadata.application.recipient,
+            metadata: {
+              protocol: 1n,
+              pointer: ipfsResult.value,
+            },
+          });
+          break;
+        }
+
+        case RoundCategory.Retrofunding: {
+          const strategyInstance = new EasyRetroFundingStrategy({
             chain: this.chainId,
             poolId: BigInt(args.roundId),
           });

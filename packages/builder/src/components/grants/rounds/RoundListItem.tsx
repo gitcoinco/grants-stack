@@ -97,6 +97,11 @@ export default function RoundListItem({
               Direct Grant
             </span>
           ) : null}
+          {roundPayoutStrategy === RoundCategory.Retrofunding ? (
+            <span className={`text-${colorScheme?.text} text-sm`}>
+              Retrofunding
+            </span>
+          ) : null}
         </Badge>
       </span>
     );

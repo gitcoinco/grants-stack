@@ -42,6 +42,9 @@ export const strategyNameToCategory = (
     case "allov2.DirectGrantsLiteStrategy":
       return RoundCategory.Direct;
 
+    case "allov2.EasyRetroFundingStrategy":
+      return RoundCategory.Retrofunding;
+
     case "allov1.QF":
     case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
       return RoundCategory.QuadraticFunding;

@@ -350,7 +350,7 @@ export type RoundPayoutTypeNew =
   | "allov2.DirectAllocationStrategy"
   | ""; // This is to handle the cases where the strategyName is not set in a round, mostly spam rounds
 
-export type RoundStrategyType = "QuadraticFunding" | "DirectGrants";
+export type RoundStrategyType = "QuadraticFunding" | "DirectGrants" | "Retrofunding";
 
 export function getRoundStrategyTitle(name: string) {
   switch (getRoundStrategyType(name)) {
@@ -359,6 +359,9 @@ export function getRoundStrategyTitle(name: string) {
 
     case "QuadraticFunding":
       return "Quadratic Funding";
+
+    case "Retrofunding":
+      return "Retro Funding";
   }
 }
 
@@ -374,6 +377,9 @@ export function getRoundStrategyType(name: string): RoundStrategyType {
     case "MERKLE":
     case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
       return "QuadraticFunding";
+
+    case "allov2.EasyRetroFundingStrategy":
+      return "Retrofunding";
 
     default:
       throw new Error(`Unknown round strategy type: ${name}`);
