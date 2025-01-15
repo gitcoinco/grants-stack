@@ -97,8 +97,7 @@ export const loadRound =
         roundPayoutStrategy = RoundCategory.Retrofunding;
         applicationsStartTime =
           Date.parse(v2Round.applicationsStartTime) / 1000;
-        applicationsEndTime =
-          Date.parse(v2Round.applicationsEndTime) / 1000;
+        applicationsEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
         roundStartTime = Date.parse(v2Round.applicationsStartTime) / 1000;
         roundEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
         break;

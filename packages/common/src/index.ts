@@ -350,7 +350,10 @@ export type RoundPayoutTypeNew =
   | "allov2.DirectAllocationStrategy"
   | ""; // This is to handle the cases where the strategyName is not set in a round, mostly spam rounds
 
-export type RoundStrategyType = "QuadraticFunding" | "DirectGrants" | "Retrofunding";
+export type RoundStrategyType =
+  | "QuadraticFunding"
+  | "DirectGrants"
+  | "Retrofunding";
 
 export function getRoundStrategyTitle(name: string) {
   switch (getRoundStrategyType(name)) {
@@ -484,6 +487,7 @@ export function isChainIdSupported(chainId: number) {
 }
 
 export function isLitUnavailable(chainId: number) {
+  chainId; // TODO: remove this once we have a way to check if LIT is available on a chain
   return true;
   // return [
   //   4201, // LUKSO_TESTNET,
