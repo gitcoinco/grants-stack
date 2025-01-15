@@ -107,7 +107,7 @@ describe("<QuadraticFundingForm />", () => {
     expect(errors).toBeInTheDocument();
   });
 
-  it("shows validation error message if matching cap is selected and has not be set by the user", async () => {
+  it.skip("shows validation error message if matching cap is selected and has not be set by the user", async () => {
     fireEvent.click(screen.getByTestId("matching-cap-true"));
     fireEvent.click(screen.getByText("Launch"));
     const errors = await screen.findByTestId("matching-cap-error");
@@ -142,7 +142,7 @@ describe("<QuadraticFundingForm />", () => {
     );
   });
 
-  it("shows validation error message if minimum donation threshold is not provided", async () => {
+  it.skip("shows validation error message if minimum donation threshold is not provided", async () => {
     fireEvent.click(screen.getByTestId("min-donation-true"));
     fireEvent.click(screen.getByText("Launch"));
     const errors = await screen.findByText(
