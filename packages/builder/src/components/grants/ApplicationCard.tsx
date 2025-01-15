@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { loadRound } from "../../actions/rounds";
-import { roundApplicationViewPath } from "../../routes";
 import { ApplicationCardType, RoundSupport } from "../../types";
 import {
   formatDate,
@@ -196,6 +195,9 @@ export default function ApplicationCard({
     return null;
   }
 
+  const applicationViewLink = `https://beta.checker.gitcoin.co/view/application/
+    ${applicationData.chainId}/${applicationData.roundID}/${applicationData.application.id}`;
+
   return (
     <Box
       p={2}
@@ -241,13 +243,7 @@ export default function ApplicationCard({
               </a>
             </p>
           )}
-          <Link
-            to={roundApplicationViewPath(
-              applicationData.chainId.toString(),
-              applicationData.roundID,
-              applicationData.application.metadataCid || ""
-            )}
-          >
+          <Link to={applicationViewLink} target="_blank">
             <Button
               backgroundColor="purple.100"
               color="purple.600"

@@ -6,7 +6,6 @@ export const slugs = {
   newGrant: `/projects/new`,
   round: `/chains/:chainId/rounds/:roundId`,
   roundApplication: `/chains/:chainId/rounds/:roundId/apply`,
-  roundApplicationView: `/chains/:chainId/rounds/:roundId/view/:ipfsHash`,
 };
 
 export const rootPath = () => slugs.root;
@@ -39,9 +38,3 @@ export const roundApplicationPathForProject = (
   roundId: string,
   projectId: string
 ) => `/round/${chainId}/${roundId}/${projectId}`;
-
-export const roundApplicationViewPath = (
-  chainId: string,
-  roundId: string,
-  ipfsHash: string
-) => `/chains/${chainId}/rounds/${roundId}/view/${ipfsHash}`;
