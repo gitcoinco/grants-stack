@@ -18,6 +18,7 @@ export type RoundVisibilityType = "public" | "private";
 export enum RoundCategory {
   QuadraticFunding,
   Direct,
+  Retrofunding,
 }
 
 export type ApplicationStatus =

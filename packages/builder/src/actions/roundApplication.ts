@@ -160,7 +160,7 @@ const applyToRound =
       projectId: projectUniqueID as `0x${string}`,
       roundId: isV2 ? Number(roundId) : (roundId as Hex),
       metadata: signedApplication as unknown as AnyJson,
-      strategy,
+      strategy: strategy as RoundCategory,
     });
 
     // Apply To Round

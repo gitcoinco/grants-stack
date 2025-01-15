@@ -93,6 +93,15 @@ export const loadRound =
         roundEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
         break;
 
+      case "allov2.EasyRetroFundingStrategy":
+        roundPayoutStrategy = RoundCategory.Retrofunding;
+        applicationsStartTime =
+          Date.parse(v2Round.applicationsStartTime) / 1000;
+        applicationsEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
+        roundStartTime = Date.parse(v2Round.applicationsStartTime) / 1000;
+        roundEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
+        break;
+
       case "allov1.QF":
       case "allov2.DonationVotingMerkleDistributionDirectTransferStrategy":
       default:

@@ -1,10 +1,14 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { ApplicationStatus, DistributionMatch, Round } from "data-layer";
+import {
+  ApplicationStatus,
+  DistributionMatch,
+  Round,
+  RoundCategory,
+} from "data-layer";
 import { Address, Hex } from "viem";
 import { AnyJson } from "..";
 import {
   CreateRoundData,
-  RoundCategory,
   UpdateRoundParams,
   MatchingStatsData,
 } from "../types";
@@ -100,7 +104,7 @@ export interface Allo {
     projectId: Hex;
     roundId: Hex | number;
     metadata: AnyJson;
-    strategy?: RoundCategory;
+    strategy: RoundCategory;
   }) => AlloOperation<
     Result<Hex>,
     {

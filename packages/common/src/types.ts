@@ -68,6 +68,7 @@ export type ProjectRequirements = {
 export enum RoundCategory {
   QuadraticFunding,
   Direct,
+  Retrofunding,
 }
 
 export enum UpdateAction {
