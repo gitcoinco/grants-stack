@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { loadRound } from "../../actions/rounds";
-import { roundApplicationViewPath } from "../../routes";
 import { ApplicationCardType, RoundSupport } from "../../types";
 import {
   formatDate,
@@ -196,17 +195,8 @@ export default function ApplicationCard({
     return null;
   }
 
-  const applicationStartTime = new Date(props.round.applicationsStartTime);
-  const showCheckerLink =
-    applicationStartTime >= new Date("2024-12-01T00:00:00Z");
-
-  const applicationViewLink = showCheckerLink
-    ? `https://beta.checker.gitcoin.co/view/application/${applicationData.chainId}/${applicationData.roundID}/${applicationData.application.id}`
-    : roundApplicationViewPath(
-        applicationData.chainId.toString(),
-        applicationData.roundID,
-        applicationData.application.metadataCid || ""
-      );
+  const applicationViewLink = `https://beta.checker.gitcoin.co/view/application/
+    ${applicationData.chainId}/${applicationData.roundID}/${applicationData.application.id}`;
 
   return (
     <Box
