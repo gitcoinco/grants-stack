@@ -780,18 +780,29 @@ export class AlloV2 implements Allo {
         blockNumber: receipt.blockNumber,
       });
 
-      // sync pool with checker
-      await fetch("https://api.checker.gitcoin.co/api/pools", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          alloPoolId: args.roundId.toString(),
-          chainId: this.chainId,
-          skipEvaluation: false,
-        }),
-      });
+      try {
+        // Trigger the call to sync pool with checker API without awaiting the result.
+        // We don't await here because it's not necessary to block execution or handle the response.
+        // This also prevents checker API failures from impacting the rest of the code.
+        fetch("https://api.checker.gitcoin.co/api/pools", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            alloPoolId: args.roundId.toString(),
+            chainId: this.chainId,
+            skipEvaluation: false,
+          }),
+        }).catch((error) => {
+          console.error("Checker API call failed:", error);
+        });
+      } catch (error) {
+        console.error(
+          "Unexpected error while triggering checker API call:",
+          error
+        );
+      }
 
       emit("indexingStatus", success(null));
 
