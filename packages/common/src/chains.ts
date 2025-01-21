@@ -9,7 +9,7 @@ const rpcUrls: { [key: number]: string | undefined } = {
   1: "https://eth-mainnet.g.alchemy.com/v2/",
   10: "https://opt-mainnet.g.alchemy.com/v2/",
   100: "https://gnosis-mainnet.g.alchemy.com/v2/",
-  // 42: "", // lukso
+  42: "https://rpc.mainnet.lukso.network",
   137: "https://polygon-mainnet.g.alchemy.com/v2/",
   // 250: "", // fantom
   300: "https://zksync-sepolia.g.alchemy.com/v2/",
