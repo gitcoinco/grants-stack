@@ -56,8 +56,6 @@ export const parseRoundApplicationMetadata = (
     };
   }
 
-  // const [major, minor, patch] = object.version.split(".").map(Number);
-  //
   metadata.applicationSchema.questions =
     metadata.applicationSchema.questions.map(
       (q: any): RoundApplicationQuestion => ({
@@ -71,14 +69,18 @@ export const parseRoundApplicationMetadata = (
       })
     );
 
+  const maxId = Math.max(
+    ...metadata.applicationSchema.questions.map((q) => q.id)
+  );
+
   metadata.applicationSchema.questions = [
     ...metadata.applicationSchema.questions,
     {
-      id: metadata.applicationSchema.questions.length + 1,
+      id: maxId + 1,
       type: "project",
     },
     {
-      id: metadata.applicationSchema.questions.length + 2,
+      id: maxId + 2,
       type: "recipient",
     },
   ];
