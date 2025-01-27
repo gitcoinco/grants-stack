@@ -72,15 +72,15 @@ export const parseRoundApplicationMetadata = (
     );
 
   metadata.applicationSchema.questions = [
+    ...metadata.applicationSchema.questions,
     {
-      id: metadata.applicationSchema.questions.length,
+      id: metadata.applicationSchema.questions.length + 1,
       type: "project",
     },
     {
-      id: metadata.applicationSchema.questions.length + 1,
+      id: metadata.applicationSchema.questions.length + 2,
       type: "recipient",
     },
-    ...metadata.applicationSchema.questions,
   ];
 
   return metadata;
