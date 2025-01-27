@@ -74,7 +74,6 @@ export const parseRoundApplicationMetadata = (
   );
 
   metadata.applicationSchema.questions = [
-    ...metadata.applicationSchema.questions,
     {
       id: maxId + 1,
       type: "project",
@@ -83,6 +82,7 @@ export const parseRoundApplicationMetadata = (
       id: maxId + 2,
       type: "recipient",
     },
+    ...metadata.applicationSchema.questions,
   ];
 
   return metadata;
