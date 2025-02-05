@@ -70,6 +70,7 @@ export const parseRoundApplicationMetadata = (
     );
 
   const maxId = Math.max(
+    0,
     ...metadata.applicationSchema.questions.map((q) => q.id)
   );
 
