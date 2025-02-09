@@ -454,7 +454,21 @@ export const getPaginatedProjects = gql`
         tags: { equalTo: "allo-v2" }
         not: { tags: { contains: "program" } }
         chainId: {
-          in: [1, 137, 10, 324, 42161, 42220, 43114, 534352, 8453, 1329]
+          in: [
+            1
+            137
+            10
+            324
+            42161
+            42220
+            43114
+            534352
+            8453
+            1329
+            100
+            42
+            1088
+          ]
         }
         rounds: { every: { applicationsExist: true } }
       }
@@ -498,7 +512,21 @@ export const getProjectsBySearchTerm = gql`
         tags: { equalTo: "allo-v2" }
         not: { tags: { contains: "program" } }
         chainId: {
-          in: [1, 137, 10, 324, 42161, 42220, 43114, 534352, 8453, 1329]
+          in: [
+            1
+            137
+            10
+            324
+            42161
+            42220
+            43114
+            534352
+            8453
+            1329
+            100
+            42
+            1088
+          ]
         }
         rounds: { every: { applicationsExist: true } }
       }
