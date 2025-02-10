@@ -251,15 +251,26 @@ export function createMockTransactionSender(): TransactionSender & {
   };
 }
 
+export const getMultiplier = (chainId?: number) => {
+  if (chainId && chainId === 295) {
+    // Hedera Mainnet
+    return 10 ** 10;
+  }
+  return 1;
+};
+
 export async function sendRawTransaction(
   sender: TransactionSender,
-  args: TransactionData
+  args: TransactionData,
+  chainId?: number
 ): Promise<Result<Hex>> {
   try {
     const tx = await sender.send({
       to: args.to,
       data: args.data,
-      value: args.value,
+      value: args.value
+        ? args.value * BigInt(getMultiplier(chainId))
+        : undefined,
     });
     return success(tx);
   } catch (err) {
@@ -280,14 +291,15 @@ export async function sendTransaction<
       })
     | { address: Address; value: bigint }
     | { address: Address; data: Hex }
-    | { address: Address; value: bigint; data: Hex }
+    | { address: Address; value: bigint; data: Hex },
+  chainId?: number
 ): Promise<Result<Hex>> {
   try {
     let data: Hex | undefined;
     let value: bigint | undefined;
 
     if ("value" in args) {
-      value = args.value;
+      value = args.value * BigInt(getMultiplier(chainId));
     }
 
     if ("data" in args) {

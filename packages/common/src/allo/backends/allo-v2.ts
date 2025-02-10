@@ -135,49 +135,61 @@ export class AlloV2 implements Allo {
 
     /* decide which function to use based on whether token is native, permit-compatible or DAI */
     if (token.address === zeroAddress || token.address === NATIVE) {
-      tx = await sendTransaction(this.transactionSender, {
-        address: mrcAddress,
-        abi: MRC_ABI,
-        functionName: "allocate",
-        args: [poolIds, Object.values(groupedAmounts), data],
-        value: nativeTokenAmount,
-      });
+      tx = await sendTransaction(
+        this.transactionSender,
+        {
+          address: mrcAddress,
+          abi: MRC_ABI,
+          functionName: "allocate",
+          args: [poolIds, Object.values(groupedAmounts), data],
+          value: nativeTokenAmount,
+        },
+        this.chainId
+      );
     } else if (permit) {
       if (getPermitType(token, this.chainId) === "dai") {
-        tx = await sendTransaction(this.transactionSender, {
-          address: mrcAddress,
-          abi: MRC_ABI,
-          functionName: "allocateDAIPermit",
-          args: [
-            data,
-            poolIds,
-            Object.values(groupedAmounts),
-            Object.values(groupedAmounts).reduce((acc, b) => acc + b),
-            token.address as Hex,
-            BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
-            permit.nonce,
-            permit.sig.v,
-            permit.sig.r as Hex,
-            permit.sig.s as Hex,
-          ],
-        });
+        tx = await sendTransaction(
+          this.transactionSender,
+          {
+            address: mrcAddress,
+            abi: MRC_ABI,
+            functionName: "allocateDAIPermit",
+            args: [
+              data,
+              poolIds,
+              Object.values(groupedAmounts),
+              Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+              token.address as Hex,
+              BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+              permit.nonce,
+              permit.sig.v,
+              permit.sig.r as Hex,
+              permit.sig.s as Hex,
+            ],
+          },
+          this.chainId
+        );
       } else {
-        tx = await sendTransaction(this.transactionSender, {
-          address: mrcAddress,
-          abi: MRC_ABI,
-          functionName: "allocateERC20Permit",
-          args: [
-            data,
-            poolIds,
-            Object.values(groupedAmounts),
-            Object.values(groupedAmounts).reduce((acc, b) => acc + b),
-            token.address as Hex,
-            BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
-            permit.sig.v,
-            permit.sig.r as Hex,
-            permit.sig.s as Hex,
-          ],
-        });
+        tx = await sendTransaction(
+          this.transactionSender,
+          {
+            address: mrcAddress,
+            abi: MRC_ABI,
+            functionName: "allocateERC20Permit",
+            args: [
+              data,
+              poolIds,
+              Object.values(groupedAmounts),
+              Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+              token.address as Hex,
+              BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
+              permit.sig.v,
+              permit.sig.r as Hex,
+              permit.sig.s as Hex,
+            ],
+          },
+          this.chainId
+        );
       }
     } else {
       /* Tried voting using erc-20 but no permit signature provided */
@@ -241,11 +253,15 @@ export class AlloV2 implements Allo {
         this.registry.createProfile(createProfileData);
 
       /** send transaction to create project */
-      const txResult = await sendRawTransaction(this.transactionSender, {
-        to: txCreateProfile.to,
-        data: txCreateProfile.data,
-        value: BigInt(txCreateProfile.value),
-      });
+      const txResult = await sendRawTransaction(
+        this.transactionSender,
+        {
+          to: txCreateProfile.to,
+          data: txCreateProfile.data,
+          value: BigInt(txCreateProfile.value),
+        },
+        this.chainId
+      );
 
       emit("transaction", txResult);
 
@@ -351,11 +367,15 @@ export class AlloV2 implements Allo {
         this.registry.updateProfileMetadata(data);
 
       /** send transaction to create project */
-      const txResult = await sendRawTransaction(this.transactionSender, {
-        to: txUpdateProfile.to,
-        data: txUpdateProfile.data,
-        value: BigInt(txUpdateProfile.value),
-      });
+      const txResult = await sendRawTransaction(
+        this.transactionSender,
+        {
+          to: txUpdateProfile.to,
+          data: txUpdateProfile.data,
+          value: BigInt(txUpdateProfile.value),
+        },
+        this.chainId
+      );
 
       emit("transaction", txResult);
 
@@ -454,11 +474,15 @@ export class AlloV2 implements Allo {
             this.chainId
           );
 
-          const txResult = await sendRawTransaction(this.transactionSender, {
-            to: txData.to,
-            data: txData.data,
-            value: BigInt(txData.value),
-          });
+          const txResult = await sendRawTransaction(
+            this.transactionSender,
+            {
+              to: txData.to,
+              data: txData.data,
+              value: BigInt(txData.value),
+            },
+            this.chainId
+          );
 
           if (txResult.type === "error") {
             return txResult;
@@ -521,11 +545,15 @@ export class AlloV2 implements Allo {
             this.chainId
           );
 
-          const txResult = await sendRawTransaction(this.transactionSender, {
-            to: txData.to,
-            data: txData.data,
-            value: BigInt(txData.value),
-          });
+          const txResult = await sendRawTransaction(
+            this.transactionSender,
+            {
+              to: txData.to,
+              data: txData.data,
+              value: BigInt(txData.value),
+            },
+            this.chainId
+          );
 
           if (txResult.type === "error") {
             return txResult;
@@ -594,11 +622,15 @@ export class AlloV2 implements Allo {
         txData = this.allo.createPool(createPoolArgs);
       }
 
-      const txResult = await sendRawTransaction(this.transactionSender, {
-        to: txData.to,
-        data: txData.data,
-        value: BigInt(txData.value),
-      });
+      const txResult = await sendRawTransaction(
+        this.transactionSender,
+        {
+          to: txData.to,
+          data: txData.data,
+          value: BigInt(txData.value),
+        },
+        this.chainId
+      );
 
       emit("transaction", txResult);
 
@@ -752,11 +784,15 @@ export class AlloV2 implements Allo {
           throw new AlloError("Unsupported strategy");
       }
 
-      const txResult = await sendRawTransaction(this.transactionSender, {
-        to: registerRecipientTx.to,
-        data: registerRecipientTx.data,
-        value: BigInt(registerRecipientTx.value),
-      });
+      const txResult = await sendRawTransaction(
+        this.transactionSender,
+        {
+          to: registerRecipientTx.to,
+          data: registerRecipientTx.data,
+          value: BigInt(registerRecipientTx.value),
+        },
+        this.chainId
+      );
 
       emit("transaction", txResult);
 
@@ -870,12 +906,16 @@ export class AlloV2 implements Allo {
         bitsPerStatus: 4,
       });
 
-      const txResult = await sendTransaction(this.transactionSender, {
-        address: args.strategyAddress,
-        abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi as Abi,
-        functionName: "reviewRecipients",
-        args: [rows, totalApplications],
-      });
+      const txResult = await sendTransaction(
+        this.transactionSender,
+        {
+          address: args.strategyAddress,
+          abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi as Abi,
+          functionName: "reviewRecipients",
+          args: [rows, totalApplications],
+        },
+        this.chainId
+      );
 
       emit("transaction", txResult);
 
@@ -928,12 +968,16 @@ export class AlloV2 implements Allo {
       if (args.tokenAddress === zeroAddress || !args.requireTokenApproval) {
         emit("tokenApprovalStatus", success(null));
       } else {
-        const approvalTx = await sendTransaction(this.transactionSender, {
-          address: args.tokenAddress,
-          abi: Erc20ABI,
-          functionName: "approve",
-          args: [this.allo.address(), args.amount],
-        });
+        const approvalTx = await sendTransaction(
+          this.transactionSender,
+          {
+            address: args.tokenAddress,
+            abi: Erc20ABI,
+            functionName: "approve",
+            args: [this.allo.address(), args.amount],
+          },
+          this.chainId
+        );
 
         if (approvalTx.type === "error") {
           return approvalTx;
@@ -949,13 +993,17 @@ export class AlloV2 implements Allo {
         }
       }
 
-      const tx = await sendTransaction(this.transactionSender, {
-        address: this.allo.address(),
-        abi: AlloAbi,
-        functionName: "fundPool",
-        args: [poolId, args.amount],
-        value: args.tokenAddress === zeroAddress ? args.amount : 0n,
-      });
+      const tx = await sendTransaction(
+        this.transactionSender,
+        {
+          address: this.allo.address(),
+          abi: AlloAbi,
+          functionName: "fundPool",
+          args: [poolId, args.amount],
+          value: args.tokenAddress === zeroAddress ? args.amount : 0n,
+        },
+        this.chainId
+      );
 
       emit("transaction", tx);
 
@@ -1004,12 +1052,16 @@ export class AlloV2 implements Allo {
     }
 
     return new AlloOperation(async ({ emit }) => {
-      const tx = await sendTransaction(this.transactionSender, {
-        address: args.payoutStrategyAddress,
-        abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi,
-        functionName: "withdraw",
-        args: [token],
-      });
+      const tx = await sendTransaction(
+        this.transactionSender,
+        {
+          address: args.payoutStrategyAddress,
+          abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi,
+          functionName: "withdraw",
+          args: [token],
+        },
+        this.chainId
+      );
 
       emit("transaction", tx);
 
@@ -1080,12 +1132,16 @@ export class AlloV2 implements Allo {
       const merkleRoot = tree.root as Hex;
 
       {
-        const txResult = await sendTransaction(this.transactionSender, {
-          address: args.strategyAddress,
-          abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi,
-          functionName: "updateDistribution",
-          args: [merkleRoot, { protocol: 1n, pointer: ipfsResult.value }],
-        });
+        const txResult = await sendTransaction(
+          this.transactionSender,
+          {
+            address: args.strategyAddress,
+            abi: DonationVotingMerkleDistributionDirectTransferStrategyAbi,
+            functionName: "updateDistribution",
+            args: [merkleRoot, { protocol: 1n, pointer: ipfsResult.value }],
+          },
+          this.chainId
+        );
 
         emit("transaction", txResult);
 
@@ -1164,11 +1220,15 @@ export class AlloV2 implements Allo {
           },
         });
 
-        const txResult = await sendRawTransaction(this.transactionSender, {
-          to: txUpdateMetadata.to,
-          data: txUpdateMetadata.data,
-          value: BigInt(txUpdateMetadata.value),
-        });
+        const txResult = await sendRawTransaction(
+          this.transactionSender,
+          {
+            to: txUpdateMetadata.to,
+            data: txUpdateMetadata.data,
+            value: BigInt(txUpdateMetadata.value),
+          },
+          this.chainId
+        );
 
         if (txResult.type === "error") {
           return error(txResult.error);
@@ -1243,7 +1303,8 @@ export class AlloV2 implements Allo {
             to: updateTimestampTxn.to,
             data: updateTimestampTxn.data,
             value: BigInt(updateTimestampTxn.value),
-          }
+          },
+          this.chainId
         );
 
         if (timestampTxResult.type === "error") {
@@ -1341,11 +1402,15 @@ export class AlloV2 implements Allo {
 
       const txData = strategy.distribute(recipientIds, projectsWithMerkleProof);
 
-      const txResult = await sendRawTransaction(this.transactionSender, {
-        to: txData.to,
-        data: txData.data,
-        value: BigInt(txData.value),
-      });
+      const txResult = await sendRawTransaction(
+        this.transactionSender,
+        {
+          to: txData.to,
+          data: txData.data,
+          value: BigInt(txData.value),
+        },
+        this.chainId
+      );
 
       emit("transaction", txResult);
 
@@ -1404,11 +1469,15 @@ export class AlloV2 implements Allo {
         },
       ]);
 
-      const tx = await sendRawTransaction(this.transactionSender, {
-        to: txData.to,
-        data: txData.data,
-        value: BigInt(txData.value),
-      });
+      const tx = await sendRawTransaction(
+        this.transactionSender,
+        {
+          to: txData.to,
+          data: txData.data,
+          value: BigInt(txData.value),
+        },
+        this.chainId
+      );
 
       emit("transaction", tx);
 
@@ -1458,11 +1527,15 @@ export class AlloV2 implements Allo {
           ? this.allo.addPoolManager(BigInt(args.poolId), args.manager)
           : this.allo.removePoolManager(BigInt(args.poolId), args.manager);
 
-      const txResult = await sendRawTransaction(this.transactionSender, {
-        to: txData.to,
-        data: txData.data,
-        value: BigInt(txData.value),
-      });
+      const txResult = await sendRawTransaction(
+        this.transactionSender,
+        {
+          to: txData.to,
+          data: txData.data,
+          value: BigInt(txData.value),
+        },
+        this.chainId
+      );
 
       emit("transaction", txResult);
 
@@ -1516,11 +1589,15 @@ export class AlloV2 implements Allo {
               members: args.members,
             });
 
-      const txResult = await sendRawTransaction(this.transactionSender, {
-        to: txData.to,
-        data: txData.data,
-        value: BigInt(txData.value),
-      });
+      const txResult = await sendRawTransaction(
+        this.transactionSender,
+        {
+          to: txData.to,
+          data: txData.data,
+          value: BigInt(txData.value),
+        },
+        this.chainId
+      );
 
       emit("transaction", txResult);
 
@@ -1590,12 +1667,16 @@ export class AlloV2 implements Allo {
       if (args.tokenAddress === zeroAddress || !args.requireTokenApproval) {
         emit("tokenApprovalStatus", success(null));
       } else {
-        const approvalTx = await sendTransaction(this.transactionSender, {
-          address: args.tokenAddress,
-          abi: Erc20ABI,
-          functionName: "approve",
-          args: [strategyAddress, args.amount],
-        });
+        const approvalTx = await sendTransaction(
+          this.transactionSender,
+          {
+            address: args.tokenAddress,
+            abi: Erc20ABI,
+            functionName: "approve",
+            args: [strategyAddress, args.amount],
+          },
+          this.chainId
+        );
 
         if (approvalTx.type === "error") {
           const result = new AlloError(
@@ -1627,11 +1708,15 @@ export class AlloV2 implements Allo {
         nonce: args.nonce,
       });
 
-      const tx = await sendRawTransaction(this.transactionSender, {
-        to: txData.to,
-        data: txData.data,
-        value: BigInt(txData.value),
-      });
+      const tx = await sendRawTransaction(
+        this.transactionSender,
+        {
+          to: txData.to,
+          data: txData.data,
+          value: BigInt(txData.value),
+        },
+        this.chainId
+      );
 
       emit("transaction", tx);
 

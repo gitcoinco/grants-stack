@@ -14,7 +14,7 @@ import { getBalance } from "@wagmi/core";
 import { useAccount } from "wagmi";
 import { config } from "../../../app/wagmi";
 import { zeroAddress } from "viem";
-import { NATIVE, getChainById } from "common";
+import { NATIVE, getChainById, getMultiplier } from "common";
 import { Balance, BalanceMap } from "../../api/types";
 import { formatUnits } from "ethers/lib/utils";
 import GenericModal from "../../common/GenericModal";
@@ -136,7 +136,7 @@ export default function ViewCart() {
                 address: token.address,
                 chainId: chainIdNumber,
                 formattedAmount: Number(
-                  formatUnits(balance.value, balance.decimals)
+                  formatUnits(balance.value / BigInt(getMultiplier(chainIdNumber)), balance.decimals)
                 ),
               };
             } catch (e) {
