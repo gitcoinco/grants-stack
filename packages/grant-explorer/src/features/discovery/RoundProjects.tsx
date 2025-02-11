@@ -15,7 +15,7 @@ export const RoundProjects: React.FC<RoundProjectsProps> = ({
     return (
       <Badge
         disabled={totalApplicationCount === 0}
-        data-testid="approved-applications-count"
+        data-testid="applications-count"
       >
         {totalApplicationCount} applications
       </Badge>
