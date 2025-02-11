@@ -6,8 +6,7 @@ import { RoundGetRound, RoundsQueryVariables, useDataLayer } from "data-layer";
 export const useRounds = (
   variables: RoundsQueryVariables,
   chainIds: number[],
-  onlywWhitelistedPrograms = false,
-  gqlQuery: string | undefined
+  onlywWhitelistedPrograms = false
 ): SWRResponse<RoundGetRound[]> => {
   const dataLayer = useDataLayer();
 
@@ -27,7 +26,6 @@ export const useRounds = (
           first: 500,
           chainIds,
           whitelistedPrograms,
-          query: gqlQuery,
         }),
       ]);
 
