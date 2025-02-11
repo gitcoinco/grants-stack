@@ -945,7 +945,6 @@ export class DataLayer {
     orderBy,
     filter,
     whitelistedPrograms,
-    query = getRoundsQuery,
   }: {
     chainIds: number[];
     first: number;
@@ -955,7 +954,7 @@ export class DataLayer {
     whitelistedPrograms?: string[];
     query?: string | undefined;
   }): Promise<{ rounds: RoundGetRound[] }> {
-    return await request(this.gsIndexerEndpoint, query, {
+    return await request(this.gsIndexerEndpoint, getRoundsQuery, {
       orderBy: orderBy ?? "NATURAL",
       chainIds,
       first,

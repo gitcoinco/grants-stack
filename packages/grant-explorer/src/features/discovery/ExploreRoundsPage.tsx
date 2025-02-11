@@ -11,7 +11,6 @@ import { getExplorerPageTitle } from "./utils/getExplorerPageTitle";
 import { RoundsGrid } from "./RoundsGrid";
 import { getEnabledChains } from "../../app/chainConfig";
 import { useMemo } from "react";
-import { getRoundsQueryWithAllApplications } from "data-layer/src/queries";
 
 const ExploreRoundsPage = () => {
   const [params] = useSearchParams();
@@ -20,8 +19,7 @@ const ExploreRoundsPage = () => {
   const rounds = useFilterRounds(
     filter,
     getEnabledChains(),
-    filter.status.includes("verified"),
-    getRoundsQueryWithAllApplications
+    filter.status.includes("verified")
   );
 
   const publicRounds = useMemo(
