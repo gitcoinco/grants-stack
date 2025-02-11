@@ -47,12 +47,6 @@ const ExploreRoundsPage = () => {
         className="flex-wrap"
         action={<RoundsFilter />}
       >
-        <div>
-          {rounds?.data?.map((round) => {
-            return <p>{"applications: " + round?.applications?.length}</p>;
-          })}
-        </div>
-
         <RoundsGrid {...rounds} loadingCount={6} roundType="all" />
       </LandingSection>
     </GradientLayout>

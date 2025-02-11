@@ -18,6 +18,7 @@ import { RoundDaysDetails } from "./RoundDaysDetails";
 import { RoundMatchAmountBadge } from "./RoundMatchAmountBadge";
 import { RoundStrategyBadge } from "./RoundStrategyBadge";
 import { RoundTimeBadge } from "./RoundTimeBadge";
+import { RoundProjects } from "./RoundProjects";
 import { Application, RoundGetRound } from "data-layer";
 import { parseChainIdIntoResult, stringToBlobUrl } from "common/dist/chains";
 
@@ -120,16 +121,6 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
 
   const trackEventValue = getTrackEventValue(roundType, index);
 
-  applications.map((application) => {
-    console.log("applications: " + application.id);
-
-    const app = application as Application;
-    console.log("casted: ", JSON.stringify(app));
-    // return (
-    //   <p key={application.id}>{application.id}</p>
-    // )
-  });
-
   return (
     <BasicCard className="w-full">
       <a
@@ -172,18 +163,11 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
           <div className="border-t" />
           <div className="flex justify-between">
             <div className="flex gap-2">
-              <Badge
-                disabled={totalApplicationCount === 0}
-                data-testid="approved-applications-count"
-              >
-                {totalApplicationCount} applications
-              </Badge>
-              <Badge
-                disabled={approvedApplications === 0}
-                data-testid="approved-applications-count"
-              >
-                {approvedApplications} projects
-              </Badge>
+              <RoundProjects
+                roundStates={roundStates}
+                totalApplicationCount={totalApplicationCount}
+                approvedApplications={approvedApplications}
+              />
               {strategyName !== ROUND_PAYOUT_DIRECT && (
                 <RoundMatchAmountBadge
                   chainId={chainId}

@@ -31,10 +31,6 @@ export const useRounds = (
         }),
       ]);
 
-      rounds?.map((round) => {
-        console.log("rounds.ts applications: " + round?.applications?.length);
-      });
-
       return rounds.filter(
         (round) =>
           !spamRounds[round.chainId]?.[round.id.toLowerCase()] &&
