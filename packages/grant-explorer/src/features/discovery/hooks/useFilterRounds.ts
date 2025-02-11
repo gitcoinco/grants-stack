@@ -75,7 +75,8 @@ export const ROUNDS_ENDING_SOON_FILTER: RoundSelectionParams & {
 export const useFilterRounds = (
   where: RoundSelectionParams,
   chains: TChain[],
-  onlywWhitelistedPrograms?: boolean
+  onlywWhitelistedPrograms?: boolean,
+  gqlQuery?: string | undefined
 ): SWRResponse<RoundGetRound[]> => {
   const chainIds =
     where.network === undefined || where.network.trim() === ""
@@ -103,7 +104,7 @@ export const useFilterRounds = (
   const orderBy =
     where.orderBy === undefined ? "CREATED_AT_BLOCK_DESC" : where.orderBy;
   const vars = { orderBy, filter };
-  return useRounds(vars, chainIds, onlywWhitelistedPrograms);
+  return useRounds(vars, chainIds, onlywWhitelistedPrograms, gqlQuery);
 };
 
 const createRoundWhereFilter = (

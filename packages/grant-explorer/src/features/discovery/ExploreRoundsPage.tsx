@@ -11,6 +11,7 @@ import { getExplorerPageTitle } from "./utils/getExplorerPageTitle";
 import { RoundsGrid } from "./RoundsGrid";
 import { getEnabledChains } from "../../app/chainConfig";
 import { useMemo } from "react";
+import { getRoundsQueryWithAllApplications } from "data-layer/src/queries";
 
 const ExploreRoundsPage = () => {
   const [params] = useSearchParams();
@@ -19,7 +20,8 @@ const ExploreRoundsPage = () => {
   const rounds = useFilterRounds(
     filter,
     getEnabledChains(),
-    filter.status.includes("verified")
+    filter.status.includes("verified"),
+    getRoundsQueryWithAllApplications
   );
 
   const publicRounds = useMemo(
@@ -45,6 +47,12 @@ const ExploreRoundsPage = () => {
         className="flex-wrap"
         action={<RoundsFilter />}
       >
+        <div>
+          {rounds?.data?.map((round) => {
+            return <p>{"applications: " + round?.applications?.length}</p>;
+          })}
+        </div>
+
         <RoundsGrid {...rounds} loadingCount={6} roundType="all" />
       </LandingSection>
     </GradientLayout>

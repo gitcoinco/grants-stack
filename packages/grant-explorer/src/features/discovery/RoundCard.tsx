@@ -18,7 +18,7 @@ import { RoundDaysDetails } from "./RoundDaysDetails";
 import { RoundMatchAmountBadge } from "./RoundMatchAmountBadge";
 import { RoundStrategyBadge } from "./RoundStrategyBadge";
 import { RoundTimeBadge } from "./RoundTimeBadge";
-import { RoundGetRound } from "data-layer";
+import { Application, RoundGetRound } from "data-layer";
 import { parseChainIdIntoResult, stringToBlobUrl } from "common/dist/chains";
 
 type RoundType = "all" | "endingSoon" | "active";
@@ -95,7 +95,13 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
     atTimeMs: Date.now(),
   });
 
-  const approvedApplicationsCount = applications?.length ?? 0;
+  // const approvedApplicationsCount = applications?.length ?? 0;
+
+  const totalApplicationCount = applications?.length ?? 0;
+  const approvedApplications =
+    applications?.filter(
+      (application) => (application as Application)?.status === "APPROVED"
+    ).length ?? 0;
 
   const getTrackEventValue = (roundType: RoundType, index: number) => {
     if (roundType === "all") return "round-card";
@@ -113,6 +119,16 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
   };
 
   const trackEventValue = getTrackEventValue(roundType, index);
+
+  applications.map((application) => {
+    console.log("applications: " + application.id);
+
+    const app = application as Application;
+    console.log("casted: ", JSON.stringify(app));
+    // return (
+    //   <p key={application.id}>{application.id}</p>
+    // )
+  });
 
   return (
     <BasicCard className="w-full">
@@ -157,10 +173,16 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
           <div className="flex justify-between">
             <div className="flex gap-2">
               <Badge
-                disabled={approvedApplicationsCount === 0}
+                disabled={totalApplicationCount === 0}
                 data-testid="approved-applications-count"
               >
-                {approvedApplicationsCount} projects
+                {totalApplicationCount} applications
+              </Badge>
+              <Badge
+                disabled={approvedApplications === 0}
+                data-testid="approved-applications-count"
+              >
+                {approvedApplications} projects
               </Badge>
               {strategyName !== ROUND_PAYOUT_DIRECT && (
                 <RoundMatchAmountBadge
