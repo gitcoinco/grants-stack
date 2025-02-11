@@ -955,11 +955,7 @@ export class DataLayer {
     whitelistedPrograms?: string[];
     query?: string | undefined;
   }): Promise<{ rounds: RoundGetRound[] }> {
-    // if (query === undefined) {
-    //   query = getRoundsQuery;
-    // }
-
-    const res = await request(this.gsIndexerEndpoint, query, {
+    return await request(this.gsIndexerEndpoint, query, {
       orderBy: orderBy ?? "NATURAL",
       chainIds,
       first,
@@ -970,8 +966,6 @@ export class DataLayer {
           }
         : filter,
     });
-
-    return res as { rounds: RoundGetRound[] };
   }
 
   async getProjectCollections(): Promise<Collection[]> {

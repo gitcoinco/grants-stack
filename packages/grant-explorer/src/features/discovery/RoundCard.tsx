@@ -96,10 +96,8 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
     atTimeMs: Date.now(),
   });
 
-  // const approvedApplicationsCount = applications?.length ?? 0;
-
   const totalApplicationCount = applications?.length ?? 0;
-  const approvedApplications =
+  const approvedApplicationCount =
     applications?.filter(
       (application) => (application as Application)?.status === "APPROVED"
     ).length ?? 0;
@@ -166,7 +164,7 @@ const RoundCard = ({ round, index, roundType }: RoundCardProps) => {
               <RoundProjects
                 roundStates={roundStates}
                 totalApplicationCount={totalApplicationCount}
-                approvedApplications={approvedApplications}
+                approvedApplications={approvedApplicationCount}
               />
               {strategyName !== ROUND_PAYOUT_DIRECT && (
                 <RoundMatchAmountBadge
