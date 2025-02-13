@@ -211,8 +211,8 @@ importers:
         specifier: ^8.4.14
         version: 8.5.2
       posthog-js:
-        specifier: ^1.132.0
-        version: 1.217.2
+        specifier: 1.132.0
+        version: 1.132.0
       process:
         specifier: ^0.11.10
         version: 0.11.10
@@ -817,8 +817,8 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       posthog-js:
-        specifier: ^1.90.0
-        version: 1.217.2
+        specifier: 1.132.0
+        version: 1.132.0
       process:
         specifier: ^0.11.10
         version: 0.11.10
@@ -1145,8 +1145,8 @@ importers:
         specifier: ^5.4.1
         version: 5.5.2
       posthog-js:
-        specifier: ^1.138.1
-        version: 1.217.2
+        specifier: 1.132.0
+        version: 1.132.0
       process:
         specifier: ^0.11.10
         version: 0.11.10
@@ -13069,8 +13069,8 @@ packages:
     resolution: {integrity: sha512-MjOadfU3Ys9KYoX0AdkBlFEF1Vx37uCCeN4ZHnmwm9FfpbsGWMZeBLMmmpY+6Ocqod7mkdZ0DT31OlbsFrLlkA==}
     engines: {node: ^10 || ^12 || >=14}
 
-  posthog-js@1.217.2:
-    resolution: {integrity: sha512-3KC+UjI0UT5zh8kAOVqe/AfvRjBMKynRIBQNlv0TXnfpZG0+h3r/1ONecDgCCGLs/a/55SJCExrugDlx+HPH3w==}
+  posthog-js@1.132.0:
+    resolution: {integrity: sha512-9Soamf6b8ASmsQirwbH0ksWudLw+NM32owashyDh505Q2zJR2mE7qysQxtXo7lTW7t0Pvddluth6ECxCUDQlHQ==}
 
   preact@10.25.4:
     resolution: {integrity: sha512-jLdZDb+Q+odkHJ+MpW/9U5cODzqnB+fy2EiHSZES7ldV5LK7yjlVzTp7R8Xy6W6y75kfK8iWYtFVH7lvjwrCMA==}
@@ -15771,9 +15771,6 @@ packages:
 
   web-vitals@2.1.4:
     resolution: {integrity: sha512-sVWcwhU5mX6crfI5Vd2dC4qchyTqxV8URinzt25XqVh+bHEPGH4C3NPrNionCP7Obx59wrYEbNlw4Z8sjALzZg==}
-
-  web-vitals@4.2.4:
-    resolution: {integrity: sha512-r4DIlprAGwJ7YM11VZp4R884m0Vmgr6EAKe3P+kO0PPj3Unqyvv59rczf6UiGcb9Z8QxZVcqKNwv/g0WNdWwsw==}
 
   webextension-polyfill@0.10.0:
     resolution: {integrity: sha512-c5s35LgVa5tFaHhrZDnr3FpQpjj1BB+RXhLTYUxGqBVN460HkbM8TBtEqdXWbpTKfzwCcjAZVF7zXCYSKtcp9g==}
@@ -33925,12 +33922,10 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  posthog-js@1.217.2:
+  posthog-js@1.132.0:
     dependencies:
-      core-js: 3.40.0
       fflate: 0.4.8
       preact: 10.25.4
-      web-vitals: 4.2.4
 
   preact@10.25.4: {}
 
@@ -37350,8 +37345,6 @@ snapshots:
   web-streams-polyfill@3.3.3: {}
 
   web-vitals@2.1.4: {}
-
-  web-vitals@4.2.4: {}
 
   webextension-polyfill@0.10.0: {}
 
