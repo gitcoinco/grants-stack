@@ -1,5 +1,4 @@
 const webpack = require("webpack");
-const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 const CracoEsbuildPlugin = require("craco-esbuild");
 const path = require("path");
 const { VerifyEnvPlugin } = require("verify-env");
@@ -15,25 +14,6 @@ const plugins = [
   }),
   new VerifyEnvPlugin(),
 ];
-
-if (process.env.REACT_APP_ENV === "production") {
-  plugins.push(
-    new SentryWebpackPlugin({
-      org: "gitcoin-protocol",
-      project: "grants-round-ge",
-
-      // Specify the directory containing build artifacts
-      include: "./build",
-
-      // Auth tokens can be obtained from https://sentry.io/settings/account/api/auth-tokens/
-      // and needs the `project:releases` and `org:read` scopes
-      authToken: process.env.REACT_APP_SENTRY_AUTH_TOKEN,
-
-      // Optionally uncomment the line below to override automatic release name detection
-      // release: process.env.RELEASE,
-    })
-  );
-}
 
 module.exports = {
   webpack: {
