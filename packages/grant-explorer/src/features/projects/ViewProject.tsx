@@ -10,6 +10,7 @@ import {
   useAllo,
   useParams,
   useValidateCredential,
+  getMultiplier,
 } from "common";
 import React, {
   ComponentProps,
@@ -158,7 +159,7 @@ export default function ViewProject() {
                 : token.address,
             chainId: chainId,
           });
-          return { token: token.address, balance: value };
+          return { token: token.address, balance: value / BigInt(getMultiplier(chainId)) };
         })
       );
 

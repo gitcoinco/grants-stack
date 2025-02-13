@@ -406,6 +406,7 @@ export {
   decodeEventFromReceipt,
   sendRawTransaction,
   sendTransaction,
+  getMultiplier,
 } from "./allo/transaction-sender";
 
 export type AnyJson =
