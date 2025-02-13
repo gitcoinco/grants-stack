@@ -224,7 +224,7 @@ export default function ApplicationsToReview() {
             $variant="outline"
             className="text-xs px-3 py-1 inline-block"
             disabled={isCsvExportLoading}
-            onClick={() => handleExportCsvClick(utils.getAddress(id), chainId)}
+            onClick={() => handleExportCsvClick(id, chainId)}
           >
             {isCsvExportLoading ? (
               <>
