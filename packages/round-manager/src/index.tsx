@@ -29,7 +29,6 @@ import ViewProgram from "./features/program/ViewProgramPage";
 import CreateRound from "./features/round/CreateRoundPage";
 import ViewApplication from "./features/round/ViewApplicationPage";
 import ViewRoundPage from "./features/round/ViewRoundPage";
-import { initSentry } from "./sentry";
 import { PostHogProvider } from "posthog-js/react";
 import { UpdateRoundProvider } from "./context/round/UpdateRoundContext";
 import { UpdateRolesProvider } from "./context/round/UpdateRolesContext";
@@ -39,9 +38,6 @@ import { SafeAutoConnect } from "./features/api/SafeAutoConnect";
 import { DataLayer, DataLayerProvider } from "data-layer";
 import { getConfig } from "common/src/config";
 import { initPosthog } from "./posthog";
-
-// Initialize sentry
-initSentry();
 
 // Initialize datadog
 initDatadog();

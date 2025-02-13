@@ -14,7 +14,6 @@ import { RoundProvider } from "./context/RoundContext";
 import { initDatadog } from "./datadog";
 import { initPosthog } from "./posthog";
 import reportWebVitals from "./reportWebVitals";
-import { initSentry } from "./sentry";
 import { initTagmanager } from "./tagmanager";
 
 import "./index.css";
@@ -37,7 +36,6 @@ import ViewProject from "./features/projects/ViewProject";
 import { ExploreProjectsPage } from "./features/discovery/ExploreProjectsPage";
 import { DirectAllocationProvider } from "./features/projects/hooks/useDirectAllocation";
 
-initSentry();
 initDatadog();
 initTagmanager();
 const posthog = initPosthog();
