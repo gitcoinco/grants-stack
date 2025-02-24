@@ -26,7 +26,7 @@ export default function InputLabel({
         >
           <span className="text-gray-400 text-xs mr-2 inline-block">
             <EyeSlashIcon className="w-3 h-3 inline-block mr-0.5 align-middle" />
-            <span className="align-middle">Hidden</span>
+            <span className="align-middle">Unlisted</span>
           </span>
         </Tooltip>
       )}
