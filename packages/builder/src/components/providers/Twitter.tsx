@@ -66,7 +66,8 @@ export default function Twitter({
         await fetchVerifiableCredential(
           process.env.REACT_APP_PASSPORT_IAM_URL || "",
           {
-            type: CredentialProvider.Twitter,
+            type: "VerifiableCredential",
+            types: [CredentialProvider.Twitter],
             version: "0.0.0",
             address: props.account || "",
             proofs: {

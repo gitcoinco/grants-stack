@@ -51,7 +51,7 @@ export class VerificationError extends Error {
 // Fetch a verifiableCredential
 export const fetchVerifiableCredential = async (
   iamUrl: string,
-  payload: GHOrgRequestPayload,
+  payload: any,
   signer: { signMessage: (message: string) => Promise<string> }
 ): Promise<VerifiableCredentialRecord> => {
   // first pull a challenge that can be signed by the user
