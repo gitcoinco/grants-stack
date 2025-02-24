@@ -74,7 +74,9 @@ export default function Github({
         await fetchVerifiableCredential(
           process.env.REACT_APP_PASSPORT_IAM_URL || "",
           {
-            type: CredentialProvider.Github,
+            type: "VerifiableCredential",
+            types: [CredentialProvider.Github],
+
             version: "0.0.0",
             address: props.account || "",
             org,
