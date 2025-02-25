@@ -21,6 +21,7 @@ describe("Fetch Credentials", () => {
   const payload: GHOrgRequestPayload = {
     address: "0x0",
     type: "Simple",
+    types: [],
     version: "Test-Case-1",
     org: "gitcoinco",
   };
