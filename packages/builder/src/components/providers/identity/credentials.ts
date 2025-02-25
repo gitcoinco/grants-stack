@@ -5,6 +5,7 @@ import {
   IssuedChallenge,
   VerifiableCredentialRecord,
 } from "@gitcoinco/passport-sdk-types";
+import { CredentialProvider } from "../../../types";
 
 export type { VerifiableCredential } from "@gitcoinco/passport-sdk-types";
 
@@ -37,6 +38,8 @@ export enum ClientType {
 }
 
 export type GHOrgRequestPayload = RequestPayload & {
+  type: string;
+  types: CredentialProvider[];
   requestedClient?: ClientType.GrantHub;
   org?: string;
 };
@@ -51,7 +54,7 @@ export class VerificationError extends Error {
 // Fetch a verifiableCredential
 export const fetchVerifiableCredential = async (
   iamUrl: string,
-  payload: any,
+  payload: GHOrgRequestPayload,
   signer: { signMessage: (message: string) => Promise<string> }
 ): Promise<VerifiableCredentialRecord> => {
   // first pull a challenge that can be signed by the user
@@ -86,8 +89,8 @@ export const fetchVerifiableCredential = async (
   return {
     signature,
     challenge,
-    record: response?.data.record,
-    credential: response?.data.credential,
+    record: response?.data[0].record,
+    credential: response?.data[0].credential,
   } as VerifiableCredentialRecord;
 };
 
