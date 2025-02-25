@@ -4,6 +4,7 @@ import {
   RequestPayload,
   IssuedChallenge,
   VerifiableCredentialRecord,
+  VerifiableCredential,
 } from "@gitcoinco/passport-sdk-types";
 import { CredentialProvider } from "../../../types";
 
@@ -77,20 +78,29 @@ export const fetchVerifiableCredential = async (
   payload.proofs = { ...payload.proofs, ...{ signature } };
 
   // fetch a credential from the API that fits the version, payload and passes the signature message challenge
-  const response = await axios.post(
+  const response = (await axios.post(
     `${iamUrl.replace(/\/*?$/, "")}/v${payload.version}/verify`,
     {
       payload,
       challenge,
     }
-  );
+  )) as {
+    data: {
+      record: VerifiableCredentialRecord["record"];
+      credential: VerifiableCredential;
+    }[];
+  };
+
+  if (response.data.length === 0) {
+    throw new VerificationError("No credential found");
+  }
 
   // return everything that was used to create the credential (along with the credential)
   return {
     signature,
     challenge,
-    record: response?.data[0].record,
-    credential: response?.data[0].credential,
+    record: response.data[0].record,
+    credential: response.data[0].credential,
   } as VerifiableCredentialRecord;
 };
 
