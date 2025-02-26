@@ -7,7 +7,7 @@ import {
 } from ".";
 import { DataLayer } from "./data-layer";
 
-// This is mocked from an acutal project on Sepolia
+// This is mocked from an actual project on Sepolia
 const mockProjects: v2Project[] = [
   {
     id: "0x8a79249b63395c25bd121ba6ff280198c399d4fb3f951fc3c42197b54a6db6a6",
