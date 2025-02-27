@@ -57,6 +57,7 @@ import {
 } from "../projects/hooks/useApplication";
 import { PassportWidget } from "../common/PassportWidget";
 import CopyToClipboard from "./CopyToClipboard";
+import OGImageGenerator from "../../ogImageGenerator";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
@@ -252,6 +253,18 @@ export default function ViewProjectDetails() {
 
   return (
     <>
+      {projectToRender && round && (
+        <OGImageGenerator
+          projectId={projectToRender?.grantApplicationId}
+          roundName={round?.roundMetadata?.name ?? ""}
+          roundDates={
+            round?.roundStartTime.toString() +
+            " - " +
+            round?.roundEndTime.toString()
+          }
+          logo={projectToRender?.projectMetadata.logoImg ?? ""}
+        />
+      )}
       <DefaultLayout>
         {isAfterRoundEndDate && (
           <div className="relative top-6">
