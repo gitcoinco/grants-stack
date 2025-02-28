@@ -21,6 +21,7 @@ describe("Fetch Credentials", () => {
   const payload: GHOrgRequestPayload = {
     address: "0x0",
     type: "Simple",
+    types: [],
     version: "Test-Case-1",
     org: "gitcoinco",
   };
@@ -71,7 +72,7 @@ describe("Fetch Credentials", () => {
 
       if (url.includes("verify")) {
         return {
-          data: MOCK_VERIFY_RESPONSE_BODY,
+          data: [MOCK_VERIFY_RESPONSE_BODY],
         };
       }
 
@@ -102,13 +103,15 @@ describe("Fetch Credentials", () => {
 
   it("will not attempt to sign if not provided a challenge in the challenge credential", async () => {
     jest.spyOn(axios, "post").mockResolvedValueOnce({
-      data: {
-        credential: {
-          credentialSubject: {
-            challenge: null,
+      data: [
+        {
+          credential: {
+            credentialSubject: {
+              challenge: null,
+            },
           },
         },
-      },
+      ],
     });
 
     await expect(
