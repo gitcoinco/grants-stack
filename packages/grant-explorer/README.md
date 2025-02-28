@@ -55,8 +55,8 @@ To contribute to this project, fork the project and follow the instructions at [
 
 ### Passport Integration
 
-In your `.env` you will need to specify two environment variables for [Gitcoin Passport Integration](https://passport.gitcoin.co/#/).
+In your `.env` you will need to specify two environment variables for [Passport Integration](https://passport.human.tech/).
 
-Generate a community scorer API Key with the Passport Scorer Dashboard [here](https://www.scorer.gitcoin.co/dashboard) by selecting API Keys in the sidebar.
+Generate an API Key with the Passport Scorer [developer portal](https://developer.passport.xyz/).
 
-Specify the `https://api.scorer.gitcoin.co` for the `REACT_APP_PASSPORT_API_ENDPOINT` and your generated API key for `REACT_APP_PASSPORT_API_KEY` in your `.env`.
+Specify `https://api.passport.xyz` for the `REACT_APP_PASSPORT_API_ENDPOINT` and your generated API key for `REACT_APP_PASSPORT_API_KEY` in your `.env`.

@@ -61,12 +61,12 @@ export const fetchPassport = (
   communityId: string,
   apiKey: string
 ): Promise<Response> => {
-  const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/registry/score/${communityId}/${address}`;
+  const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/v2/stamps/${communityId}/score/${address}`;
   return fetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+      "X-API-Key": `${apiKey}`,
     },
   });
 };
