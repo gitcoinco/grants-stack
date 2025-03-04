@@ -103,7 +103,6 @@ export const getProjectsById = gql`
       metadata
       metadataCid
       name
-      nodeId
       projectNumber
       registryAddress
       tags
@@ -561,7 +560,7 @@ export const getProjectsBySearchTerm = gql`
 export const getProjectsAndRolesByAddress = gql`
   query getProjectsAndRolesByAddressQuery(
     $address: String!
-    $version: String! //TODO: chainge the code in which this query is called
+    $version: String!
     $chainIds: [Int!]!
   ) {
     projects(
@@ -705,7 +704,7 @@ const getRoundForManagerFields = `
   fundedAmount
   fundedAmountInUsd
   matchingDistribution
-  roles(first: 100) {
+  roundRoles(first: 100) {
     role
     address
     createdAtBlock

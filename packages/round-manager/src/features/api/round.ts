@@ -83,7 +83,7 @@ export async function getRoundById(args: {
 }
 
 function indexerV2RoundToRound(round: RoundForManager): Round {
-  const operatorWallets = round.roles.map(
+  const operatorWallets = round.roundRoles.map(
     (account: { address: string }) => account.address
   );
 
@@ -129,7 +129,7 @@ function indexerV2RoundToRound(round: RoundForManager): Round {
     },
     ownedBy: round.projectId,
     operatorWallets: operatorWallets,
-    roles: round.roles,
+    roles: round.roundRoles,
     finalized: false,
     tags: round.tags,
     createdByAddress: round.createdByAddress,

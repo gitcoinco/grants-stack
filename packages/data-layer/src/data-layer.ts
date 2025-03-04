@@ -263,7 +263,7 @@ export class DataLayer {
     projectId: string;
     chainId: number;
   }): Promise<Address | undefined> {
-    const response: { project?: { anchorAddress: Address } } = await request(
+    const response: {  projects: Array<{ anchorAddress: Address }>} = await request(
       this.gsIndexerEndpoint,
       getProjectAnchorByIdAndChainId,
       {
@@ -272,7 +272,7 @@ export class DataLayer {
       },
     );
 
-    return response?.project?.anchorAddress;
+    return response?.projects[0]?.anchorAddress;
   }
 
   /**

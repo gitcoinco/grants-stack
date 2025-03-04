@@ -32,9 +32,7 @@ export function usePayouts(args: {
         projectId: args.projectId,
       });
 
-      const payouts =
-        result.applications[0]
-          .applicationsPayoutsByChainIdAndRoundIdAndApplicationId;
+      const payouts = result.applications[0].applicationsPayouts;
 
       let mappedPayouts = payouts.map((payout) => {
         return {
