@@ -39,7 +39,7 @@ export async function listPrograms(
       programs.push({
         id: program.id,
         metadata: program.metadata,
-        operatorWallets: program.roles.map(
+        operatorWallets: program.projectRoles.map(
           (role: { address: string }) => role.address
         ),
         tags: program.tags,
@@ -49,7 +49,7 @@ export async function listPrograms(
           logo: stringToBlobUrl(chain.icon),
         },
         createdByAddress: program.createdByAddress,
-        roles: program.roles,
+        roles: program.projectRoles,
         qfRoundsCount: program.qfRounds?.length || 0,
         dgRoundsCount: program.dgRounds?.length || 0,
       });
@@ -84,7 +84,7 @@ export async function getProgramById(
   return {
     id: program.id,
     metadata: program.metadata,
-    operatorWallets: program.roles.map(
+    operatorWallets: program.projectRoles.map(
       (role: { address: string }) => role.address
     ),
     tags: program.tags,
@@ -93,6 +93,6 @@ export async function getProgramById(
       name: chain.prettyName,
       logo: stringToBlobUrl(chain.icon),
     },
-    roles: program.roles,
+    roles: program.projectRoles,
   };
 }

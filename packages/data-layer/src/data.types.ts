@@ -174,7 +174,6 @@ export type v2Project = {
    */
   metadataCid: string;
   name: string;
-  nodeId: string;
   /**
    * The project number from v1
    *
@@ -205,7 +204,7 @@ export type v2Project = {
    * The block the project was updated at
    */
   updatedAtBlock: string;
-  roles: AddressAndRole[];
+  projectRoles: AddressAndRole[];
   nonce?: bigint;
   anchorAddress?: string;
   /**
@@ -273,6 +272,7 @@ export type DirectDonationValues = {
   amount: number;
   donorAddress: string;
   amountInUsd: number;
+  projectId: string;
 };
 
 /**
@@ -301,8 +301,8 @@ export type ProjectApplicationForManager = ProjectApplication & {
     strategyName: string;
     strategyAddress: string;
   };
-  canonicalProject: {
-    roles: { address: Address }[];
+  project: {
+    projectRoles: { address: Address }[];
   };
 };
 
@@ -397,7 +397,7 @@ export type ProjectApplicationWithProject = {
 };
 
 export type V2RoundWithRoles = V2Round & {
-  roles: AddressAndRole[];
+  roundRoles: AddressAndRole[];
   createdByAddress: string;
 };
 
@@ -792,6 +792,7 @@ export type Contribution = {
     project: {
       name: string;
       metadata?: ProjectMetadata;
+      projectType: string;
     };
   };
   timestamp: string;
@@ -812,7 +813,7 @@ export type RoundApplicationPayout = {
   applications: [
     {
       id: string;
-      applicationsPayoutsByChainIdAndRoundIdAndApplicationId: Payout[];
+      applicationsPayouts: Payout[];
     },
   ];
 };
