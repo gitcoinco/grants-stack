@@ -172,7 +172,8 @@ function ReclaimFundsContent(props: {
     props.round &&
     props.round.roundMetadata.quadraticFundingConfig?.matchingFundsAvailable;
   const { data, error, loading } = useTokenPrice(
-    matchingFundPayoutToken?.redstoneTokenId
+    matchingFundPayoutToken?.redstoneTokenId,
+    matchingFundPayoutToken?.priceSource
   );
   const matchingFundsInUSD =
     matchingFunds && data && !loading && !error && matchingFunds * Number(data);

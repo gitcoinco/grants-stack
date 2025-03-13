@@ -45,7 +45,10 @@ export default function ViewFundGrantees(props: {
   );
 
   const tokenRedstoneId = matchingFundPayoutToken?.redstoneTokenId;
-  const { data, error, loading } = useTokenPrice(tokenRedstoneId);
+  const { data, error, loading } = useTokenPrice(
+    tokenRedstoneId,
+    matchingFundPayoutToken?.priceSource
+  );
   const { chainId } = useAccount();
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const projects = useGroupProjectsByPaymentStatus(chainId!, props.round!);

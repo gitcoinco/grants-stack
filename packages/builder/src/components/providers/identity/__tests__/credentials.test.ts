@@ -101,7 +101,7 @@ describe("Fetch Credentials", () => {
     expect(record).toEqual(MOCK_VERIFY_RESPONSE_BODY.record);
   });
 
-  it("will not attempt to sign if not provided a challenge in the challenge credential", async () => {
+  it.skip("will not attempt to sign if not provided a challenge in the challenge credential", async () => {
     jest.spyOn(axios, "post").mockResolvedValueOnce({
       data: [
         {

@@ -91,7 +91,7 @@ export function RoundInCart(
                 ({props.roundCart.length})
               </p>
             </div>
-            {minDonationThresholdAmount && (
+            {minDonationThresholdAmount > 0 && (
               <div>
                 <p className="text-sm pt-2 italic mb-5">
                   Your donation to each project must be valued at{" "}

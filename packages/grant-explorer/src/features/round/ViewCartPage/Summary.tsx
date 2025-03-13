@@ -14,7 +14,8 @@ export function Summary({
   enoughBalance,
 }: SummaryProps) {
   const { data: payoutTokenPrice } = useTokenPrice(
-    selectedPayoutToken.redstoneTokenId
+    selectedPayoutToken.redstoneTokenId,
+    selectedPayoutToken.priceSource
   );
   const totalDonationInUSD =
     payoutTokenPrice && totalDonation * Number(payoutTokenPrice);

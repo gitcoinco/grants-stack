@@ -7,6 +7,7 @@ import { Round } from "data-layer";
 import { getAlloVersion, getConfig } from "./config";
 import moment from "moment-timezone";
 import { getChainById } from "@gitcoin/gitcoin-chain-data";
+import { PriceSource } from "./types";
 
 export * from "./icons";
 export * from "./markdown";
@@ -269,7 +270,10 @@ export const getLocalDateTime = (date: Date): string => {
   return `${getLocalDate(date)} ${getLocalTime(date)}`;
 };
 
-export const useTokenPrice = (tokenId: string | undefined) => {
+export const useTokenPrice = (
+  tokenId: string | undefined,
+  priceSource?: PriceSource
+) => {
   const [tokenPrice, setTokenPrice] = useState<number>();
   const [error, setError] = useState<Error | undefined>(undefined);
   const [loading, setLoading] = useState(false);
@@ -277,8 +281,24 @@ export const useTokenPrice = (tokenId: string | undefined) => {
   useEffect(() => {
     setLoading(true);
 
-    const tokenPriceEndpoint = `https://api.redstone.finance/prices?symbol=${tokenId}&provider=redstone&limit=1`;
-    fetch(tokenPriceEndpoint)
+    const isCoingecko =
+      tokenId === "" &&
+      priceSource?.chainId !== undefined &&
+      priceSource?.address !== undefined;
+    const options = isCoingecko
+      ? {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            "x-cg-pro-api-key": process.env.REACT_APP_COINGECKO_API_KEY || "",
+          },
+        }
+      : {};
+
+    const tokenPriceEndpoint = isCoingecko
+      ? `https://pro-api.coingecko.com/api/v3/simple/token_price/${getChainById(priceSource.chainId)?.coingeckoId}?contract_addresses=${priceSource.address}&vs_currencies=usd`
+      : `https://api.redstone.finance/prices?symbol=${tokenId}&provider=redstone&limit=1`;
+    fetch(tokenPriceEndpoint, options)
       .then((resp) => {
         if (resp.ok) {
           return resp.json();
@@ -289,8 +309,12 @@ export const useTokenPrice = (tokenId: string | undefined) => {
         }
       })
       .then((data) => {
-        if (data && data.length > 0) {
-          setTokenPrice(data[0].value);
+        if (data && (isCoingecko || data.length > 0)) {
+          setTokenPrice(
+            isCoingecko
+              ? data[priceSource.address.toLowerCase()].usd
+              : data[0].value
+          );
         } else {
           throw new Error(`No data returned: ${data.toString()}`);
         }
@@ -306,9 +330,9 @@ export const useTokenPrice = (tokenId: string | undefined) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [tokenId]);
+  }, [tokenId, priceSource]);
 
-  if (!tokenId) {
+  if (!tokenId && !priceSource) {
     return {
       data: 0,
       error,
@@ -323,11 +347,35 @@ export const useTokenPrice = (tokenId: string | undefined) => {
   };
 };
 
-export async function getTokenPrice(tokenId: string) {
+export async function getTokenPrice(
+  tokenId: string,
+  priceSource?: PriceSource
+) {
+  if (
+    tokenId === "" &&
+    priceSource?.chainId !== undefined &&
+    priceSource?.address !== undefined
+  ) {
+    return getTokenPriceFromCoingecko(priceSource);
+  }
   const tokenPriceEndpoint = `https://api.redstone.finance/prices?symbol=${tokenId}&provider=redstone&limit=1`;
   const resp = await fetch(tokenPriceEndpoint);
   const data = await resp.json();
   return data[0].value;
+}
+
+async function getTokenPriceFromCoingecko(priceSource: PriceSource) {
+  const url = `https://pro-api.coingecko.com/api/v3/simple/token_price/${getChainById(priceSource.chainId)?.coingeckoId}?contract_addresses=${priceSource.address}&vs_currencies=usd`;
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      "x-cg-pro-api-key": process.env.REACT_APP_COINGECKO_API_KEY || "",
+    },
+  };
+  const resp = await fetch(url, options);
+  const data = await resp.json();
+  return data[priceSource.address.toLowerCase()].usd;
 }
 
 export const ROUND_PAYOUT_MERKLE_OLD = "MERKLE";
