@@ -14,6 +14,7 @@ import { getAddress, parseEther, parseUnits, zeroAddress } from "viem";
 import { getBalance, sendTransaction } from "@wagmi/core";
 import { config } from "../../app/wagmi";
 import React from "react";
+import { GitcoinRunner } from "../../components/GitcoinRunner";
 
 type Props = {
   isOpen: boolean;
@@ -244,12 +245,24 @@ export function DonateToGitcoinDialog(props: Props) {
         </a>
       </div>
 
+      <div className="mt-8">
+        <div className="text-center mb-4">
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            🎉 Thank You for Your Donation! 🎉
+          </h3>
+          <p className="text-xs text-gray-600">
+            Here's a little game to celebrate your support of public goods.
+          </p>
+        </div>
+        <GitcoinRunner />
+      </div>
+      {/* 
       <div className="mt-6 space-y-4">
         <p className="text-sm text-gray-600 italic">
           "Together, we're building a better future for open source."
         </p>
         <p className="text-sm font-medium">- The Gitcoin Team</p>
-      </div>
+      </div> */}
     </div>
   );
 
@@ -283,6 +296,7 @@ export function DonateToGitcoinDialog(props: Props) {
             </Dialog.Title>
 
             <div>
+              {/* <GitcoinRunner /> */}
               <label className="block text-sm font-medium text-gray-700">
                 Network
               </label>
@@ -486,9 +500,6 @@ function DialogWrapper({
   closeModal: () => void;
   children: JSX.Element;
 }) {
-  const { chainId } = useAccount();
-  const chains = getChains();
-
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
