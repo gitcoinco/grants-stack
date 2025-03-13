@@ -32,7 +32,6 @@ export function DonateToGitcoinDialog(props: Props) {
 
   const selectedChain = chains.find((c) => c.id === chainId);
 
-  // Get the selected token details
   const tokenDetails = selectedChain?.tokens.find(
     (t) => t.address === selectedToken
   );
@@ -40,7 +39,6 @@ export function DonateToGitcoinDialog(props: Props) {
   const isNativeToken = selectedToken.toLowerCase() === NATIVE.toLowerCase();
   const gitcoinAddress = "0x5645bF145C3f1E974D0D7FB91bf3c68592ab5012"; // todo: Replace with actual Gitcoin address
 
-  // For ERC20 transfers
   const { data: simulateData } = useSimulateContract({
     address: selectedToken as `0x${string}`,
     abi: [
@@ -65,7 +63,6 @@ export function DonateToGitcoinDialog(props: Props) {
   const { writeContract, isPending, data: writeHash } = useWriteContract();
   const { switchChain } = useSwitchChain();
 
-  // Add this hook to watch the transaction
   const {
     isSuccess: isTransactionSuccess,
     isError: isTransactionError,
@@ -96,7 +93,6 @@ export function DonateToGitcoinDialog(props: Props) {
     }
   };
 
-  // Update status based on transaction state
   React.useEffect(() => {
     if (isTransactionSuccess && transactionReceipt) {
       setStatus("success");
@@ -114,7 +110,6 @@ export function DonateToGitcoinDialog(props: Props) {
   };
 
   const closeModal = () => {
-    // Reset all states
     setSelectedToken("");
     setAmount("");
     setTxHash(undefined);
@@ -198,7 +193,6 @@ export function DonateToGitcoinDialog(props: Props) {
               Donate to Gitcoin
             </Dialog.Title>
 
-            {/* Chain Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Network
@@ -216,7 +210,6 @@ export function DonateToGitcoinDialog(props: Props) {
               </select>
             </div>
 
-            {/* Token Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Token
@@ -237,7 +230,6 @@ export function DonateToGitcoinDialog(props: Props) {
               </select>
             </div>
 
-            {/* Amount Input */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Amount
@@ -251,7 +243,6 @@ export function DonateToGitcoinDialog(props: Props) {
               />
             </div>
 
-            {/* Donate Button */}
             <Button
               type="button"
               onClick={handleDonate}
@@ -276,12 +267,9 @@ function DialogWrapper({
   closeModal: () => void;
   children: JSX.Element;
 }) {
-  // useAccount chainId
   const { chainId } = useAccount();
   const chains = getChains();
   const selectedChain = chains.find((c) => c.id === chainId);
-
-  console.log(selectedChain);
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
