@@ -69,8 +69,6 @@ export default function ViewRoundPage() {
     id.toLowerCase()
   );
 
-  console.log("round", round);
-
   const isRoundFetched =
     fetchRoundStatus == ProgressStatus.IS_SUCCESS && !error;
   const { data: applications } = useApplicationsByRoundId(id);
@@ -95,7 +93,6 @@ export default function ViewRoundPage() {
   }, [chain?.id, roundChainId, connector, switchChain]);
 
   const strategyName = round?.payoutStrategy.strategyName;
-  console.log("strategyName", strategyName);
   const badgeColor =
     strategyName === "MERKLE" ? "gradient-border-qf" : "gradient-border-direct";
 

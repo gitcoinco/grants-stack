@@ -70,7 +70,8 @@ export function useContractAmountFunded(args: {
   );
 
   const { data: priceData, error: priceError } = useTokenPrice(
-    payoutToken?.redstoneTokenId
+    payoutToken?.redstoneTokenId,
+    payoutToken?.priceSource
   );
 
   if (isAlloV2) {
@@ -511,9 +512,7 @@ export default function FundContract(props: {
               disabled={fundContractDisabled}
               className={classNames(
                 `bg-violet-400 hover:bg-violet-700 text-white py-2 px-4 rounded ${
-                  fundContractDisabled
-                    ? "cursor-not-allowed"
-                    : "cursor-pointer"
+                  fundContractDisabled ? "cursor-not-allowed" : "cursor-pointer"
                 }`
               )}
               data-testid="fund-contract-btn"
@@ -527,10 +526,7 @@ export default function FundContract(props: {
                 data-testid="view-contract-btn"
                 onClick={() =>
                   window.open(
-                    getTxExplorerForContract(
-                      chainId!,
-                      props.roundId as string
-                    ),
+                    getTxExplorerForContract(chainId!, props.roundId as string),
                     "_blank"
                   )
                 }
