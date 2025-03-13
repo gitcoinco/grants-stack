@@ -102,3 +102,8 @@ export type Allocation = {
   token: `0x${string}`;
   nonce: bigint;
 };
+
+export type PriceSource = {
+  chainId: number;
+  address: `0x${string}`;
+};

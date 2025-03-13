@@ -270,13 +270,15 @@ export function SummaryContainer(props: {
     props.totalAmountByChainId,
     (totalAmountByChainId) => {
       return Promise.all(
-        Object.keys(totalAmountByChainId).map((chainId) =>
-          getTokenPrice(
-            getVotingTokenForChain(parseChainId(chainId)).redstoneTokenId
+        Object.keys(totalAmountByChainId).map((chainId) => {
+          const votingToken = getVotingTokenForChain(parseChainId(chainId));
+          return getTokenPrice(
+            votingToken.redstoneTokenId,
+            votingToken.priceSource
           ).then((price) => {
             return totalAmountByChainId[Number(chainId)] * Number(price);
-          })
-        )
+          });
+        })
       );
     }
   );

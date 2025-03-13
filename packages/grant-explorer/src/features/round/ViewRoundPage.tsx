@@ -125,8 +125,6 @@ export default function ViewRound() {
     }
   }, [roundId, alloVersion, isAfterRoundEndDate]);
 
-  console.log("round", round, "chainId", chainId, "roundId", roundId);
-
   return isLoading ? (
     <Spinner text="We're fetching the Round." />
   ) : (
@@ -385,8 +383,6 @@ function RoundPage(props: {
     : round.roundEndTime;
 
   const chain = getChainById(chainId);
-
-  console.log("round", round, "chainId", chainId, "roundId", roundId);
 
   return (
     <>
@@ -1050,7 +1046,10 @@ const Stats = ({
   const tokenAmount =
     round.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable ?? 0;
 
-  const { data: poolTokenPrice } = useTokenPrice(token?.redstoneTokenId);
+  const { data: poolTokenPrice } = useTokenPrice(
+    token?.redstoneTokenId,
+    token?.priceSource
+  );
 
   const matchingPoolUSD = poolTokenPrice
     ? Number(poolTokenPrice) * tokenAmount
