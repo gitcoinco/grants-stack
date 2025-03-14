@@ -136,7 +136,10 @@ export default function ViewCart() {
                 address: token.address,
                 chainId: chainIdNumber,
                 formattedAmount: Number(
-                  formatUnits(balance.value / BigInt(getMultiplier(chainIdNumber)), balance.decimals)
+                  formatUnits(
+                    balance.value / BigInt(getMultiplier(chainIdNumber)),
+                    balance.decimals
+                  )
                 ),
               };
             } catch (e) {

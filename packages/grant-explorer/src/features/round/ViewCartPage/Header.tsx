@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { CartProject } from "../../api/types";
 import { CollectionShareButtonContainer } from "../CollectionShareDialog";
+import { DonateToGitcoinButton } from "../DonateToGitcoinDialog";
 
 export function Header(props: { projects: CartProject[] }) {
   const applications = useMemo(
@@ -18,6 +19,9 @@ export function Header(props: { projects: CartProject[] }) {
     <div>
       <div className="flex mt-5 border-b-2 pb-2">
         <h1 className="grow text-3xl">Cart</h1>
+        <div>
+          <DonateToGitcoinButton />
+        </div>
         <div>
           <CollectionShareButtonContainer
             showOnlyInAlloVersion="allo-v2"
