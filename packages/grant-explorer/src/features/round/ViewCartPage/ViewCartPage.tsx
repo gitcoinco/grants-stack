@@ -19,6 +19,7 @@ import { Balance, BalanceMap } from "../../api/types";
 import { formatUnits } from "ethers/lib/utils";
 import GenericModal from "../../common/GenericModal";
 import SquidWidget, { SwapParams } from "./SquidWidget";
+import { GitcoinRunner } from "../../../components/GitcoinRunner";
 
 export default function ViewCart() {
   const { projects, setCart, getVotingTokenForChain } = useCartStorage();
@@ -136,7 +137,10 @@ export default function ViewCart() {
                 address: token.address,
                 chainId: chainIdNumber,
                 formattedAmount: Number(
-                  formatUnits(balance.value / BigInt(getMultiplier(chainIdNumber)), balance.decimals)
+                  formatUnits(
+                    balance.value / BigInt(getMultiplier(chainIdNumber)),
+                    balance.decimals
+                  )
                 ),
               };
             } catch (e) {
@@ -250,6 +254,7 @@ export default function ViewCart() {
             ) : (
               <div className={"grid sm:grid-cols-3 gap-5 w-full"}>
                 <div className="flex flex-col gap-5 sm:col-span-2 order-2 sm:order-1">
+                  <GitcoinRunner />
                   {Object.keys(groupedCartProjects).map((chainId) => (
                     <div key={Number(chainId)}>
                       <CartWithProjects
