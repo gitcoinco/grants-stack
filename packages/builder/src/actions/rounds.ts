@@ -98,8 +98,8 @@ export const loadRound =
         applicationsStartTime =
           Date.parse(v2Round.applicationsStartTime) / 1000;
         applicationsEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
-        roundStartTime = Date.parse(v2Round.applicationsStartTime) / 1000;
-        roundEndTime = Date.parse(v2Round.applicationsEndTime) / 1000;
+        roundStartTime = Date.parse(v2Round.donationsStartTime) / 1000;
+        roundEndTime = Date.parse(v2Round.donationsEndTime) / 1000;
         break;
 
       case "allov1.QF":
