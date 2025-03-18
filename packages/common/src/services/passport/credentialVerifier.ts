@@ -40,8 +40,6 @@ export class PassportVerifierWithExpiration {
     // const { expirationDate, proof } = credential;
     const { proof } = credential;
 
-    console.log("proof", proof);
-
     // check that the credential is still valid (not expired)
     // if (new Date(expirationDate) > new Date()) {
     try {
@@ -52,9 +50,6 @@ export class PassportVerifierWithExpiration {
           `{"proofPurpose":"${proof.proofPurpose}"}`
         )
       ) as { checks: string[]; warnings: string[]; errors: string[] };
-
-      console.log("verify", verify);
-      console.log("verify.errors", verify.errors.length === 0);
 
       // did we get any errors when we attempted to verify?
       return verify.errors.length === 0;
