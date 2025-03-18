@@ -25,6 +25,7 @@ export const fetchChallengeCredential = async (
       payload: {
         address: payload.address,
         type: payload.type,
+        signatureType: "EIP712",
       },
     }
   );
