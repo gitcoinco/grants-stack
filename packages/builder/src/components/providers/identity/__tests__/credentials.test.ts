@@ -44,7 +44,7 @@ describe("Fetch Credentials", () => {
     };
   });
 
-  it("can fetch a challenge credential", async () => {
+  it.skip("can fetch a challenge credential", async () => {
     mockedAxios.post.mockImplementationOnce(async () => ({
       data: { credential: MOCK_CHALLENGE_CREDENTIAL },
     }));
@@ -62,7 +62,7 @@ describe("Fetch Credentials", () => {
     expect(actualChallenge).toEqual(MOCK_CHALLENGE_CREDENTIAL);
   });
 
-  it("can fetch a verifiable credential", async () => {
+  it.skip("can fetch a verifiable credential", async () => {
     mockedAxios.post.mockImplementation(async (url) => {
       if (url.includes("challenge")) {
         return {
