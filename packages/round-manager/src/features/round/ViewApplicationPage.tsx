@@ -74,8 +74,10 @@ import { convertApplications } from "../api/utils";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
-export const IAM_SERVER =
-  "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
+export const IAM_SERVER = [
+  "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC",
+  "did:ethr:0xd6f8d6ca86aa01e551a311d670a0d1bd8577e5fb",
+];
 
 const verifier = new PassportVerifierWithExpiration();
 
@@ -927,7 +929,9 @@ async function isVerified(
   application: GrantApplication | undefined
 ) {
   const vcHasValidProof = await verifier.verifyCredential(verifiableCredential);
-  const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
+  const vcIssuedByValidIAMServer = IAM_SERVER.includes(
+    verifiableCredential.issuer
+  );
   const providerMatchesProject = vcProviderMatchesProject(
     provider,
     verifiableCredential,
