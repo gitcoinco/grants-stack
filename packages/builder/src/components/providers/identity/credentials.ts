@@ -157,12 +157,9 @@ export function openOauthWindow(
     const channel = new BroadcastChannel(broadcastChannelName);
 
     // timeout after 5 minutes
-    const timeout = setTimeout(
-      () => {
-        reject(new VerificationError("Authorization timed out"));
-      },
-      1000 * 60 * 5
-    );
+    const timeout = setTimeout(() => {
+      reject(new VerificationError("Authorization timed out"));
+    }, 1000 * 60 * 5);
 
     channel.addEventListener("message", (event: any) => {
       const eventData = event.data as {
