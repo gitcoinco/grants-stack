@@ -185,8 +185,6 @@ export const loadProjects =
         chainIds: chainIDs.map((id) => id.valueOf()),
       });
 
-      console.log("projects", projects);
-
       if (projects && withMetaData) {
         projects.forEach((project) => {
           if (project.metadata && project.metadata.title) {
