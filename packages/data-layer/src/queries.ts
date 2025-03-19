@@ -94,6 +94,7 @@ export const getProjectsById = gql`
       limit: 100
       where: {
         tags: { _hasKey: $alloVersion }
+        projectType: { _eq: "canonical" }
         _not: { tags: { _contains: "program" } }
         id: { _eq: $projectId }
       }
