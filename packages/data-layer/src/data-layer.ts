@@ -1,7 +1,7 @@
 import _fetch from "cross-fetch";
 import { request } from "graphql-request";
 import shuffle from "knuth-shuffle-seeded";
-import { Address } from "viem";
+import { Address, getAddress } from "viem";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
@@ -162,7 +162,7 @@ export class DataLayer {
     tags: string[];
   }): Promise<{ programs: Program[] }> {
     const requestVariables = {
-      userAddress: address.toLowerCase(),
+      userAddress: getAddress(address),
       chainIds,
       tags: ["program", ...tags],
     };
@@ -263,14 +263,11 @@ export class DataLayer {
     projectId: string;
     chainId: number;
   }): Promise<Address | undefined> {
-    const response: {  projects: Array<{ anchorAddress: Address }>} = await request(
-      this.gsIndexerEndpoint,
-      getProjectAnchorByIdAndChainId,
-      {
+    const response: { projects: Array<{ anchorAddress: Address }> } =
+      await request(this.gsIndexerEndpoint, getProjectAnchorByIdAndChainId, {
         projectId,
         chainId,
-      },
-    );
+      });
 
     return response?.projects[0]?.anchorAddress;
   }
@@ -308,7 +305,7 @@ export class DataLayer {
     chainIds: number[];
   }): Promise<v2Project[]> {
     const requestVariables = {
-      address: address.toLowerCase(),
+      address: getAddress(address),
       version: alloVersion,
       chainIds,
     };
@@ -319,11 +316,7 @@ export class DataLayer {
       requestVariables,
     );
 
-    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
-      response.projects,
-    );
-
-    return projects;
+    return response.projects;
   }
 
   /**
@@ -684,7 +677,7 @@ export class DataLayer {
     const response: { rounds: RoundForManager[] } = await request(
       this.gsIndexerEndpoint,
       getRoundsForManagerByAddress,
-      { chainIds, address },
+      { chainIds, address: getAddress(address) },
     );
 
     return response.rounds;

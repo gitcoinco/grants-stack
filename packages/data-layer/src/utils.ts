@@ -8,7 +8,9 @@ import { RoundCategory, RoundPayoutType, v2Project } from ".";
  *
  * @returns - Array of merged v2 projects
  */
-export const mergeCanonicalAndLinkedProjects = (projects: v2Project[]) => {
+export const mergeCanonicalAndLinkedProjects = (
+  projects: v2Project[],
+): v2Project[] => {
   const canonicalProjects = projects.filter(
     (project) => project.projectType === "CANONICAL",
   );
@@ -22,7 +24,7 @@ export const mergeCanonicalAndLinkedProjects = (projects: v2Project[]) => {
   }
 
   for (const project of linkedProjects) {
-    if (allProjects[project.id]) {
+    if (Object.prototype.hasOwnProperty.call(allProjects, project.id)) {
       if (!allProjects[project.id].linkedChains) {
         allProjects[project.id].linkedChains = [];
       }
