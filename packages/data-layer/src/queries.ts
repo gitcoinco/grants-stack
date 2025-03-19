@@ -705,7 +705,7 @@ const getRoundForManagerFields = `
   fundedAmount
   fundedAmountInUsd
   matchingDistribution
-  roundRoles(first: 100) {
+  roundRoles(limit: 100) {
     role
     address
     createdAtBlock
