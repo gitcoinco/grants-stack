@@ -457,30 +457,14 @@ export const getProjectsByAddress = gql`
  * @returns The v2Projects
  */
 export const getPaginatedProjects = gql`
-  query getPaginatedProjects($first: Int!, $offset: Int!) {
+  query getPaginatedProjects($first: Int!, $offset: Int!, $chainIds: [Int!]!) {
     projects(
       where: {
         metadata: { _isNull: false }
         tags: { _contains: "allo-v2" }
         _not: { tags: { _contains: "program" } }
-        chainId: {
-          _in: [
-            1
-            137
-            10
-            324
-            42161
-            42220
-            43114
-            534352
-            8453
-            1329
-            100
-            42
-            1088
-          ]
-        }
-          //TODO: Not sure if removing rounds filter is correct 
+        chainId: { _in: $chainIds }
+        projectType: { _eq: "canonical" }
       }
       limit: $first
       offset: $offset
@@ -513,34 +497,17 @@ export const getProjectsBySearchTerm = gql`
     $searchTerm: String!
     $first: Int!
     $offset: Int!
+    $chainIds: [Int!]!
   ) {
-    searchProjects(
-      args: { search_term: $searchTerm }
+    projects(
       limit: $first
       offset: $offset
       where: {
-        metadata: { _isNull: false }
+        metadata: { _isNull: false, _cast: { String: { _regex: $searchTerm } } }
         tags: { _contains: "allo-v2" }
         _not: { tags: { _contains: "program" } }
-        chainId: {
-          _in: [
-            1
-            137
-            10
-            324
-            42161
-            42220
-            43114
-            534352
-            8453
-            1329
-            100
-            42
-            1088
-          ]
-        }
-        //TODO: Not sure if removing rounds filter is correct 
-
+        chainId: { _in: $chainIds }
+        projectType: { _eq: "canonical" }
       }
     ) {
       id

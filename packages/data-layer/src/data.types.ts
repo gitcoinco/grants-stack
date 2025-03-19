@@ -531,11 +531,11 @@ export interface Round {
 }
 
 export type TimeFilter = {
-  greaterThan?: string;
-  lessThan?: string;
-  greaterThanOrEqualTo?: string;
-  lessThanOrEqualTo?: string;
-  isNull?: boolean;
+  _gt?: string;
+  _lt?: string;
+  _gte?: string;
+  _lte?: string;
+  _isNull?: boolean;
 };
 
 export type TimeFilterVariables = {
@@ -543,18 +543,18 @@ export type TimeFilterVariables = {
   applicationsEndTime?: TimeFilter;
   donationsStartTime?: TimeFilter;
   donationsEndTime?: TimeFilter;
-  or?: TimeFilterVariables[];
+  _or?: TimeFilterVariables[];
 };
 
 export type RoundsQueryVariables = {
   first?: number;
   orderBy?: OrderByRounds;
   filter?: {
-    and: (
-      | { or: TimeFilterVariables[] }
-      | { or: { strategyName: { in: string[] } } }
+    _and: (
+      | { _or: TimeFilterVariables[] }
+      | { _or: { strategyName: { _in: string[] } } }
       | {
-          or: {
+          _or: {
             chainId: {
               in: number[];
             };
@@ -562,7 +562,7 @@ export type RoundsQueryVariables = {
         }
       | {
           tags: {
-            contains: "allo-v1" | "allo-v2";
+            _contains: "allo-v1" | "allo-v2";
           };
         }
     )[];

@@ -59,7 +59,7 @@ import {
   getRoundsForManagerByAddress,
   getDirectDonationsByProjectId,
 } from "./queries";
-import { mergeCanonicalAndLinkedProjects } from "./utils";
+import { mergeCanonicalAndLinkedProjects, orderByMapping } from "./utils";
 import {
   AttestationService,
   type MintingAttestationIdsData,
@@ -329,13 +329,16 @@ export class DataLayer {
   async getPaginatedProjects({
     first,
     offset,
+    chainIds,
   }: {
     first: number;
     offset: number;
+    chainIds: number[];
   }): Promise<v2Project[]> {
     const requestVariables = {
       first,
       offset,
+      chainIds,
     };
 
     const response: { projects: v2Project[] } = await request(
@@ -344,11 +347,7 @@ export class DataLayer {
       requestVariables,
     );
 
-    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
-      response.projects,
-    );
-
-    return projects;
+    return response.projects;
   }
 
   /**
@@ -363,28 +362,27 @@ export class DataLayer {
     searchTerm,
     first,
     offset,
+    chainIds,
   }: {
     searchTerm: string;
     first: number;
     offset: number;
+    chainIds: number[];
   }): Promise<v2Project[]> {
     const requestVariables = {
-      searchTerm,
+      searchTerm: `(?i)`.concat(searchTerm.replace(/^['"]|['"]$/g, "")),
       first,
       offset,
+      chainIds,
     };
 
-    const response: { searchProjects: v2Project[] } = await request(
+    const response: { projects: v2Project[] } = await request(
       this.gsIndexerEndpoint,
       getProjectsBySearchTerm,
       requestVariables,
     );
 
-    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
-      response.searchProjects,
-    );
-
-    return projects;
+    return response.projects;
   }
 
   /**
@@ -503,12 +501,12 @@ export class DataLayer {
 
     const applicationToFilter = (r: ExpandedApplicationRef): string => {
       return `{
-        and: {
-          chainId: { equalTo: ${r.chainId} }
+        _and: {
+          chainId: { _eq: ${r.chainId} }
           roundId: {
-            equalTo: "${r.roundId}"
+            _eq: "${r.roundId}"
           }
-          id: { equalTo: "${r.id}" }
+          id: { _eq: "${r.id}" }
         }
       }`;
     };
@@ -520,9 +518,9 @@ export class DataLayer {
         applications(
           first: 300
           filter: {
-            and: [
-              { status: { equalTo: APPROVED } },
-              { or: [ ${filters} ] }
+            _and: [
+              { status: { _eq: APPROVED } },
+              { _or: [ ${filters} ] }
             ]
           }
         ) {
@@ -790,7 +788,7 @@ export class DataLayer {
       this.gsIndexerEndpoint,
       getDonationsByDonorAddress,
       {
-        address: address.toLowerCase(),
+        address: getAddress(address),
         chainIds,
       },
     );
@@ -948,13 +946,13 @@ export class DataLayer {
     query?: string | undefined;
   }): Promise<{ rounds: RoundGetRound[] }> {
     return await request(this.gsIndexerEndpoint, getRoundsQuery, {
-      orderBy: orderBy ?? "NATURAL",
-      chainIds,
       first,
+      orderBy: orderByMapping[orderBy ?? "NATURAL"],
       filter: whitelistedPrograms
         ? {
             ...filter,
-            projectId: { in: whitelistedPrograms },
+            projectId: { _in: whitelistedPrograms },
+            chainId: { _in: chainIds },
           }
         : filter,
     });

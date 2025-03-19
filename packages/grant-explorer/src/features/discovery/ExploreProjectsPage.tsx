@@ -39,6 +39,9 @@ export function ExploreProjectsPage(): JSX.Element {
     dataLayer
   );
 
+  console.log("===> projects", projects);
+  console.log("===> projectsFromSearch", projectsFromSearch);
+
   const onQueryChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const q = e.target.value;
     setSearchInput(q);
