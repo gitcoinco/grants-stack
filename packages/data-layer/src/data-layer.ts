@@ -251,9 +251,9 @@ export class DataLayer {
 
     if (response.projects.length === 0) return null;
 
-    const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
+    // const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
 
-    return { project };
+    return { project: response.projects[0] };
   }
 
   async getProjectAnchorByIdAndChainId({

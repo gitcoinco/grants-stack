@@ -89,11 +89,11 @@ export const getProgramById = gql`
 export const getProjectsById = gql`
   # @param $alloVersion - The version of Allo ex: "{allo-v2}"
   # @param $projectId - The ID of the project
-  query ($alloVersion: _text, $projectId: String!) {
+  query ($alloVersion: String!, $projectId: String!) {
     projects(
       limit: 100
       where: {
-        tags: { _eq: $alloVersion }
+        tags: { _hasKey: $alloVersion }
         _not: { tags: { _contains: "program" } }
         id: { _eq: $projectId }
       }
@@ -145,7 +145,7 @@ export const getProjectAnchorByIdAndChainId = gql`
 //FIXME: Deprecated on indexer v2 ?
 export const getLegacyProjectId = gql`
   query ($projectId: String!) {
-    legacyProjects(first: 1, filter: { v2ProjectId: { equalTo: $projectId } }) {
+    legacyProjects(limit: 1, where: { v2ProjectId: { _eq: $projectId } }) {
       v1ProjectId
     }
   }
@@ -598,19 +598,19 @@ export const getProjectsAndRolesByAddress = gql`
 `;
 
 //NOT SUPPORTED ON THE CURRENT INDEXER
-export const getBlockNumberQuery = gql`
-  query getBlockNumberQuery($chainId: Int!) {
-    {
-      subscriptions(
-        first: 100
-        filter: { chainId: { equalTo: $chainId }, toBlock: { equalTo: "latest" } }
-      ) {
-        chainId
-        indexedToBlock
-      }
-    }
-  }
-`;
+// export const getBlockNumberQuery = gql`
+//   query getBlockNumberQuery($chainId: Int!) {
+//     {
+//       subscriptions(
+//         first: 100
+//         filter: { chainId: { equalTo: $chainId }, toBlock: { equalTo: "latest" } }
+//       ) {
+//         chainId
+//         indexedToBlock
+//       }
+//     }
+//   }
+// `;
 
 //TODO: migrate code in which this query is called
 export const getRoundsQuery = gql`
