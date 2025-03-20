@@ -15,27 +15,27 @@ function getStatusFilter(status: string): TimeFilterVariables {
     case RoundStatus.active:
       return {
         // Round must have started and not ended yet
-        donationsStartTime: { lessThan: currentTimestamp },
-        or: [
-          { donationsEndTime: { greaterThan: currentTimestamp} },
-          { donationsEndTime: { isNull: true } },
-        ]
+        donationsStartTime: { _lt: currentTimestamp },
+        _or: [
+          { donationsEndTime: { _gt: currentTimestamp } },
+          { donationsEndTime: { _isNull: true } },
+        ],
       };
     case RoundStatus.taking_applications:
       return {
-        applicationsStartTime: { lessThanOrEqualTo: currentTimestamp },
-        applicationsEndTime: { greaterThanOrEqualTo: currentTimestamp },
+        applicationsStartTime: { _lte: currentTimestamp },
+        applicationsEndTime: { _gte: currentTimestamp },
       };
 
     case RoundStatus.finished:
       return {
-        donationsEndTime: { lessThan: currentTimestamp },
+        donationsEndTime: { _lt: currentTimestamp },
       };
     case RoundStatus.ending_soon:
       return {
         donationsEndTime: {
-          greaterThan: currentTimestamp,
-          lessThan: createISOTimestamp(ONE_DAY_IN_MILISECONDS * 30),
+          _gt: currentTimestamp,
+          _lt: createISOTimestamp(ONE_DAY_IN_MILISECONDS * 30),
         },
       };
     default:

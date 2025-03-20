@@ -71,6 +71,7 @@ import { useAccount } from "wagmi";
 import { ViewGrantsExplorerButton } from "../common/ViewGrantsExplorerButton";
 import { useDataLayer } from "data-layer";
 import { convertApplications } from "../api/utils";
+import { getAddress } from "viem";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
@@ -190,6 +191,7 @@ export default function ViewApplicationPage() {
   useEffect(() => {
     const applicationHasLoadedWithProjectOwners =
       !isLoading && application?.project?.owners;
+
     if (applicationHasLoadedWithProjectOwners) {
       const credentials: ProjectCredentials =
         application?.project?.credentials ?? {};
@@ -197,10 +199,12 @@ export default function ViewApplicationPage() {
       if (!credentials) {
         return;
       }
+
       const verify = async () => {
         const newVerifiedProviders: { [key: string]: VerifiedCredentialState } =
-          { ...verifiedProviders };
-        for (const provider of Object.keys(verifiedProviders)) {
+          {};
+        // Use Object.keys on a static object instead of verifiedProviders
+        for (const provider of Object.keys(credentials)) {
           const verifiableCredential = credentials[provider];
           if (verifiableCredential) {
             newVerifiedProviders[provider] = await isVerified(
@@ -211,12 +215,12 @@ export default function ViewApplicationPage() {
             );
           }
         }
-
         setVerifiedProviders(newVerifiedProviders);
+        console.log("newVerifiedProviders", newVerifiedProviders);
       };
       verify();
     }
-  }, [application, application?.project?.owners, isLoading, verifiedProviders]);
+  }, [application, application?.project?.owners, isLoading]); // Remove verifiedProviders
 
   const { round } = useRoundById(roundChainId!, roundId);
   const allo = useAllo();
@@ -314,8 +318,9 @@ export default function ViewApplicationPage() {
         return;
       }
 
+      console.log("round", round);
       if (round && address) {
-        setHasAccess(!!round.operatorWallets?.includes(address.toLowerCase()));
+        setHasAccess(!!round.operatorWallets?.includes(getAddress(address)));
       }
     }
   }, [address, application, isLoading, round, debugModeEnabled]);

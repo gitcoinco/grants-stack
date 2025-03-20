@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import { DataLayer } from "data-layer";
+import { allChains } from "../../../app/wagmi";
 
 type Params = {
   first: number;
@@ -11,6 +12,7 @@ export function useProjects(params: Params, dataLayer: DataLayer) {
     const validatedParams = {
       first: params.first,
       offset: params.offset,
+      chainIds: allChains.map((chain) => chain.id),
     };
     return (await dataLayer.getPaginatedProjects(validatedParams)) ?? undefined;
   });
@@ -31,6 +33,7 @@ export function useProjectsBySearchTerm(
       searchTerm: params.searchTerm,
       first: params.first,
       offset: params.offset,
+      chainIds: allChains.map((chain) => chain.id),
     };
     return (
       (await dataLayer.getProjectsBySearchTerm(validatedParams)) ?? undefined

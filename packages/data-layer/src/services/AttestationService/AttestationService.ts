@@ -17,7 +17,7 @@ export class AttestationService {
       query getMintingAttestationIdsByTransactionHash(
         $transactionHashes: [String!]!
       ) {
-        attestationTxns(filter: { txnHash: { in: $transactionHashes } }) {
+        attestationTxns(where: { txnHash: { _in: $transactionHashes } }) {
           txnHash
           attestationUid
           attestationChainId
@@ -38,26 +38,25 @@ export class AttestationService {
   }
 
   async getAttestationCount({
-    attestationChainIds
+    attestationChainIds,
   }: {
     attestationChainIds: number[];
-  }) : Promise<number> {
+  }): Promise<number> {
     const query = gql`
-      query getAttestationCount(
-        $attestationChainIds: [Int!]!
-      ) {
-        attestations(filter: {
-          chainId: { in: $attestationChainIds }
-        }) {
+      query getAttestationCount($attestationChainIds: [Int!]!) {
+        attestations(where: { chainId: { _in: $attestationChainIds } }) {
           uid
         }
       }
     `;
 
-    const response: { attestations: any[] } =
-      await request(this.gsIndexerEndpoint, query, {
+    const response: { attestations: { uid: string }[] } = await request(
+      this.gsIndexerEndpoint,
+      query,
+      {
         attestationChainIds,
-      });
+      },
+    );
 
     return response.attestations.length;
   }

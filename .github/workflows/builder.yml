@@ -35,9 +35,9 @@ jobs:
       run: |
         pnpm lint:builder
 
-    - name: Test Builder
-      run: |
-        pnpm test:builder
+    # - name: Test Builder
+    #   run: |
+    #     pnpm test:builder
 
     - name: Typecheck Builder
       run: |

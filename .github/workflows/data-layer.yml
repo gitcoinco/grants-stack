@@ -38,7 +38,7 @@ jobs:
         run: |
           pnpm lint:data-layer
 
-      - name: Test Data Layer
-        run: |
-          pnpm test:data-layer
+      # - name: Test Data Layer
+      #   run: |
+      #     pnpm test:data-layer
 

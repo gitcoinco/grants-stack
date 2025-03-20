@@ -66,7 +66,6 @@ export default function RoundStats() {
             chainIds: allChains.map((chain) => chain.id),
           });
 
-        console.log("directDonations", directDonations);
         totalDirectDonationCount = directDonations.length;
 
         directDonations.forEach((donation) => {

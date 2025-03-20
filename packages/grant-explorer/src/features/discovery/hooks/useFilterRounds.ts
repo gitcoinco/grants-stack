@@ -116,30 +116,30 @@ const createRoundWhereFilter = (
     // @ts-expect-error TS thinks that some of the items can be undefined,
     // even though they can't, because they are filtered out down the line
     // so we ignore the error here
-    and: [
+    _and: [
       // Find rounds that match both statusFilter and round type
-      { or: statusFilter },
+      { _or: statusFilter },
       {
         ...(strategyNames.length > 0 && {
-          or: {
-            strategyName: { in: strategyNames },
+          _or: {
+            strategyName: { _in: strategyNames },
           },
         }),
       },
       {
         ...(chainIds.length > 0 && {
-          or: {
+          _or: {
             chainId: {
-              in: chainIds,
+              _in: chainIds,
             },
           },
         }),
       },
       {
         ...(version && {
-          or: {
+          _or: {
             tags: {
-              contains: version,
+              _contains: version,
             },
           },
         }),

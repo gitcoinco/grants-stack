@@ -96,7 +96,7 @@ export const transformAndDispatchProject =
     };
 
     // todo: should we lowercase the owner addresses?
-    const ownerAddresses: string[] = project.roles
+    const ownerAddresses: string[] = project.projectRoles
       .filter((role: AddressAndRole) => role.role === "OWNER")
       .map((role) => ethers.utils.getAddress(role.address));
 
