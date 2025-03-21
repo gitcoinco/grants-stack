@@ -13,10 +13,10 @@ import attestationFrameLogo from "../../assets/attestation-frame-logo.svg";
 
 const useColorAndBackground = () => {
   const colorMapper = {
-    "0": "#8266BE",
+    "0": "#E3734C",
     "1": "#79A557",
     "2": "#9BC8E7",
-    "3": "#E3734C",
+    "3": "#8266BE",
     "4": "#BCBFBF",
   };
 

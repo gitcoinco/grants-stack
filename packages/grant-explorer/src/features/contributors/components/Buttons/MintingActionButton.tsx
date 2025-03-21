@@ -62,7 +62,7 @@ export function MintingActionButton({
   const { attestationChainId: chainId, attestationUid = "" } =
     attestation ?? {};
 
-  const attestationLink = `https://attestation.gitcoin.co/attestation/${attestationUid}`;
+  const attestationLink = `https://gitcoin-server-api-git-card-update-grants-stack.vercel.app/attestation/${attestationUid}`;
 
   return isMinted ? (
     <>

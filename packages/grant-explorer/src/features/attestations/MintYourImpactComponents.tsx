@@ -95,7 +95,7 @@ export const PreviewFrameHistoryPage = ({
   return (
     <div className="flex flex-col items-center gap-2 sm:gap-6">
       <img
-        className="w-full max-w-[400px] min-w-[287px]"
+        className="w-full max-w-[600px] min-w-[287px]"
         src={previewBackground}
         alt="preview"
       />

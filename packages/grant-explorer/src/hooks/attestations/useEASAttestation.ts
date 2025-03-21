@@ -55,7 +55,7 @@ export const useEASAttestation = (
       }
       updateStatus(ProgressStatus.IN_PROGRESS);
       const attestationUID = await attest.mutateAsync(data);
-      const attestationLink = `https://attestation.gitcoin.co/attestation/${attestationUID}`;
+      const attestationLink = `https://gitcoin-server-api-git-card-update-grants-stack.vercel.app/attestation/${attestationUID}`;
       updateStatus(ProgressStatus.IS_SUCCESS);
       return attestationLink;
     } catch (error) {
