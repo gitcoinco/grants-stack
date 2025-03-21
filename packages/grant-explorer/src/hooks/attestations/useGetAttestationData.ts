@@ -30,7 +30,7 @@ export const useGetAttestationData = (
 
       try {
         const response = await fetch(
-          `https://attestation.gitcoin.co/api/getAttestation`,
+          `https://gitcoin-server-api-git-card-update-grants-stack.vercel.app/api/getAttestation`,
           {
             method: "POST",
             headers: {
