@@ -193,7 +193,7 @@ export default function ThankYou() {
               <div className="w-full lg:w-1/2  ">
                 <div className="flex flex-col items-center justify-center">
                   {/* Main content */}
-                  <div className="w-full max-w-[800px] min-h-svh overflow-hidden bg-gradient-to-b from-[#EBEBEB] to-transparent rounded-t-[400px] flex flex-col items-center justify-center pt-20 px-4 mx-auto">
+                  <div className="w-full max-w-[900px] min-h-svh overflow-hidden bg-gradient-to-b from-[#EBEBEB] to-transparent rounded-t-[400px] flex flex-col items-center justify-center pt-20 px-4 mx-auto">
                     <div className="flex flex-col items-center">
                       <div className="relative max-w-[500px] z-10 text-center">
                         <h1 className="text-5xl mb-2 font-modern-era-bold">
@@ -222,7 +222,7 @@ export default function ThankYou() {
               </div>
             </div>
           ) : minted ? (
-            <div className="rounded-xl absolute top-20 flex flex-col items-center text-center gap-6 px-[64px] py-8 backdrop-blur-xl">
+            <div className="rounded-xl absolute top-20 flex flex-col items-center text-center gap-6 py-8 backdrop-blur-xl">
               <div className="flex flex-col gap-2">
                 <div className="relative text-center font-modern-era-medium text-[48px]/[52px]">
                   Your donation impact
@@ -235,7 +235,7 @@ export default function ThankYou() {
               </div>
               <ImpactMintingSuccess
                 impactImageCid={impactImageCid}
-                imageSize="size-[520px]"
+                imageSize="w-full max-w-[700px]"
                 attestationLink={attestationLink ?? ""}
               />
               <div className="flex flex-wrap gap-6 my-2 z-50">

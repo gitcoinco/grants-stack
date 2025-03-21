@@ -33,8 +33,8 @@ export const PreviewFrame = ({
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          width: "400px",
-          height: "400px",
+          width: "690px",
+          height: "344px",
         }}
       ></div>
       <div className="flex flex-wrap gap-3 items-center mt-3   p-2">
@@ -95,7 +95,7 @@ export const PreviewFrameHistoryPage = ({
   return (
     <div className="flex flex-col items-center gap-2 sm:gap-6">
       <img
-        className="w-full max-w-[400px] min-w-[287px]"
+        className="w-full max-w-[600px] min-w-[287px]"
         src={previewBackground}
         alt="preview"
       />
@@ -142,7 +142,7 @@ import { ImageWithLoading } from "../common/components/ImageWithLoading";
 export const ImpactMintingSuccess = ({
   attestationLink,
   impactImageCid,
-  imageSize = "size-[400px]",
+  imageSize = "w-full max-w-[700px] relative",
   isShareButtonsAbove = true,
 }: {
   attestationLink: string;
