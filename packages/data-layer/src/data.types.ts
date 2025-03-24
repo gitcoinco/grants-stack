@@ -765,6 +765,7 @@ export type Application = {
     application: {
       recipient: string;
       answers: GrantApplicationFormAnswer[];
+      project: ProjectMetadata & { id: string };
     };
   };
 };
