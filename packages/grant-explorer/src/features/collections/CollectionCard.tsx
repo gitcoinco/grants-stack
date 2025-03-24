@@ -1,5 +1,5 @@
 import { CommunityCollection } from "./community";
-import { Badge, BasicCard, CardHeader } from "../common/styles";
+import { BasicCard, CardHeader } from "../common/styles";
 import { CollectionBanner } from "../discovery/CardBanner";
 import { collectionPath } from "common/src/routes/explorer";
 

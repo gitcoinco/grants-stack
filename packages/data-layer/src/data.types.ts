@@ -790,6 +790,11 @@ export type Contribution = {
     strategyName: RoundPayoutType;
   };
   application: {
+    metadata: {
+      application: {
+        project: ProjectMetadata & { id: string };
+      };
+    };
     project: {
       name: string;
       metadata?: ProjectMetadata;

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { renderToPlainText, useTokenPrice, TToken } from "common";
+import { renderToPlainText } from "common";
 
 import { CartProject, Project, Round } from "../../api/types";
 

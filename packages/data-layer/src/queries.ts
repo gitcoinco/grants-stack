@@ -332,7 +332,6 @@ export const getApprovedApplication = gql`
       project {
         tags
         id
-        metadata
         anchorAddress
       }
     }
@@ -371,7 +370,6 @@ export const getApplicationsForExplorer = gql`
       project {
         tags
         id
-        metadata
         anchorAddress
       }
     }
@@ -689,7 +687,7 @@ export const getRoundForManager = gql`
   query getRoundForManager($roundId: String!, $chainId: Int!) {
     rounds(
       limit: 1
-      where: { 
+      where: {
         id: { _eq: $roundId },
         chainId: { _eq: $chainId },
         roundMetadata: { _isNull: false }
@@ -723,7 +721,7 @@ export const getRoundsForManagerByAddress = gql`
       limit: 100
       where: {
         roundMetadata: { _isNull: false },
-        chainId: { _in: $chainIds}, 
+        chainId: { _in: $chainIds},
         roundRoles: {
             address: {
               _eq: $address
@@ -771,7 +769,6 @@ export const getRoundForExplorer = gql`
         anchorAddress
         project {
           id
-          metadata
           anchorAddress
         }
       }
@@ -805,9 +802,9 @@ export const getDonationsByDonorAddress = gql`
         strategyName
       }
       application {
+        metadata
         project {
           name
-          metadata
           projectType
         }
       }
