@@ -159,7 +159,10 @@ export default function ViewProject() {
                 : token.address,
             chainId: chainId,
           });
-          return { token: token.address, balance: value / BigInt(getMultiplier(chainId)) };
+          return {
+            token: token.address,
+            balance: value / BigInt(getMultiplier(chainId)),
+          };
         })
       );
 
@@ -470,7 +473,7 @@ export default function ViewProject() {
 
       const poolId = directAllocationPoolId.toString();
 
-      const recipient = project?.roles?.filter(
+      const recipient = project?.projectRoles?.filter(
         (role) => role.role === "OWNER"
       )[0].address;
 

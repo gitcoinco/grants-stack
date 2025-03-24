@@ -59,6 +59,7 @@ function Project() {
     // 1 - when it loads or id changes (it checks if it's cached in local storage)
     // 2 - when ipfs is initialized (it fetches it if not loaded yet)
     if (props.id !== undefined && props.currentProject === undefined) {
+      console.log("fetching grant data", props.id);
       dispatch(fetchGrantData(props.id, dataLayer));
     }
   }, [dispatch, props.id, props.currentProject]);

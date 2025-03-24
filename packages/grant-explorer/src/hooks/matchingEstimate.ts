@@ -60,7 +60,7 @@ function getMatchingEstimates(
   }));
 
   return fetch(
-    `${process.env.REACT_APP_INDEXER_V2_API_URL}/api/v1/chains/${params.chainId}/rounds/${params.roundId}/estimate`,
+    `${process.env.REACT_APP_INDEXER_V1_API_URL}/api/v1/chains/${params.chainId}/rounds/${params.roundId}/estimate`,
     {
       headers: {
         Accept: "application/json",

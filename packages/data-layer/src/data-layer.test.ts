@@ -32,8 +32,6 @@ const mockProjects: v2Project[] = [
     },
     metadataCid: "bafkreie4ra5mdxumvxhsjpvawhvtdovlgjk4v74zsgvpqrs2ehdk5srtl4",
     name: "Jax v2 test 4",
-    nodeId:
-      "WyJwcm9qZWN0cyIsIjB4OGE3OTI0OWI2MzM5NWMyNWJkMTIxYmE2ZmYyODAxOThjMzk5ZDRmYjNmOTUxZmMzYzQyMTk3YjU0YTZkYjZhNiIsMTExNTUxMTFd",
     // note: This is moved to roles also
     createdByAddress: "0x0000",
     createdAtBlock: "5146499",
@@ -41,7 +39,7 @@ const mockProjects: v2Project[] = [
     projectNumber: null,
     registryAddress: "0x4aacca72145e1df2aec137e1f3c5e3d75db8b5f3",
     tags: ["allo-v2"],
-    roles: [
+    projectRoles: [
       {
         address: "0xe849b2a694184b8739a04c915518330757cdb18b",
         role: "OWNER",
@@ -585,7 +583,6 @@ describe("v2 projects retrieval", () => {
     });
 
     expect(project?.project.id).toEqual(mockProject.id);
-    expect(project?.project.nodeId).toEqual(mockProject.nodeId);
     expect(project?.project.chainId).toEqual(mockProject.chainId);
     expect(project?.project.registryAddress).toEqual(
       mockProject.registryAddress,
@@ -593,7 +590,7 @@ describe("v2 projects retrieval", () => {
     // Note: projectNumber is depreciated in v2 and should be null
     expect(project?.project.projectNumber).toEqual(null);
     expect(project?.project.tags).toEqual(mockProject.tags);
-    expect(project?.project.roles).toEqual(mockProject.roles);
+    expect(project?.project.projectRoles).toEqual(mockProject.projectRoles);
     expect(project?.project.name).toEqual(mockProject.name);
     expect(project?.project.metadata.description).toEqual(
       mockProject.metadata.description,

@@ -248,9 +248,9 @@ export const convertApplications = (
 ) => {
   const applications: GrantApplication[] = dataLayerApplications.flatMap(
     (application) => {
-      if (application.canonicalProject === null) {
+      if (application.project === null) {
         console.error(
-          `Canonical project not found for application ${application.id}`
+          `project not found for application ${application.id}`
         );
         return [];
       }
@@ -268,7 +268,7 @@ export const convertApplications = (
           metadata: application.metadata,
           project: {
             ...application.metadata.application.project,
-            owners: application.canonicalProject.roles,
+            owners: application.project.projectRoles,
             id: application.projectId,
           },
           projectId: application.projectId,

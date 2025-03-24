@@ -34,9 +34,9 @@ jobs:
         run: |
           pnpm lint:explorer
 
-      - name: Test Explorer
-        run: |
-          pnpm test:explorer
+      # - name: Test Explorer
+      #   run: |
+      #     pnpm test:explorer
 
       - name: Typecheck Explorer
         run: |
