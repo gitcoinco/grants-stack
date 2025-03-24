@@ -803,25 +803,27 @@ export class DataLayer {
       },
     );
 
-    return response.donations
-      .filter((donation) => {
+    // Filter out invalid donations and map the project metadata from application metadata (solution for canonical projects in indexer v2)
+    const validDonations = response.donations.reduce<Contribution[]>(
+      (validDonations, donation) => {
         if (donation.round.strategyName !== "allov2.DirectAllocationStrategy") {
-          return (
-            donation.application !== null &&
-            donation.application?.project !== null
-          );
+          if (donation.application?.project) {
+            donation.application.project.metadata =
+              donation.application.metadata.application.project;
+
+            validDonations.push(donation);
+          }
         } else {
-          return (
-            // DirectAllocationStrategy donations are not linked to applications
-            donation.application === null
-          );
+          if (donation.application === null) {
+            validDonations.push(donation);
+          }
         }
-      })
-      .map((donation) => {
-        donation.application.project.metadata =
-          donation.application.metadata.application.project;
-        return donation;
-      });
+        return validDonations;
+      },
+      [],
+    );
+
+    return validDonations;
   }
 
   async getPayoutsByChainIdRoundIdProjectId(args: {

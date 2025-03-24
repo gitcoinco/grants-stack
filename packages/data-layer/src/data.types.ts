@@ -789,7 +789,7 @@ export type Contribution = {
     donationsEndTime: string;
     strategyName: RoundPayoutType;
   };
-  application: {
+  application?: {
     metadata: {
       application: {
         project: ProjectMetadata & { id: string };
