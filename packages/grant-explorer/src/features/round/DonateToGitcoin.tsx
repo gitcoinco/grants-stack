@@ -153,11 +153,24 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
               <Listbox value={selectedToken} onChange={setSelectedToken}>
                 <div className="relative">
                   <Listbox.Button className="relative w-40 cursor-default rounded-lg border border-gray-200 bg-white py-2 pl-3 pr-8 text-left text-sm shadow-sm hover:border-gray-300">
-                    {selectedToken
-                      ? selectedChain?.tokens.find(
-                          (t) => t.address === selectedToken
-                        )?.code
-                      : "Select token"}
+                    {selectedToken ? (
+                      <div className="flex justify-between items-center">
+                        <span>
+                          {
+                            selectedChain?.tokens.find(
+                              (t) =>
+                                t.address.toLowerCase() ===
+                                selectedToken.toLowerCase()
+                            )?.code
+                          }
+                        </span>
+                        <span className="text-xs text-gray-500 ml-2">
+                          {selectedTokenBalance.toFixed(3)}
+                        </span>
+                      </div>
+                    ) : (
+                      "Select token"
+                    )}
                   </Listbox.Button>
                   <Transition
                     as={Fragment}
@@ -172,6 +185,37 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
                       <div className="max-h-[40vh] overflow-y-auto">
                         {selectedChain?.tokens
                           .filter((token) => token.address !== zeroAddress)
+                          .sort((a, b) => {
+                            // NATIVE token always first
+                            if (
+                              a.address.toLowerCase() === NATIVE.toLowerCase()
+                            )
+                              return -1;
+                            if (
+                              b.address.toLowerCase() === NATIVE.toLowerCase()
+                            )
+                              return 1;
+
+                            // Get balances
+                            const balanceA =
+                              tokenBalances.find(
+                                (b) =>
+                                  b.token.toLowerCase() ===
+                                  a.address.toLowerCase()
+                              )?.balance || 0;
+                            const balanceB =
+                              tokenBalances.find(
+                                (b) =>
+                                  b.token.toLowerCase() ===
+                                  b.token.toLowerCase()
+                              )?.balance || 0;
+
+                            // Sort by balance (highest to lowest)
+                            if (balanceA === 0 && balanceB === 0) return 0;
+                            if (balanceA === 0) return 1;
+                            if (balanceB === 0) return -1;
+                            return balanceB - balanceA;
+                          })
                           .map((token) => {
                             const balance =
                               tokenBalances.find(
@@ -221,12 +265,6 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
                   </div>
                 )}
               </div>
-
-              {selectedToken && (
-                <span className="text-sm text-gray-500 whitespace-nowrap">
-                  Balance: {selectedTokenBalance.toFixed(3)}
-                </span>
-              )}
             </div>
           )}
 
