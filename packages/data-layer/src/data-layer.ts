@@ -551,10 +551,9 @@ export class DataLayer {
             tags
           }
           metadata
-          project: canonicalProject {
+          project {
             tags
             id
-            metadata
             anchorAddress
           }
         }
@@ -567,6 +566,7 @@ export class DataLayer {
     );
 
     return response.applications.map((a: Application) => {
+      const projectMetadata = a.metadata.application.project;
       return {
         applicationRef: `${a.chainId}:${a.roundId}:${a.id}`,
         chainId: parseInt(a.chainId),
@@ -574,11 +574,11 @@ export class DataLayer {
         roundId: a.roundId,
         roundName: a.round.roundMetadata?.name,
         projectId: a.project.id,
-        name: a.project?.metadata?.title,
-        websiteUrl: a.project?.metadata?.website,
-        logoImageCid: a.project?.metadata?.logoImg ?? null,
-        bannerImageCid: a.project?.metadata?.bannerImg ?? null,
-        summaryText: a.project?.metadata?.description,
+        name: projectMetadata?.title,
+        websiteUrl: projectMetadata?.website,
+        logoImageCid: projectMetadata?.logoImg ?? null,
+        bannerImageCid: projectMetadata?.bannerImg ?? null,
+        summaryText: projectMetadata?.description,
         payoutWalletAddress: a.metadata?.application?.recipient,
         createdAtBlock: 123,
         contributorCount: a.uniqueDonorsCount,
