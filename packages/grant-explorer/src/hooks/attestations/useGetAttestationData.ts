@@ -30,7 +30,7 @@ export const useGetAttestationData = (
 
       try {
         const response = await fetch(
-          `https://attestation.gitcoin.co/api/getAttestation`,
+          `${process.env.REACT_APP_ATTESTATION_SERVER}/api/getAttestation`,
           {
             method: "POST",
             headers: {
