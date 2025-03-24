@@ -89,11 +89,12 @@ export const getProgramById = gql`
 export const getProjectsById = gql`
   # @param $alloVersion - The version of Allo ex: "{allo-v2}"
   # @param $projectId - The ID of the project
-  query ($alloVersion: _text, $projectId: String!) {
+  query ($alloVersion: String!, $projectId: String!) {
     projects(
       limit: 100
       where: {
-        tags: { _eq: $alloVersion }
+        tags: { _hasKey: $alloVersion }
+        projectType: { _eq: "canonical" }
         _not: { tags: { _contains: "program" } }
         id: { _eq: $projectId }
       }
@@ -103,7 +104,6 @@ export const getProjectsById = gql`
       metadata
       metadataCid
       name
-      nodeId
       projectNumber
       registryAddress
       tags
@@ -146,7 +146,7 @@ export const getProjectAnchorByIdAndChainId = gql`
 //FIXME: Deprecated on indexer v2 ?
 export const getLegacyProjectId = gql`
   query ($projectId: String!) {
-    legacyProjects(first: 1, filter: { v2ProjectId: { equalTo: $projectId } }) {
+    legacyProjects(limit: 1, where: { v2ProjectId: { _eq: $projectId } }) {
       v1ProjectId
     }
   }
@@ -457,30 +457,14 @@ export const getProjectsByAddress = gql`
  * @returns The v2Projects
  */
 export const getPaginatedProjects = gql`
-  query getPaginatedProjects($first: Int!, $offset: Int!) {
+  query getPaginatedProjects($first: Int!, $offset: Int!, $chainIds: [Int!]!) {
     projects(
       where: {
         metadata: { _isNull: false }
         tags: { _contains: "allo-v2" }
         _not: { tags: { _contains: "program" } }
-        chainId: {
-          _in: [
-            1
-            137
-            10
-            324
-            42161
-            42220
-            43114
-            534352
-            8453
-            1329
-            100
-            42
-            1088
-          ]
-        }
-          //TODO: Not sure if removing rounds filter is correct 
+        chainId: { _in: $chainIds }
+        projectType: { _eq: "canonical" }
       }
       limit: $first
       offset: $offset
@@ -513,34 +497,17 @@ export const getProjectsBySearchTerm = gql`
     $searchTerm: String!
     $first: Int!
     $offset: Int!
+    $chainIds: [Int!]!
   ) {
-    searchProjects(
-      args: { search_term: $searchTerm }
+    projects(
       limit: $first
       offset: $offset
       where: {
-        metadata: { _isNull: false }
+        metadata: { _isNull: false, _cast: { String: { _regex: $searchTerm } } }
         tags: { _contains: "allo-v2" }
         _not: { tags: { _contains: "program" } }
-        chainId: {
-          _in: [
-            1
-            137
-            10
-            324
-            42161
-            42220
-            43114
-            534352
-            8453
-            1329
-            100
-            42
-            1088
-          ]
-        }
-        //TODO: Not sure if removing rounds filter is correct 
-
+        chainId: { _in: $chainIds }
+        projectType: { _eq: "canonical" }
       }
     ) {
       id
@@ -561,7 +528,7 @@ export const getProjectsBySearchTerm = gql`
 export const getProjectsAndRolesByAddress = gql`
   query getProjectsAndRolesByAddressQuery(
     $address: String!
-    $version: String! //TODO: chainge the code in which this query is called
+    $version: String!
     $chainIds: [Int!]!
   ) {
     projects(
@@ -599,19 +566,19 @@ export const getProjectsAndRolesByAddress = gql`
 `;
 
 //NOT SUPPORTED ON THE CURRENT INDEXER
-export const getBlockNumberQuery = gql`
-  query getBlockNumberQuery($chainId: Int!) {
-    {
-      subscriptions(
-        first: 100
-        filter: { chainId: { equalTo: $chainId }, toBlock: { equalTo: "latest" } }
-      ) {
-        chainId
-        indexedToBlock
-      }
-    }
-  }
-`;
+// export const getBlockNumberQuery = gql`
+//   query getBlockNumberQuery($chainId: Int!) {
+//     {
+//       subscriptions(
+//         first: 100
+//         filter: { chainId: { equalTo: $chainId }, toBlock: { equalTo: "latest" } }
+//       ) {
+//         chainId
+//         indexedToBlock
+//       }
+//     }
+//   }
+// `;
 
 //TODO: migrate code in which this query is called
 export const getRoundsQuery = gql`
@@ -705,7 +672,7 @@ const getRoundForManagerFields = `
   fundedAmount
   fundedAmountInUsd
   matchingDistribution
-  roles(first: 100) {
+  roundRoles(limit: 100) {
     role
     address
     createdAtBlock
