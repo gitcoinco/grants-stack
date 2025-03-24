@@ -4,7 +4,7 @@ import { TToken, getChainById, stringToBlobUrl } from "common";
 import { useCartStorage } from "../../../store";
 import { parseChainId } from "common/src/chains";
 import { Checkbox } from "@chakra-ui/react";
-
+import { DonateToGitcoin } from "../DonateToGitcoin";
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
   totalDonationsPerChain: { [chain: number]: number };
@@ -43,7 +43,7 @@ export function ChainConfirmationModalBody({
   return (
     <>
       <p className="text-sm text-grey-400">
-      {chainIdsBeingCheckedOut.length > 1 && (
+        {chainIdsBeingCheckedOut.length > 1 && (
           <>
             Checkout all your carts across different networks or select the cart
             you wish to checkout now.
@@ -51,27 +51,32 @@ export function ChainConfirmationModalBody({
         )}
       </p>
       <div className="my-4">
-        {Object.keys(projectsByChain)
-          .map(parseChainId)
-          .filter((chainId) => chainIdsBeingCheckedOut.includes(chainId))
-          .map((chainId, index) => (
-            <ChainSummary
-              chainId={chainId}
-              selectedPayoutToken={getVotingTokenForChain(chainId)}
-              totalDonation={totalDonationsPerChain[chainId]}
-              checked={
-                chainIdsBeingCheckedOut.includes(chainId) &&
-                enoughBalanceByChainId[chainId]
-              }
-              chainsBeingCheckedOut={chainIdsBeingCheckedOut.length}
-              onChange={(checked) =>
-                handleChainCheckboxChange(chainId, checked)
-              }
-              isLastItem={index === Object.keys(projectsByChain).length - 1}
-              notEnoughBalance={!enoughBalanceByChainId[chainId]}
-              handleSwap={() => handleSwap(chainId)}
-            />
-          ))}
+        <>
+          <DonateToGitcoin divider="bottom" />
+        </>
+        <>
+          {Object.keys(projectsByChain)
+            .map(parseChainId)
+            .filter((chainId) => chainIdsBeingCheckedOut.includes(chainId))
+            .map((chainId, index) => (
+              <ChainSummary
+                chainId={chainId}
+                selectedPayoutToken={getVotingTokenForChain(chainId)}
+                totalDonation={totalDonationsPerChain[chainId]}
+                checked={
+                  chainIdsBeingCheckedOut.includes(chainId) &&
+                  enoughBalanceByChainId[chainId]
+                }
+                chainsBeingCheckedOut={chainIdsBeingCheckedOut.length}
+                onChange={(checked) =>
+                  handleChainCheckboxChange(chainId, checked)
+                }
+                isLastItem={index === Object.keys(projectsByChain).length - 1}
+                notEnoughBalance={!enoughBalanceByChainId[chainId]}
+                handleSwap={() => handleSwap(chainId)}
+              />
+            ))}
+        </>
       </div>
     </>
   );

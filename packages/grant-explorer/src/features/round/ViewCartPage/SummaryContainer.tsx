@@ -187,7 +187,9 @@ export function SummaryContainer(props: {
               handleSwap={props.handleSwap}
             />
           }
-          isOpen={openChainConfirmationModal}
+          // todo: put back
+          // isOpen={openChainConfirmationModal}
+          isOpen={true}
           setIsOpen={setOpenChainConfirmationModal}
           disabled={chainIdsBeingCheckedOut.length === 0}
         />
