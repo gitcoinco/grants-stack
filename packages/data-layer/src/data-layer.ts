@@ -464,7 +464,10 @@ export class DataLayer {
       return null;
     }
 
-    return response.applications[0];
+    const application = response.applications[0];
+    application.project.metadata = application.metadata.application.project;
+
+    return application;
   }
 
   async getApplicationsForExplorer({
@@ -485,7 +488,12 @@ export class DataLayer {
       requestVariables,
     );
 
-    return response.applications ?? [];
+    return (
+      response.applications.map((application) => {
+        application.project.metadata = application.metadata.application.project;
+        return application;
+      }) ?? []
+    );
   }
 
   /**
@@ -795,19 +803,25 @@ export class DataLayer {
       },
     );
 
-    return response.donations.filter((donation) => {
-      if (donation.round.strategyName !== "allov2.DirectAllocationStrategy") {
-        return (
-          donation.application !== null &&
-          donation.application?.project !== null
-        );
-      } else {
-        return (
-          // DirectAllocationStrategy donations are not linked to applications
-          donation.application === null
-        );
-      }
-    });
+    return response.donations
+      .filter((donation) => {
+        if (donation.round.strategyName !== "allov2.DirectAllocationStrategy") {
+          return (
+            donation.application !== null &&
+            donation.application?.project !== null
+          );
+        } else {
+          return (
+            // DirectAllocationStrategy donations are not linked to applications
+            donation.application === null
+          );
+        }
+      })
+      .map((donation) => {
+        donation.application.project.metadata =
+          donation.application.metadata.application.project;
+        return donation;
+      });
   }
 
   async getPayoutsByChainIdRoundIdProjectId(args: {
