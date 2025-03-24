@@ -18,8 +18,8 @@ import { PlusIcon } from "@heroicons/react/solid";
 
 const sortDataByRole = (data: AddressAndRole[]): AddressAndRole[] => {
   return data.sort((a, b) => {
-    if (a.role === "OWNER") return -1;
-    if (b.role === "OWNER") return 1;
+    if (a.role === "owner") return -1;
+    if (b.role === "owner") return 1;
     return a.role.localeCompare(b.role);
   });
 };
@@ -35,8 +35,8 @@ const filterRoles = (data: AddressAndRole[]): AddressAndRole[] => {
       // If not included, simply add the current item
       acc.push(current);
     } else if (
-      acc[existingIndex].role !== "OWNER" &&
-      current.role === "OWNER"
+      acc[existingIndex].role !== "owner" &&
+      current.role === "owner"
     ) {
       // If the existing item is not an Owner but the current is, replace it
       acc[existingIndex] = current;
@@ -64,7 +64,7 @@ export function ViewManageProgram(props: {
   const isOwner = props.program?.roles?.some(
     (role) =>
       role.address.toLowerCase() === props.userAddress.toLowerCase() &&
-      role.role === "OWNER"
+      role.role === "owner"
   );
 
   // Show Owner role first, then Operator
@@ -84,7 +84,7 @@ export function ViewManageProgram(props: {
       name: "Updating",
       description: `Updating the team members for the profile`,
       status: contractUpdatingStatus,
-    }
+    },
   ];
 
   const handleUpdateTeam = async () => {
@@ -192,9 +192,9 @@ export function ViewManageProgram(props: {
               <tr key={index}>
                 <AddressRow address={item.address} />
                 <td className="w-1/4 px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                  {item.role === "OWNER" ? "Owner" : "Member"}
+                  {item.role === "owner" ? "Owner" : "Member"}
                 </td>
-                {isOwner && item.role !== "OWNER" ? (
+                {isOwner && item.role !== "owner" ? (
                   <td>
                     <XIcon
                       className="text-red-100 w-6 cursor-pointer"
@@ -205,8 +205,9 @@ export function ViewManageProgram(props: {
                       }}
                     />
                   </td>
-                ) : 
-                <td className="bg-white"></td>}
+                ) : (
+                  <td className="bg-white"></td>
+                )}
               </tr>
             ))}
           </tbody>

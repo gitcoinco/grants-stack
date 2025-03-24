@@ -42,7 +42,7 @@ const mockProjects: v2Project[] = [
     projectRoles: [
       {
         address: "0xe849b2a694184b8739a04c915518330757cdb18b",
-        role: "OWNER",
+        role: "owner",
         createdAtBlock: "5146499",
       },
     ],
