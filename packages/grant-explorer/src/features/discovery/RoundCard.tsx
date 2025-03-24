@@ -6,7 +6,6 @@ import {
 } from "common";
 import { getDaysLeft, getRoundStates } from "../api/utils";
 import {
-  Badge,
   BasicCard,
   CardContent,
   CardDescription,

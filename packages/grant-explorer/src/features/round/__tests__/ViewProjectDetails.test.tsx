@@ -77,6 +77,21 @@ const expectedProject: Application = {
   id: faker.finance.ethereumAddress(),
   metadata: {
     application: {
+      project: {
+        id: faker.finance.ethereumAddress(),
+        createdAt: Date.now(),
+        title: "Project test",
+        description: "Best project in the world",
+        website: "test.com",
+        owners: [],
+        bannerImg: "banner!",
+        logoImg: "logo!",
+        projectTwitter: "twitter.com/project",
+        projectGithub: "github.com/project",
+        userGithub: "github.com/user",
+        lastUpdated: 0,
+        credentials: {},
+      },
       answers: [
         {
           answer: "never gonna give you up",
