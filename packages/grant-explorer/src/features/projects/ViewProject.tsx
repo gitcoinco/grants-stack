@@ -474,7 +474,7 @@ export default function ViewProject() {
       const poolId = directAllocationPoolId.toString();
 
       const recipient = project?.projectRoles?.filter(
-        (role) => role.role === "OWNER"
+        (role) => role.role === "owner"
       )[0].address;
 
       const nonce = project?.nonce;

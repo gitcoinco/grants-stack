@@ -96,8 +96,9 @@ export const transformAndDispatchProject =
     };
 
     // todo: should we lowercase the owner addresses?
+    console.log("project.projectRoles", project.projectRoles);
     const ownerAddresses: string[] = project.projectRoles
-      .filter((role: AddressAndRole) => role.role === "OWNER")
+      .filter((role: AddressAndRole) => role.role === "owner")
       .map((role) => ethers.utils.getAddress(role.address));
 
     dispatch(projectOwnersLoaded(id, ownerAddresses));
