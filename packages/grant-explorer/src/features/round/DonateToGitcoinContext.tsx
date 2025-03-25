@@ -1,7 +1,13 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+} from "react";
 import { getBalance } from "@wagmi/core";
 import { config } from "../../app/wagmi";
-import { NATIVE, getChains } from "common";
+import { NATIVE, getChains, TChain, TToken } from "common";
 import { useAccount } from "wagmi";
 import { zeroAddress } from "viem";
 
@@ -23,15 +29,17 @@ type DonateToGitcoinContextType = {
   amount: string;
   tokenBalances: { token: string; balance: number }[];
   selectedTokenBalance: number;
+  isAmountValid: boolean;
+  tokenFilters?: TokenFilter[];
+  chains: TChain[];
+  selectedChain: TChain | null;
+  filteredTokens?: TToken[];
+  tokenDetails: TToken | undefined;
   setIsEnabled: (enabled: boolean) => void;
   setSelectedChainId: (chainId: number | null) => void;
   setSelectedToken: (token: string) => void;
   setAmount: (amount: string) => void;
-  handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleTokenChange: (newToken: string) => void;
-  handleChainChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  handleCheckboxChange: (checked: boolean) => void;
-  onDonationChange?: (details: DonationDetails | null) => void;
+  setTokenFilters: (filters: TokenFilter[]) => void;
 };
 
 const DonateToGitcoinContext = createContext<DonateToGitcoinContextType | null>(
@@ -40,11 +48,8 @@ const DonateToGitcoinContext = createContext<DonateToGitcoinContextType | null>(
 
 export function DonateToGitcoinProvider({
   children,
-  onDonationChange,
 }: {
   children: React.ReactNode;
-  tokenFilters?: TokenFilter[];
-  onDonationChange?: (details: DonationDetails | null) => void;
 }) {
   const [isEnabled, setIsEnabled] = useState(false);
   const [selectedChainId, setSelectedChainId] = useState<number | null>(null);
@@ -55,21 +60,47 @@ export function DonateToGitcoinProvider({
   >([]);
   const { address } = useAccount();
 
-  const selectedTokenBalance =
-    tokenBalances.find(
-      (b) => b.token.toLowerCase() === selectedToken.toLowerCase()
-    )?.balance || 0;
+  const [tokenFilters, setTokenFilters] = useState<TokenFilter[] | undefined>(
+    undefined
+  );
 
-  // Fetch token balances when chain or address changes
-  React.useEffect(() => {
+  const chains = useMemo(() => {
+    const allChains = getChains().filter((c) => c.type === "mainnet");
+    if (!tokenFilters) return allChains;
+    return allChains.filter((chain) =>
+      tokenFilters.some((filter) => filter.chainId === chain.id)
+    );
+  }, [tokenFilters]);
+
+  const selectedChain = selectedChainId
+    ? chains.find((c) => c.id === selectedChainId) || null
+    : null;
+
+  const selectedTokenBalance = useMemo(
+    () =>
+      tokenBalances.find(
+        (b) => b.token.toLowerCase() === selectedToken.toLowerCase()
+      )?.balance || 0,
+    [tokenBalances, selectedToken]
+  );
+
+  const isAmountValid = useMemo(() => {
+    if (!amount || !selectedToken) return true;
+    const numAmount = Number(amount);
+    return (
+      !isNaN(numAmount) &&
+      (amount.endsWith(".") || numAmount > 0) &&
+      numAmount <= selectedTokenBalance
+    );
+  }, [amount, selectedToken, selectedTokenBalance]);
+
+  useEffect(() => {
     if (!address || !selectedChainId) return;
-
     const fetchBalances = async () => {
-      const chain = getChains().find((c) => c.id === selectedChainId);
-      if (!chain) return;
+      if (!selectedChain) return;
 
       const balances = await Promise.all(
-        chain.tokens
+        selectedChain.tokens
           .filter((token) => token.address !== zeroAddress)
           .map(async (token) => {
             const { value } = await getBalance(config, {
@@ -90,54 +121,33 @@ export function DonateToGitcoinProvider({
     };
 
     fetchBalances();
-  }, [address, selectedChainId]);
+  }, [address, selectedChainId, selectedChain]);
 
-  // Replace the two-part handler with a single handleAmountChange
-  const handleAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      if (value === "" || /^\d*\.?\d*$/.test(value)) {
-        setAmount(value);
-        if (isEnabled && selectedChainId && selectedToken) {
-          onDonationChange?.({
-            chainId: selectedChainId,
-            tokenAddress: selectedToken,
-            amount: value,
-          });
-        }
-      }
-    },
-    [isEnabled, selectedChainId, selectedToken, onDonationChange]
-  );
-
-  const handleTokenChange = useCallback((newToken: string) => {
-    setSelectedToken(newToken);
-    setAmount("");
-  }, []);
-
-  const handleChainChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const newChainId = Number(e.target.value);
-      setSelectedChainId(newChainId || null);
+  useEffect(() => {
+    if (!isEnabled) {
+      setSelectedChainId(null);
       setSelectedToken("");
       setAmount("");
-    },
-    []
+      setTokenBalances([]);
+    }
+  }, [isEnabled, setSelectedChainId, setSelectedToken, setAmount]);
+
+  const tokenDetails = selectedChain?.tokens.find(
+    (t) => t.address === selectedToken
   );
 
-  const handleCheckboxChange = useCallback(
-    (checked: boolean) => {
-      setIsEnabled(checked);
-      if (!checked) {
-        setSelectedChainId(null);
-        setSelectedToken("");
-        setAmount("");
-        setTokenBalances([]);
-        onDonationChange?.(null);
-      }
-    },
-    [onDonationChange]
-  );
+  const filteredTokens = useMemo(() => {
+    if (!selectedChain || !tokenFilters) return selectedChain?.tokens;
+    const chainFilter = tokenFilters.find(
+      (f) => f.chainId === selectedChain.id
+    );
+    if (!chainFilter) return selectedChain.tokens;
+    return selectedChain.tokens.filter((token) =>
+      chainFilter.addresses
+        .map((addr) => addr.toLowerCase())
+        .includes(token.address.toLowerCase())
+    );
+  }, [selectedChain, tokenFilters]);
 
   const value = {
     isEnabled,
@@ -150,11 +160,13 @@ export function DonateToGitcoinProvider({
     setSelectedChainId,
     setSelectedToken,
     setAmount,
-    handleAmountChange,
-    handleTokenChange,
-    handleChainChange,
-    handleCheckboxChange,
-    onDonationChange,
+    isAmountValid,
+    chains,
+    selectedChain,
+    tokenFilters,
+    setTokenFilters,
+    filteredTokens,
+    tokenDetails,
   };
 
   return (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { CartProject } from "../../api/types";
 import { NATIVE, TToken, getChainById, stringToBlobUrl } from "common";
 import { useCartStorage } from "../../../store";
@@ -6,6 +6,7 @@ import { parseChainId } from "common/src/chains";
 import { Checkbox } from "@chakra-ui/react";
 import { DonateToGitcoin } from "../DonateToGitcoin";
 import { zeroAddress } from "viem";
+import { useDonateToGitcoin } from "../DonateToGitcoinContext";
 
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
@@ -24,6 +25,7 @@ export function ChainConfirmationModalBody({
   setChainIdsBeingCheckedOut,
   handleSwap,
 }: ChainConfirmationModalBodyProps) {
+  const { setTokenFilters } = useDonateToGitcoin();
   const handleChainCheckboxChange = (chainId: number, checked: boolean) => {
     if (checked) {
       setChainIdsBeingCheckedOut((prevChainIds) =>
@@ -42,6 +44,28 @@ export function ChainConfirmationModalBody({
     (state) => state.getVotingTokenForChain
   );
 
+  const parsedChainIds = useMemo(
+    () => Object.keys(projectsByChain).map(parseChainId),
+    [projectsByChain]
+  );
+
+  const tokenFilters = useMemo(
+    () =>
+      parsedChainIds.map((chainId) => ({
+        chainId,
+        addresses: [
+          getVotingTokenForChain(chainId).address === zeroAddress
+            ? NATIVE
+            : getVotingTokenForChain(chainId).address,
+        ],
+      })),
+    [parsedChainIds, getVotingTokenForChain]
+  );
+
+  useEffect(() => {
+    setTokenFilters(tokenFilters);
+  }, [tokenFilters]);
+
   return (
     <>
       <p className="text-sm text-grey-400">
@@ -54,11 +78,11 @@ export function ChainConfirmationModalBody({
       </p>
       <div className="my-4">
         <>
-          {Object.keys(projectsByChain)
-            .map(parseChainId)
+          {parsedChainIds
             .filter((chainId) => chainIdsBeingCheckedOut.includes(chainId))
             .map((chainId, index) => (
               <ChainSummary
+                key={chainId}
                 chainId={chainId}
                 selectedPayoutToken={getVotingTokenForChain(chainId)}
                 totalDonation={totalDonationsPerChain[chainId]}
@@ -77,19 +101,7 @@ export function ChainConfirmationModalBody({
             ))}
         </>
         <>
-          <DonateToGitcoin
-            divider="top"
-            tokenFilters={Object.keys(projectsByChain)
-              .map(parseChainId)
-              .map((chainId) => ({
-                chainId,
-                addresses: [
-                  getVotingTokenForChain(chainId).address === zeroAddress
-                    ? NATIVE
-                    : getVotingTokenForChain(chainId).address,
-                ],
-              }))}
-          />
+          <DonateToGitcoin divider="top" />
         </>
       </div>
     </>
