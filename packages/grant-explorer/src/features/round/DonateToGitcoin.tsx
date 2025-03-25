@@ -1,27 +1,98 @@
-import { useState, Fragment, useMemo } from "react";
+import { Fragment, useMemo, useRef, useEffect } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { getChains, NATIVE } from "common";
-import { useAccount } from "wagmi";
-import { getBalance } from "@wagmi/core";
-import { config } from "../../app/wagmi";
-import React from "react";
-import { zeroAddress } from "viem";
 import { stringToBlobUrl } from "common";
 import { Checkbox } from "@chakra-ui/react";
+import { zeroAddress } from "viem";
+import { useDonateToGitcoin } from "./DonateToGitcoinContext";
+import React from "react";
+
+type TokenFilter = {
+  chainId: number;
+  addresses: string[];
+};
+
+export type DonationDetails = {
+  chainId: number;
+  tokenAddress: string;
+  amount: string;
+};
 
 type DonateToGitcoinProps = {
   divider?: "none" | "top" | "bottom";
+  tokenFilters?: TokenFilter[];
 };
 
-export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
-  const [isEnabled, setIsEnabled] = useState(false);
-  const chains = getChains().filter((c) => c.type === "mainnet");
-  const [selectedChainId, setSelectedChainId] = useState<number | null>(null);
-  const [selectedToken, setSelectedToken] = useState<string>("");
-  const [amount, setAmount] = useState<string>("");
-  const [tokenBalances, setTokenBalances] = useState<
-    { token: string; balance: number }[]
-  >([]);
+const AmountInput = React.memo(function AmountInput({
+  amount,
+  isAmountValid,
+  selectedToken,
+  selectedTokenBalance,
+  tokenDetails,
+  handleAmountChange,
+}: {
+  amount: string;
+  isAmountValid: boolean;
+  selectedToken: string;
+  selectedTokenBalance: number;
+  tokenDetails?: { code: string };
+  handleAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  return (
+    <div className="relative flex-grow max-w-[200px]">
+      <input
+        ref={inputRef}
+        type="text"
+        className={`w-full rounded-lg border py-2 px-3 text-sm shadow-sm hover:border-gray-300 ${
+          isAmountValid ? "border-gray-200" : "border-red-300"
+        }`}
+        value={amount}
+        onChange={handleAmountChange}
+        placeholder="Enter amount"
+        max={selectedTokenBalance}
+      />
+      {selectedToken && (
+        <div className="absolute right-3 top-2.5 text-xs text-gray-500">
+          {tokenDetails?.code}
+        </div>
+      )}
+    </div>
+  );
+});
+
+function DonateToGitcoinContent({
+  divider = "none",
+  tokenFilters,
+}: DonateToGitcoinProps) {
+  const {
+    isEnabled,
+    selectedChainId,
+    selectedToken,
+    amount,
+    tokenBalances,
+    selectedTokenBalance,
+    handleAmountChange,
+    handleTokenChange,
+    handleChainChange,
+    handleCheckboxChange,
+  } = useDonateToGitcoin();
+
+  // Filter chains based on tokenFilters
+  const chains = useMemo(() => {
+    const allChains = getChains().filter((c) => c.type === "mainnet");
+    if (!tokenFilters) return allChains;
+    return allChains.filter((chain) =>
+      tokenFilters.some((filter) => filter.chainId === chain.id)
+    );
+  }, [tokenFilters]);
 
   const selectedChain = selectedChainId
     ? chains.find((c) => c.id === selectedChainId)
@@ -29,57 +100,20 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
   const tokenDetails = selectedChain?.tokens.find(
     (t) => t.address === selectedToken
   );
-  const { address } = useAccount();
 
-  const handleCheckboxChange = (checked: boolean) => {
-    setIsEnabled(checked);
-    if (!checked) {
-      // Reset form when checkbox is unchecked
-      setSelectedChainId(null);
-      setSelectedToken("");
-      setAmount("");
-      setTokenBalances([]);
-    }
-  };
-
-  React.useEffect(() => {
-    if (!address || !selectedChain) return;
-
-    const fetchBalances = async () => {
-      const balances = await Promise.all(
-        selectedChain.tokens
-          .filter((token) => token.address !== zeroAddress)
-          .map(async (token) => {
-            const { value } = await getBalance(config, {
-              address,
-              token:
-                token.address.toLowerCase() === NATIVE.toLowerCase()
-                  ? undefined
-                  : token.address,
-              chainId: selectedChainId,
-            });
-            return {
-              token: token.address,
-              balance: Number(value) / 10 ** (token.decimals || 18),
-            };
-          })
-      );
-      setTokenBalances(balances);
-    };
-
-    fetchBalances();
-  }, [address, selectedChainId, selectedChain]);
-
-  const selectedTokenBalance =
-    tokenBalances.find(
-      (b) => b.token.toLowerCase() === selectedToken.toLowerCase()
-    )?.balance || 0;
-
-  const isAmountValid = useMemo(() => {
-    if (!amount || !selectedToken) return true;
-    const numAmount = Number(amount);
-    return numAmount > 0 && numAmount <= selectedTokenBalance;
-  }, [amount, selectedToken, selectedTokenBalance]);
+  // Filter tokens based on tokenFilters
+  const filteredTokens = useMemo(() => {
+    if (!selectedChain || !tokenFilters) return selectedChain?.tokens;
+    const chainFilter = tokenFilters.find(
+      (f) => f.chainId === selectedChain.id
+    );
+    if (!chainFilter) return selectedChain.tokens;
+    return selectedChain.tokens.filter((token) =>
+      chainFilter.addresses
+        .map((addr) => addr.toLowerCase())
+        .includes(token.address.toLowerCase())
+    );
+  }, [selectedChain, tokenFilters]);
 
   const borderClass = useMemo(() => {
     switch (divider) {
@@ -91,6 +125,16 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
         return "";
     }
   }, [divider]);
+
+  const isAmountValid = useMemo(() => {
+    if (!amount || !selectedToken) return true;
+    const numAmount = Number(amount);
+    return (
+      !isNaN(numAmount) &&
+      (amount.endsWith(".") || numAmount > 0) &&
+      numAmount <= selectedTokenBalance
+    );
+  }, [amount, selectedToken, selectedTokenBalance]);
 
   return (
     <div className={`flex flex-col justify-center mt-2 py-4 ${borderClass}`}>
@@ -129,12 +173,7 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
               <select
                 className="bg-transparent border-none focus:ring-0 text-sm flex-grow font-medium"
                 value={selectedChainId || ""}
-                onChange={(e) => {
-                  const newChainId = Number(e.target.value);
-                  setSelectedChainId(newChainId || null);
-                  setSelectedToken("");
-                  setAmount("");
-                }}
+                onChange={handleChainChange}
               >
                 <option value="">Select chain</option>
                 {chains
@@ -150,7 +189,7 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
 
           {selectedChain && (
             <div className="flex items-center gap-3">
-              <Listbox value={selectedToken} onChange={setSelectedToken}>
+              <Listbox value={selectedToken} onChange={handleTokenChange}>
                 <div className="relative">
                   <Listbox.Button className="relative w-40 cursor-default rounded-lg border border-gray-200 bg-white py-2 pl-3 pr-8 text-left text-sm shadow-sm hover:border-gray-300">
                     {selectedToken ? (
@@ -183,10 +222,9 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
                       style={{ maxHeight: "40vh" }}
                     >
                       <div className="max-h-[40vh] overflow-y-auto">
-                        {selectedChain?.tokens
+                        {(filteredTokens || [])
                           .filter((token) => token.address !== zeroAddress)
                           .sort((a, b) => {
-                            // NATIVE token always first
                             if (
                               a.address.toLowerCase() === NATIVE.toLowerCase()
                             )
@@ -196,7 +234,6 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
                             )
                               return 1;
 
-                            // Get balances
                             const balanceA =
                               tokenBalances.find(
                                 (b) =>
@@ -210,7 +247,6 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
                                   b.token.toLowerCase()
                               )?.balance || 0;
 
-                            // Sort by balance (highest to lowest)
                             if (balanceA === 0 && balanceB === 0) return 0;
                             if (balanceA === 0) return 1;
                             if (balanceB === 0) return -1;
@@ -248,23 +284,14 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
                 </div>
               </Listbox>
 
-              <div className="relative flex-grow max-w-[200px]">
-                <input
-                  type="number"
-                  className={`w-full rounded-lg border py-2 px-3 text-sm shadow-sm hover:border-gray-300 ${
-                    isAmountValid ? "border-gray-200" : "border-red-300"
-                  }`}
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount"
-                  max={selectedTokenBalance}
-                />
-                {selectedToken && (
-                  <div className="absolute right-3 top-2.5 text-xs text-gray-500">
-                    {tokenDetails?.code}
-                  </div>
-                )}
-              </div>
+              <AmountInput
+                amount={amount}
+                isAmountValid={isAmountValid}
+                selectedToken={selectedToken}
+                selectedTokenBalance={selectedTokenBalance}
+                tokenDetails={tokenDetails}
+                handleAmountChange={handleAmountChange}
+              />
             </div>
           )}
 
@@ -277,4 +304,8 @@ export function DonateToGitcoin({ divider = "none" }: DonateToGitcoinProps) {
       )}
     </div>
   );
+}
+
+export function DonateToGitcoin(props: DonateToGitcoinProps) {
+  return <DonateToGitcoinContent {...props} />;
 }

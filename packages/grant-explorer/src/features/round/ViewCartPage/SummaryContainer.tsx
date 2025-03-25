@@ -31,12 +31,14 @@ import { useDataLayer } from "data-layer";
 import { isPresent } from "ts-is-present";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
+import { useDonateToGitcoin } from "../DonateToGitcoinContext";
 
 export function SummaryContainer(props: {
   enoughBalanceByChainId: Record<number, boolean>;
   totalAmountByChainId: Record<number, number>;
   handleSwap: (chainId: number) => void;
 }) {
+  console.log("===> fuck 2");
   const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
   const { address, isConnected, connector } = useAccount();
@@ -47,8 +49,16 @@ export function SummaryContainer(props: {
   } = useCartStorage();
   const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
   const dataLayer = useDataLayer();
-
   const { openConnectModal } = useConnectModal();
+
+  const {
+    isEnabled,
+    selectedChainId,
+    selectedToken,
+    amount,
+    tokenBalances,
+    selectedTokenBalance,
+  } = useDonateToGitcoin();
 
   const projectsByChain = useMemo(
     () => groupBy(projects, "chainId"),
@@ -128,6 +138,17 @@ export function SummaryContainer(props: {
       navigate("/thankyou");
     }
   }, [chainsToCheckout, navigate, voteStatus]);
+
+  useEffect(() => {
+    console.log("==> ", {
+      isEnabled,
+      selectedChainId,
+      selectedToken,
+      amount,
+      tokenBalances,
+      selectedTokenBalance,
+    });
+  }, []);
 
   function checkEmptyDonations() {
     const emptyDonationsExist =
@@ -219,7 +240,7 @@ export function SummaryContainer(props: {
           onTryAgain={() => {
             window.location.href = "https://passport.gitcoin.co";
           }}
-          heading={`Don’t miss out on getting your donations matched!`}
+          heading={`Don't miss out on getting your donations matched!`}
           subheading={
             <>
               <p className={"text-sm text-grey-400 mb-2"}>

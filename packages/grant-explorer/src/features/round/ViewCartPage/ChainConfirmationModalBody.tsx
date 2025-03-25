@@ -1,10 +1,12 @@
 import React from "react";
 import { CartProject } from "../../api/types";
-import { TToken, getChainById, stringToBlobUrl } from "common";
+import { NATIVE, TToken, getChainById, stringToBlobUrl } from "common";
 import { useCartStorage } from "../../../store";
 import { parseChainId } from "common/src/chains";
 import { Checkbox } from "@chakra-ui/react";
 import { DonateToGitcoin } from "../DonateToGitcoin";
+import { zeroAddress } from "viem";
+
 type ChainConfirmationModalBodyProps = {
   projectsByChain: { [chain: number]: CartProject[] };
   totalDonationsPerChain: { [chain: number]: number };
@@ -52,9 +54,6 @@ export function ChainConfirmationModalBody({
       </p>
       <div className="my-4">
         <>
-          <DonateToGitcoin divider="bottom" />
-        </>
-        <>
           {Object.keys(projectsByChain)
             .map(parseChainId)
             .filter((chainId) => chainIdsBeingCheckedOut.includes(chainId))
@@ -76,6 +75,21 @@ export function ChainConfirmationModalBody({
                 handleSwap={() => handleSwap(chainId)}
               />
             ))}
+        </>
+        <>
+          <DonateToGitcoin
+            divider="top"
+            tokenFilters={Object.keys(projectsByChain)
+              .map(parseChainId)
+              .map((chainId) => ({
+                chainId,
+                addresses: [
+                  getVotingTokenForChain(chainId).address === zeroAddress
+                    ? NATIVE
+                    : getVotingTokenForChain(chainId).address,
+                ],
+              }))}
+          />
         </>
       </div>
     </>
