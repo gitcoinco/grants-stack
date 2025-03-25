@@ -1,3 +1,3 @@
 import ViewProjectDetails from "./ViewProjectDetails";
-export * from "./ViewProjectDetails";
+export { ProjectStats, Stat } from "./components";
 export default ViewProjectDetails;

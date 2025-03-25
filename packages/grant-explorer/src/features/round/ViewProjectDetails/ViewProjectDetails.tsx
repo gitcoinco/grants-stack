@@ -1,58 +1,22 @@
 import { datadogLogs } from "@datadog/browser-logs";
-import {
-  ArrowTrendingUpIcon,
-  LinkIcon,
-  ShieldCheckIcon,
-} from "@heroicons/react/24/solid";
-import {
-  formatDateWithOrdinal,
-  renderToHTML,
-  useParams,
-  useValidateCredential,
-} from "common";
 import { getAlloVersion } from "common/src/config";
-import { formatDistanceToNowStrict } from "date-fns";
-import React, {
-  ComponentProps,
-  ComponentPropsWithRef,
-  createElement,
-  FunctionComponent,
-  PropsWithChildren,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { useAccount, useEnsName } from "wagmi";
-import DefaultLogoImage from "../../../assets/default_logo.png";
-import { ReactComponent as GithubIcon } from "../../../assets/github-logo.svg";
-import { ReactComponent as TwitterIcon } from "../../../assets/twitter-logo.svg";
-import { ReactComponent as EthereumIcon } from "../../../assets/icons/ethereum-icon.svg";
-import { ReactComponent as GlobeIcon } from "../../../assets/icons/globe-icon.svg";
+import React, { useEffect, useMemo, useState } from "react";
+import { useAccount } from "wagmi";
+
 import { useRoundById } from "../../../context/RoundContext";
-import {
-  CartProject,
-  GrantApplicationFormAnswer,
-  Project,
-} from "../../api/types";
+import { CartProject } from "../../api/types";
 import { ProjectBanner } from "../../common/ProjectBanner";
 import RoundEndedBanner from "../../common/RoundEndedBanner";
 import Breadcrumb, { BreadcrumbItem } from "../../common/Breadcrumb";
 import { isDirectRound, isInfiniteDate } from "../../api/utils";
 import { useCartStorage } from "../../../store";
-import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
+import { Skeleton, SkeletonText } from "@chakra-ui/react";
 import { GrantList } from "../KarmaGrant/GrantList";
 import { ImpactList } from "../KarmaGrant/ImpactList";
 import { useGap } from "../../api/gap";
 import { StatList } from "../OSO/ImpactStats";
 import { useOSO } from "../../api/oso";
-import { CheckIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
-import {
-  Application,
-  BaseQuestion,
-  Round,
-  RoundApplicationQuestion,
-  useDataLayer,
-} from "data-layer";
+import { useDataLayer } from "data-layer";
 import { DefaultLayout } from "../../common/DefaultLayout";
 import {
   mapApplicationToProject,
@@ -82,11 +46,15 @@ const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   );
 };
 
-const useProjectDetailsParams = useParams<{
-  chainId: string;
-  roundId: string;
-  applicationId: string;
-}>;
+import { useProjectDetailsParams } from "./hooks/useProjectDetailsParams";
+import {
+  ApplicationFormAnswers,
+  Detail,
+  ProjectDetailsTabs,
+  ProjectLinks,
+  Sidebar,
+  ProjectLogo,
+} from "./components";
 
 export default function ViewProjectDetails() {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -326,362 +294,5 @@ export default function ViewProjectDetails() {
         </div>
       </DefaultLayout>
     </>
-  );
-}
-
-function ProjectDetailsTabs(props: {
-  tabs: string[];
-  onChange?: (tabIndex: number) => void;
-  selected: number;
-}) {
-  return (
-    <Box className="" bottom={0.5}>
-      {props.tabs.length > 0 && (
-        <Tabs
-          display="flex"
-          onChange={props.onChange}
-          defaultIndex={props.selected}
-        >
-          {props.tabs.map((tab, index) => (
-            <Tab key={index}>{tab}</Tab>
-          ))}
-        </Tabs>
-      )}
-    </Box>
-  );
-}
-
-function ProjectLinks({ project }: { project?: Project }) {
-  const {
-    recipient,
-    projectMetadata: {
-      createdAt,
-      website,
-      projectTwitter,
-      projectGithub,
-      userGithub,
-      credentials,
-    },
-  } = project ?? { projectMetadata: {} };
-
-  // @ts-expect-error Temp until viem (could also cast recipient as Address or update the type)
-  const ens = useEnsName({ address: recipient, enabled: Boolean(recipient) });
-
-  const { isValid: validTwitterCredential } = useValidateCredential(
-    credentials?.twitter,
-    projectTwitter
-  );
-
-  const { isValid: validGithubCredential } = useValidateCredential(
-    credentials?.github,
-    projectGithub
-  );
-
-  const createdOn =
-    createdAt &&
-    `Created on: ${formatDateWithOrdinal(new Date(createdAt ?? 0))}`;
-
-  return (
-    <div
-      className={`grid md:grid-cols-2 gap-4  border-y-[2px] py-4 my-4 ${
-        // isLoading?
-        createdAt ? "" : "bg-grey-100 animate-pulse"
-      }`}
-    >
-      <ProjectLink icon={EthereumIcon}>
-        <CopyToClipboard text={ens.data || recipient} />
-      </ProjectLink>
-      <ProjectLink icon={CalendarIcon}>{createdOn}</ProjectLink>
-      <ProjectLink url={website} icon={GlobeIcon}>
-        {website}
-      </ProjectLink>
-      {projectTwitter !== undefined && (
-        <ProjectLink
-          url={`https://twitter.com/${projectTwitter}`}
-          icon={TwitterIcon}
-          isVerified={validTwitterCredential}
-        >
-          {projectTwitter}
-        </ProjectLink>
-      )}
-      {projectGithub !== undefined && (
-        <ProjectLink
-          url={`https://github.com/${projectGithub}`}
-          icon={GithubIcon}
-          isVerified={validGithubCredential}
-        >
-          {projectGithub}
-        </ProjectLink>
-      )}
-      {userGithub !== undefined && (
-        <ProjectLink url={`https://github.com/${userGithub}`} icon={GithubIcon}>
-          {userGithub}
-        </ProjectLink>
-      )}
-    </div>
-  );
-}
-
-function ProjectLink({
-  icon,
-  children,
-  url,
-  isVerified,
-}: PropsWithChildren<{
-  icon: FunctionComponent<ComponentPropsWithRef<"svg">>;
-  url?: string;
-  isVerified?: boolean;
-}>) {
-  const Component = url ? "a" : "div";
-  return children ? (
-    <div className="flex items-center gap-2">
-      <div>{createElement(icon, { className: "w-4 h-4 text-grey-400" })}</div>
-      <div className="flex gap-2">
-        <Component
-          href={url}
-          target="_blank"
-          className={url && "text-blue-300 hover:underline"}
-        >
-          {children}
-        </Component>
-        {isVerified && <VerifiedBadge />}
-      </div>
-    </div>
-  ) : null;
-}
-
-function VerifiedBadge() {
-  return (
-    <span className="bg-teal-100 flex gap-2 rounded-full px-2 text-xs items-center font-modern-era-medium text-teal-500">
-      <ShieldCheckIcon className="w-4 h-4" />
-      Verified
-    </span>
-  );
-}
-
-function Detail(props: { text: string; testID: string }) {
-  return (
-    <p
-      dangerouslySetInnerHTML={{
-        __html: renderToHTML(props.text.replace(/\n/g, "\n\n")),
-      }}
-      className="text-blue-800 text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600 max-w-full"
-      data-testid={props.testID}
-    />
-  );
-}
-
-function ApplicationFormAnswers(props: {
-  answers: GrantApplicationFormAnswer[];
-  round: Round | undefined;
-}) {
-  const roundQuestions = props.round?.applicationQuestions as (BaseQuestion &
-    RoundApplicationQuestion)[];
-  let answers: GrantApplicationFormAnswer[] = [];
-  if (roundQuestions) {
-    answers = roundQuestions
-      .filter((q) => !q.hidden && !q.encrypted)
-      .map((q) => ({
-        ...props.answers.find(
-          (a) =>
-            a.questionId === q.id && a.question === q.title && a.type === q.type
-        ),
-        question: q.title,
-      }))
-      .filter((a): a is GrantApplicationFormAnswer => !!a.answer);
-  }
-
-  if (answers.length === 0) {
-    answers = props.answers.filter((a) => !!a.answer && !a.hidden);
-  }
-
-  if (answers.length === 0) {
-    return null;
-  }
-
-  return (
-    <div>
-      <h1 className="text-2xl mt-8 font-thin text-blue-800">
-        Additional Information
-      </h1>
-      <div>
-        {answers.map((answer) => {
-          const answerText = Array.isArray(answer.answer)
-            ? answer.answer.join(", ")
-            : answer.answer;
-          return (
-            <div key={answer.questionId}>
-              <p className="text-md mt-8 mb-3 font-semibold text-blue-800">
-                {answer.question}
-              </p>
-              {answer.type === "paragraph" ? (
-                <p
-                  dangerouslySetInnerHTML={{
-                    __html: renderToHTML(answerText.replace(/\n/g, "\n\n")),
-                  }}
-                  className="text-md prose prose-h1:text-lg prose-h2:text-base prose-h3:text-base prose-a:text-blue-600"
-                ></p>
-              ) : (
-                <p
-                  className="text-base text-blue-800"
-                  dangerouslySetInnerHTML={{
-                    __html: renderToHTML(answerText.replace(/\n/g, "\n\n")),
-                  }}
-                ></p>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-const ipfsGateway = process.env.REACT_APP_IPFS_BASE_URL;
-
-function ProjectLogo({ logoImg }: { logoImg?: string }) {
-  const src = logoImg ? `${ipfsGateway}/ipfs/${logoImg}` : DefaultLogoImage;
-
-  return (
-    <img
-      className={"-mt-16 h-32 w-32 rounded-full ring-4 ring-white bg-white"}
-      src={src}
-      alt="Project Logo"
-    />
-  );
-}
-
-function Sidebar(props: {
-  isAlreadyInCart: boolean;
-  isBeforeRoundEndDate?: boolean;
-  removeFromCart: () => void;
-  addToCart: () => void;
-}) {
-  const { chainId, roundId, applicationId } = useProjectDetailsParams();
-  const dataLayer = useDataLayer();
-
-  const { data: application } = useApplication(
-    {
-      chainId: Number(chainId as string),
-      roundId,
-      applicationId: applicationId,
-    },
-    dataLayer
-  );
-
-  return (
-    <div>
-      <div className="min-w-[320px] h-fit mb-6 rounded-3xl bg-gray-50">
-        <ProjectStats application={application} />
-        {props.isBeforeRoundEndDate && (
-          <CartButtonToggle
-            isAlreadyInCart={props.isAlreadyInCart}
-            addToCart={props.addToCart}
-            removeFromCart={props.removeFromCart}
-          />
-        )}
-      </div>
-      {!props.isBeforeRoundEndDate && (
-        <a
-          href={`/#/projects/${application?.project.id}`}
-          target="_blank"
-          className="mt-4 flex font-bold justify-center border rounded-lg px-4 py-2"
-        >
-          <ArrowTrendingUpIcon className="w-4 h-4 inline-block mt-1 mr-2" />
-          View history
-          <LinkIcon className="w-4 h-4 ml-2 mt-1" />
-        </a>
-      )}
-    </div>
-  );
-}
-
-export function ProjectStats(props: { application: Application | undefined }) {
-  const { chainId, roundId } = useProjectDetailsParams();
-  const { round } = useRoundById(Number(chainId), roundId);
-  const application = props.application;
-
-  const timeRemaining =
-    round?.roundEndTime && !isInfiniteDate(round?.roundEndTime)
-      ? formatDistanceToNowStrict(round.roundEndTime)
-      : null;
-  const isBeforeRoundEndDate =
-    round &&
-    (isInfiniteDate(round.roundEndTime) || round.roundEndTime > new Date());
-
-  return (
-    <div className="rounded-3xl flex-auto p-3 md:p-4 gap-4 flex flex-col text-blue-800">
-      <Stat
-        isLoading={!application}
-        value={`$${application?.totalAmountDonatedInUsd.toFixed(2)}`}
-      >
-        funding received in current round
-      </Stat>
-      <Stat isLoading={!application} value={application?.uniqueDonorsCount}>
-        contributors
-      </Stat>
-
-      <Stat
-        isLoading={isBeforeRoundEndDate === undefined}
-        value={timeRemaining}
-        className={
-          // Explicitly check for true - could be undefined if round hasn't been loaded yet
-          isBeforeRoundEndDate === true || isBeforeRoundEndDate === undefined
-            ? ""
-            : "flex-col-reverse"
-        }
-      >
-        {
-          // If loading - render empty
-          isBeforeRoundEndDate === undefined
-            ? ""
-            : isBeforeRoundEndDate
-              ? "to go"
-              : "Round ended"
-        }
-      </Stat>
-    </div>
-  );
-}
-
-export function Stat({
-  value,
-  children,
-  isLoading,
-  className,
-}: {
-  value?: string | number | null;
-  isLoading?: boolean;
-} & ComponentProps<"div">) {
-  return (
-    <div className={`flex flex-col ${className}`}>
-      <Skeleton isLoaded={!isLoading} height={"36px"}>
-        <h4 className="text-3xl">{value}</h4>
-      </Skeleton>
-      <span className="text-sm md:text-base">{children}</span>
-    </div>
-  );
-}
-
-function CartButtonToggle(props: {
-  isAlreadyInCart: boolean;
-  addToCart: () => void;
-  removeFromCart: () => void;
-}) {
-  return (
-    <button
-      className="font-mono bg-blue-100 hover:bg-blue-300  hover:text-grey-50 transition-all w-full items-center justify-center rounded-b-3xl rounded-t-none p-4 inline-flex gap-2"
-      data-testid={props.isAlreadyInCart ? "remove-from-cart" : "add-to-cart"}
-      onClick={() =>
-        props.isAlreadyInCart ? props.removeFromCart() : props.addToCart()
-      }
-    >
-      {props.isAlreadyInCart ? (
-        <CheckIcon className="w-5 h-5" />
-      ) : (
-        <ShoppingCartIcon className="w-5 h-5" />
-      )}
-      {props.isAlreadyInCart ? "Added to cart" : "Add to cart"}
-    </button>
   );
 }
