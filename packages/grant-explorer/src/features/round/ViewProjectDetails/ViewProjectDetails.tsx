@@ -23,24 +23,28 @@ import React, {
   useState,
 } from "react";
 import { useAccount, useEnsName } from "wagmi";
-import DefaultLogoImage from "../../assets/default_logo.png";
-import { ReactComponent as GithubIcon } from "../../assets/github-logo.svg";
-import { ReactComponent as TwitterIcon } from "../../assets/twitter-logo.svg";
-import { ReactComponent as EthereumIcon } from "common/src/assets/ethereum-icon.svg";
-import { ReactComponent as GlobeIcon } from "../../assets/icons/globe-icon.svg";
-import { useRoundById } from "../../context/RoundContext";
-import { CartProject, GrantApplicationFormAnswer, Project } from "../api/types";
-import { ProjectBanner } from "../common/ProjectBanner";
-import RoundEndedBanner from "../common/RoundEndedBanner";
-import Breadcrumb, { BreadcrumbItem } from "../common/Breadcrumb";
-import { isDirectRound, isInfiniteDate } from "../api/utils";
-import { useCartStorage } from "../../store";
+import DefaultLogoImage from "../../../assets/default_logo.png";
+import { ReactComponent as GithubIcon } from "../../../assets/github-logo.svg";
+import { ReactComponent as TwitterIcon } from "../../../assets/twitter-logo.svg";
+import { ReactComponent as EthereumIcon } from "../../../assets/icons/ethereum-icon.svg";
+import { ReactComponent as GlobeIcon } from "../../../assets/icons/globe-icon.svg";
+import { useRoundById } from "../../../context/RoundContext";
+import {
+  CartProject,
+  GrantApplicationFormAnswer,
+  Project,
+} from "../../api/types";
+import { ProjectBanner } from "../../common/ProjectBanner";
+import RoundEndedBanner from "../../common/RoundEndedBanner";
+import Breadcrumb, { BreadcrumbItem } from "../../common/Breadcrumb";
+import { isDirectRound, isInfiniteDate } from "../../api/utils";
+import { useCartStorage } from "../../../store";
 import { Box, Skeleton, SkeletonText, Tab, Tabs } from "@chakra-ui/react";
-import { GrantList } from "./KarmaGrant/GrantList";
-import { ImpactList } from "./KarmaGrant/ImpactList";
-import { useGap } from "../api/gap";
-import { StatList } from "./OSO/ImpactStats";
-import { useOSO } from "../api/oso";
+import { GrantList } from "../KarmaGrant/GrantList";
+import { ImpactList } from "../KarmaGrant/ImpactList";
+import { useGap } from "../../api/gap";
+import { StatList } from "../OSO/ImpactStats";
+import { useOSO } from "../../api/oso";
 import { CheckIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import {
   Application,
@@ -49,14 +53,14 @@ import {
   RoundApplicationQuestion,
   useDataLayer,
 } from "data-layer";
-import { DefaultLayout } from "../common/DefaultLayout";
+import { DefaultLayout } from "../../common/DefaultLayout";
 import {
   mapApplicationToProject,
   mapApplicationToRound,
   useApplication,
-} from "../projects/hooks/useApplication";
-import { PassportWidget } from "../common/PassportWidget";
+} from "../../projects/hooks/useApplication";
 import CopyToClipboard from "common/src/components/CopyToClipboard";
+import { PassportWidget } from "../../common/PassportWidget";
 
 const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => {
   return (
