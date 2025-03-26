@@ -52,6 +52,9 @@ import {
   isDirectRound,
   ApplicationOpenDateRange,
 } from "./ViewRoundPage";
+import CopyToClipboard from "common/src/components/CopyToClipboard";
+import { ReactComponent as EthereumIcon } from "common/src/assets/ethereum-icon.svg";
+import { useEnsName } from "wagmi";
 
 import {
   CalendarIcon,
@@ -135,6 +138,9 @@ export default function ViewApplicationPage() {
     contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
     indexingStatus == ProgressStatus.IN_PROGRESS;
 
+  const recipient = application?.recipient;
+  // @ts-expect-error Temp until viem (could also cast recipient as Address or update the type)
+  const ens = useEnsName({ address: recipient, enabled: Boolean(recipient) });
   const progressSteps: ProgressStep[] = [
     {
       name: "Updating",
@@ -804,6 +810,16 @@ export default function ViewApplicationPage() {
                             new Date(Number(application?.project?.createdAt))
                           )
                         : "-"}
+                    </span>
+                  </span>
+                  {/* Application wallet address */}
+                  <span
+                    className="flex flex-row items-center"
+                    data-testid="application-recipient"
+                  >
+                    <EthereumIcon className="h-4 w-4 mr-2 text-grey-400" />
+                    <span className="text-sm text-grey-400">
+                      <CopyToClipboard text={ens.data || recipient} />
                     </span>
                   </span>
                 </div>
