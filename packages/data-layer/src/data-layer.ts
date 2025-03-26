@@ -524,8 +524,8 @@ export class DataLayer {
     const query = gql`
       query Application {
         applications(
-          first: 300
-          filter: {
+          limit: 300
+          where: {
             _and: [
               { status: { _eq: APPROVED } },
               { _or: [ ${filters} ] }
