@@ -6,3 +6,4 @@ export { ProjectLogo } from "./ProjectLogo";
 export { Sidebar } from "./Sidebar";
 export { ProjectStats } from "./ProjectStats";
 export { Stat } from "./Stat";
+export { StakingBannerAndModal } from "./StakingBannerAndModal";

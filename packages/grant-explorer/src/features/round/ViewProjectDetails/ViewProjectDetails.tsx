@@ -54,6 +54,7 @@ import {
   ProjectLinks,
   Sidebar,
   ProjectLogo,
+  StakingBannerAndModal,
 } from "./components";
 
 export default function ViewProjectDetails() {
@@ -278,6 +279,7 @@ export default function ViewProjectDetails() {
                   </h1>
                 </Skeleton>
                 <ProjectLinks project={projectToRender} />
+                <StakingBannerAndModal />
                 <ProjectDetailsTabs
                   selected={selectedTab}
                   onChange={handleTabChange}
