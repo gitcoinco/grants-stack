@@ -394,6 +394,9 @@ importers:
       '@gitcoinco/passport-sdk-types':
         specifier: ^0.2.0
         version: 0.2.0
+      '@heroicons/react':
+        specifier: ^2.0.13
+        version: 2.2.0(react@18.3.1)
       '@openzeppelin/merkle-tree':
         specifier: 1.0.2
         version: 1.0.2
@@ -22578,13 +22581,13 @@ snapshots:
 
   '@types/webpack-sources@3.2.3':
     dependencies:
-      '@types/node': 18.19.80
+      '@types/node': 20.17.24
       '@types/source-list-map': 0.1.6
       source-map: 0.7.4
 
   '@types/webpack@4.41.40':
     dependencies:
-      '@types/node': 18.19.80
+      '@types/node': 20.17.24
       '@types/tapable': 1.0.12
       '@types/uglify-js': 3.17.5
       '@types/webpack-sources': 3.2.3

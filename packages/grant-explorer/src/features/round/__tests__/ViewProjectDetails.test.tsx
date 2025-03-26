@@ -7,7 +7,7 @@ import {
   setWindowDimensions,
 } from "../../../test-utils";
 import ViewProjectDetails from "../ViewProjectDetails";
-import { truncate } from "../../common/utils/truncate";
+import { truncate } from "common/src/components/truncate";
 import { formatDateWithOrdinal } from "common";
 import { useApplication } from "../../projects/hooks/useApplication";
 import { beforeEach, expect, Mock } from "vitest";

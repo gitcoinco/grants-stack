@@ -3,7 +3,7 @@ import {
   CheckCircleIcon,
   DocumentDuplicateIcon,
 } from "@heroicons/react/24/outline";
-import { truncate } from "../common/utils/truncate";
+import { truncate } from "./truncate";
 import { isAddress } from "viem";
 
 const CopyToClipboard = ({ text }: { text: string | undefined }) => {
