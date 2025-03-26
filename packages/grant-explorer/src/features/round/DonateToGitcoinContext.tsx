@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { getBalance } from "@wagmi/core";
 import { config } from "../../app/wagmi";
-import { NATIVE, getChains, TChain, TToken } from "common";
+import { NATIVE, getChains, TChain, TToken, getChainById } from "common";
 import { useAccount } from "wagmi";
 import { zeroAddress } from "viem";
 
@@ -27,6 +27,7 @@ type DonateToGitcoinContextType = {
   selectedChainId: number | null;
   selectedToken: string;
   amount: string;
+  directAllocationPoolId: number | null;
   tokenBalances: { token: string; balance: number }[];
   selectedTokenBalance: number;
   isAmountValid: boolean;
@@ -42,6 +43,23 @@ type DonateToGitcoinContextType = {
   setTokenFilters: (filters: TokenFilter[]) => void;
 };
 
+//todo: update with actual gitcoin data
+const getGitcoinRecipientData = async (
+  chainId: number
+): Promise<{
+  nonce: bigint;
+  recipient: string;
+}> => {
+  // prepared for different addresses and profiles, like on zksync or so
+  switch (chainId) {
+    default:
+      return {
+        nonce: 1147166n,
+        recipient: "0x5645bF145C3f1E974D0D7FB91bf3c68592ab5012",
+      };
+  }
+};
+
 const DonateToGitcoinContext = createContext<DonateToGitcoinContextType | null>(
   null
 );
@@ -55,6 +73,9 @@ export function DonateToGitcoinProvider({
   const [selectedChainId, setSelectedChainId] = useState<number | null>(null);
   const [selectedToken, setSelectedToken] = useState("");
   const [amount, setAmount] = useState("");
+  const [directAllocationPoolId, setDirectAllocationPoolId] = useState<
+    number | null
+  >(null);
   const [tokenBalances, setTokenBalances] = useState<
     { token: string; balance: number }[]
   >([]);
@@ -132,6 +153,16 @@ export function DonateToGitcoinProvider({
     }
   }, [isEnabled, setSelectedChainId, setSelectedToken, setAmount]);
 
+  useEffect(() => {
+    if (!selectedChainId) return;
+    const fetchDirectAllocationPoolId = async () => {
+      const poolId =
+        getChainById(selectedChainId).contracts.directAllocationPoolId;
+      setDirectAllocationPoolId(poolId ?? null);
+    };
+    fetchDirectAllocationPoolId();
+  }, [selectedChainId]);
+
   const tokenDetails = selectedChain?.tokens.find(
     (t) => t.address === selectedToken
   );
@@ -154,6 +185,7 @@ export function DonateToGitcoinProvider({
     selectedChainId,
     selectedToken,
     amount,
+    directAllocationPoolId,
     tokenBalances,
     selectedTokenBalance,
     setIsEnabled,

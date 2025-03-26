@@ -314,6 +314,7 @@ export function SummaryContainer(props: {
         rounds={rounds}
         enoughBalanceByChainId={props.enoughBalanceByChainId}
         totalAmountByChainId={props.totalAmountByChainId}
+        totalDonationAcrossChainsInUSD={totalDonationAcrossChainsInUSD}
         handleSwap={props.handleSwap}
         openChainConfirmationModal={openChainConfirmationModal}
         setOpenChainConfirmationModal={setOpenChainConfirmationModal}

@@ -13,6 +13,7 @@ interface ModalProps {
   children?: ReactNode;
   modalStyle?: "wide" | "normal";
   disabled?: boolean;
+  totalDonationAcrossChainsInUSD?: number;
 }
 
 export default function ConfirmationModal({
@@ -25,6 +26,7 @@ export default function ConfirmationModal({
   cancelButtonAction = () => setIsOpen(false),
   children,
   modalStyle = "normal",
+  totalDonationAcrossChainsInUSD,
   ...props
 }: ModalProps) {
   const cancelButtonRef = useRef(null);

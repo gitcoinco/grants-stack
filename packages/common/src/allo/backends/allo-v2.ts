@@ -25,7 +25,11 @@ import {
 } from "data-layer";
 import { Abi, Address, Hex, getAddress, zeroAddress } from "viem";
 import { AnyJson } from "../..";
-import { UpdateRoundParams, MatchingStatsData } from "../../types";
+import {
+  UpdateRoundParams,
+  MatchingStatsData,
+  DirectAllocation,
+} from "../../types";
 import { Allo, AlloError, AlloOperation, CreateRoundArguments } from "../allo";
 import {
   Result,
@@ -121,7 +125,8 @@ export class AlloV2 implements Allo {
       sig: PermitSignature;
       deadline: number;
       nonce: bigint;
-    }
+    },
+    directAllocation?: DirectAllocation
   ) {
     let tx: Result<Hex>;
     const mrcAddress = getChainById(chainId).contracts.multiRoundCheckout;
@@ -132,6 +137,8 @@ export class AlloV2 implements Allo {
     });
 
     const data = Object.values(groupedVotes).flat();
+
+    // TODO: Kurt - handle direct allocation
 
     /* decide which function to use based on whether token is native, permit-compatible or DAI */
     if (token.address === zeroAddress || token.address === NATIVE) {

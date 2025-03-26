@@ -1,6 +1,15 @@
 import { useDonateToGitcoin } from "../../DonateToGitcoinContext";
+import { useState, useEffect } from "react";
 
-export function DonationInput() {
+type Props = {
+  totalAmount: string;
+};
+
+function formatAmount(num: number): string {
+  return (Math.floor(num * 100) / 100).toFixed(2);
+}
+
+export function DonationInput({ totalAmount }: Props) {
   const {
     amount,
     setAmount,
@@ -8,31 +17,90 @@ export function DonationInput() {
     selectedToken,
     selectedTokenBalance,
     tokenDetails,
+    isEnabled,
   } = useDonateToGitcoin();
+
+  const [selectedPercentage, setSelectedPercentage] = useState<number>(10);
+
+  const percentages = [10, 15, 20];
+
+  useEffect(() => {
+    if (isEnabled) {
+      const calculatedAmount = Number(totalAmount) * (10 / 100);
+      setAmount(formatAmount(calculatedAmount));
+    } else {
+      setAmount("0.00");
+    }
+  }, [totalAmount, setAmount, isEnabled]);
+
+  const handlePercentageClick = (percentage: number) => {
+    const calculatedAmount = Number(totalAmount) * (percentage / 100);
+    setAmount(formatAmount(calculatedAmount));
+    setSelectedPercentage(percentage);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
       setAmount(value);
+      // Check if the new amount matches any percentage
+      const newPercentage = percentages.find(
+        (p) => formatAmount(Number(totalAmount) * (p / 100)) === value
+      );
+      setSelectedPercentage(newPercentage || 10);
     }
   };
+
   return (
-    <div className="relative flex-grow max-w-[200px]">
-      <input
-        type="text"
-        className={`w-full rounded-lg border py-2 px-3 text-sm shadow-sm hover:border-gray-300 ${
-          isAmountValid ? "border-gray-200" : "border-red-300"
-        }`}
-        value={amount}
-        onChange={handleChange}
-        placeholder="Enter amount"
-        max={selectedTokenBalance}
-      />
-      {selectedToken && (
-        <div className="absolute right-3 top-2.5 text-xs text-gray-500">
-          {tokenDetails?.code}
+    <div className="flex gap-2 items-center">
+      {percentages.map((percentage) => (
+        <button
+          key={percentage}
+          onClick={() => handlePercentageClick(percentage)}
+          className={`
+            flex justify-content-center items-center
+            w-[68px] h-[32px]
+            px-4 py-2
+            rounded-[8px]
+            border border-solid
+            shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]
+            font-inter text-[12px] font-medium text-black
+            ${
+              selectedPercentage === percentage
+                ? "border-[#7D67EB]"
+                : "border-[#D7D7D7]"
+            }
+            bg-white
+          `}
+        >
+          +{percentage}%
+        </button>
+      ))}
+      <div className="relative flex-[3]">
+        <div className="absolute left-3 top-[10px] text-[14px] font-medium font-inter text-black">
+          $
         </div>
-      )}
+        <input
+          type="text"
+          className={`
+            w-full rounded-[6px] 
+            border-[0.75px] border-[#D7D7D7]
+            p-[7.5px] pr-3 pl-6
+            text-[12px] font-medium font-inter text-black
+            text-right
+            ${isAmountValid ? "bg-white" : "border-red-300"}
+          `}
+          value={amount}
+          onChange={handleChange}
+          placeholder="Enter amount"
+          max={selectedTokenBalance}
+        />
+        {selectedToken && (
+          <div className="absolute right-3 top-[7.5px] text-[12px] font-medium font-inter text-black">
+            {tokenDetails?.code}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -9,7 +9,8 @@ import { groupBy } from "lodash-es";
 import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
-import { Round, useDataLayer } from "data-layer";
+import { Round } from "data-layer";
+import { useDonateToGitcoin } from "../DonateToGitcoinContext";
 
 export function PayoutModals({
   openChainConfirmationModal,
@@ -20,6 +21,7 @@ export function PayoutModals({
   enoughBalanceByChainId,
   totalAmountByChainId,
   handleSwap,
+  totalDonationAcrossChainsInUSD,
 }: {
   openChainConfirmationModal: boolean;
   setOpenChainConfirmationModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -29,8 +31,15 @@ export function PayoutModals({
   enoughBalanceByChainId: Record<number, boolean>;
   totalAmountByChainId: Record<number, number>;
   handleSwap: (chainId: number) => void;
+  totalDonationAcrossChainsInUSD: number;
 }) {
-  const dataLayer = useDataLayer();
+  const {
+    isEnabled,
+    selectedChainId,
+    selectedToken,
+    amount,
+    directAllocationPoolId,
+  } = useDonateToGitcoin();
 
   const { data: walletClient } = useWalletClient();
   const { connector } = useAccount();
@@ -65,6 +74,14 @@ export function PayoutModals({
         setOpenChainConfirmationModal(false);
       }, modalDelayMs);
 
+      console.log("===> ", {
+        isEnabled,
+        selectedChainId,
+        selectedToken,
+        amount,
+        directAllocationPoolId,
+      });
+
       await checkout(
         chainIdsBeingCheckedOut
           .filter((chainId) => enoughBalanceByChainId[chainId] === true)
@@ -73,8 +90,7 @@ export function PayoutModals({
             permitDeadline: currentPermitDeadline,
           })),
         walletClient,
-        connector,
-        dataLayer
+        connector
       );
     } catch (error) {
       console.error(error);
@@ -94,6 +110,7 @@ export function PayoutModals({
             setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
             enoughBalanceByChainId={enoughBalanceByChainId}
             handleSwap={handleSwap}
+            totalDonationAcrossChainsInUSD={totalDonationAcrossChainsInUSD}
           />
         }
         // todo: put back

@@ -1,13 +1,8 @@
-import { useMemo, useCallback } from "react";
+import { useCallback } from "react";
 import { Checkbox } from "@chakra-ui/react";
 import { useDonateToGitcoin } from "../DonateToGitcoinContext";
 import React from "react";
 import { DonateToGitcoinContent } from "./components/DonateToGitcoinContent";
-
-type TokenFilter = {
-  chainId: number;
-  addresses: string[];
-};
 
 export type DonationDetails = {
   chainId: number;
@@ -16,12 +11,11 @@ export type DonationDetails = {
 };
 
 type DonateToGitcoinProps = {
-  divider?: "none" | "top" | "bottom";
-  tokenFilters?: TokenFilter[];
+  totalAmount: string;
 };
 
 export const DonateToGitcoin = React.memo(
-  ({ divider = "none" }: DonateToGitcoinProps) => {
+  ({ totalAmount }: DonateToGitcoinProps) => {
     const { isEnabled, setIsEnabled } = useDonateToGitcoin();
 
     const handleCheckboxChange = useCallback(
@@ -31,23 +25,12 @@ export const DonateToGitcoin = React.memo(
       [setIsEnabled]
     );
 
-    const borderClass = useMemo(() => {
-      switch (divider) {
-        case "top":
-          return "border-t";
-        case "bottom":
-          return "border-b";
-        default:
-          return "";
-      }
-    }, [divider]);
-
     return (
-      <div className={`flex flex-col justify-center mt-2 py-4 ${borderClass}`}>
-        <div className={`${!isEnabled ? "opacity-50" : ""}`}>
-          <p className="font-sans font-medium flex items-center">
+      <div className="flex flex-col items-start gap-[9px] p-[9px] border-[0.75px] border-[#E3E3E3] rounded-[7.5px] bg-[#F5F4FE]">
+        <div>
+          <p className="flex items-center">
             <Checkbox
-              className="mr-2"
+              className={`mr-2 ${!isEnabled ? "opacity-50" : ""}`}
               border={"1px"}
               borderRadius={"4px"}
               colorScheme="whiteAlpha"
@@ -61,13 +44,15 @@ export const DonateToGitcoin = React.memo(
               alt="Gitcoin"
               src="/logos/gitcoin-gist-logo.svg"
             />
-            <span className="font-sans font-medium">Donate to Gitcoin</span>
+            <span className="text-[15px] font-medium font-inter text-black">
+              Donate to Gitcoin
+            </span>
           </p>
         </div>
 
-        <DonateToGitcoinContent />
+        <DonateToGitcoinContent totalAmount={totalAmount} />
       </div>
     );
   },
-  (prevProps, nextProps) => prevProps.divider === nextProps.divider
+  (prevProps, nextProps) => prevProps.totalAmount === nextProps.totalAmount
 );
