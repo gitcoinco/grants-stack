@@ -9,7 +9,7 @@ import { getBalance } from "@wagmi/core";
 import { config } from "../../app/wagmi";
 import { NATIVE, getChains, TChain, TToken, getChainById } from "common";
 import { useAccount } from "wagmi";
-import { zeroAddress } from "viem";
+import { Hex, zeroAddress } from "viem";
 
 type TokenFilter = {
   chainId: number;
@@ -36,20 +36,22 @@ type DonateToGitcoinContextType = {
   selectedChain: TChain | null;
   filteredTokens?: TToken[];
   tokenDetails: TToken | undefined;
+  amountInWei: bigint;
   setIsEnabled: (enabled: boolean) => void;
   setSelectedChainId: (chainId: number | null) => void;
   setSelectedToken: (token: string) => void;
   setAmount: (amount: string) => void;
   setTokenFilters: (filters: TokenFilter[]) => void;
+  setAmountInWei: (amount: bigint) => void;
 };
 
 //todo: update with actual gitcoin data
-const getGitcoinRecipientData = async (
+export const getGitcoinRecipientData = (
   chainId: number
-): Promise<{
+): {
   nonce: bigint;
-  recipient: string;
-}> => {
+  recipient: Hex;
+} => {
   // prepared for different addresses and profiles, like on zksync or so
   switch (chainId) {
     default:
@@ -72,7 +74,7 @@ export function DonateToGitcoinProvider({
   const [isEnabled, setIsEnabled] = useState(false);
   const [selectedChainId, setSelectedChainId] = useState<number | null>(null);
   const [selectedToken, setSelectedToken] = useState("");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState("0.00");
   const [directAllocationPoolId, setDirectAllocationPoolId] = useState<
     number | null
   >(null);
@@ -84,6 +86,8 @@ export function DonateToGitcoinProvider({
   const [tokenFilters, setTokenFilters] = useState<TokenFilter[] | undefined>(
     undefined
   );
+
+  const [amountInWei, setAmountInWei] = useState<bigint>(0n);
 
   const chains = useMemo(() => {
     const allChains = getChains().filter((c) => c.type === "mainnet");
@@ -199,6 +203,8 @@ export function DonateToGitcoinProvider({
     setTokenFilters,
     filteredTokens,
     tokenDetails,
+    amountInWei,
+    setAmountInWei,
   };
 
   return (

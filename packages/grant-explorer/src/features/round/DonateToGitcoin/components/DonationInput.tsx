@@ -20,7 +20,7 @@ export function DonationInput({ totalAmount }: Props) {
     isEnabled,
   } = useDonateToGitcoin();
 
-  const [selectedPercentage, setSelectedPercentage] = useState<number>(10);
+  const [selectedPercentage, setSelectedPercentage] = useState<number>(0);
 
   const percentages = [10, 15, 20];
 
@@ -28,15 +28,27 @@ export function DonationInput({ totalAmount }: Props) {
     if (isEnabled) {
       const calculatedAmount = Number(totalAmount) * (10 / 100);
       setAmount(formatAmount(calculatedAmount));
+      setSelectedPercentage(10);
     } else {
       setAmount("0.00");
     }
-  }, [totalAmount, setAmount, isEnabled]);
+  }, [isEnabled, totalAmount, setAmount]);
 
   const handlePercentageClick = (percentage: number) => {
+    console.log("Percentage clicked:", percentage);
     const calculatedAmount = Number(totalAmount) * (percentage / 100);
+    console.log("Calculating new amount:", {
+      totalAmount,
+      percentage,
+      calculatedAmount,
+      formatted: formatAmount(calculatedAmount),
+    });
     setAmount(formatAmount(calculatedAmount));
     setSelectedPercentage(percentage);
+    console.log("Updated values:", {
+      amount: formatAmount(calculatedAmount),
+      selectedPercentage: percentage,
+    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

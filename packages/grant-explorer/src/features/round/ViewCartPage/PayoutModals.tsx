@@ -10,7 +10,11 @@ import MRCProgressModal from "../../common/MRCProgressModal";
 import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
 import { Round } from "data-layer";
-import { useDonateToGitcoin } from "../DonateToGitcoinContext";
+import {
+  getGitcoinRecipientData,
+  useDonateToGitcoin,
+} from "../DonateToGitcoinContext";
+import { Hex } from "viem";
 
 export function PayoutModals({
   openChainConfirmationModal,
@@ -39,6 +43,7 @@ export function PayoutModals({
     selectedToken,
     amount,
     directAllocationPoolId,
+    amountInWei,
   } = useDonateToGitcoin();
 
   const { data: walletClient } = useWalletClient();
@@ -74,14 +79,6 @@ export function PayoutModals({
         setOpenChainConfirmationModal(false);
       }, modalDelayMs);
 
-      console.log("===> ", {
-        isEnabled,
-        selectedChainId,
-        selectedToken,
-        amount,
-        directAllocationPoolId,
-      });
-
       await checkout(
         chainIdsBeingCheckedOut
           .filter((chainId) => enoughBalanceByChainId[chainId] === true)
@@ -90,7 +87,21 @@ export function PayoutModals({
             permitDeadline: currentPermitDeadline,
           })),
         walletClient,
-        connector
+        connector,
+        selectedChainId &&
+          selectedToken &&
+          directAllocationPoolId &&
+          amountInWei
+          ? {
+              chainId: selectedChainId as number,
+              tokenAddress: selectedToken as Hex,
+              poolId: directAllocationPoolId.toString(),
+              amount: amountInWei,
+              recipient: getGitcoinRecipientData(selectedChainId as number)
+                .recipient,
+              nonce: getGitcoinRecipientData(selectedChainId as number).nonce,
+            }
+          : undefined
       );
     } catch (error) {
       console.error(error);

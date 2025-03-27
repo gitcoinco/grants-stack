@@ -1,4 +1,4 @@
-import { stringToBlobUrl } from "common";
+import { getTokenPrice, stringToBlobUrl, TToken } from "common";
 import { useState, useRef, useEffect } from "react";
 
 import { useDonateToGitcoin } from "../../DonateToGitcoinContext";
@@ -6,6 +6,8 @@ import { DonationInput } from "./DonationInput";
 
 import React from "react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { useCartStorage } from "../../../../store";
+import { parseUnits } from "viem";
 
 type DonateToGitcoinContentProps = {
   totalAmount: string;
@@ -20,26 +22,52 @@ export const DonateToGitcoinContent = React.memo(
       setSelectedToken,
       amount,
       setAmount,
+      amountInWei,
+      setAmountInWei,
       selectedChain,
       chains,
       isAmountValid,
     } = useDonateToGitcoin();
 
     const [isOpen, setIsOpen] = useState(false);
+    const [tokenAmount, setTokenAmount] = useState<number>(0);
+    const [token, setToken] = useState<TToken | undefined>(undefined);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Set initial amount when component mounts
-    useEffect(() => {
-      const initialAmount = (Number(totalAmount) * (10 / 100)).toString();
-      setAmount(initialAmount);
-    }, [totalAmount, setAmount]); // Added totalAmount to dependencies
-
     const handleChainSelect = (chainId: number) => {
-      console.log("handleChainSelect called with chainId:", chainId);
       setSelectedChainId(chainId);
       setSelectedToken("");
       setIsOpen(false);
     };
+
+    useEffect(() => {
+      console.log("selectedChainId changed to:", selectedChainId);
+      if (selectedChainId) {
+        const votingToken = useCartStorage
+          .getState()
+          .getVotingTokenForChain(selectedChainId);
+        setToken(votingToken);
+        getTokenPrice(
+          votingToken.redstoneTokenId,
+          votingToken.priceSource
+        ).then((price) => {
+          const tAmount =
+            Number(amount) === 0 ? 0 : Number(amount) / Number(price);
+          console.log("tAmount", tAmount);
+          console.log("amount", amount);
+          console.log("price", price);
+          console.log(
+            "amountInWei",
+            parseUnits(String(tAmount), votingToken.decimals)
+          );
+          setTokenAmount(tAmount);
+          setAmountInWei(parseUnits(String(tAmount), votingToken.decimals));
+        });
+      } else {
+        setTokenAmount(0);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedChainId, amount]);
 
     if (!isEnabled) return null;
 
@@ -137,7 +165,7 @@ export const DonateToGitcoinContent = React.memo(
                 Donation total
               </span>
               <span className="font-inter text-[12px] font-medium text-foreground">
-                0.001 ETH
+                {tokenAmount.toFixed(5)} {token?.code}
               </span>
             </div>
           )}
