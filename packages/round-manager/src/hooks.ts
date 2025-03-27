@@ -29,12 +29,28 @@ export function useAlloIndexerClient(): Client {
   }, [chainId]);
 }
 
+// todo: remove when Huss finished the new calculator
+export function useLegacyAlloIndexerClient(): Client {
+  const { chainId } = useAccount();
+
+  return useMemo(() => {
+    if (!chainId) {
+      throw new Error("Chain ID is not set");
+    }
+    return new Client(
+      fetch.bind(window),
+      process.env.REACT_APP_INDEXER_V1_API_URL ?? "",
+      chainId
+    );
+  }, [chainId]);
+}
+
 export function useRoundMatchingFunds(
   roundId: string,
   ignoreSaturation?: boolean,
   overrides?: Blob
 ) {
-  const client = useAlloIndexerClient();
+  const client = useLegacyAlloIndexerClient();
   return useSWR(
     [roundId, "/matches", overrides, ignoreSaturation],
     ([roundId]) => {
@@ -44,14 +60,14 @@ export function useRoundMatchingFunds(
 }
 
 export function useRound(roundId: string | number) {
-  const client = useAlloIndexerClient();
+  const client = useLegacyAlloIndexerClient();
   return useSWR([roundId, "/stats"], ([roundId]) => {
     return client.getRoundBy("id", roundId);
   });
 }
 
 export function useRoundApplications(roundId: string) {
-  const client = useAlloIndexerClient();
+  const client = useLegacyAlloIndexerClient();
   return useSWR([roundId, "/applications"], ([roundId]) => {
     return client.getRoundApplications(roundId);
   });
