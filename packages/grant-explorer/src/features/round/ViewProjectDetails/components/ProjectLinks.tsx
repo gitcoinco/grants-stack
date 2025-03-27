@@ -1,12 +1,12 @@
 import { ReactComponent as GithubIcon } from "../../../../assets/github-logo.svg";
 import { ReactComponent as TwitterIcon } from "../../../../assets/twitter-logo.svg";
-import { ReactComponent as EthereumIcon } from "../../../../assets/icons/ethereum-icon.svg";
+import { ReactComponent as EthereumIcon } from "common/src/assets/ethereum-icon.svg";
 import { ReactComponent as GlobeIcon } from "../../../../assets/icons/globe-icon.svg";
 import { Project } from "../../../api/types";
 import { formatDateWithOrdinal, useValidateCredential } from "common";
 import { useEnsName } from "wagmi";
 import { ProjectLink } from "./ProjectLink";
-import CopyToClipboard from "../../CopyToClipboard";
+import CopyToClipboard from "common/src/components/CopyToClipboard";
 import { CalendarIcon } from "./CalendarIcon";
 
 export function ProjectLinks({ project }: { project?: Project }) {
