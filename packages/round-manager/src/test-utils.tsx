@@ -124,8 +124,8 @@ export const makeRoundData = (overrides: Partial<Round> = {}): Round => {
     matchAmountInUsd: 0,
     fundedAmount: 0n,
     fundedAmountInUsd: 0,
-    matchingDistribution: null,
     readyForPayoutTransaction: null,
+    matchingDistribution: [],
     ...overrides,
   };
 };
@@ -192,7 +192,7 @@ export const makeDirectGrantRoundData = (
     matchAmountInUsd: 0,
     fundedAmount: 0n,
     fundedAmountInUsd: 0,
-    matchingDistribution: null,
+    matchingDistribution: [],
     readyForPayoutTransaction: null,
     ...overrides,
   };

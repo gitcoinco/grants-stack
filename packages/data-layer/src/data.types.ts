@@ -381,9 +381,7 @@ export type DistributionMatch = {
 };
 
 export type RoundForManager = V2RoundWithProject & {
-  matchingDistribution: {
-    matchingDistribution: DistributionMatch[];
-  } | null;
+  matchingDistribution: DistributionMatch[];
   tags: string[];
   matchAmount: string;
   matchAmountInUsd: number;
