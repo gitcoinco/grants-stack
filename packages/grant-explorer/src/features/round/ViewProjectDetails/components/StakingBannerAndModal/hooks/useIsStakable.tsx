@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { useIsDonationPeriod } from "./useIsDonationPeriod";
 
 // TODO: either from metadata or from env value
 // ONLY GITCOIN ROUNDS OF GG23
@@ -21,24 +20,15 @@ const STAKABLE_ROUNDS: Array<{ chainId: number; roundId: string }> = [
 export const useIsStakable = ({
   chainId,
   roundId,
-  applicationId,
 }: {
   chainId: number;
   roundId: string;
-  applicationId: string;
 }) => {
-  const isDonationPeriod = useIsDonationPeriod({
-    chainId,
-    roundId,
-    applicationId,
-  });
-
   const isStakable = useMemo(() => {
-    if (!isDonationPeriod) return false;
     return STAKABLE_ROUNDS.some(
       (round) => round.chainId === chainId && round.roundId === roundId
     );
-  }, [isDonationPeriod, chainId, roundId]);
+  }, [chainId, roundId]);
 
   return isStakable;
 };
