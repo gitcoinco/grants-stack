@@ -82,7 +82,7 @@ function useRevisedMatchingFunds(
       round.matchingDistribution !== null &&
       round.readyForPayoutTransaction !== null
     ) {
-      return round.matchingDistribution.matchingDistribution.map((m) => {
+      return round.matchingDistribution.map((m) => {
         return {
           applicationId: m.applicationId,
           payoutAddress: m.projectPayoutAddress,
