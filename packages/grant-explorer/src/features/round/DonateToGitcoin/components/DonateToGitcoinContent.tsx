@@ -1,5 +1,5 @@
-import { getTokenPrice, stringToBlobUrl, TToken } from "common";
-import { useState, useRef, useEffect } from "react";
+import { getChainById, getTokenPrice, stringToBlobUrl, TToken } from "common";
+import { useState, useRef, useEffect, useMemo } from "react";
 
 import { useDonateToGitcoin } from "../../DonateToGitcoinContext";
 import { DonationInput } from "./DonationInput";
@@ -25,12 +25,47 @@ export const DonateToGitcoinContent = React.memo(
       selectedChain,
       chains,
       isAmountValid,
+      tokenBalances,
+      tokenFilters,
     } = useDonateToGitcoin();
 
     const [isOpen, setIsOpen] = useState(false);
     const [tokenAmount, setTokenAmount] = useState<number>(0);
     const [token, setToken] = useState<TToken | undefined>(undefined);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const supportedVotingTokenByChainId: { [chainId: number]: string } =
+      useMemo(() => {
+        const supportedChainIds = tokenFilters?.map((f) => f.chainId) || [];
+        return supportedChainIds.reduce(
+          (acc, chainId) => ({
+            ...acc,
+            [chainId]: useCartStorage.getState().getVotingTokenForChain(chainId)
+              .address,
+          }),
+          {}
+        );
+      }, [tokenFilters]);
+
+    const supportedTokenByChainId: { [chainId: number]: TToken } =
+      useMemo(() => {
+        const supportedChainIds = tokenFilters?.map((f) => f.chainId) || [];
+        return supportedChainIds.reduce(
+          (acc, chainId) => ({
+            ...acc,
+            [chainId]: getChainById(chainId)?.tokens.find(
+              (t) =>
+                t.address.toLowerCase() ===
+                supportedVotingTokenByChainId[chainId].toLowerCase()
+            ),
+          }),
+          {}
+        );
+      }, [tokenFilters, supportedVotingTokenByChainId]);
+
+    console.log(supportedVotingTokenByChainId);
+    console.log(supportedTokenByChainId);
+    console.log(tokenBalances);
 
     const handleChainSelect = (chainId: number) => {
       setSelectedChainId(chainId);
@@ -75,7 +110,7 @@ export const DonateToGitcoinContent = React.memo(
               // Single chain display
               <div
                 className={`
-              flex items-center w-full
+              flex items-center justify-between w-full
               p-[9px]
               rounded-[6px]
               border-[0.75px] border-[#D7D7D7]
@@ -83,12 +118,21 @@ export const DonateToGitcoinContent = React.memo(
               font-modern-era text-[12px] font-medium text-black
             `}
               >
-                <img
-                  className="w-5 h-5 mr-2"
-                  alt={chains[0].prettyName}
-                  src={stringToBlobUrl(chains[0].icon)}
-                />
-                <span>{chains[0].prettyName}</span>
+                <div className="flex items-center">
+                  <img
+                    className="w-5 h-5 mr-2"
+                    alt={chains[0].prettyName}
+                    src={stringToBlobUrl(chains[0].icon)}
+                  />
+                  <span>{chains[0].prettyName}</span>
+                </div>
+                <span className="text-gray-500">
+                  Balance:{" "}
+                  {tokenBalances[chains[0].id]?.[
+                    supportedVotingTokenByChainId[chains[0].id] || ""
+                  ]?.toFixed(5)}{" "}
+                  {supportedTokenByChainId[chains[0].id]?.code}
+                </span>
               </div>
             ) : (
               // Dropdown for multiple chains
@@ -105,18 +149,29 @@ export const DonateToGitcoinContent = React.memo(
               `}
               >
                 {selectedChain ? (
-                  <div className="flex items-center gap-2">
-                    <img
-                      className="w-5 h-5"
-                      alt={selectedChain.prettyName}
-                      src={stringToBlobUrl(selectedChain.icon)}
-                    />
-                    <span>{selectedChain.prettyName}</span>
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <img
+                        className="w-5 h-5"
+                        alt={selectedChain.prettyName}
+                        src={stringToBlobUrl(selectedChain.icon)}
+                      />
+                      <span>{selectedChain.prettyName}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">
+                        Balance:{" "}
+                        {tokenBalances[selectedChain.id]?.[
+                          supportedVotingTokenByChainId[selectedChain.id] || ""
+                        ]?.toFixed(5)}{" "}
+                        {supportedTokenByChainId[selectedChain.id]?.code}
+                      </span>
+                      <ChevronDownIcon className="w-5 h-5" />
+                    </div>
                   </div>
                 ) : (
                   <span>Select chain</span>
                 )}
-                <ChevronDownIcon className="w-5 h-5" />
               </div>
             )}
 
@@ -127,23 +182,25 @@ export const DonateToGitcoinContent = React.memo(
                   .map((chain) => (
                     <div
                       key={chain.id}
-                      onClick={() => {
-                        console.log(
-                          "Clicking chain:",
-                          chain.id,
-                          chain.prettyName
-                        );
-                        handleChainSelect(chain.id);
-                      }}
-                      className="flex items-center gap-2 p-[9px] hover:bg-gray-50 cursor-pointer"
+                      onClick={() => handleChainSelect(chain.id)}
+                      className="flex items-center justify-between p-[9px] hover:bg-gray-50 cursor-pointer"
                     >
-                      <img
-                        className="w-5 h-5"
-                        alt={chain.prettyName}
-                        src={stringToBlobUrl(chain.icon)}
-                      />
-                      <span className="font-modern-era text-[12px] font-medium">
-                        {chain.prettyName}
+                      <div className="flex items-center gap-2">
+                        <img
+                          className="w-5 h-5"
+                          alt={chain.prettyName}
+                          src={stringToBlobUrl(chain.icon)}
+                        />
+                        <span className="font-modern-era text-[12px] font-medium">
+                          {chain.prettyName}
+                        </span>
+                      </div>
+                      <span className="font-modern-era text-[12px] font-medium text-gray-500">
+                        Balance:{" "}
+                        {tokenBalances[chain.id]?.[
+                          supportedVotingTokenByChainId[chain.id] || ""
+                        ]?.toFixed(5)}{" "}
+                        {supportedTokenByChainId[chain.id]?.code}
                       </span>
                     </div>
                   ))}

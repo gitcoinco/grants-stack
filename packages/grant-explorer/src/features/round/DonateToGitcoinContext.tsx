@@ -28,7 +28,11 @@ type DonateToGitcoinContextType = {
   selectedToken: string;
   amount: string;
   directAllocationPoolId: number | null;
-  tokenBalances: { token: string; balance: number }[];
+  tokenBalances: {
+    [chainId: number]: {
+      [address: string]: number;
+    };
+  };
   selectedTokenBalance: number;
   isAmountValid: boolean;
   tokenFilters?: TokenFilter[];
@@ -78,9 +82,11 @@ export function DonateToGitcoinProvider({
   const [directAllocationPoolId, setDirectAllocationPoolId] = useState<
     number | null
   >(null);
-  const [tokenBalances, setTokenBalances] = useState<
-    { token: string; balance: number }[]
-  >([]);
+  const [tokenBalances, setTokenBalances] = useState<{
+    [chainId: number]: {
+      [address: Hex]: number;
+    };
+  }>({});
   const { address } = useAccount();
 
   const [tokenFilters, setTokenFilters] = useState<TokenFilter[] | undefined>(
@@ -103,10 +109,10 @@ export function DonateToGitcoinProvider({
 
   const selectedTokenBalance = useMemo(
     () =>
-      tokenBalances.find(
-        (b) => b.token.toLowerCase() === selectedToken.toLowerCase()
-      )?.balance || 0,
-    [tokenBalances, selectedToken]
+      selectedChainId && selectedToken
+        ? tokenBalances[selectedChainId]?.[selectedToken as Hex] || 0
+        : 0,
+    [tokenBalances, selectedChainId, selectedToken]
   );
 
   const isAmountValid = useMemo(() => {
@@ -120,40 +126,70 @@ export function DonateToGitcoinProvider({
   }, [amount, selectedToken, selectedTokenBalance]);
 
   useEffect(() => {
-    if (!address || !selectedChainId) return;
-    const fetchBalances = async () => {
-      if (!selectedChain) return;
+    if (!address || !tokenFilters) return;
 
-      const balances = await Promise.all(
-        selectedChain.tokens
-          .filter((token) => token.address !== zeroAddress)
-          .map(async (token) => {
-            const { value } = await getBalance(config, {
-              address,
-              token:
-                token.address.toLowerCase() === NATIVE.toLowerCase()
-                  ? undefined
-                  : token.address,
-              chainId: selectedChainId,
-            });
-            return {
-              token: token.address,
-              balance: Number(value) / 10 ** (token.decimals || 18),
-            };
-          })
+    const fetchBalances = async () => {
+      const balancesMap: { [chainId: number]: { [address: string]: number } } =
+        {};
+
+      // Process each chain's token filters
+      await Promise.all(
+        tokenFilters.map(async ({ chainId, addresses }) => {
+          const chain = getChainById(chainId);
+          if (!chain) return;
+
+          balancesMap[chainId] = {};
+
+          // Fetch balances for filtered tokens
+          const tokenBalances = await Promise.all(
+            addresses.map(async (tokenAddress) => {
+              const token = chain.tokens.find(
+                (t) => t.address.toLowerCase() === tokenAddress.toLowerCase()
+              );
+              if (!token) return null;
+
+              const { value } = await getBalance(config, {
+                address,
+                token:
+                  tokenAddress.toLowerCase() === NATIVE.toLowerCase() ||
+                  tokenAddress.toLowerCase() === zeroAddress.toLowerCase()
+                    ? undefined
+                    : (tokenAddress.toLowerCase() as Hex),
+                chainId,
+              });
+
+              return {
+                address:
+                  tokenAddress.toLowerCase() === NATIVE.toLowerCase() ||
+                  tokenAddress.toLowerCase() === zeroAddress.toLowerCase()
+                    ? zeroAddress
+                    : tokenAddress,
+                balance: Number(value) / 10 ** (token.decimals || 18),
+              };
+            })
+          );
+
+          // Add valid balances to the map
+          tokenBalances.forEach((result) => {
+            if (result) {
+              balancesMap[chainId][result.address] = result.balance;
+            }
+          });
+        })
       );
-      setTokenBalances(balances);
+
+      setTokenBalances(balancesMap);
     };
 
     fetchBalances();
-  }, [address, selectedChainId, selectedChain]);
+  }, [address, tokenFilters]);
 
   useEffect(() => {
     if (!isEnabled) {
       setSelectedChainId(null);
       setSelectedToken("");
       setAmount("");
-      setTokenBalances([]);
+      setTokenBalances({});
     }
   }, [isEnabled, setSelectedChainId, setSelectedToken, setAmount]);
 
