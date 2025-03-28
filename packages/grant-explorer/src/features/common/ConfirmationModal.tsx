@@ -26,7 +26,6 @@ export default function ConfirmationModal({
   cancelButtonAction = () => setIsOpen(false),
   children,
   modalStyle = "normal",
-  totalDonationAcrossChainsInUSD,
   ...props
 }: ModalProps) {
   const cancelButtonRef = useRef(null);
