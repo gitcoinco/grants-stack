@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { groupProjectsInCart } from "../../api/utils";
 import Footer from "common/src/components/Footer";
 import Navbar from "../../common/Navbar";
@@ -23,17 +23,22 @@ import SquidWidget, { SwapParams } from "./SquidWidget";
 export default function ViewCart() {
   const { projects, setCart, getVotingTokenForChain } = useCartStorage();
   const { address, chainId: connectedChain } = useAccount();
-  const [balances, setBalances] = useState<BalanceMap>({});
-  const [totalAmountByChainId, setTotalAmountByChainId] = useState<
-    Record<number, number>
-  >({});
+  const [{ balances, addressOfBalances }, setBalances] = useState<{
+    balances: BalanceMap;
+    addressOfBalances?: `0x${string}`;
+  }>({
+    balances: {},
+  });
   const [enoughBalanceByChainId, setEnoughBalanceByChainId] = useState<
     Record<number, boolean>
   >({});
 
   const dataLayer = useDataLayer();
-  const groupedCartProjects = groupProjectsInCart(projects);
-  const chainIds = Object.keys(groupedCartProjects);
+  const [chainIds, groupedCartProjects] = useMemo(() => {
+    const groupedCartProjects = groupProjectsInCart(projects);
+    const chainIds = Object.keys(groupedCartProjects);
+    return [chainIds, groupedCartProjects];
+  }, [projects]);
 
   const [openSwapModel, setOpenSwapModal] = useState<boolean>(false);
   const [swapParams, setSwapParams] = useState<SwapParams>({
@@ -90,27 +95,26 @@ export default function ViewCart() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    const totalAmountByChainId = Object.keys(groupedCartProjects).reduce(
-      (acc, chainId) => {
-        const amount = Object.values(
-          groupedCartProjects[Number(chainId)]
-        ).reduce(
-          (acc, curr) =>
-            acc +
-            curr.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0),
-          0
-        );
-        return { ...acc, [Number(chainId)]: amount };
-      },
-      {}
-    );
-    setTotalAmountByChainId(totalAmountByChainId);
-  }, [projects]);
-  // reduce the number of re-renders by memoizing the chainIds
-  const memoizedChainIds = useMemo(() => chainIds, [JSON.stringify(chainIds)]);
+  const totalAmountByChainId: Record<number, number> = useMemo(
+    () =>
+      Object.keys(groupedCartProjects).reduce(
+        (acc, chainId) => {
+          const amount = Object.values(
+            groupedCartProjects[Number(chainId)]
+          ).reduce(
+            (acc, curr) =>
+              acc +
+              curr.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0),
+            0
+          );
+          return { ...acc, [Number(chainId)]: amount };
+        },
+        {} as Record<number, number>
+      ),
+    [groupedCartProjects]
+  );
 
-  const fetchBalances = async () => {
+  const fetchBalances = useCallback(async () => {
     const allBalances = await Promise.all(
       chainIds.map(async (chainId) => {
         const chainIdNumber = Number(chainId);
@@ -136,7 +140,10 @@ export default function ViewCart() {
                 address: token.address,
                 chainId: chainIdNumber,
                 formattedAmount: Number(
-                  formatUnits(balance.value / BigInt(getMultiplier(chainIdNumber)), balance.decimals)
+                  formatUnits(
+                    balance.value / BigInt(getMultiplier(chainIdNumber)),
+                    balance.decimals
+                  )
                 ),
               };
             } catch (e) {
@@ -169,15 +176,15 @@ export default function ViewCart() {
       map[chainId] = balanceMap;
       return map;
     }, {} as BalanceMap);
-    setBalances(newBalances);
-  };
+    setBalances({ balances: newBalances, addressOfBalances: address });
+  }, [address, chainIds]);
 
   useEffect(() => {
     // Fetch balances if they have not been fetched yet
-    if (Object.keys(balances) && address) {
+    if (address !== addressOfBalances) {
       fetchBalances();
     }
-  }, [memoizedChainIds, address, config]);
+  }, [address, addressOfBalances, fetchBalances]);
 
   useEffect(() => {
     if (
@@ -198,7 +205,7 @@ export default function ViewCart() {
       );
       setEnoughBalanceByChainId(enoughBalanceByChainId);
     }
-  }, [balances, totalAmountByChainId]);
+  }, [balances, totalAmountByChainId, getVotingTokenForChain]);
 
   const breadCrumbs: BreadcrumbItem[] = [
     {

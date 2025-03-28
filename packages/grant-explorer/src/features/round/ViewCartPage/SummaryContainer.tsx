@@ -3,20 +3,15 @@ import { getTokenPrice, submitPassportLite } from "common";
 import { useCartStorage } from "../../../store";
 import { useEffect, useMemo, useState } from "react";
 import { Summary } from "./Summary";
-import ChainConfirmationModal from "../../common/ConfirmationModal";
-import { ChainConfirmationModalBody } from "./ChainConfirmationModalBody";
 import { ProgressStatus } from "../../api/types";
-import { modalDelayMs } from "../../../constants";
 import { useNavigate } from "react-router-dom";
-import { useAccount, useWalletClient } from "wagmi";
+import { useAccount } from "wagmi";
 import { Button } from "common/src/styles";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import { BoltIcon } from "@heroicons/react/24/outline";
 import { getClassForPassportColor } from "../../api/passport";
 import useSWR from "swr";
 import { groupBy, uniqBy } from "lodash-es";
-import MRCProgressModal from "../../common/MRCProgressModal";
-import { MRCProgressModalBody } from "./MRCProgressModalBody";
 import { useCheckoutStore } from "../../../checkoutStore";
 import { Address, parseUnits, zeroAddress } from "viem";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -31,23 +26,22 @@ import { useDataLayer } from "data-layer";
 import { isPresent } from "ts-is-present";
 import { getFormattedRoundId } from "../../common/utils/utils";
 import { datadogLogs } from "@datadog/browser-logs";
+import { PayoutModals } from "./PayoutModals";
 
 export function SummaryContainer(props: {
   enoughBalanceByChainId: Record<number, boolean>;
   totalAmountByChainId: Record<number, number>;
   handleSwap: (chainId: number) => void;
 }) {
-  const { data: walletClient } = useWalletClient();
   const navigate = useNavigate();
-  const { address, isConnected, connector } = useAccount();
+  const { address, isConnected } = useAccount();
   const {
     projects,
     getVotingTokenForChain,
     remove: removeProjectFromCart,
   } = useCartStorage();
-  const { checkout, voteStatus, chainsToCheckout } = useCheckoutStore();
+  const { voteStatus, chainsToCheckout } = useCheckoutStore();
   const dataLayer = useDataLayer();
-
   const { openConnectModal } = useConnectModal();
 
   const projectsByChain = useMemo(
@@ -98,22 +92,9 @@ export function SummaryContainer(props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects, clickedSubmit]);
 
-  /** The ids of the chains that will be checked out */
-  const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
-    number[]
-  >(Object.keys(projectsByChain).map(Number));
-
-  /** We find the round that ends last, and take its end date as the permit deadline */
-  const currentPermitDeadline =
-    rounds && rounds.length > 0
-      ? [...rounds]
-          .sort((a, b) => a.roundEndTime.getTime() - b.roundEndTime.getTime())
-          [rounds.length - 1].roundEndTime.getTime()
-      : 0;
-
   const [emptyInput, setEmptyInput] = useState(false);
   const [openChainConfirmationModal, setOpenChainConfirmationModal] =
-    useState(false);
+    useState(true);
   const [openMRCProgressModal, setOpenMRCProgressModal] = useState(false);
   /* Donate without matching warning modal */
   // const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
@@ -167,100 +148,6 @@ export function SummaryContainer(props: {
       datadogLogs.logger.error(
         `error: submitting to passsport lite - ${res}, address - ${address}`
       );
-    }
-  }
-
-  function PayoutModals() {
-    return (
-      <>
-        <ChainConfirmationModal
-          title={"Checkout"}
-          confirmButtonText={"Checkout"}
-          confirmButtonAction={handleSubmitDonation}
-          body={
-            <ChainConfirmationModalBody
-              projectsByChain={projectsByChain}
-              totalDonationsPerChain={props.totalAmountByChainId}
-              chainIdsBeingCheckedOut={chainIdsBeingCheckedOut}
-              setChainIdsBeingCheckedOut={setChainIdsBeingCheckedOut}
-              enoughBalanceByChainId={props.enoughBalanceByChainId}
-              handleSwap={props.handleSwap}
-            />
-          }
-          isOpen={openChainConfirmationModal}
-          setIsOpen={setOpenChainConfirmationModal}
-          disabled={chainIdsBeingCheckedOut.length === 0}
-        />
-        <MRCProgressModal
-          isOpen={openMRCProgressModal}
-          subheading={"Please hold while we submit your donation."}
-          body={
-            <MRCProgressModalBody
-              chainIdsBeingCheckedOut={chainIdsBeingCheckedOut.filter(
-                (chainId) => props.enoughBalanceByChainId[chainId] === true
-              )}
-              tryAgainFn={handleSubmitDonation}
-              setIsOpen={setOpenMRCProgressModal}
-            />
-          }
-        />
-        {/*Passport not connected warning modal*/}
-        {/* <ErrorModal
-          isOpen={donateWarningModalOpen}
-          setIsOpen={setDonateWarningModalOpen}
-          onDone={() => {
-            setDonateWarningModalOpen(false);
-            handleConfirmation();
-          }}
-          tryAgainText={"Go to Passport"}
-          doneText={"Donate without matching"}
-          onTryAgain={() => {
-            window.location.href = "https://passport.gitcoin.co";
-          }}
-          heading={`Don’t miss out on getting your donations matched!`}
-          subheading={
-            <>
-              <p className={"text-sm text-grey-400 mb-2"}>
-                Verify your identity with Gitcoin Passport to amplify your
-                donations.
-              </p>
-              <p className={"text-sm text-grey-400"}>
-                Note that donations made without Gitcoin Passport verification
-                will not be matched.
-              </p>
-            </>
-          }
-          closeOnBackgroundClick={true}
-        /> */}
-      </>
-    );
-  }
-
-  async function handleSubmitDonation() {
-    try {
-      if (!walletClient || !connector) {
-        console.log("Wallet client or Connector not available");
-        return;
-      }
-
-      setTimeout(() => {
-        setOpenMRCProgressModal(true);
-        setOpenChainConfirmationModal(false);
-      }, modalDelayMs);
-
-      await checkout(
-        chainIdsBeingCheckedOut
-          .filter((chainId) => props.enoughBalanceByChainId[chainId] === true)
-          .map((chainId) => ({
-            chainId,
-            permitDeadline: currentPermitDeadline,
-          })),
-        walletClient,
-        connector,
-        dataLayer
-      );
-    } catch (error) {
-      console.error(error);
     }
   }
 
@@ -423,7 +310,17 @@ export function SummaryContainer(props: {
       >
         {isConnected ? "Submit your donation!" : "Connect wallet to continue"}
       </Button>
-      <PayoutModals />
+      <PayoutModals
+        rounds={rounds}
+        enoughBalanceByChainId={props.enoughBalanceByChainId}
+        totalAmountByChainId={props.totalAmountByChainId}
+        totalDonationAcrossChainsInUSD={totalDonationAcrossChainsInUSD}
+        handleSwap={props.handleSwap}
+        openChainConfirmationModal={openChainConfirmationModal}
+        setOpenChainConfirmationModal={setOpenChainConfirmationModal}
+        openMRCProgressModal={openMRCProgressModal}
+        setOpenMRCProgressModal={setOpenMRCProgressModal}
+      />
       <p className="mx-auto text-center mt-4 font-medium">
         Need to bridge funds ? Bridge funds{" "}
         <span
