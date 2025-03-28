@@ -107,11 +107,6 @@ export function DonationInput({ totalAmount }: Props) {
           placeholder="Enter amount"
           max={selectedTokenBalance}
         />
-        {selectedToken && (
-          <div className="absolute right-3 top-[7.5px] text-[12px] font-medium font-inter text-black">
-            {tokenDetails?.code}
-          </div>
-        )}
       </div>
     </div>
   );

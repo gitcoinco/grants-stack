@@ -23,7 +23,15 @@ import {
   RoundApplicationAnswers,
   RoundCategory,
 } from "data-layer";
-import { Abi, Address, Hex, getAddress, zeroAddress } from "viem";
+import {
+  Abi,
+  Address,
+  Hex,
+  encodeAbiParameters,
+  getAddress,
+  parseAbiParameters,
+  zeroAddress,
+} from "viem";
 import { AnyJson } from "../..";
 import {
   UpdateRoundParams,
@@ -137,9 +145,29 @@ export class AlloV2 implements Allo {
     });
 
     const data = Object.values(groupedVotes).flat();
+    const amounts = Object.values(groupedAmounts);
 
-    // TODO: Kurt - handle direct allocation
+    if (directAllocation) {
+      console.log("isDirectAllocation", directAllocation);
+      poolIds.push(directAllocation.poolId);
+      amounts.push(directAllocation?.amount ?? BigInt(0));
+      const encoded: `0x${string}` = encodeAbiParameters(
+        parseAbiParameters("address,uint256,address,uint256"),
+        [
+          directAllocation.recipient,
+          directAllocation.amount,
+          directAllocation.tokenAddress,
+          directAllocation.nonce,
+        ]
+      );
+      data.push(encoded);
 
+      console.log("poolIds", poolIds);
+      console.log("amounts", amounts);
+      console.log("data", data);
+    } else {
+      console.log("isNotDirectAllocation");
+    }
     /* decide which function to use based on whether token is native, permit-compatible or DAI */
     if (token.address === zeroAddress || token.address === NATIVE) {
       tx = await sendTransaction(
@@ -148,7 +176,7 @@ export class AlloV2 implements Allo {
           address: mrcAddress,
           abi: MRC_ABI,
           functionName: "allocate",
-          args: [poolIds, Object.values(groupedAmounts), data],
+          args: [poolIds, amounts, data],
           value: nativeTokenAmount,
         },
         this.chainId
@@ -164,8 +192,8 @@ export class AlloV2 implements Allo {
             args: [
               data,
               poolIds,
-              Object.values(groupedAmounts),
-              Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+              amounts,
+              amounts.reduce((acc, b) => acc + b),
               token.address as Hex,
               BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
               permit.nonce,
@@ -186,8 +214,8 @@ export class AlloV2 implements Allo {
             args: [
               data,
               poolIds,
-              Object.values(groupedAmounts),
-              Object.values(groupedAmounts).reduce((acc, b) => acc + b),
+              amounts,
+              amounts.reduce((acc, b) => acc + b),
               token.address as Hex,
               BigInt(permit.deadline ?? Number.MAX_SAFE_INTEGER),
               permit.sig.v,

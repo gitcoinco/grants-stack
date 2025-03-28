@@ -79,6 +79,19 @@ export function PayoutModals({
         setOpenChainConfirmationModal(false);
       }, modalDelayMs);
 
+      console.log("selectedChainId", selectedChainId);
+      console.log("selectedToken", selectedToken);
+      console.log("directAllocationPoolId", directAllocationPoolId);
+      console.log("amountInWei", amountInWei);
+      console.log({
+        chainId: selectedChainId as number,
+        tokenAddress: selectedToken as Hex,
+        poolId: directAllocationPoolId?.toString(),
+        amount: amountInWei,
+        recipient: getGitcoinRecipientData(selectedChainId as number).recipient,
+        nonce: getGitcoinRecipientData(selectedChainId as number).nonce,
+      });
+
       await checkout(
         chainIdsBeingCheckedOut
           .filter((chainId) => enoughBalanceByChainId[chainId] === true)

@@ -21,8 +21,6 @@ export const DonateToGitcoinContent = React.memo(
       setSelectedChainId,
       setSelectedToken,
       amount,
-      setAmount,
-      amountInWei,
       setAmountInWei,
       selectedChain,
       chains,
@@ -41,25 +39,18 @@ export const DonateToGitcoinContent = React.memo(
     };
 
     useEffect(() => {
-      console.log("selectedChainId changed to:", selectedChainId);
       if (selectedChainId) {
         const votingToken = useCartStorage
           .getState()
           .getVotingTokenForChain(selectedChainId);
         setToken(votingToken);
+        setSelectedToken(votingToken.address);
         getTokenPrice(
           votingToken.redstoneTokenId,
           votingToken.priceSource
         ).then((price) => {
           const tAmount =
             Number(amount) === 0 ? 0 : Number(amount) / Number(price);
-          console.log("tAmount", tAmount);
-          console.log("amount", amount);
-          console.log("price", price);
-          console.log(
-            "amountInWei",
-            parseUnits(String(tAmount), votingToken.decimals)
-          );
           setTokenAmount(tAmount);
           setAmountInWei(parseUnits(String(tAmount), votingToken.decimals));
         });

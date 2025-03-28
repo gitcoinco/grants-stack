@@ -157,6 +157,10 @@ export const useCheckoutStore = create<CheckoutState>()(
         const isDirectAllocation =
           hasDirectAllocation && directAllocation.chainId === chainId;
 
+        console.log("checkoutStore:isDirectAllocation", isDirectAllocation);
+        console.log("checkoutStore:directAllocation", directAllocation);
+        console.log("hasDirectAllocation", hasDirectAllocation);
+        console.log("chainId", chainId);
         set({
           currentChainBeingCheckedOut: chainId,
         });
