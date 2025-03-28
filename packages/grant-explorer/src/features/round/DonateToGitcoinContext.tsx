@@ -34,7 +34,6 @@ type DonateToGitcoinContextType = {
     };
   };
   selectedTokenBalance: number;
-  isAmountValid: boolean;
   tokenFilters?: TokenFilter[];
   chains: TChain[];
   selectedChain: TChain | null;
@@ -114,16 +113,6 @@ export function DonateToGitcoinProvider({
         : 0,
     [tokenBalances, selectedChainId, selectedToken]
   );
-
-  const isAmountValid = useMemo(() => {
-    if (!amount || !selectedToken) return true;
-    const numAmount = Number(amount);
-    return (
-      !isNaN(numAmount) &&
-      (amount.endsWith(".") || numAmount > 0) &&
-      numAmount <= selectedTokenBalance
-    );
-  }, [amount, selectedToken, selectedTokenBalance]);
 
   useEffect(() => {
     if (!address || !tokenFilters) return;
@@ -228,18 +217,17 @@ export function DonateToGitcoinProvider({
     directAllocationPoolId,
     tokenBalances,
     selectedTokenBalance,
+    chains,
+    selectedChain,
+    tokenFilters,
+    filteredTokens,
+    tokenDetails,
+    amountInWei,
+    setTokenFilters,
     setIsEnabled,
     setSelectedChainId,
     setSelectedToken,
     setAmount,
-    isAmountValid,
-    chains,
-    selectedChain,
-    tokenFilters,
-    setTokenFilters,
-    filteredTokens,
-    tokenDetails,
-    amountInWei,
     setAmountInWei,
   };
 

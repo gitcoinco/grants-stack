@@ -148,7 +148,6 @@ export class AlloV2 implements Allo {
     const amounts = Object.values(groupedAmounts);
 
     if (directAllocation) {
-      console.log("isDirectAllocation", directAllocation);
       poolIds.push(directAllocation.poolId);
       amounts.push(directAllocation?.amount ?? BigInt(0));
       const encoded: `0x${string}` = encodeAbiParameters(
@@ -161,12 +160,6 @@ export class AlloV2 implements Allo {
         ]
       );
       data.push(encoded);
-
-      console.log("poolIds", poolIds);
-      console.log("amounts", amounts);
-      console.log("data", data);
-    } else {
-      console.log("isNotDirectAllocation");
     }
     /* decide which function to use based on whether token is native, permit-compatible or DAI */
     if (token.address === zeroAddress || token.address === NATIVE) {

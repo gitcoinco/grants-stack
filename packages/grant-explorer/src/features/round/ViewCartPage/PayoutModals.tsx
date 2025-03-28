@@ -70,7 +70,7 @@ export function PayoutModals({
   async function handleSubmitDonation() {
     try {
       if (!walletClient || !connector) {
-        console.log("Wallet client or Connector not available");
+        console.error("Wallet client or Connector not available");
         return;
       }
 
@@ -78,19 +78,6 @@ export function PayoutModals({
         setOpenMRCProgressModal(true);
         setOpenChainConfirmationModal(false);
       }, modalDelayMs);
-
-      console.log("selectedChainId", selectedChainId);
-      console.log("selectedToken", selectedToken);
-      console.log("directAllocationPoolId", directAllocationPoolId);
-      console.log("amountInWei", amountInWei);
-      console.log({
-        chainId: selectedChainId as number,
-        tokenAddress: selectedToken as Hex,
-        poolId: directAllocationPoolId?.toString(),
-        amount: amountInWei,
-        recipient: getGitcoinRecipientData(selectedChainId as number).recipient,
-        nonce: getGitcoinRecipientData(selectedChainId as number).nonce,
-      });
 
       await checkout(
         chainIdsBeingCheckedOut
@@ -137,9 +124,7 @@ export function PayoutModals({
             totalDonationAcrossChainsInUSD={totalDonationAcrossChainsInUSD}
           />
         }
-        // todo: put back
         isOpen={openChainConfirmationModal}
-        // isOpen={true}
         setIsOpen={setOpenChainConfirmationModal}
         disabled={chainIdsBeingCheckedOut.length === 0}
       />

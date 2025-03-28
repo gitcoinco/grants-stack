@@ -12,10 +12,13 @@ export type DonationDetails = {
 
 type DonateToGitcoinProps = {
   totalAmount: string;
+  totalDonationsByChain: {
+    [chainId: number]: number;
+  };
 };
 
 export const DonateToGitcoin = React.memo(
-  ({ totalAmount }: DonateToGitcoinProps) => {
+  ({ totalAmount, totalDonationsByChain }: DonateToGitcoinProps) => {
     const { isEnabled, setIsEnabled } = useDonateToGitcoin();
 
     const handleCheckboxChange = useCallback(
@@ -50,7 +53,10 @@ export const DonateToGitcoin = React.memo(
           </p>
         </div>
 
-        <DonateToGitcoinContent totalAmount={totalAmount} />
+        <DonateToGitcoinContent
+          totalAmount={totalAmount}
+          totalDonationsByChain={totalDonationsByChain}
+        />
       </div>
     );
   },

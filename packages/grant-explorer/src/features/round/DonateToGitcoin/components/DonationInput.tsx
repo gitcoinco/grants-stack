@@ -10,15 +10,8 @@ function formatAmount(num: number): string {
 }
 
 export function DonationInput({ totalAmount }: Props) {
-  const {
-    amount,
-    setAmount,
-    isAmountValid,
-    selectedToken,
-    selectedTokenBalance,
-    tokenDetails,
-    isEnabled,
-  } = useDonateToGitcoin();
+  const { amount, setAmount, selectedTokenBalance, isEnabled } =
+    useDonateToGitcoin();
 
   const [selectedPercentage, setSelectedPercentage] = useState<number>(0);
 
@@ -35,20 +28,9 @@ export function DonationInput({ totalAmount }: Props) {
   }, [isEnabled, totalAmount, setAmount]);
 
   const handlePercentageClick = (percentage: number) => {
-    console.log("Percentage clicked:", percentage);
     const calculatedAmount = Number(totalAmount) * (percentage / 100);
-    console.log("Calculating new amount:", {
-      totalAmount,
-      percentage,
-      calculatedAmount,
-      formatted: formatAmount(calculatedAmount),
-    });
     setAmount(formatAmount(calculatedAmount));
     setSelectedPercentage(percentage);
-    console.log("Updated values:", {
-      amount: formatAmount(calculatedAmount),
-      selectedPercentage: percentage,
-    });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +41,7 @@ export function DonationInput({ totalAmount }: Props) {
       const newPercentage = percentages.find(
         (p) => formatAmount(Number(totalAmount) * (p / 100)) === value
       );
-      setSelectedPercentage(newPercentage || 10);
+      setSelectedPercentage(newPercentage || 0);
     }
   };
 
@@ -96,11 +78,10 @@ export function DonationInput({ totalAmount }: Props) {
           type="text"
           className={`
             w-full rounded-[6px] 
-            border-[0.75px] border-[#D7D7D7]
+            border ${selectedPercentage === 0 ? "border-[#7D67EB]" : "border-[#D7D7D7]"}
             p-[7.5px] pr-3 pl-6
             text-[12px] font-medium font-inter text-black
             text-right
-            ${isAmountValid ? "bg-white" : "border-red-300"}
           `}
           value={amount}
           onChange={handleChange}

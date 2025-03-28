@@ -118,6 +118,7 @@ export function ChainConfirmationModalBody({
           </div>
           <DonateToGitcoin
             totalAmount={totalDonationAcrossChainsInUSD.toFixed(2)}
+            totalDonationsByChain={totalDonationsPerChain}
           />
           <div className="pt-6">
             <div className="flex justify-between items-center py-3 border-y mb-3 border-[#D7D7D7]">
