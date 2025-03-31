@@ -1,6 +1,5 @@
 import { isInfiniteDate } from "common";
 import { DonationPeriodResult, TimeRemaining } from "./types";
-import { Application } from "data-layer";
 
 export const isValidStringDate = (date?: string): boolean => {
   return !!date && !isInfiniteDate(new Date(date));
@@ -20,17 +19,22 @@ export const calculateTimeRemaining = (
   };
 };
 
+interface RoundDonationPeriod {
+  roundStartTime: string;
+  roundEndTime: string;
+}
+
 export const calculateDonationPeriod = ({
-  application,
+  roundDonationPeriod,
   currentTime,
   hasValidDonationDates,
 }: {
-  application?: Application;
+  roundDonationPeriod?: RoundDonationPeriod;
   currentTime: Date;
   hasValidDonationDates: boolean;
 }): DonationPeriodResult => {
-  const { donationsStartTime, donationsEndTime } = application?.round ?? {};
-  if (!hasValidDonationDates || !donationsStartTime || !donationsEndTime) {
+  const { roundStartTime, roundEndTime } = roundDonationPeriod ?? {};
+  if (!hasValidDonationDates || !roundStartTime || !roundEndTime) {
     return {
       isDonationPeriod: undefined,
       timeToDonationStart: undefined,
@@ -38,28 +42,28 @@ export const calculateDonationPeriod = ({
     };
   }
 
-  const donationsStartTimeDate = new Date(donationsStartTime);
-  const donationsEndTimeDate = new Date(donationsEndTime);
+  const donationsStartTimeDate = new Date(roundStartTime);
+  const donationsEndTimeDate = new Date(roundEndTime);
 
   const isBeforeDonationPeriod = currentTime < donationsStartTimeDate;
   const isAfterDonationPeriod = currentTime > donationsEndTimeDate;
   const isDonationPeriod = !isBeforeDonationPeriod && !isAfterDonationPeriod;
 
+  const timeToDonationEnd = calculateTimeRemaining(
+    donationsEndTimeDate,
+    currentTime
+  );
+
   if (isAfterDonationPeriod) {
     return {
       isDonationPeriod: false,
       timeToDonationStart: undefined,
-      timeToDonationEnd: undefined,
+      timeToDonationEnd,
     };
   }
 
   const timeToDonationStart = calculateTimeRemaining(
     donationsStartTimeDate,
-    currentTime
-  );
-
-  const timeToDonationEnd = calculateTimeRemaining(
-    donationsEndTimeDate,
     currentTime
   );
 
