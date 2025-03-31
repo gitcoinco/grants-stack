@@ -96,7 +96,7 @@ export const fetchVerifiableCredential = async (
     throw new VerificationError("No credential found");
   }
 
-  if (response.data[0].credential == null) {
+  if (response.data[0].credential.issuer.length === 0) {
     throw new VerificationError(
       "Error verifying ownership - ensure you are a public member of the org"
     );
