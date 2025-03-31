@@ -7,7 +7,10 @@ import {
 } from "common";
 import { useState, useRef, useEffect, useMemo } from "react";
 
-import { useDonateToGitcoin } from "../../DonateToGitcoinContext";
+import {
+  useDonateToGitcoin,
+  GITCOIN_RECIPIENT_CONFIG,
+} from "../../DonateToGitcoinContext";
 import { DonationInput } from "./DonationInput";
 
 import React from "react";
@@ -39,6 +42,7 @@ export const DonateToGitcoinContent = React.memo(
 
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     const { votingTokens, tokenAmountInfo } = useMemo(() => {
       if (!tokenFilters) {
@@ -79,6 +83,20 @@ export const DonateToGitcoinContent = React.memo(
     const [tokenAmount, setTokenAmount] = useState<number>(0);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Filter chains to only show Gitcoin supported ones
+    const supportedChains = useMemo(
+      () => chains.filter((chain) => chain.id in GITCOIN_RECIPIENT_CONFIG),
+      [chains]
+    );
+
+    // Handle initial setup
+    useEffect(() => {
+      if (supportedChains.length === 1 && !selectedChainId) {
+        setSelectedChainId(supportedChains[0].id);
+      }
+      setIsInitialized(true);
+    }, [supportedChains, selectedChainId, setSelectedChainId]);
 
     useEffect(() => {
       let isMounted = true;
@@ -185,7 +203,7 @@ export const DonateToGitcoinContent = React.memo(
       totalDonationsByChain,
     ]);
 
-    if (!isEnabled) return null;
+    if (!isEnabled || !isInitialized) return null;
 
     const renderChainOption = (chain: TChain) => {
       const votingInfo = votingTokens[chain.id];
@@ -219,9 +237,9 @@ export const DonateToGitcoinContent = React.memo(
           </span>
 
           <div className="relative flex items-center rounded-lg flex-grow w-full">
-            {chains.length === 1 ? (
+            {supportedChains.length === 1 ? (
               <div className="w-full p-[9px] rounded-[6px] border-[0.75px] border-[#D7D7D7] bg-white font-modern-era font-medium">
-                {renderChainOption(chains[0])}
+                {renderChainOption(supportedChains[0])}
               </div>
             ) : (
               <>
@@ -242,7 +260,7 @@ export const DonateToGitcoinContent = React.memo(
 
                 {isOpen && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#D7D7D7] rounded-[6px] shadow-lg z-10">
-                    {chains
+                    {supportedChains
                       .sort((a, b) => a.prettyName.localeCompare(b.prettyName))
                       .map((chain) => (
                         <div
@@ -274,7 +292,9 @@ export const DonateToGitcoinContent = React.memo(
           )}
         </div>
 
-        {error && <p className="text-[11px] text-red-500">{error}</p>}
+        {isInitialized && error && (
+          <p className="text-[11px] text-red-500">{error}</p>
+        )}
       </div>
     );
   }

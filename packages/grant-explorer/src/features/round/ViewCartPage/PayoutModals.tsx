@@ -38,10 +38,8 @@ export function PayoutModals({
   totalDonationAcrossChainsInUSD: number;
 }) {
   const {
-    isEnabled,
     selectedChainId,
     selectedToken,
-    amount,
     directAllocationPoolId,
     amountInWei,
   } = useDonateToGitcoin();
@@ -58,6 +56,11 @@ export function PayoutModals({
   const [chainIdsBeingCheckedOut, setChainIdsBeingCheckedOut] = useState<
     number[]
   >(Object.keys(projectsByChain).map(Number));
+
+  const cancelButtonAction = () => {
+    setOpenChainConfirmationModal(false);
+    setChainIdsBeingCheckedOut(Object.keys(projectsByChain).map(Number));
+  };
 
   /** We find the round that ends last, and take its end date as the permit deadline */
   const currentPermitDeadline =
@@ -113,6 +116,7 @@ export function PayoutModals({
         title={"Checkout"}
         confirmButtonText={"Checkout"}
         confirmButtonAction={handleSubmitDonation}
+        cancelButtonAction={cancelButtonAction}
         body={
           <ChainConfirmationModalBody
             projectsByChain={projectsByChain}

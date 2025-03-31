@@ -48,21 +48,45 @@ type DonateToGitcoinContextType = {
   setAmountInWei: (amount: bigint) => void;
 };
 
-//todo: update with actual gitcoin data
+export const GITCOIN_RECIPIENT_CONFIG: {
+  [chainId: number]: {
+    nonce: bigint;
+    recipient: Hex;
+  };
+} = {
+  42220: {
+    // Celo
+    nonce: 10000n,
+    recipient: "0x6a02e9bdAd1C5B8cBbC3B200F0aaE67496FFd4d4",
+  },
+  42161: {
+    // Arbitrum One
+    nonce: 10000n,
+    recipient: "0x6a02e9bdAd1C5B8cBbC3B200F0aaE67496FFd4d4",
+  },
+  10: {
+    // Optimism
+    nonce: 10000n,
+    recipient: "0x6a02e9bdAd1C5B8cBbC3B200F0aaE67496FFd4d4",
+  },
+  8453: {
+    // Base
+    nonce: 10000n,
+    recipient: "0x6a02e9bdAd1C5B8cBbC3B200F0aaE67496FFd4d4",
+  },
+};
+
 export const getGitcoinRecipientData = (
   chainId: number
 ): {
   nonce: bigint;
   recipient: Hex;
 } => {
-  // prepared for different addresses and profiles, like on zksync or so
-  switch (chainId) {
-    default:
-      return {
-        nonce: 1147166n,
-        recipient: "0x5645bF145C3f1E974D0D7FB91bf3c68592ab5012",
-      };
+  const config = GITCOIN_RECIPIENT_CONFIG[chainId];
+  if (!config) {
+    throw new Error(`Unsupported chainId: ${chainId}`);
   }
+  return config;
 };
 
 const DonateToGitcoinContext = createContext<DonateToGitcoinContextType | null>(
@@ -178,7 +202,6 @@ export function DonateToGitcoinProvider({
       setSelectedChainId(null);
       setSelectedToken("");
       setAmount("");
-      setTokenBalances({});
     }
   }, [isEnabled, setSelectedChainId, setSelectedToken, setAmount]);
 

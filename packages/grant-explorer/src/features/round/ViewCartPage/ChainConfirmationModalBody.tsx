@@ -6,7 +6,10 @@ import { parseChainId } from "common/src/chains";
 import { Checkbox } from "@chakra-ui/react";
 import { DonateToGitcoin } from "../DonateToGitcoin";
 import { zeroAddress } from "viem";
-import { useDonateToGitcoin } from "../DonateToGitcoinContext";
+import {
+  useDonateToGitcoin,
+  GITCOIN_RECIPIENT_CONFIG,
+} from "../DonateToGitcoinContext";
 import { TotalAmountInclGitcoinDonation } from "../DonateToGitcoin/components/TotalAmountInclGitcoinDonation";
 
 type ChainConfirmationModalBodyProps = {
@@ -69,6 +72,10 @@ export function ChainConfirmationModalBody({
     setTokenFilters(tokenFilters);
   }, [tokenFilters, setTokenFilters]);
 
+  const hasGitcoinSupportedChain = chainIdsBeingCheckedOut.some(
+    (chainId) => chainId in GITCOIN_RECIPIENT_CONFIG
+  );
+
   return (
     <div className="flex flex-col">
       <p className="text-sm text-grey-400">
@@ -108,20 +115,23 @@ export function ChainConfirmationModalBody({
             ))}
         </div>
         <div className="">
-          <div className="flex justify-between items-center py-3 mb-6 border-b border-[#D7D7D7]">
-            <span className="font-inter text-[15px] font-medium text-black">
-              Subtotal
-            </span>
-            <span className="font-inter text-[15px] font-medium text-black">
-              ~${totalDonationAcrossChainsInUSD.toFixed(2)}
-            </span>
-          </div>
-          <DonateToGitcoin
-            totalAmount={totalDonationAcrossChainsInUSD.toFixed(2)}
-            totalDonationsByChain={totalDonationsPerChain}
-          />
-          <div className="pt-6">
-            <div className="flex justify-between items-center py-3 border-y mb-3 border-[#D7D7D7]">
+          {hasGitcoinSupportedChain && (
+            <div className="flex justify-between items-center py-3 mb-6 border-b border-[#D7D7D7]">
+              <span className="font-inter text-[15px] font-medium text-black">
+                Subtotal
+              </span>
+              <span className="font-inter text-[15px] font-medium text-black">
+                ~${totalDonationAcrossChainsInUSD.toFixed(2)}
+              </span>
+            </div>
+          )}
+          {hasGitcoinSupportedChain ? (
+            <DonateToGitcoin
+              totalAmount={totalDonationAcrossChainsInUSD.toFixed(2)}
+              totalDonationsByChain={totalDonationsPerChain}
+            />
+          ) : (
+            <div className="flex justify-between items-center mb-3 py-3">
               <span className="font-inter text-[15px] font-medium text-black">
                 Total
               </span>
@@ -129,7 +139,21 @@ export function ChainConfirmationModalBody({
                 totalDonationAcrossChainsInUSD={totalDonationAcrossChainsInUSD}
               />
             </div>
-          </div>
+          )}
+          {hasGitcoinSupportedChain && (
+            <div className="pt-6">
+              <div className="flex justify-between items-center py-3 border-y mb-3 border-[#D7D7D7]">
+                <span className="font-inter text-[15px] font-medium text-black">
+                  Total
+                </span>
+                <TotalAmountInclGitcoinDonation
+                  totalDonationAcrossChainsInUSD={
+                    totalDonationAcrossChainsInUSD
+                  }
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
