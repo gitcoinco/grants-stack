@@ -96,6 +96,12 @@ export const fetchVerifiableCredential = async (
     throw new VerificationError("No credential found");
   }
 
+  if (response.data[0].credential == null) {
+    throw new VerificationError(
+      "Error verifying ownership - ensure you are a public member of the org"
+    );
+  }
+
   // return everything that was used to create the credential (along with the credential)
   return {
     signature,
@@ -157,9 +163,12 @@ export function openOauthWindow(
     const channel = new BroadcastChannel(broadcastChannelName);
 
     // timeout after 5 minutes
-    const timeout = setTimeout(() => {
-      reject(new VerificationError("Authorization timed out"));
-    }, 1000 * 60 * 5);
+    const timeout = setTimeout(
+      () => {
+        reject(new VerificationError("Authorization timed out"));
+      },
+      1000 * 60 * 5
+    );
 
     channel.addEventListener("message", (event: any) => {
       const eventData = event.data as {
