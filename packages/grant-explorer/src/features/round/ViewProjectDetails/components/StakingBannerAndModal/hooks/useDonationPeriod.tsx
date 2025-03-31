@@ -1,13 +1,11 @@
-import { useApplication } from "../../../../../projects/hooks/useApplication";
-import { useDataLayer } from "data-layer";
 import { useEffect, useMemo, useState } from "react";
 import { DonationPeriodResult, TimeRemaining } from "../types";
 import { calculateDonationPeriod, isValidStringDate } from "../utils";
+import { useRoundById } from "../../../../../../context/RoundContext";
 
 interface Params {
   chainId: number;
   roundId: string;
-  applicationId: string;
   refreshInterval?: number;
 }
 
@@ -21,27 +19,21 @@ interface Result {
 export const useDonationPeriod = ({
   chainId,
   roundId,
-  applicationId,
   refreshInterval = 5 * 60 * 1000,
 }: Params): Result => {
-  const dataLayer = useDataLayer();
-  const { data: application } = useApplication(
-    {
-      chainId,
-      roundId,
-      applicationId,
-    },
-    dataLayer
-  );
+  const { round } = useRoundById(chainId, roundId);
 
   const hasValidDonationDates = useMemo(() => {
-    if (!application) return false;
-    const { donationsStartTime, donationsEndTime } = application?.round ?? {};
+    if (!round) return false;
+    const {
+      roundStartTime: donationsStartTime,
+      roundEndTime: donationsEndTime,
+    } = round;
     return (
-      isValidStringDate(donationsStartTime) &&
-      isValidStringDate(donationsEndTime)
+      isValidStringDate(donationsStartTime.toISOString()) &&
+      isValidStringDate(donationsEndTime.toISOString())
     );
-  }, [application]);
+  }, [round]);
 
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -57,11 +49,14 @@ export const useDonationPeriod = ({
     useMemo<DonationPeriodResult>(
       () =>
         calculateDonationPeriod({
-          application,
+          roundDonationPeriod: {
+            roundStartTime: round?.roundStartTime.toISOString() ?? "",
+            roundEndTime: round?.roundEndTime.toISOString() ?? "",
+          },
           currentTime,
           hasValidDonationDates,
         }),
-      [application, currentTime, hasValidDonationDates]
+      [round, currentTime, hasValidDonationDates]
     );
   return { isDonationPeriod, timeToDonationStart, timeToDonationEnd };
 };

@@ -9,6 +9,7 @@ type DropdownProps<T> = PropsWithChildren<{
   keepOpen?: boolean;
   renderItem: (p: { active: boolean; close: () => void } & T) => ReactElement;
   headerElement?: (close: () => void) => ReactElement;
+  labelClassName?: string;
 }>;
 
 export function Dropdown<T>({
@@ -17,6 +18,7 @@ export function Dropdown<T>({
   keepOpen,
   renderItem,
   headerElement,
+  labelClassName,
 }: DropdownProps<T>) {
   return (
     <Menu as="div" className="md:relative inline-block text-left z-20">
@@ -24,7 +26,11 @@ export function Dropdown<T>({
         <>
           <div>
             <Menu.Button className="inline-flex gap-2 items-center">
-              <span className="text-white py-2">{label}</span>
+              <span
+                className={`${labelClassName ? labelClassName : "text-white py-2 "}`}
+              >
+                {label}
+              </span>
               <ChevronDownIcon
                 className="h-5 w-5 text-black"
                 aria-hidden="true"

@@ -39,16 +39,24 @@ export const StakingCountDownLabel = ({
   label = "Staking begins in",
   timeLeft,
   limitMinutes = 3,
+  isRoundView = false,
 }: {
   label?: string;
   timeLeft: TimeRemaining;
   limitMinutes?: number;
+  isRoundView?: boolean;
 }) => {
   if (timeLeft.totalMilliseconds <= 0) {
     return null;
   }
   return (
-    <div className="py-4 px-8 rounded-2xl text-white bg-[#22635A] font-sans text-lg font-medium flex flex-row xl:flex-col items-center gap-1">
+    <div
+      className={` text-white bg-[#22635A] font-sans text-lg font-medium flex flex-row items-center gap-1 ${
+        isRoundView
+          ? "rounded-2xl px-4 py-1"
+          : "xl:flex-col py-4 px-8 rounded-2xl"
+      }`}
+    >
       <div className="whitespace-nowrap">{label}</div>
       <div className="whitespace-nowrap">
         {generateCountDownLabel({ ...timeLeft, limitMinutes })}
