@@ -37,7 +37,9 @@ export function usePayouts(args: {
       let mappedPayouts = payouts.map((payout) => {
         return {
           applicationIndex: Number(result.applications[0].id),
-          amount: payout.amount,
+          amount: Number(payout.amount).toLocaleString("fullwide", {
+            useGrouping: false,
+          }),
           createdAt: payout.timestamp,
           txnHash: payout.transactionHash,
           tokenAddress: payout.tokenAddress,

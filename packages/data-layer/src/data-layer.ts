@@ -831,13 +831,13 @@ export class DataLayer {
     roundId: string;
     projectId: string;
   }): Promise<RoundApplicationPayout> {
-    const response: { round: RoundApplicationPayout } = await request(
+    const response: { rounds: RoundApplicationPayout[] } = await request(
       this.gsIndexerEndpoint,
       getPayoutsByChainIdRoundIdProjectId,
       args,
     );
 
-    return response.round;
+    return response.rounds[0];
   }
 
   /**
