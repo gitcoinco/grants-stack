@@ -3,6 +3,7 @@ import { BaseModal } from "../../../../common/BaseModal";
 import { ArrowRightIcon } from "@heroicons/react/20/solid";
 
 const TITLE = "You're about to stake GTC on this project";
+const TITLE_ROUND_VIEW = "You're about to stake GTC in this round!";
 const DESCRIPTION =
   "To complete your stake, you’ll be redirected to a new tab. Once you confirm your transaction, your support will be reflected on the round page.";
 
@@ -11,10 +12,10 @@ const CHECK_POINTS = [
   "Earn a share of the 3% rewards pool",
 ];
 
-const Title = () => (
+const Title = ({ isRoundView }: { isRoundView: boolean }) => (
   <div className="flex flex-col gap-2">
     <div className="text-3xl leading-[2.125rem] align-middle font-medium">
-      {TITLE}
+      {isRoundView ? TITLE_ROUND_VIEW : TITLE}
     </div>
     <div className="text-base leading-[1.625rem] align-middle font-normal">
       {DESCRIPTION}
@@ -33,9 +34,9 @@ const CheckPoints = () => (
   </div>
 );
 
-const Content = () => (
+const Content = ({ isRoundView }: { isRoundView: boolean }) => (
   <div className="flex flex-col gap-6 font-sans text-black">
-    <Title />
+    <Title isRoundView={isRoundView} />
     <CheckPoints />
   </div>
 );
@@ -74,15 +75,17 @@ export const StakingModal = ({
   isOpen,
   onClose,
   onStake,
+  isRoundView,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onStake: () => void;
+  isRoundView: boolean;
 }) => {
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} size="2xl">
       <div className="flex flex-col gap-8">
-        <Content />
+        <Content isRoundView={isRoundView} />
         <ActionButtons onCancel={onClose} onStake={onStake} />
       </div>
     </BaseModal>

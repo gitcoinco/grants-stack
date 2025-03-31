@@ -26,7 +26,7 @@ const builderURL = process.env.REACT_APP_BUILDER_URL;
 import CartNotification from "../../common/CartNotification";
 import { useAccount, useToken } from "wagmi";
 import { getAddress } from "viem";
-import { DefaultLayout } from "../../common/DefaultLayout";
+import { RoundViewLayout } from "../../common/DefaultLayout";
 import { getUnixTime } from "date-fns";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 
@@ -36,7 +36,10 @@ import { ProjectList } from "./ProjectList";
 import { RoundStatsTabContent } from "./RoundStatsTabContent";
 import { RoundTabs } from "./RoundTabs";
 import { getAlloVersion } from "common/src/config";
+import { StakingBannerAndModal } from "../ViewProjectDetails/components/StakingBannerAndModal";
+import { useIsStakable } from "../ViewProjectDetails/components/StakingBannerAndModal/hooks/useIsStakable";
 
+import { SortDropdown } from "./SortDropdown";
 const alloVersion = getAlloVersion();
 
 export function RoundPage(props: {
@@ -54,6 +57,11 @@ export function RoundPage(props: {
   const [projects, setProjects] = useState<Project[]>();
   const [randomizedProjects, setRandomizedProjects] = useState<Project[]>();
   const { address: walletAddress } = useAccount();
+
+  const isStakableRound = useIsStakable({
+    chainId: Number(chainId),
+    roundId,
+  });
   const isSybilDefenseEnabled =
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
@@ -254,7 +262,7 @@ export function RoundPage(props: {
 
   return (
     <>
-      <DefaultLayout>
+      <RoundViewLayout infoCard={<StakingBannerAndModal isRoundView={true} />}>
         {showCartNotification && renderCartNotification()}
         {props.isAfterRoundEndDate && (
           <div className="relative top-6">
@@ -442,24 +450,32 @@ export function RoundPage(props: {
               onChange={handleTabChange}
             />
             {selectedTab === 0 && (
-              <div className="relative">
-                <Search className="absolute h-4 w-4 mt-3 ml-3 " />
-                <Input
-                  className="w-full lg:w-64 h-8 rounded-full pl-10 font-mono"
-                  type="text"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setSearchQuery(e.target.value)
-                  }
-                />
+              <div className="relative flex items-center gap-2">
+                <div className="relative">
+                  <Search className="absolute h-4 w-4 mt-3 ml-3 " />
+                  <Input
+                    className="w-full lg:w-64 h-8 rounded-full pl-10 font-mono"
+                    type="text"
+                    placeholder="Search"
+                    value={searchQuery}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSearchQuery(e.target.value)
+                    }
+                  />
+                </div>
+                {isStakableRound && props.isAfterRoundStartDate && (
+                  <div className="flex gap-2 items-center">
+                    <div>Sort by</div>
+                    <SortDropdown />
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           <div>{projectDetailsTabs[selectedTab].content}</div>
         </div>
-      </DefaultLayout>
+      </RoundViewLayout>
     </>
   );
 }

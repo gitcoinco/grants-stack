@@ -15,6 +15,7 @@ import {
 
 import { useCartStorage } from "../../../store";
 import { CartButton } from "./CartButton";
+import { useIsStakable } from "../ViewProjectDetails/components/StakingBannerAndModal/hooks/useIsStakable";
 
 export function ProjectCard(props: {
   project: Project;
@@ -28,12 +29,17 @@ export function ProjectCard(props: {
   setShowCartNotification: React.Dispatch<React.SetStateAction<boolean>>;
   crowdfundedUSD: number;
   uniqueContributorsCount: number;
+  totalStaked?: number;
 }) {
   const { project, roundRoutePath } = props;
-  const projectRecipient =
-    project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
 
   const { projects, add, remove } = useCartStorage();
+  const isStakableRound = useIsStakable({
+    chainId: Number(props.chainId),
+    roundId: props.roundId,
+  });
+
+  const isStakingPeriodStarted = props.showProjectCardFooter;
 
   const isAlreadyInCart = projects.some(
     (cartProject) =>
@@ -41,6 +47,9 @@ export function ProjectCard(props: {
       cartProject.grantApplicationId === project.grantApplicationId &&
       cartProject.roundId === props.roundId
   );
+  if (!project) return null;
+  const projectRecipient =
+    project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
 
   const cartProject = project as CartProject;
   cartProject.roundId = props.roundId;
@@ -55,7 +64,7 @@ export function ProjectCard(props: {
         to={`${roundRoutePath}/${project.grantApplicationId}`}
         data-testid="project-detail-link"
       >
-        <CardHeader>
+        <CardHeader className="relative">
           <ProjectBanner
             bannerImgCid={project.projectMetadata.bannerImg ?? null}
             classNameOverride={
@@ -63,6 +72,11 @@ export function ProjectCard(props: {
             }
             resizeHeight={108}
           />
+          {isStakableRound &&
+            props.totalStaked !== undefined &&
+            isStakingPeriodStarted && (
+              <StakedAmountCard totalStaked={props.totalStaked} />
+            )}
         </CardHeader>
 
         <CardContent className="px-2 relative">
@@ -131,3 +145,42 @@ export function ProjectCard(props: {
     </BasicCard>
   );
 }
+
+const StakedAmountCard = ({ totalStaked }: { totalStaked: number }) => {
+  return (
+    <div className="p-2 bg-white bg-opacity-80 rounded-2xl backdrop-blur-sm inline-flex justify-start items-center gap-2 absolute top-4 right-4">
+      <div className="w-5 h-5 relative overflow-hidden">
+        <div data-svg-wrapper className="left-[3.33px] top-[2.50px] absolute">
+          <svg
+            width="16"
+            height="18"
+            viewBox="0 0 16 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8.83337 7.33333V1.5L1.33337 10.6667H7.16671L7.16671 16.5L14.6667 7.33333L8.83337 7.33333Z"
+              stroke="#7D67EB"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+      </div>
+      <div className="inline-flex flex-col justify-start items-start">
+        <div className="self-stretch inline-flex justify-start items-center gap-1">
+          <div className="justify-start text-text-primary text-sm font-medium font-mono leading-normal">
+            {totalStaked}
+          </div>
+          <div className="justify-start text-text-primary text-sm font-medium font-mono leading-normal">
+            GTC
+          </div>
+        </div>
+        <div className="self-stretch justify-start text-text-primary text-xs font-normal font-mono leading-[14px]">
+          Total staked
+        </div>
+      </div>
+    </div>
+  );
+};

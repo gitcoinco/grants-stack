@@ -24,6 +24,30 @@ export function DefaultLayout({
   );
 }
 
+export function RoundViewLayout({
+  showWalletInteraction = true,
+  children,
+  infoCard,
+}: LayoutProps & { infoCard?: React.ReactNode }) {
+  return (
+    <main className={"font-sans min-h-screen text-grey-500"}>
+      <Navbar showWalletInteraction={showWalletInteraction} />
+      {infoCard && (
+        <div className="relative pt-16 w-full items-center">{infoCard}</div>
+      )}
+      <div
+        className={classNames(
+          "container pt-16 relative z-10 mx-auto px-4 sm:px-6 lg:px-20 max-w-screen-2xl",
+          infoCard ? "pt-0" : "pt-16"
+        )}
+      >
+        {children}
+      </div>
+      <Footer />
+    </main>
+  );
+}
+
 export function GradientLayout({
   showWalletInteraction = true,
   showAlloVersionBanner = false,
