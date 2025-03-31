@@ -4,6 +4,7 @@ import { devtools } from "zustand/middleware";
 import { CartProject, ProgressStatus } from "./features/api/types";
 import {
   AlloV2,
+  DirectAllocation,
   createEthersTransactionSender,
   createPinataIpfsUploader,
   createWaitForIndexerSyncTo,
@@ -32,13 +33,13 @@ import { groupBy, uniq } from "lodash-es";
 import { getEnabledChains } from "./app/chainConfig";
 import { getPermitType } from "common/dist/allo/voting";
 import { getConfig } from "common/src/config";
-import { DataLayer } from "data-layer";
 import { getEthersProvider, getEthersSigner } from "./app/wagmi";
 import { Connector } from "wagmi";
 
 type ChainMap<T> = Record<number, T>;
 
 const isV2 = getConfig().allo.version === "allo-v2";
+
 interface CheckoutState {
   permitStatus: ChainMap<ProgressStatus>;
   setPermitStatusForChain: (
@@ -62,7 +63,7 @@ interface CheckoutState {
     chainsToCheckout: { chainId: number; permitDeadline: number }[],
     walletClient: WalletClient,
     connector: Connector,
-    dataLayer: DataLayer
+    directAllocation?: DirectAllocation
   ) => Promise<void>;
   getCheckedOutProjects: () => CartProject[];
   checkedOutProjects: CartProject[];
@@ -109,10 +110,12 @@ export const useCheckoutStore = create<CheckoutState>()(
     checkout: async (
       chainsToCheckout: { chainId: number; permitDeadline: number }[],
       walletClient: WalletClient,
-      connector: Connector
+      connector: Connector,
+      directAllocation?: DirectAllocation
     ) => {
       const userAddress = walletClient.account?.address;
       const chainIdsToCheckOut = chainsToCheckout.map((chain) => chain.chainId);
+      const hasDirectAllocation = !!directAllocation;
       get().setChainsToCheckout(
         uniq([...get().chainsToCheckout, ...chainIdsToCheckOut])
       );
@@ -151,6 +154,8 @@ export const useCheckoutStore = create<CheckoutState>()(
         const chainId = currentChain.chainId;
         const deadline = currentChain.permitDeadline;
         const donations = projectsByChain[chainId];
+        const isDirectAllocation =
+          hasDirectAllocation && directAllocation.chainId === chainId;
 
         set({
           currentChainBeingCheckedOut: chainId,
@@ -205,7 +210,9 @@ export const useCheckoutStore = create<CheckoutState>()(
                 tokenName = "cUSD";
               sig = await signPermit2612({
                 walletClient: walletClient,
-                value: totalDonationPerChain[chainId],
+                value: isDirectAllocation
+                  ? totalDonationPerChain[chainId] + directAllocation.amount
+                  : totalDonationPerChain[chainId],
                 spenderAddress: chain.contracts.multiRoundCheckout,
                 nonce,
                 chainId,
@@ -302,7 +309,8 @@ export const useCheckoutStore = create<CheckoutState>()(
                   deadline,
                   nonce: nonce!,
                 }
-              : undefined
+              : undefined,
+            isDirectAllocation ? directAllocation : undefined
           );
 
           if (receipt.status === "reverted") {
