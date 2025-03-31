@@ -1,6 +1,7 @@
 import { Round } from "data-layer";
 import { AnyJson } from ".";
 import { BigNumber } from "ethers";
+import { Hex } from "viem";
 
 export type CreateRoundData = {
   roundMetadataWithProgramContractAddress: Round["roundMetadata"];
@@ -107,3 +108,12 @@ export type PriceSource = {
   chainId: number;
   address: `0x${string}`;
 };
+
+export interface DirectAllocation {
+  chainId: number;
+  tokenAddress: Hex;
+  poolId: string;
+  amount: bigint;
+  recipient: Hex;
+  nonce: bigint;
+}
