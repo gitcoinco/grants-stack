@@ -14,6 +14,7 @@ export * from "./markdown";
 export * from "./allo/common";
 export * from "./allo/application";
 export * from "./payoutTokens";
+export * from "./types";
 
 export * from "./services/passport/passportCredentials";
 export { PassportVerifierWithExpiration } from "./services/passport/credentialVerifier";

@@ -17,7 +17,7 @@ assignees: ''
 *request timeline* <br> 
 
 **Specific Indicators/Metrics:**<br>
-*Please add each indictor/metric below. Feel free to link specific formulas if you have something in mind*<br> 
+*Please add each indicator/metric below. Feel free to link specific formulas if you have something in mind*<br> 
 - [ ] Indicator example 1
 - [ ] Indicator example 2
 - [ ] Indicator example 3

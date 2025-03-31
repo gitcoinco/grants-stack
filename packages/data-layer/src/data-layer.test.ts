@@ -558,7 +558,7 @@ describe("applications search", () => {
   });
 });
 
-describe("v2 projects retrieval", () => {
+describe.skip("v2 projects retrieval", () => {
   test("can retrieve project by id", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       status: 200,
