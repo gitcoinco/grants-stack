@@ -37,7 +37,7 @@ export function RoundViewLayout({
       )}
       <div
         className={classNames(
-          "container pt-16 relative z-10 mx-auto px-4 sm:px-6 lg:px-20 max-w-screen-2xl",
+          "container relative z-10 mx-auto px-4 sm:px-6 lg:px-20 max-w-screen-2xl",
           infoCard ? "pt-0" : "pt-16"
         )}
       >
