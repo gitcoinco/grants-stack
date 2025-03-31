@@ -94,7 +94,7 @@ export function SummaryContainer(props: {
 
   const [emptyInput, setEmptyInput] = useState(false);
   const [openChainConfirmationModal, setOpenChainConfirmationModal] =
-    useState(true);
+    useState(false);
   const [openMRCProgressModal, setOpenMRCProgressModal] = useState(false);
   /* Donate without matching warning modal */
   // const [donateWarningModalOpen, setDonateWarningModalOpen] = useState(false);
