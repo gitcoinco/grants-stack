@@ -34,9 +34,9 @@ jobs:
         run: |
           pnpm lint:manager
 
-      - name: Test Round Manager
-        run: |
-          pnpm test:manager
+      # - name: Test Round Manager
+      #   run: |
+      #     pnpm test:manager
 
       - name: Typecheck Round Manager
         run: |

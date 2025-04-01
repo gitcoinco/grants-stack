@@ -1,12 +1,15 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { datadogLogs } from "@datadog/browser-logs";
 
+const isDevelopment = process.env.NODE_ENV === "development";
 /**
  * Initialize datadog at a global level
  *  - Datadog Real User Monitoring (RUM) : https://www.npmjs.com/package/@datadog/browser-rum
  *  - Datadog Browser Logs : https://www.npmjs.com/package/@datadog/browser-logs
  */
 export const initDatadog = () => {
+  if (isDevelopment) return;
+
   // Init datadog-rum
   datadogRum.init({
     applicationId: process.env.REACT_APP_DATADOG_APPLICATION_ID || "",

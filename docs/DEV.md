@@ -42,7 +42,9 @@ Set the WalletConnect applicationId in the `.env` file: `REACT_APP_WALLETCONNECT
 Set your Alchemy API Key: `REACT_APP_ALCHEMY_ID=[YOUR ALCHEMY API KEY]`
 
 The default configuration loads data from the production indexer.
-You can point your dapps to a local indexer changing the following variable: `REACT_APP_INDEXER_V2_API_URL=http://localhost:PORT_NUMBER`
+You can point your dapps to a local indexer changing the following variables: 
+- `REACT_APP_INDEXER_V1_API_URL=http://localhost:PORT_NUMBER`
+- `REACT_APP_INDEXER_V2_API_URL=http://localhost:PORT_NUMBER`
 
 ### Run All Packages
 

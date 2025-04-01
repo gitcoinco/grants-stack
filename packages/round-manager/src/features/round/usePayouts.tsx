@@ -32,14 +32,14 @@ export function usePayouts(args: {
         projectId: args.projectId,
       });
 
-      const payouts =
-        result.applications[0]
-          .applicationsPayoutsByChainIdAndRoundIdAndApplicationId;
+      const payouts = result.applications[0].applicationsPayouts;
 
       let mappedPayouts = payouts.map((payout) => {
         return {
           applicationIndex: Number(result.applications[0].id),
-          amount: payout.amount,
+          amount: Number(payout.amount).toLocaleString("fullwide", {
+            useGrouping: false,
+          }),
           createdAt: payout.timestamp,
           txnHash: payout.transactionHash,
           tokenAddress: payout.tokenAddress,

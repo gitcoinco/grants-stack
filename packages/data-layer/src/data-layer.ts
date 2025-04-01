@@ -1,7 +1,7 @@
 import _fetch from "cross-fetch";
 import { request } from "graphql-request";
 import shuffle from "knuth-shuffle-seeded";
-import { Address } from "viem";
+import { Address, getAddress } from "viem";
 import * as categories from "./backends/categories";
 import * as collections from "./backends/collections";
 import { AlloVersion, PaginationInfo } from "./data-layer.types";
@@ -59,7 +59,7 @@ import {
   getRoundsForManagerByAddress,
   getDirectDonationsByProjectId,
 } from "./queries";
-import { mergeCanonicalAndLinkedProjects } from "./utils";
+import { orderByMapping } from "./utils";
 import {
   AttestationService,
   type MintingAttestationIdsData,
@@ -162,7 +162,7 @@ export class DataLayer {
     tags: string[];
   }): Promise<{ programs: Program[] }> {
     const requestVariables = {
-      userAddress: address.toLowerCase(),
+      userAddress: getAddress(address),
       chainIds,
       tags: ["program", ...tags],
     };
@@ -251,9 +251,9 @@ export class DataLayer {
 
     if (response.projects.length === 0) return null;
 
-    const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
+    // const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
 
-    return { project };
+    return { project: response.projects[0] };
   }
 
   async getProjectAnchorByIdAndChainId({
@@ -263,16 +263,13 @@ export class DataLayer {
     projectId: string;
     chainId: number;
   }): Promise<Address | undefined> {
-    const response: { project?: { anchorAddress: Address } } = await request(
-      this.gsIndexerEndpoint,
-      getProjectAnchorByIdAndChainId,
-      {
+    const response: { projects: Array<{ anchorAddress: Address }> } =
+      await request(this.gsIndexerEndpoint, getProjectAnchorByIdAndChainId, {
         projectId,
         chainId,
-      },
-    );
+      });
 
-    return response?.project?.anchorAddress;
+    return response?.projects[0]?.anchorAddress;
   }
 
   /**
@@ -308,7 +305,7 @@ export class DataLayer {
     chainIds: number[];
   }): Promise<v2Project[]> {
     const requestVariables = {
-      address: address.toLowerCase(),
+      address: getAddress(address),
       version: alloVersion,
       chainIds,
     };
@@ -319,11 +316,7 @@ export class DataLayer {
       requestVariables,
     );
 
-    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
-      response.projects,
-    );
-
-    return projects;
+    return response.projects;
   }
 
   /**
@@ -336,13 +329,16 @@ export class DataLayer {
   async getPaginatedProjects({
     first,
     offset,
+    chainIds,
   }: {
     first: number;
     offset: number;
+    chainIds: number[];
   }): Promise<v2Project[]> {
     const requestVariables = {
       first,
       offset,
+      chainIds,
     };
 
     const response: { projects: v2Project[] } = await request(
@@ -351,11 +347,7 @@ export class DataLayer {
       requestVariables,
     );
 
-    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
-      response.projects,
-    );
-
-    return projects;
+    return response.projects;
   }
 
   /**
@@ -370,28 +362,27 @@ export class DataLayer {
     searchTerm,
     first,
     offset,
+    chainIds,
   }: {
     searchTerm: string;
     first: number;
     offset: number;
+    chainIds: number[];
   }): Promise<v2Project[]> {
     const requestVariables = {
-      searchTerm,
+      searchTerm: `(?i)`.concat(searchTerm.replace(/^['"]|['"]$/g, "")),
       first,
       offset,
+      chainIds,
     };
 
-    const response: { searchProjects: v2Project[] } = await request(
+    const response: { projects: v2Project[] } = await request(
       this.gsIndexerEndpoint,
       getProjectsBySearchTerm,
       requestVariables,
     );
 
-    const projects: v2Project[] = mergeCanonicalAndLinkedProjects(
-      response.searchProjects,
-    );
-
-    return projects;
+    return response.projects;
   }
 
   /**
@@ -473,7 +464,10 @@ export class DataLayer {
       return null;
     }
 
-    return response.applications[0];
+    const application = response.applications[0];
+    application.project.metadata = application.metadata.application.project;
+
+    return application;
   }
 
   async getApplicationsForExplorer({
@@ -494,7 +488,12 @@ export class DataLayer {
       requestVariables,
     );
 
-    return response.applications ?? [];
+    return (
+      response.applications.map((application) => {
+        application.project.metadata = application.metadata.application.project;
+        return application;
+      }) ?? []
+    );
   }
 
   /**
@@ -510,12 +509,12 @@ export class DataLayer {
 
     const applicationToFilter = (r: ExpandedApplicationRef): string => {
       return `{
-        and: {
-          chainId: { equalTo: ${r.chainId} }
+        _and: {
+          chainId: { _eq: ${r.chainId} }
           roundId: {
-            equalTo: "${r.roundId}"
+            _eq: "${r.roundId}"
           }
-          id: { equalTo: "${r.id}" }
+          id: { _eq: "${r.id}" }
         }
       }`;
     };
@@ -525,11 +524,11 @@ export class DataLayer {
     const query = gql`
       query Application {
         applications(
-          first: 300
-          filter: {
-            and: [
-              { status: { equalTo: APPROVED } },
-              { or: [ ${filters} ] }
+          limit: 300
+          where: {
+            _and: [
+              { status: { _eq: APPROVED } },
+              { _or: [ ${filters} ] }
             ]
           }
         ) {
@@ -552,10 +551,9 @@ export class DataLayer {
             tags
           }
           metadata
-          project: canonicalProject {
+          project {
             tags
             id
-            metadata
             anchorAddress
           }
         }
@@ -568,6 +566,7 @@ export class DataLayer {
     );
 
     return response.applications.map((a: Application) => {
+      const projectMetadata = a.metadata.application.project;
       return {
         applicationRef: `${a.chainId}:${a.roundId}:${a.id}`,
         chainId: parseInt(a.chainId),
@@ -575,11 +574,11 @@ export class DataLayer {
         roundId: a.roundId,
         roundName: a.round.roundMetadata?.name,
         projectId: a.project.id,
-        name: a.project?.metadata?.title,
-        websiteUrl: a.project?.metadata?.website,
-        logoImageCid: a.project?.metadata?.logoImg ?? null,
-        bannerImageCid: a.project?.metadata?.bannerImg ?? null,
-        summaryText: a.project?.metadata?.description,
+        name: projectMetadata?.title,
+        websiteUrl: projectMetadata?.website,
+        logoImageCid: projectMetadata?.logoImg ?? null,
+        bannerImageCid: projectMetadata?.bannerImg ?? null,
+        summaryText: projectMetadata?.description,
         payoutWalletAddress: a.metadata?.application?.recipient,
         createdAtBlock: 123,
         contributorCount: a.uniqueDonorsCount,
@@ -684,7 +683,7 @@ export class DataLayer {
     const response: { rounds: RoundForManager[] } = await request(
       this.gsIndexerEndpoint,
       getRoundsForManagerByAddress,
-      { chainIds, address },
+      { chainIds, address: getAddress(address) },
     );
 
     return response.rounds;
@@ -728,18 +727,20 @@ export class DataLayer {
           anchorAddress: application.anchorAddress,
           recipient: application.metadata.application.recipient,
           projectMetadata: {
-            title: application.project.metadata.title,
-            description: application.project.metadata.description,
-            website: application.project.metadata.website,
-            logoImg: application.project.metadata.logoImg,
-            bannerImg: application.project.metadata.bannerImg,
-            projectTwitter: application.project.metadata.projectTwitter,
-            userGithub: application.project.metadata.userGithub,
-            projectGithub: application.project.metadata.projectGithub,
-            credentials: application.project.metadata.credentials,
-            owners: application.project.metadata.owners,
-            createdAt: application.project.metadata.createdAt,
-            lastUpdated: application.project.metadata.lastUpdated,
+            title: application.metadata.application.project.title,
+            description: application.metadata.application.project.description,
+            website: application.metadata.application.project.website,
+            logoImg: application.metadata.application.project.logoImg,
+            bannerImg: application.metadata.application.project.bannerImg,
+            projectTwitter:
+              application.metadata.application.project.projectTwitter,
+            userGithub: application.metadata.application.project.userGithub,
+            projectGithub:
+              application.metadata.application.project.projectGithub,
+            credentials: application.metadata.application.project.credentials,
+            owners: application.metadata.application.project.owners,
+            createdAt: application.metadata.application.project.createdAt,
+            lastUpdated: application.metadata.application.project.lastUpdated,
           },
           grantApplicationFormAnswers:
             application.metadata.application.answers.map((answer) => ({
@@ -782,10 +783,31 @@ export class DataLayer {
     chainId: number;
     roundId: string;
   }): Promise<ProjectApplicationForManager[]> {
-    const response: { applications: ProjectApplicationForManager[] } =
-      await request(this.gsIndexerEndpoint, getApplicationsForManager, args);
+    const PAGE_SIZE = 200; // You can adjust this value based on your needs
+    let allApplications: ProjectApplicationForManager[] = [];
+    let offset = 0;
+    let hasMore = true;
 
-    return response.applications;
+    while (hasMore) {
+      const response: { applications: ProjectApplicationForManager[] } =
+        await request(this.gsIndexerEndpoint, getApplicationsForManager, {
+          ...args,
+          limit: PAGE_SIZE,
+          offset,
+        });
+
+      const applications = response.applications;
+      allApplications = [...allApplications, ...applications];
+
+      // If we got fewer results than the page size, we've reached the end
+      if (applications.length < PAGE_SIZE) {
+        hasMore = false;
+      } else {
+        offset += PAGE_SIZE;
+      }
+    }
+
+    return allApplications;
   }
 
   async getDonationsByDonorAddress(args: {
@@ -797,24 +819,32 @@ export class DataLayer {
       this.gsIndexerEndpoint,
       getDonationsByDonorAddress,
       {
-        address: address.toLowerCase(),
+        address: getAddress(address),
         chainIds,
       },
     );
 
-    return response.donations.filter((donation) => {
-      if (donation.round.strategyName !== "allov2.DirectAllocationStrategy") {
-        return (
-          donation.application !== null &&
-          donation.application?.project !== null
-        );
-      } else {
-        return (
-          // DirectAllocationStrategy donations are not linked to applications
-          donation.application === null
-        );
-      }
-    });
+    // Filter out invalid donations and map the project metadata from application metadata (solution for canonical projects in indexer v2)
+    const validDonations = response.donations.reduce<Contribution[]>(
+      (validDonations, donation) => {
+        if (donation.round.strategyName !== "allov2.DirectAllocationStrategy") {
+          if (donation.application?.project) {
+            donation.application.project.metadata =
+              donation.application.metadata.application.project;
+
+            validDonations.push(donation);
+          }
+        } else {
+          if (donation.application === null) {
+            validDonations.push(donation);
+          }
+        }
+        return validDonations;
+      },
+      [],
+    );
+
+    return validDonations;
   }
 
   async getPayoutsByChainIdRoundIdProjectId(args: {
@@ -822,13 +852,13 @@ export class DataLayer {
     roundId: string;
     projectId: string;
   }): Promise<RoundApplicationPayout> {
-    const response: { round: RoundApplicationPayout } = await request(
+    const response: { rounds: RoundApplicationPayout[] } = await request(
       this.gsIndexerEndpoint,
       getPayoutsByChainIdRoundIdProjectId,
       args,
     );
 
-    return response.round;
+    return response.rounds[0];
   }
 
   /**
@@ -955,13 +985,13 @@ export class DataLayer {
     query?: string | undefined;
   }): Promise<{ rounds: RoundGetRound[] }> {
     return await request(this.gsIndexerEndpoint, getRoundsQuery, {
-      orderBy: orderBy ?? "NATURAL",
-      chainIds,
       first,
+      orderBy: orderByMapping[orderBy ?? "NATURAL"],
       filter: whitelistedPrograms
         ? {
             ...filter,
-            projectId: { in: whitelistedPrograms },
+            projectId: { _in: whitelistedPrograms },
+            chainId: { _in: chainIds },
           }
         : filter,
     });

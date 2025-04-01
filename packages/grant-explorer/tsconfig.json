@@ -19,5 +19,5 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "incremental": true
   },
-  "include": ["src"]
+  "include": ["src", "../common/src/components/CopyToClipboard.tsx", "../common/src/components/truncate.ts"]
 }

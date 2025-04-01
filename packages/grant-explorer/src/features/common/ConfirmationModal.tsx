@@ -13,6 +13,7 @@ interface ModalProps {
   children?: ReactNode;
   modalStyle?: "wide" | "normal";
   disabled?: boolean;
+  totalDonationAcrossChainsInUSD?: number;
 }
 
 export default function ConfirmationModal({

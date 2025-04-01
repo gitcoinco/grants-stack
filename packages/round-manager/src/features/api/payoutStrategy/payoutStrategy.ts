@@ -62,29 +62,28 @@ export const useGroupProjectsByPaymentStatus = (
 
   const allProjects: MatchingStatsData[] = useMemo(
     () =>
-      round.matchingDistribution?.matchingDistribution.map(
-        (matchingStatsData) => {
-          return {
-            projectName: matchingStatsData.projectName,
-            contributionsCount: matchingStatsData.contributionsCount,
-            matchPoolPercentage: matchingStatsData.matchPoolPercentage,
-            projectId: matchingStatsData.projectId,
-            applicationId: matchingStatsData.applicationId,
-            anchorAddress: applications?.find(
-              (application) =>
-                application.projectId === matchingStatsData.projectId
-            )?.anchorAddress,
-            matchAmountInToken: BigNumber.from(
-              matchingStatsData.matchAmountInToken
-            ),
-            originalMatchAmountInToken: BigNumber.from(
-              matchingStatsData.originalMatchAmountInToken
-            ),
-            projectPayoutAddress: matchingStatsData.projectPayoutAddress,
-          };
-        }
-      ) ?? [],
-    [round.matchingDistribution?.matchingDistribution, applications]
+      round.matchingDistribution?.map((matchingStatsData) => {
+        const anchorAddress = applications?.find(
+          (application) => application.projectId === matchingStatsData.projectId
+        )?.anchorAddress;
+
+        return {
+          projectName: matchingStatsData.projectName,
+          contributionsCount: matchingStatsData.contributionsCount,
+          matchPoolPercentage: matchingStatsData.matchPoolPercentage,
+          projectId: matchingStatsData.projectId,
+          applicationId: matchingStatsData.applicationId,
+          anchorAddress,
+          matchAmountInToken: BigNumber.from(
+            matchingStatsData.matchAmountInToken
+          ),
+          originalMatchAmountInToken: BigNumber.from(
+            matchingStatsData.originalMatchAmountInToken
+          ),
+          projectPayoutAddress: matchingStatsData.projectPayoutAddress,
+        };
+      }) ?? [],
+    [round.matchingDistribution, applications]
   );
 
   useEffect(() => {
@@ -103,11 +102,13 @@ export const useGroupProjectsByPaymentStatus = (
         let tmpProject = project;
 
         if (projectStatus === "paid") {
+          const hash = paidProjects?.find(
+            (p) => p.projectId === project.projectId
+          )?.distributionTransaction;
+
           tmpProject = {
             ...project,
-            hash:
-              paidProjects?.find((p) => p.projectId === project.projectId)
-                ?.distributionTransaction || undefined,
+            hash: hash || undefined,
             status: "",
           };
         }
@@ -118,7 +119,7 @@ export const useGroupProjectsByPaymentStatus = (
     }
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allProjects]);
+  }, [allProjects, paidProjects, paidProjectIds]);
+
   return groupedProjects;
 };

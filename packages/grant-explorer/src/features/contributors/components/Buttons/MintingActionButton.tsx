@@ -62,7 +62,7 @@ export function MintingActionButton({
   const { attestationChainId: chainId, attestationUid = "" } =
     attestation ?? {};
 
-  const attestationLink = `https://attestation.gitcoin.co/attestation/${attestationUid}`;
+  const attestationLink = `${process.env.REACT_APP_ATTESTATION_SERVER}/attestation/${attestationUid}`;
 
   return isMinted ? (
     <>

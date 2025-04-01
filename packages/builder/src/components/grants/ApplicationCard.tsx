@@ -250,7 +250,7 @@ export default function ApplicationCard({
               className="mt-4 mr-2 mb-2 w-full"
               fontWeight="normal"
             >
-              View Application
+              View Feedback
             </Button>
           </Link>
         </Box>

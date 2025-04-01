@@ -5,7 +5,6 @@ import { formatDateWithOrdinal } from "common";
 import { useProject } from "../hooks/useProject";
 import { beforeEach, expect, Mock } from "vitest";
 import { DataLayer, v2Project } from "data-layer";
-import { mock } from "@wagmi/core";
 
 vi.mock("../../common/Navbar");
 vi.mock("../../common/Auth");
@@ -97,14 +96,13 @@ const expectedProject: Project = {
     },
     metadataCid: "0xdeadbeef",
     name: "Project test",
-    nodeId: "0xdeadbeef",
     projectNumber: null,
     registryAddress: "",
     tags: [],
     createdByAddress: "",
     createdAtBlock: "",
     updatedAtBlock: "",
-    roles: [],
+    projectRoles: [],
     projectType: "CANONICAL",
   },
 };

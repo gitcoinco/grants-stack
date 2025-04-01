@@ -23,7 +23,7 @@ export function useAlloIndexerClient(): Client {
     }
     return new Client(
       fetch.bind(window),
-      process.env.REACT_APP_INDEXER_V2_API_URL ?? "",
+      process.env.REACT_APP_INDEXER_V1_API_URL ?? "",
       chainId
     );
   }, [chainId]);

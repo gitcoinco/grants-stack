@@ -44,7 +44,10 @@ export function CartWithProjects({
     Number(chainId)
   ).filter((p) => p.canVote);
 
-  const { data, error, loading } = useTokenPrice(payoutToken.redstoneTokenId);
+  const { data, error, loading } = useTokenPrice(
+    payoutToken.redstoneTokenId,
+    payoutToken.priceSource
+  );
   const payoutTokenPrice = !loading && !error ? Number(data) : null;
 
   // get number of projects in cartByRound
@@ -72,7 +75,7 @@ export function CartWithProjects({
             src={stringToBlobUrl(chain.icon)}
             alt={"Chain Logo"}
           />
-          <h2 className="mt-3 text-2xl font-semibold">{chain.name}</h2>
+          <h2 className="mt-3 text-2xl font-semibold">{chain.prettyName}</h2>
           <h2 className="mt-3 text-2xl font-semibold">({projectCount})</h2>
         </div>
         <div className="flex justify-center sm:justify-end flex-row gap-2 basis-[72%]">
@@ -123,8 +126,9 @@ export function CartWithProjects({
             <ExclamationCircleIcon className="w-6 h-6 text-left" />
             <span className="p-2 pr-4 flex-1">
               You do not have enough funds in your wallet to complete this
-              donation. <br/>Please bridge funds to this network in order to submit
-              your donation.
+              donation. <br />
+              Please bridge funds to this network in order to submit your
+              donation.
             </span>
             <div
               onClick={() => handleSwap()}

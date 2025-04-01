@@ -32,7 +32,7 @@ export async function roundApplicationsToCSV(
   litContract: string,
   approvedOnly?: boolean
 ) {
-  const remoteUrl = `${process.env.REACT_APP_INDEXER_V2_API_URL}/data/${chainId}/rounds/${roundId}/applications.json`;
+  const remoteUrl = `${process.env.REACT_APP_INDEXER_V1_API_URL}/data/${chainId}/rounds/${roundId}/applications.json`;
 
   // Fetch the CSV data
   const response = await fetch(remoteUrl);
@@ -65,15 +65,13 @@ export async function roundApplicationsToCSV(
     "website",
     "projectTwitter",
     "projectGithub",
-    "userGithub"
+    "userGithub",
   ]);
-
 
   for (const application of applications) {
     const answers =
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       application.metadata?.application.answers.flatMap((answer: any) => {
-
         columns.add(answer.question);
 
         if (answer.answer) {
@@ -128,13 +126,17 @@ export async function roundApplicationsToCSV(
   const columnsArray = Array.from(columns) as string[];
 
   const csv = (await new Promise((resolve, reject) => {
-    stringifyCsv(decryptedData, { header: true , columns: columnsArray}, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
+    stringifyCsv(
+      decryptedData,
+      { header: true, columns: columnsArray },
+      (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
       }
-    });
+    );
   })) as string;
   return csv;
 }

@@ -99,7 +99,7 @@ export function ProjectInCart(
             className="w-[100px] sm:w-[80px] text-center border border-black"
           />
           <p className="m-auto">{props.selectedPayoutToken.code}</p>
-          {props.payoutTokenPrice && (
+          {props.payoutTokenPrice > 0 && (
             <div className="m-auto px-2 min-w-max flex flex-col">
               <span className="text-sm text-grey-400 ">
                 ${" "}

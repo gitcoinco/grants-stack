@@ -25,6 +25,7 @@ export const fetchChallengeCredential = async (
       payload: {
         address: payload.address,
         type: payload.type,
+        signatureType: "EIP712",
       },
     }
   );
@@ -93,6 +94,12 @@ export const fetchVerifiableCredential = async (
 
   if (response.data.length === 0) {
     throw new VerificationError("No credential found");
+  }
+
+  if (response.data[0].credential.issuer.length === 0) {
+    throw new VerificationError(
+      "Error verifying ownership - ensure you are a public member of the org"
+    );
   }
 
   // return everything that was used to create the credential (along with the credential)

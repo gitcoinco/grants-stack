@@ -82,7 +82,7 @@ function useRevisedMatchingFunds(
       round.matchingDistribution !== null &&
       round.readyForPayoutTransaction !== null
     ) {
-      return round.matchingDistribution.matchingDistribution.map((m) => {
+      return round.matchingDistribution.map((m) => {
         return {
           applicationId: m.applicationId,
           payoutAddress: m.projectPayoutAddress,
@@ -441,7 +441,7 @@ function ViewRoundResults({
               <div className="flex flex-col mt-4 w-min">
                 <a
                   role={"link"}
-                  href={`${process.env.REACT_APP_INDEXER_V2_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/vote_coefficients`}
+                  href={`${process.env.REACT_APP_INDEXER_V1_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/vote_coefficients`}
                   className="bg-gray-100 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded flex items-center gap-2"
                 >
                   <DownloadIcon className="h-5 w-5" />
@@ -537,9 +537,9 @@ function ViewRoundResults({
                                   - System default quadratic funding calculation
                                 </span>
                                 <span className="text-sm mt-1 ml-2 text-gray-400">
-                                  Since you default quadratic funding calculation
-                                  at setup, select this option. Please
-                                  use this{" "}
+                                  Since you default quadratic funding
+                                  calculation at setup, select this option.
+                                  Please use this{" "}
                                   <a
                                     className="underline"
                                     target="_blank"
@@ -677,7 +677,7 @@ function ViewRoundResults({
             <div className="pt-6">
               <a
                 className="flex items-center mb-4"
-                href={`${process.env.REACT_APP_INDEXER_V2_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/votes`}
+                href={`${process.env.REACT_APP_INDEXER_V1_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/votes`}
               >
                 <span className="w-40">Raw Votes</span>
                 <DownloadIcon className="h-5 w-5" />
@@ -711,14 +711,14 @@ function ViewRoundResults({
               </button>
               <a
                 className="flex items-center mb-4"
-                href={`${process.env.REACT_APP_INDEXER_V2_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/round`}
+                href={`${process.env.REACT_APP_INDEXER_V1_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/round`}
               >
                 <span className="w-40">Round</span>
                 <DownloadIcon className="h-5 w-5" />
               </a>
               <a
                 className="flex items-center mb-4"
-                href={`${process.env.REACT_APP_INDEXER_V2_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/prices`}
+                href={`${process.env.REACT_APP_INDEXER_V1_API_URL}/api/v1/chains/${chain?.id}/rounds/${roundId}/exports/prices`}
               >
                 <span className="w-40">Prices</span>
                 <DownloadIcon className="h-5 w-5" />

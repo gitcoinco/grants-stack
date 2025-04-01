@@ -42,6 +42,8 @@ const config = getConfig();
 function getMatchingEstimates(
   params: UseMatchingEstimatesParams
 ): Promise<MatchingEstimateResult[]> {
+  console.log("getMatchingEstimates", params);
+  console.log("config", config);
   if (config.explorer.disableEstimates) {
     throw new Error("matching estimate temporarily disabled");
   }
@@ -58,7 +60,7 @@ function getMatchingEstimates(
   }));
 
   return fetch(
-    `${process.env.REACT_APP_INDEXER_V2_API_URL}/api/v1/chains/${params.chainId}/rounds/${params.roundId}/estimate`,
+    `${process.env.REACT_APP_INDEXER_V1_API_URL}/api/v1/chains/${params.chainId}/rounds/${params.roundId}/estimate`,
     {
       headers: {
         Accept: "application/json",
@@ -75,6 +77,7 @@ function getMatchingEstimates(
  * For a single round, pass in an array with a single element
  */
 export function useMatchingEstimates(params: UseMatchingEstimatesParams[]) {
+  console.log("params", params);
   const shouldFetch = params.every((param) => param.roundId !== zeroAddress);
   return useSWRImmutable(shouldFetch ? params : null, (params) =>
     Promise.all(params.map((params) => getMatchingEstimates(params)))

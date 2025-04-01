@@ -19,8 +19,8 @@ import { PlusIcon } from "@heroicons/react/solid";
 
 const sortDataByRole = (data: AddressAndRole[]): AddressAndRole[] => {
   return data.sort((a, b) => {
-    if (a.role === "ADMIN") return -1;
-    if (b.role === "ADMIN") return 1;
+    if (a.role === "admin") return -1;
+    if (b.role === "admin") return 1;
     return a.role.localeCompare(b.role);
   });
 };
@@ -36,8 +36,8 @@ const filterRoles = (data: AddressAndRole[]): AddressAndRole[] => {
       // If not included, simply add the current item
       acc.push(current);
     } else if (
-      acc[existingIndex].role !== "ADMIN" &&
-      current.role === "ADMIN"
+      acc[existingIndex].role !== "admin" &&
+      current.role === "admin"
     ) {
       // If the existing item is not an Admin but the current is, replace it
       acc[existingIndex] = current;
@@ -75,7 +75,7 @@ export default function ViewManageTeam(props: {
   const isAdmin = props.round?.roles?.some(
     (role) =>
       role.address.toLowerCase() === props.userAddress.toLowerCase() &&
-      role.role === "ADMIN"
+      role.role === "admin"
   );
 
   // Show Admin role first, then Operator
@@ -89,7 +89,6 @@ export default function ViewManageTeam(props: {
   }, [sortedRoles]);
 
   const isTeamMembersLoading = indexingStatus == ProgressStatus.IN_PROGRESS;
-
 
   const progressSteps: ProgressStep[] = [
     {
@@ -257,9 +256,9 @@ export default function ViewManageTeam(props: {
               <tr key={index}>
                 <AddressRow address={item.address} />
                 <td className="w-1/4 px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                  {item.role === "ADMIN" ? "Admin" : "Operator"}
+                  {item.role === "admin" ? "Admin" : "Operator"}
                 </td>
-                {editMode && item.role !== "ADMIN" && (
+                {editMode && item.role !== "admin" && (
                   <td>
                     <XIcon
                       className="text-red-100 w-6 cursor-pointer"

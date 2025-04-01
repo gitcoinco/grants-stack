@@ -19,7 +19,7 @@ export function ViewAttestationImage({
 
   return (
     <ImageWithLoading
-      sizeClass="w-full max-w-[400px] aspect-square relative"
+      sizeClass="w-full max-w-[700px] relative"
       src={imageSrc}
       isLoading={isLoading}
     />

@@ -52,6 +52,9 @@ import {
   isDirectRound,
   ApplicationOpenDateRange,
 } from "./ViewRoundPage";
+import CopyToClipboard from "common/src/components/CopyToClipboard";
+import { ReactComponent as EthereumIcon } from "common/src/assets/ethereum-icon.svg";
+import { useEnsName } from "wagmi";
 
 import {
   CalendarIcon,
@@ -71,11 +74,14 @@ import { useAccount } from "wagmi";
 import { ViewGrantsExplorerButton } from "../common/ViewGrantsExplorerButton";
 import { useDataLayer } from "data-layer";
 import { convertApplications } from "../api/utils";
+import { getAddress } from "viem";
 
 type Status = "done" | "current" | "rejected" | "approved" | undefined;
 
-export const IAM_SERVER =
-  "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC";
+export const IAM_SERVER = [
+  "did:key:z6MkghvGHLobLEdj1bgRLhS4LPGJAvbMA1tn2zcRyqmYU5LC",
+  "did:ethr:0xd6f8d6ca86aa01e551a311d670a0d1bd8577e5fb",
+];
 
 const verifier = new PassportVerifierWithExpiration();
 
@@ -132,6 +138,9 @@ export default function ViewApplicationPage() {
     contractUpdatingStatus == ProgressStatus.IN_PROGRESS ||
     indexingStatus == ProgressStatus.IN_PROGRESS;
 
+  const recipient = application?.recipient;
+  // @ts-expect-error Temp until viem (could also cast recipient as Address or update the type)
+  const ens = useEnsName({ address: recipient, enabled: Boolean(recipient) });
   const progressSteps: ProgressStep[] = [
     {
       name: "Updating",
@@ -190,6 +199,7 @@ export default function ViewApplicationPage() {
   useEffect(() => {
     const applicationHasLoadedWithProjectOwners =
       !isLoading && application?.project?.owners;
+
     if (applicationHasLoadedWithProjectOwners) {
       const credentials: ProjectCredentials =
         application?.project?.credentials ?? {};
@@ -197,10 +207,12 @@ export default function ViewApplicationPage() {
       if (!credentials) {
         return;
       }
+
       const verify = async () => {
         const newVerifiedProviders: { [key: string]: VerifiedCredentialState } =
-          { ...verifiedProviders };
-        for (const provider of Object.keys(verifiedProviders)) {
+          {};
+        // Use Object.keys on a static object instead of verifiedProviders
+        for (const provider of Object.keys(credentials)) {
           const verifiableCredential = credentials[provider];
           if (verifiableCredential) {
             newVerifiedProviders[provider] = await isVerified(
@@ -211,12 +223,12 @@ export default function ViewApplicationPage() {
             );
           }
         }
-
         setVerifiedProviders(newVerifiedProviders);
+        console.log("newVerifiedProviders", newVerifiedProviders);
       };
       verify();
     }
-  }, [application, application?.project?.owners, isLoading, verifiedProviders]);
+  }, [application, application?.project?.owners, isLoading]); // Remove verifiedProviders
 
   const { round } = useRoundById(roundChainId!, roundId);
   const allo = useAllo();
@@ -314,8 +326,9 @@ export default function ViewApplicationPage() {
         return;
       }
 
+      console.log("round", round);
       if (round && address) {
-        setHasAccess(!!round.operatorWallets?.includes(address.toLowerCase()));
+        setHasAccess(!!round.operatorWallets?.includes(getAddress(address)));
       }
     }
   }, [address, application, isLoading, round, debugModeEnabled]);
@@ -799,6 +812,16 @@ export default function ViewApplicationPage() {
                         : "-"}
                     </span>
                   </span>
+                  {/* Application wallet address */}
+                  <span
+                    className="flex flex-row items-center"
+                    data-testid="application-recipient"
+                  >
+                    <EthereumIcon className="h-4 w-4 mr-2 text-grey-400" />
+                    <span className="text-sm text-grey-400">
+                      <CopyToClipboard text={ens.data || recipient} />
+                    </span>
+                  </span>
                 </div>
                 <hr className="my-6" />
                 {/* Description */}
@@ -927,7 +950,9 @@ async function isVerified(
   application: GrantApplication | undefined
 ) {
   const vcHasValidProof = await verifier.verifyCredential(verifiableCredential);
-  const vcIssuedByValidIAMServer = verifiableCredential.issuer === IAM_SERVER;
+  const vcIssuedByValidIAMServer = IAM_SERVER.includes(
+    verifiableCredential.issuer
+  );
   const providerMatchesProject = vcProviderMatchesProject(
     provider,
     verifiableCredential,

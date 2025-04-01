@@ -26,7 +26,6 @@ describe("listPrograms", () => {
   //     createdByAddress: expectedProgram.operatorWallets[0],
   //   };
   //   const expectedPrograms: Program[] = [expectedProgram];
-
   //   const actualPrograms = await listPrograms("0x0", 1, {
   //     getProgramsByUser: jest.fn().mockResolvedValue({
   //       programs: [
@@ -48,7 +47,6 @@ describe("listPrograms", () => {
   //       ],
   //     }),
   //   } as unknown as DataLayer);
-
   //   expect(actualPrograms).toEqual(expectedPrograms);
   // });
 });
@@ -70,7 +68,7 @@ describe("getProgramById", () => {
           roles: [
             {
               address: expectedProgram.operatorWallets[0],
-              role: "OWNER",
+              role: "owner",
               createdAtBlock: "0",
             },
           ],

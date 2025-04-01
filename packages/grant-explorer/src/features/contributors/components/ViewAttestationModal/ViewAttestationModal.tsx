@@ -31,7 +31,7 @@ export function ViewAttestationModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="flex flex-col items-center gap-6 mx-auto w-full h-full overflow-x-auto max-w-full md:w-[625px]">
+      <div className="flex flex-col items-center gap-6 mx-auto w-full h-full overflow-x-auto max-w-full md:w-[725px]">
         <h2 className="text-black text-3xl sm:text-4xl md:text-5xl/[52px] text-center font-medium font-sans  text-[clamp(1.5rem, 2vw + 1rem, 2rem)]">
           {title}
         </h2>
@@ -40,7 +40,7 @@ export function ViewAttestationModal({
           onClick={() => window.open(transactionUrl, "_blank")}
         />
         <ImageWithLoading
-          sizeClass="w-full max-w-[400px] aspect-square relative"
+          sizeClass={`max-w-[700px] relative`}
           src={imageSrc}
           isLoading={isLoading}
         />

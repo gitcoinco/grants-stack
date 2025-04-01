@@ -11,7 +11,7 @@ export function RoundAccordionContribution({
 }) {
   const { chainId, roundId, applicationId, amount } = contribution;
 
-  const projectName = contribution.application.project.name;
+  const projectName = contribution.application?.project.name;
   const amountInUsd = contribution.amountInUsd.toFixed(2);
 
   const linkToRound = `/round/${chainId}/${roundId.toString().toLowerCase()}/${applicationId}`;

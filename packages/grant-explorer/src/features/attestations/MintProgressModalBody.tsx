@@ -40,7 +40,7 @@ const MintProgressModalBody = ({
   isOnAction: boolean;
 }>) => (
   <div
-    className={`max-w-[710px] p-6 flex flex-col justify-center text-black ${!isOnAction ? "sm:p-10 items-center text-center gap-2 sm:gap-6" : "gap-8"}`}
+    className={`max-w-[710px] p-4 flex flex-col justify-center text-black ${!isOnAction ? "sm:p-8 items-center text-center gap-2 sm:gap-6" : "gap-8"}`}
   >
     <div className={`flex flex-col gap-2 ${isOnAction ? "" : "sm:gap-6"}`}>
       <div
@@ -55,7 +55,7 @@ const MintProgressModalBody = ({
       </div>
     </div>
     <div className="flex flex-col justify-center items-center w-full">
-      <div className="min-w-[288px] sm:w-[405px] w-full">{children}</div>
+      <div className="min-w-[288px] sm:w-[600px] w-full">{children}</div>
     </div>
   </div>
 );
@@ -165,7 +165,7 @@ export function MintProgressModalBodyHistory(
           impactImageCid={impactImageCid as string}
           attestationLink={attestationLink ?? ""}
           isShareButtonsAbove={false}
-          imageSize="size-[288px] sm:size-[400px]"
+          // imageSize="size-[288px] sm:size-[400px]"
         />
       ) : (
         <MintingProcessContent
