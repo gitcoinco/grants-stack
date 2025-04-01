@@ -783,10 +783,31 @@ export class DataLayer {
     chainId: number;
     roundId: string;
   }): Promise<ProjectApplicationForManager[]> {
-    const response: { applications: ProjectApplicationForManager[] } =
-      await request(this.gsIndexerEndpoint, getApplicationsForManager, args);
+    const PAGE_SIZE = 200; // You can adjust this value based on your needs
+    let allApplications: ProjectApplicationForManager[] = [];
+    let offset = 0;
+    let hasMore = true;
 
-    return response.applications;
+    while (hasMore) {
+      const response: { applications: ProjectApplicationForManager[] } =
+        await request(this.gsIndexerEndpoint, getApplicationsForManager, {
+          ...args,
+          limit: PAGE_SIZE,
+          offset,
+        });
+
+      const applications = response.applications;
+      allApplications = [...allApplications, ...applications];
+
+      // If we got fewer results than the page size, we've reached the end
+      if (applications.length < PAGE_SIZE) {
+        hasMore = false;
+      } else {
+        offset += PAGE_SIZE;
+      }
+    }
+
+    return allApplications;
   }
 
   async getDonationsByDonorAddress(args: {
