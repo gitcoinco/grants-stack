@@ -244,9 +244,16 @@ export const getApprovedApplicationsByProjectIds = gql`
 `;
 
 export const getApplicationsForManager = gql`
-  query getApplicationsForManager($chainId: Int!, $roundId: String!) {
+  query getApplicationsForManager(
+    $chainId: Int!
+    $roundId: String!
+    $limit: Int!
+    $offset: Int!
+  ) {
     applications(
       where: { roundId: { _eq: $roundId }, chainId: { _eq: $chainId } }
+      limit: $limit
+      offset: $offset
     ) {
       id
       projectId
