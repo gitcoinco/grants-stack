@@ -98,7 +98,7 @@ export function DonateToGitcoinProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(true);
   const [selectedChainId, setSelectedChainId] = useState<number | null>(null);
   const [selectedToken, setSelectedToken] = useState("");
   const [amount, setAmount] = useState("0.00");
