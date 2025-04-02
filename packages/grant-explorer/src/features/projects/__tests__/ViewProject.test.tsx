@@ -103,7 +103,7 @@ const expectedProject: Project = {
     createdAtBlock: "",
     updatedAtBlock: "",
     projectRoles: [],
-    projectType: "CANONICAL",
+    projectType: "canonical",
   },
 };
 

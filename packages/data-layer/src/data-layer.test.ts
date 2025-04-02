@@ -46,7 +46,7 @@ const mockProjects: v2Project[] = [
         createdAtBlock: "5146499",
       },
     ],
-    projectType: "CANONICAL",
+    projectType: "canonical",
     linkedChains: [],
   },
 ];

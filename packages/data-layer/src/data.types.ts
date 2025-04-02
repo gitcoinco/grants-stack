@@ -32,7 +32,7 @@ export type ApplicationStatus =
   | "CANCELLED"
   | "IN_REVIEW";
 
-export type ProjectType = "CANONICAL" | "LINKED";
+export type ProjectType = "canonical" | "linked";
 
 export type GrantApplicationFormAnswer = {
   questionId: number;
@@ -208,7 +208,7 @@ export type v2Project = {
   nonce?: bigint;
   anchorAddress?: string;
   /**
-   * The type of the project - `CANONICAL` or `LINKED`
+   * The type of the project - `canonical` or `linked`
    */
   projectType: ProjectType;
   /**

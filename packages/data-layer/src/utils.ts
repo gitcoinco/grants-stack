@@ -12,11 +12,11 @@ export const mergeCanonicalAndLinkedProjects = (
   projects: v2Project[],
 ): v2Project[] => {
   const canonicalProjects = projects.filter(
-    (project) => project.projectType === "CANONICAL",
+    (project) => project.projectType === "canonical",
   );
 
   const linkedProjects = projects.filter(
-    (project) => project.projectType === "LINKED",
+    (project) => project.projectType === "linked",
   );
   const allProjects: Record<string, v2Project> = {};
   for (const project of canonicalProjects) {

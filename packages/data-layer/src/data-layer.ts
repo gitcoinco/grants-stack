@@ -59,7 +59,7 @@ import {
   getRoundsForManagerByAddress,
   getDirectDonationsByProjectId,
 } from "./queries";
-import { orderByMapping } from "./utils";
+import { mergeCanonicalAndLinkedProjects, orderByMapping } from "./utils";
 import {
   AttestationService,
   type MintingAttestationIdsData,
@@ -250,10 +250,11 @@ export class DataLayer {
     );
 
     if (response.projects.length === 0) return null;
+    console.log("response.projects", response.projects);
 
-    // const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
+    const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
 
-    return { project: response.projects[0] };
+    return { project: project };
   }
 
   async getProjectAnchorByIdAndChainId({
@@ -316,7 +317,8 @@ export class DataLayer {
       requestVariables,
     );
 
-    return response.projects;
+    const mergedProjects = mergeCanonicalAndLinkedProjects(response.projects);
+    return mergedProjects;
   }
 
   /**
