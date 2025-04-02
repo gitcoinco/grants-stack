@@ -171,7 +171,7 @@ const StakedAmountCard = ({ totalStaked }: { totalStaked: number }) => {
       <div className="inline-flex flex-col justify-start items-start">
         <div className="self-stretch inline-flex justify-start items-center gap-1">
           <div className="justify-start text-text-primary text-sm font-medium font-mono leading-normal">
-            {totalStaked.toFixed(4)}
+            {totalStaked.toFixed(3)}
           </div>
           <div className="justify-start text-text-primary text-sm font-medium font-mono leading-normal">
             GTC
