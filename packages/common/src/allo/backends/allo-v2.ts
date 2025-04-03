@@ -170,7 +170,7 @@ export class AlloV2 implements Allo {
           abi: MRC_ABI,
           functionName: "allocate",
           args: [poolIds, amounts, data],
-          value: nativeTokenAmount,
+          value: nativeTokenAmount + (directAllocation?.amount ?? BigInt(0)),
         },
         this.chainId
       );
