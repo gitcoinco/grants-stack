@@ -250,7 +250,6 @@ export class DataLayer {
     );
 
     if (response.projects.length === 0) return null;
-    console.log("response.projects", response.projects);
 
     const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
 
