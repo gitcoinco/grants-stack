@@ -41,12 +41,14 @@ export function ProjectCard(props: {
 
   const isStakingPeriodStarted = props.showProjectCardFooter;
 
-  const isAlreadyInCart = projects.some(
-    (cartProject) =>
-      cartProject.chainId === Number(props.chainId) &&
-      cartProject.grantApplicationId === project.grantApplicationId &&
-      cartProject.roundId === props.roundId
-  );
+  const isAlreadyInCart =
+    project &&
+    projects.some(
+      (cartProject) =>
+        cartProject.chainId === Number(props.chainId) &&
+        cartProject.grantApplicationId === project.grantApplicationId &&
+        cartProject.roundId === props.roundId
+    );
   if (!project) return null;
   const projectRecipient =
     project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
