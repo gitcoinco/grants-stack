@@ -14,7 +14,7 @@ export const StakingButton = ({
 }) => {
   return (
     <Button
-      className={`text-white max-h-[40px] font-mono whitespace-nowrap text-[14px]/[24px] ${isClaimPeriod ? "bg-[#5C35CC]" : "bg-[#22635A]"}`}
+      className={`text-white text-sm font-medium px-4 py-2 leading-normal rounded-lg inline-flex justify-center items-center gap-2 font-mono ${isClaimPeriod ? "bg-[#5C35CC]" : "bg-[#22635A]"}`}
       onClick={onClick}
     >
       {isClaimPeriod
