@@ -773,8 +773,15 @@ export const getRoundForExplorer = gql`
 `;
 
 export const getDonationsByDonorAddress = gql`
-  query getDonationsByDonorAddress($address: String!, $chainIds: [Int!]!) {
+  query getDonationsByDonorAddress(
+    $address: String!
+    $chainIds: [Int!]!
+    $limit: Int = 200
+    $offset: Int = 0
+  ) {
     donations(
+      limit: $limit
+      offset: $offset
       where: { chainId: { _in: $chainIds }, donorAddress: { _eq: $address } }
     ) {
       id
