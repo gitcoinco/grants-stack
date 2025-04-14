@@ -35,6 +35,7 @@ import {
 } from "./components";
 import { useGetApplicationStakes } from "./hooks/useGetApplicationStakes";
 import { useIsStakable } from "./components/StakingBannerAndModal/hooks/useIsStakable";
+import { ActivityList } from "../KarmaGrant/ActivityList";
 export default function ViewProjectDetails() {
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -93,7 +94,7 @@ export default function ViewProjectDetails() {
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
 
-  const { grants, impacts } = useGap(
+  const { grants, impacts, updates } = useGap(
     projectToRender?.projectRegistryId as string
   );
   const { stats } = useOSO(
@@ -198,6 +199,7 @@ export default function ViewProjectDetails() {
                 grants.length > 0 && impacts.length === 0
               }
             />
+            <ActivityList activities={updates} />
             <ImpactList
               impacts={impacts}
               displayKarmaAttribution={impacts.length > 0}
