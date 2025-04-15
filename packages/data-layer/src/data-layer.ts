@@ -59,7 +59,7 @@ import {
   getRoundsForManagerByAddress,
   getDirectDonationsByProjectId,
 } from "./queries";
-import { orderByMapping } from "./utils";
+import { mergeCanonicalAndLinkedProjects, orderByMapping } from "./utils";
 import {
   AttestationService,
   type MintingAttestationIdsData,
@@ -251,9 +251,9 @@ export class DataLayer {
 
     if (response.projects.length === 0) return null;
 
-    // const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
+    const project = mergeCanonicalAndLinkedProjects(response.projects)[0];
 
-    return { project: response.projects[0] };
+    return { project: project };
   }
 
   async getProjectAnchorByIdAndChainId({
@@ -316,7 +316,8 @@ export class DataLayer {
       requestVariables,
     );
 
-    return response.projects;
+    const mergedProjects = mergeCanonicalAndLinkedProjects(response.projects);
+    return mergedProjects;
   }
 
   /**
@@ -815,17 +816,30 @@ export class DataLayer {
     chainIds: number[];
   }): Promise<Contribution[]> {
     const { address, chainIds } = args;
-    const response: { donations: Contribution[] } = await request(
-      this.gsIndexerEndpoint,
-      getDonationsByDonorAddress,
-      {
-        address: getAddress(address),
-        chainIds,
-      },
-    );
+    let offset = 0;
+    let hasMore = true;
+    const limit = 200;
+    let donations: Contribution[] = [];
+
+    while (hasMore) {
+      const response: { donations: Contribution[] } = await request(
+        this.gsIndexerEndpoint,
+        getDonationsByDonorAddress,
+        { address: getAddress(address), chainIds, limit, offset },
+      );
+
+      donations = [...donations, ...response.donations];
+
+      // Check if we need to fetch more
+      if (response.donations.length < limit) {
+        hasMore = false;
+      } else {
+        offset += limit;
+      }
+    }
 
     // Filter out invalid donations and map the project metadata from application metadata (solution for canonical projects in indexer v2)
-    const validDonations = response.donations.reduce<Contribution[]>(
+    const validDonations = donations.reduce<Contribution[]>(
       (validDonations, donation) => {
         if (donation.round.strategyName !== "allov2.DirectAllocationStrategy") {
           if (donation.application?.project) {

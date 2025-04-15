@@ -41,12 +41,14 @@ export function ProjectCard(props: {
 
   const isStakingPeriodStarted = props.showProjectCardFooter;
 
-  const isAlreadyInCart = projects.some(
-    (cartProject) =>
-      cartProject.chainId === Number(props.chainId) &&
-      cartProject.grantApplicationId === project.grantApplicationId &&
-      cartProject.roundId === props.roundId
-  );
+  const isAlreadyInCart =
+    project &&
+    projects.some(
+      (cartProject) =>
+        cartProject.chainId === Number(props.chainId) &&
+        cartProject.grantApplicationId === project.grantApplicationId &&
+        cartProject.roundId === props.roundId
+    );
   if (!project) return null;
   const projectRecipient =
     project.recipient.slice(0, 5) + "..." + project.recipient.slice(-4);
@@ -171,7 +173,7 @@ const StakedAmountCard = ({ totalStaked }: { totalStaked: number }) => {
       <div className="inline-flex flex-col justify-start items-start">
         <div className="self-stretch inline-flex justify-start items-center gap-1">
           <div className="justify-start text-text-primary text-sm font-medium font-mono leading-normal">
-            {totalStaked}
+            {totalStaked.toFixed(3)}
           </div>
           <div className="justify-start text-text-primary text-sm font-medium font-mono leading-normal">
             GTC

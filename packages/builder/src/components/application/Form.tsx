@@ -111,7 +111,9 @@ export default function Form({
     const allProjectMetadata = state.grantsMetadata;
     const { chainID } = state.web3;
 
+    console.log("allProjectMetadata", allProjectMetadata);
     const projectIds = Object.keys(allProjectMetadata);
+    console.log("projectIds", projectIds);
 
     return {
       anchors: state.projects.anchor,
@@ -139,6 +141,7 @@ export default function Form({
   let selectedProjectMetadata: Metadata | undefined;
   let createLinkedProject = false;
 
+  // VERIFY LOGIC AFTER POPULATING linkedChains
   if (selectedProjectID !== undefined && selectedProjectID !== "") {
     selectedProjectMetadata =
       props.allProjectMetadata[selectedProjectID]?.metadata;
@@ -302,11 +305,15 @@ export default function Form({
 
   useEffect(() => {
     const currentOptions = props.projectIDs.map((id): ProjectOption => {
+      console.log("currentOptions: id", id);
       const chainId = props.allProjectMetadata[id]!.metadata!.chainId!;
-
+      console.log("currentOptions: chainId", chainId);
       const chain = getChainById(chainId);
+      console.log("currentOptions: chain", chain);
       const chainName = chain.prettyName;
+      console.log("currentOptions: chainName", chainName);
       const { icon } = chain;
+      console.log("currentOptions: icon", icon);
 
       return {
         id,
@@ -319,7 +326,7 @@ export default function Form({
       };
     });
     currentOptions.unshift({ id: undefined, title: "", chainInfo: undefined });
-
+    console.log("currentOptions: currentOptions", currentOptions);
     setProjectOptions(currentOptions);
   }, [props.allProjectMetadata]);
 
@@ -401,6 +408,8 @@ export default function Form({
             ) {
               return null;
             }
+
+            console.log("answers", answers);
 
             if (input.type === "project") {
               return readOnly ? (

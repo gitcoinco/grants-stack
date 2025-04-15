@@ -74,9 +74,73 @@ export interface IGapVerified {
   };
 }
 
+export interface IGapProjectUpdate {
+  id: string;
+  uid: Hex;
+  schemaUID: Hex;
+  refUID: Hex;
+  attester: Hex;
+  recipient: Hex;
+  revoked: boolean;
+  revocationTime: number;
+  createdAt: string;
+  updatedAt: string;
+  chainID: number;
+  type: string;
+  data: {
+    title: string;
+    text: string;
+    startDate?: Date;
+    endDate?: Date;
+    grants?: string[];
+    indicators?: {
+      name: string;
+      indicatorId: string;
+    }[];
+    deliverables?: {
+      name: string;
+      proof: string;
+      description: string;
+    }[];
+    type: "project-update";
+  };
+}
+
+export interface IGapProjectIndicatorData {
+  id: string;
+  name: string;
+  description: string;
+  unitOfMeasure: string;
+  createdAt?: string;
+  updatedAt?: string;
+  programs: {
+    programId: string;
+    chainID: number;
+  }[];
+  datapoints: {
+    value: number | string;
+    proof: string;
+    startDate: string;
+    endDate: string;
+    outputTimestamp?: string;
+  }[];
+  hasData: boolean;
+  isAssociatedWithPrograms: boolean;
+}
+
+export interface IGapGrantData {
+  uid: string;
+  details: {
+    data: {
+      title: string;
+    };
+  };
+}
+
 export function useGap(projectId?: string) {
   const [grants, setGrants] = useState<IGapGrant[]>([]);
   const [impacts, setImpacts] = useState<IGapImpact[]>([]);
+  const [updates, setUpdates] = useState<IGapProjectUpdate[]>([]);
 
   const getGrantsFor = async (projectRegistryId: string) => {
     if (!indexerUrl) throw new Error("GAP Indexer url not set.");
@@ -141,6 +205,25 @@ export function useGap(projectId?: string) {
       setImpacts([]);
     }
   };
+  const getProjectUpdatesFor = async (projectRegistryId: string) => {
+    if (!indexerUrl) throw new Error("GAP Indexer url not set.");
+    try {
+      const items: IGapProjectUpdate[] = await fetch(
+        `${indexerUrl}/grants/external-id/${projectRegistryId}/updates`
+      ).then((res) => res.json());
+
+      if (!Array.isArray(items)) {
+        setUpdates([]);
+        return;
+      }
+
+      setUpdates(items);
+    } catch (e) {
+      console.error(`No updates found for project: ${projectRegistryId}`);
+      console.error(e);
+      setUpdates([]);
+    }
+  };
 
   const { isLoading: isGrantsLoading } = useSWR(
     `${indexerUrl}/grants/external-id/${projectId}`,
@@ -153,6 +236,13 @@ export function useGap(projectId?: string) {
     `${indexerUrl}/grants/external-id/${projectId}/impacts`,
     {
       fetcher: async () => projectId && getImpactsFor(projectId),
+    }
+  );
+
+  const { isLoading: isUpdatesLoading } = useSWR(
+    projectId ? `${indexerUrl}/grants/external-id/${projectId}/updates` : null,
+    {
+      fetcher: async () => projectId && getProjectUpdatesFor(projectId),
     }
   );
 
@@ -178,7 +268,108 @@ export function useGap(projectId?: string) {
     /**
      * Loading state for grants and impacts
      */
-    isGapLoading: isGrantsLoading || isImpactsLoading,
+    isGapLoading: isGrantsLoading || isImpactsLoading || isUpdatesLoading,
+    /**
+     * Updates for a project (loaded from GAP)
+     */
+    updates,
+    /**
+     * Loading state for updates
+     */
+    isUpdatesLoading,
+  };
+}
+
+export function useGapGrants(projectUID?: string) {
+  const [grants, setGrants] = useState<IGapGrantData[]>([]);
+
+  const {
+    data: grantsData,
+    error: grantsError,
+    isLoading: grantsLoading,
+  } = useSWR(
+    projectUID ? `${indexerUrl}/projects/${projectUID}/grants` : null,
+    async () => {
+      if (!indexerUrl || !projectUID) return [];
+
+      try {
+        const response = await fetch(
+          `${indexerUrl}/projects/${projectUID}/grants`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch grants: ${response.statusText}`);
+        }
+
+        const data: IGapGrantData[] = await response.json();
+
+        if (!Array.isArray(data)) {
+          console.error("Unexpected grants data format", data);
+          return [];
+        }
+
+        setGrants(data);
+        return data;
+      } catch (e) {
+        console.error(
+          `Error fetching indicators for project: ${projectUID}`,
+          e
+        );
+        setGrants([]);
+        return [];
+      }
+    }
+  );
+
+  return {
+    grants,
+    grantsLoading,
+    grantsError,
+  };
+}
+
+export function useGapIndicators(projectUID?: string) {
+  const [indicators, setIndicators] = useState<IGapProjectIndicatorData[]>([]);
+
+  const { data, error, isLoading } = useSWR(
+    projectUID
+      ? `${indexerUrl}/projects/${projectUID}/indicators/data/all`
+      : null,
+    async () => {
+      if (!indexerUrl || !projectUID) return [];
+
+      try {
+        const response = await fetch(
+          `${indexerUrl}/projects/${projectUID}/indicators/data/all`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch indicators: ${response.statusText}`);
+        }
+
+        const data: IGapProjectIndicatorData[] = await response.json();
+
+        if (!Array.isArray(data)) {
+          console.error("Unexpected indicators data format", data);
+          return [];
+        }
+
+        setIndicators(data);
+        return data;
+      } catch (e) {
+        console.error(
+          `Error fetching indicators for project: ${projectUID}`,
+          e
+        );
+        return [];
+      }
+    }
+  );
+
+  return {
+    indicators,
+    isLoading,
+    error,
   };
 }
 
@@ -191,3 +382,6 @@ export const getGapProjectGrantUrl = (projectUID: string, grantUID?: string) =>
 
 export const getGapProjectImpactUrl = (projectUID: string) =>
   `${gapAppUrl}/project/${projectUID}/impact`;
+
+export const getGapProjectUrl = (projectUID: string) =>
+  `${gapAppUrl}/project/${projectUID}`;

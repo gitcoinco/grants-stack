@@ -6,6 +6,8 @@ import { useIsStakable } from "./hooks/useIsStakable";
 import { useDonationPeriod } from "./hooks/useDonationPeriod";
 import { StakingButton } from "./StakingButton";
 import { StakingCountDownLabel } from "./StakingCountDownLabel";
+import { Button } from "../../../../collections/CollectionDetails";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
 const STAKING_APP_URL = process.env.REACT_APP_STAKING_APP;
 
@@ -109,7 +111,26 @@ export const StakingBannerAndModal = ({
     return (
       <div className="mt-2 mb-6">
         <StakingBanner isRoundView={isRoundView}>
-          <StakingButton onClick={handleOpenModal} isRoundView={isRoundView} />
+          <div className="flex items-center gap-2">
+            <StakingButton
+              onClick={handleOpenModal}
+              isRoundView={isRoundView}
+            />
+            {isRoundView && (
+              <Button
+                onClick={() => {
+                  window.open(
+                    "https://dashboard.boost.explorer.gitcoin.co/about-explorer-boost",
+                    "_blank"
+                  );
+                }}
+                className="text-black text-sm font-mono font-medium px-4 py-2 leading-normal rounded-lg inline-flex justify-center items-center gap-2 bg-transparent hover:bg-transparent"
+              >
+                Learn more
+                <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
         </StakingBanner>
         <StakingModal
           isOpen={isOpen}

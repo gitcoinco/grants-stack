@@ -33,7 +33,9 @@ import {
   ProjectLogo,
   StakingBannerAndModal,
 } from "./components";
-
+import { useGetApplicationStakes } from "./hooks/useGetApplicationStakes";
+import { useIsStakable } from "./components/StakingBannerAndModal/hooks/useIsStakable";
+import { ActivityList } from "../KarmaGrant/ActivityList";
 export default function ViewProjectDetails() {
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -58,6 +60,11 @@ export default function ViewProjectDetails() {
     applicationId = paramApplicationId;
   }
 
+  const isStakableRound = useIsStakable({
+    chainId: Number(chainId),
+    roundId,
+  });
+
   const {
     data: application,
     error,
@@ -70,6 +77,13 @@ export default function ViewProjectDetails() {
     },
     dataLayer
   );
+  const { data: totalStaked } = useGetApplicationStakes(
+    Number(chainId),
+    Number(roundId),
+    application?.anchorAddress ?? "",
+    isStakableRound
+  );
+
   const { round: roundDetails } = useRoundById(Number(chainId), roundId);
 
   const projectToRender = application && mapApplicationToProject(application);
@@ -80,7 +94,7 @@ export default function ViewProjectDetails() {
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense === true ||
     round?.roundMetadata?.quadraticFundingConfig?.sybilDefense !== "none";
 
-  const { grants, impacts } = useGap(
+  const { grants, impacts, updates } = useGap(
     projectToRender?.projectRegistryId as string
   );
   const { stats } = useOSO(
@@ -185,6 +199,7 @@ export default function ViewProjectDetails() {
                 grants.length > 0 && impacts.length === 0
               }
             />
+            <ActivityList activities={updates} />
             <ImpactList
               impacts={impacts}
               displayKarmaAttribution={impacts.length > 0}
@@ -218,12 +233,15 @@ export default function ViewProjectDetails() {
             </div>
           )}
         </div>
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <ProjectBanner
             bannerImgCid={bannerImg ?? null}
             classNameOverride="h-32 w-full object-cover lg:h-80 rounded md:rounded-3xl"
             resizeHeight={320}
           />
+          {totalStaked && Number(totalStaked) > 0 && (
+            <StakedAmountCard totalStaked={Number(totalStaked)} />
+          )}
           <div className="pl-4 sm:pl-6 lg:pl-8">
             <div className="sm:flex sm:items-end sm:space-x-5">
               <div className="flex">
@@ -275,3 +293,40 @@ export default function ViewProjectDetails() {
     </>
   );
 }
+
+const StakedAmountCard = ({ totalStaked }: { totalStaked: number }) => {
+  return (
+    <div className="p-2 bg-white/80 rounded-2xl backdrop-blur-sm inline-flex justify-start items-center gap-2 absolute top-4 right-4">
+      <div data-svg-wrapper className="relative">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10.8334 8.33333V2.5L3.33337 11.6667H9.16671L9.16671 17.5L16.6667 8.33333L10.8334 8.33333Z"
+            stroke="#7D67EB"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+      <div className="inline-flex flex-col justify-start items-start">
+        <div className="self-stretch inline-flex justify-start items-center gap-1">
+          <div className="justify-start text-text-primary text-lg font-medium font-['DM_Mono'] leading-normal">
+            {totalStaked}
+          </div>
+          <div className="justify-start text-text-primary text-lg font-medium font-['DM_Mono'] leading-normal">
+            GTC
+          </div>
+        </div>
+        <div className="self-stretch justify-start text-text-primary text-sm font-normal font-['DM_Mono'] leading-[14px]">
+          Total staked
+        </div>
+      </div>
+    </div>
+  );
+};

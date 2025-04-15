@@ -98,8 +98,8 @@ export function DonateToGitcoinProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [isEnabled, setIsEnabled] = useState(false);
   const [selectedChainId, setSelectedChainId] = useState<number | null>(null);
+  const [isEnabled, setIsEnabled] = useState(false);
   const [selectedToken, setSelectedToken] = useState("");
   const [amount, setAmount] = useState("0.00");
   const [directAllocationPoolId, setDirectAllocationPoolId] = useState<
@@ -196,6 +196,17 @@ export function DonateToGitcoinProvider({
 
     fetchBalances();
   }, [address, tokenFilters]);
+
+  useEffect(() => {
+    if (tokenFilters) {
+      const hasGitcoinSupportedChain = tokenFilters.some((filter) =>
+        Object.keys(GITCOIN_RECIPIENT_CONFIG).includes(
+          filter.chainId.toString()
+        )
+      );
+      setIsEnabled(hasGitcoinSupportedChain);
+    }
+  }, [tokenFilters]);
 
   useEffect(() => {
     if (!isEnabled) {
