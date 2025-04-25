@@ -245,14 +245,7 @@ export default function ViewRoundSettings(props: {
             ),
           }),
           quadraticFundingConfig: yup.object({
-            matchingFundsAvailable: yup
-              .number()
-              .typeError("Invalid value.")
-              .min(
-                round?.roundMetadata?.quadraticFundingConfig
-                  ?.matchingFundsAvailable ?? 0,
-                `Must be greater than previous value of ${round?.roundMetadata?.quadraticFundingConfig?.matchingFundsAvailable}.`
-              ),
+            matchingFundsAvailable: yup.number().typeError("Invalid value."),
             matchingCapAmount: yup.number().when("matchingCap", {
               is: (val: string) => val === "yes",
               then: yup
@@ -2087,7 +2080,8 @@ function Funding(props: {
                       ?.matchingCap !== true
                   }
                   checked={
-                    !props.editedRound?.roundMetadata?.quadraticFundingConfig?.matchingCap
+                    !props.editedRound?.roundMetadata?.quadraticFundingConfig
+                      ?.matchingCap
                   }
                   onChange={(e) => {
                     props.resetField(
