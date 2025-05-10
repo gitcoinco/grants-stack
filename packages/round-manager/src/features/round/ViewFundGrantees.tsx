@@ -257,6 +257,8 @@ export function PayProjectsTable(props: {
   }, [selectedProjects, props.projects]);
 
   function toggleAll() {
+    console.log("toggleAll", checked, indeterminate);
+    console.log("props.projects", props.projects);
     setSelectedProjects(checked || indeterminate ? [] : props.projects);
     setChecked(!checked && !indeterminate);
     setIndeterminate(false);
@@ -295,13 +297,6 @@ export function PayProjectsTable(props: {
     </div>
   );
 
-  const getAnchorAddress = async (chainId?: number, poolId?: string) => {
-    if (chainId === 42220 && poolId === "27") {
-      return "0x91F824424Ec66F129E0DaCA8151eaD5e3bD89E5F";
-    }
-    return "";
-  };
-
   const handleFundGrantees = async () => {
     setShowConfirmationModal(false);
     setOpenReadyForDistributionProgressModal(true);
@@ -311,22 +306,6 @@ export function PayProjectsTable(props: {
     }
 
     if (roundId) {
-      // check if all anchoraddresses are set, if undefined, console.log please
-      const anchorAddresses = selectedProjects.map((p) => p.anchorAddress);
-      if (anchorAddresses.some((address) => address === undefined)) {
-        const anchorAddress = await getAnchorAddress(
-          props.round.chainId,
-          props.round.payoutStrategy.id
-        );
-
-        const updatedProjects = selectedProjects.map((p) => ({
-          ...p,
-          anchorAddress: anchorAddress,
-        }));
-
-        setSelectedProjects(updatedProjects);
-      }
-
       const result = await allo
         .batchDistributeFunds({
           payoutStrategyOrPoolId:
@@ -387,6 +366,8 @@ export function PayProjectsTable(props: {
       setShowConfirmationModal(true);
     }
   };
+
+  console.log("selectedProjects", selectedProjects);
 
   return (
     <div>
