@@ -428,28 +428,32 @@ export function PayProjectsTable(props: {
                     <tr
                       key={project.projectId}
                       className={
-                        selectedProjects.includes(project)
+                        selectedProjects.some(
+                          (p) => p.projectId === project.projectId
+                        )
                           ? "bg-gray-50"
                           : undefined
                       }
                     >
                       <td className="relative px-7 sm:w-12 sm:px-6">
-                        {selectedProjects.includes(project) && (
+                        {selectedProjects.some(
+                          (p) => p.projectId === project.projectId
+                        ) && (
                           <div className="absolute inset-y-0 left-0 w-0.5 bg-indigo-600" />
                         )}
                         <input
                           type="checkbox"
                           data-testid="project-checkbox"
                           className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                          checked={selectedProjects.includes(project)}
+                          checked={selectedProjects.some(
+                            (p) => p.projectId === project.projectId
+                          )}
                           onChange={(e) => {
                             setSelectedProjects(
                               e.target.checked
                                 ? [...selectedProjects, project]
                                 : selectedProjects.filter(
-                                    (p) =>
-                                      p.projectPayoutAddress !==
-                                      project.projectPayoutAddress
+                                    (p) => p.projectId !== project.projectId
                                   )
                             );
                           }}
@@ -458,7 +462,9 @@ export function PayProjectsTable(props: {
                       <td
                         className={classNames(
                           "whitespace-nowrap py-4 pr-3 text-sm font-medium",
-                          selectedProjects.includes(project)
+                          selectedProjects.some(
+                            (p) => p.projectId === project.projectId
+                          )
                             ? "text-indigo-600"
                             : "text-gray-900"
                         )}
@@ -534,7 +540,7 @@ export function PayProjectsTable(props: {
         title="Warning!"
         body={
           <div className="text-gray-400 text-sm font-['Libre_Franklin']">
-            You don’t have enough funds in the contract to pay out the selected
+            You don't have enough funds in the contract to pay out the selected
             grantees. Please either add more funds to the contract or select
             fewer grantees.
           </div>
