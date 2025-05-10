@@ -63,6 +63,9 @@ export const fetchPassport = (
   communityId: string,
   apiKey: string
 ): Promise<Response> => {
+  console.log("fetchPassport: hammer time", {
+    address,
+  });
   const url = `${process.env.REACT_APP_PASSPORT_API_ENDPOINT}/v2/stamps/${communityId}/score/${address}`;
   return fetch(url, {
     method: "GET",
