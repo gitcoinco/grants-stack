@@ -60,9 +60,17 @@ export const useGroupProjectsByPaymentStatus = (
 
   const paidProjectIds = paidProjects?.map((project) => project.projectId);
 
+  const matchingDistribution = round.matchingDistribution;
+
+  // filter out matchingDistribution with projectId "0x0DD5CC8755C6e4247364012Bb0AC99Cd5ED136D2"
+  const filteredMatchingDistribution = matchingDistribution?.filter(
+    (project) =>
+      project.projectId !== "0x0DD5CC8755C6e4247364012Bb0AC99Cd5ED136D2"
+  );
+
   const allProjects: MatchingStatsData[] = useMemo(
     () =>
-      round.matchingDistribution?.map((matchingStatsData) => {
+      filteredMatchingDistribution?.map((matchingStatsData) => {
         const anchorAddress = applications?.find(
           (application) => application.projectId === matchingStatsData.projectId
         )?.anchorAddress;
@@ -83,7 +91,7 @@ export const useGroupProjectsByPaymentStatus = (
           projectPayoutAddress: matchingStatsData.projectPayoutAddress,
         };
       }) ?? [],
-    [round.matchingDistribution, applications]
+    [filteredMatchingDistribution, applications]
   );
 
   useEffect(() => {
