@@ -265,7 +265,7 @@ function ViewRoundResults({
     overridesFile
   );
 
-  const readyForPayoutTransactionHash = round.readyForPayoutTransaction;
+  const readyForPayoutTransactionHash = undefined; //round.readyForPayoutTransaction;
   const isReadyForPayout = readyForPayoutTransactionHash !== null;
 
   const shouldShowRevisedTable =
