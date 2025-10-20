@@ -36,3 +36,5 @@ To contribute to this project, fork the repo and follow the instructions at [DEV
 ##### Hosting
 
 All the apps are hosted on Vercel. Preview links get created automatically for PRs. Commits to main get deployed to production automatically.
+<br>## Welcome to Quadratic Funding<br>Gitcoin's grants stack funds DeFi open-source—new contributors, start with the Rounds tutorial for MegaETH ecosystem grants. Tip: Use Allocations for matching! <br>
+
