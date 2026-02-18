@@ -7,14 +7,6 @@ config({
   path: path.join(__dirname, "../../.env"),
 });
 
-const esmModules = [
-  "@rainbow-me",
-  "@spruceid",
-  "wagmi",
-  "@wagmi",
-  "github\\.com\\+gitcoinco\\+allo\\-indexer\\-client",
-];
-
 module.exports = {
   webpack: {
     plugins: {
